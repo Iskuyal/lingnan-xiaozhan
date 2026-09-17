@@ -5,11 +5,12 @@ const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
 async function run() {
-  const output = path.resolve('artifacts/p1');
+  const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
   const mini = await automator.connect({ wsEndpoint: 'ws://127.0.0.1:9420' });
   async function waitForPage(route) {
-    const deadline = Date.now() + 10000;
+    // 流程变长后开发者工具响应明显变慢（模拟器、连续截图、热重载），10 秒会误报超时。
+    const deadline = Date.now() + 30000;
     while (Date.now() < deadline) {
       const page = await mini.currentPage();
       if (page && page.path === route) return page;
@@ -85,12 +86,30 @@ async function run() {
     await (await directTimetable.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
+    // 资讯：列表 → 详情。首页最近资讯入口属 P3-2（未完成），此处直接导航。
+    await mini.callWxMethod('reLaunch', { url: '/pages/news/index' });
+    const newsList = await waitForPage('pages/news/index');
+    await newsList.waitFor(1000);
+    const newsItems = await newsList.$$('.news-item');
+    assert.ok(newsItems.length > 0, '资讯列表没有条目');
+    const newsTitle = await (await newsItems[0].$('.news-item-title')).text();
+    assert.ok(newsTitle.length > 0, '资讯条目缺少标题');
+    await mini.screenshot({ path: path.join(output, 'news.png') });
+    await newsItems[0].tap();
+    const newsDetail = await waitForPage('pages/news/detail/index');
+    await newsDetail.waitFor(1000);
+    assert.equal(await (await newsDetail.$('.detail-title')).text(), newsTitle);
+    assert.ok((await newsDetail.$$('.detail-paragraph')).length > 0, '资讯详情没有正文段落');
+    assert.ok(await newsDetail.$('#copy-article-source'), '资讯详情缺少复制原文链接入口');
+    await mini.screenshot({ path: path.join(output, 'news-detail.png') });
+
     const system = await mini.systemInfo();
     const report = { verifiedAt: new Date().toISOString(), platform: system.platform,
       model: system.model, SDKVersion: system.SDKVersion,
       checks: ['学校名称', '学生部门入口与返回', '部门列表显示组织名称与校区',
         '部门详情显示介绍、联系方式或缺失、动态或缺失', '未知部门 id 显示未找到状态',
-        '课表入口与返回', '直接进入部门列表后返回首页', '直接进入课表状态页后返回首页'],
+        '课表入口与返回', '直接进入部门列表后返回首页', '直接进入课表状态页后返回首页',
+        '资讯列表显示条目与标题', '资讯详情显示标题、正文段落与复制原文链接入口'],
       result: 'passed', realDevice: false };
     writeFileSync(path.join(output, 'verification.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
