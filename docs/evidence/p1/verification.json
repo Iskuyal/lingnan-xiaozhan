@@ -1,0 +1,14 @@
+{
+  "verifiedAt": "2026-09-17T14:39:54.626Z",
+  "platform": "devtools",
+  "model": "iPhone 12/13 (Pro)",
+  "SDKVersion": "3.17.2",
+  "checks": [
+    "学校名称",
+    "部门入口及返回",
+    "课表入口及返回",
+    "直接进入状态页后返回首页"
+  ],
+  "result": "passed",
+  "realDevice": false
+}

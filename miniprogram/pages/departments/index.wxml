@@ -1,0 +1,7 @@
+<view class="page status-page">
+  <view class="status-icon"><image src="/assets/departments.svg" mode="aspectFit" /></view>
+  <view class="status-title">部门资料整理中</view>
+  <view class="status-copy">这里将汇集学生部门的介绍、职责、联系方式与动态，方便你找到需要的组织。</view>
+  <view class="status-note">资料核实后会在这里展示，目前暂无可查看的部门。</view>
+  <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+</view>

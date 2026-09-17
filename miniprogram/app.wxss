@@ -1,0 +1,21 @@
+page {
+  background: #f4f7f5;
+  color: #183c31;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+view, button { box-sizing: border-box; }
+button { font: inherit; }
+button::after { border: 0; }
+.page { padding: 40rpx 36rpx 64rpx; padding-bottom: calc(64rpx + env(safe-area-inset-bottom)); }
+.eyebrow { color: #547367; font-size: 24rpx; }
+.section-title { font-size: 34rpx; font-weight: 600; }
+.pressed { opacity: 0.72; }
+.status-page { padding-top: 100rpx; }
+.status-icon { width: 100rpx; height: 100rpx; border-radius: 28rpx; background: #e1ece6; display: flex; align-items: center; justify-content: center; margin-bottom: 40rpx; }
+.status-icon image { width: 52rpx; height: 52rpx; }
+.status-title { font-size: 44rpx; font-weight: 600; margin-bottom: 22rpx; }
+.status-copy { color: #576c63; font-size: 29rpx; line-height: 1.9; }
+.status-note { border-left: 4rpx solid #bed1c5; padding-left: 24rpx; margin-top: 44rpx; color: #576c63; }
+.home-button { margin: 64rpx 0 0; background: #23664e; color: #fff; border-radius: 18rpx; padding: 24rpx; line-height: 1.5; font-weight: 600; }

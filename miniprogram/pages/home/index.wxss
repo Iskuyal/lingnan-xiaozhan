@@ -1,0 +1,21 @@
+.school-heading { padding: 8rpx 0 48rpx; }
+.school-name { font-size: 42rpx; font-weight: 650; line-height: 1.4; margin-top: 14rpx; letter-spacing: -1rpx; }
+.campuses { display: flex; align-items: center; margin-top: 20rpx; color: #547367; font-size: 25rpx; }
+.campus-dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: #438361; margin-right: 14rpx; }
+.tools { display: flex; gap: 20rpx; margin-top: 22rpx; }
+.tool { flex: 1; min-width: 0; padding: 28rpx 24rpx 18rpx; text-align: left; margin: 0; border-radius: 24rpx; line-height: 1.5; color: #183c31; }
+.tool-departments { background: #e1ece6; }
+.tool-timetable { background: #e7edf4; }
+.tool-icon { width: 52rpx; height: 52rpx; display: block; margin-bottom: 22rpx; }
+.tool-title { font-size: 32rpx; font-weight: 600; }
+.tool-description { font-size: 23rpx; color: #536b60; margin-top: 8rpx; }
+.tool-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 26rpx; }
+.tool-status { font-size: 22rpx; color: #536b60; }
+.chevron { font-size: 38rpx; line-height: 1; }
+.school-about { margin-top: 48rpx; padding: 32rpx; background: #fff; border-radius: 24rpx; }
+.introduction { margin-top: 20rpx; color: #52685d; font-size: 28rpx; line-height: 1.9; }
+.source-area { border-top: 1rpx solid #e8eeea; margin-top: 28rpx; padding-top: 24rpx; }
+.source-label { font-size: 23rpx; color: #63786d; }
+.verified-date { color: #6c7c73; font-size: 22rpx; margin-top: 4rpx; }
+.source-button { color: #23664e; background: #f0f5f2; margin: 20rpx 0 0; padding: 18rpx 24rpx; font-size: 25rpx; line-height: 1.5; border-radius: 12rpx; }
+.footer { text-align: center; color: #6b7b72; font-size: 23rpx; margin-top: 38rpx; }
