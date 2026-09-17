@@ -1,4 +1,4 @@
-import { newsService } from '../../services/news';
+import { newsService } from '../../services/news/index';
 import { NewsListItem } from '../../services/news/types';
 
 /** 只声明页面用到的事件字段，避免依赖 typings 内部结构。 */

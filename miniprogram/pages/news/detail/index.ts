@@ -1,4 +1,4 @@
-import { newsService } from '../../../services/news';
+import { newsService } from '../../../services/news/index';
 
 /** 正文按段落渲染，带上序号作为 wx:key，避免重复段落触发列表警告。 */
 interface BodyParagraph {

@@ -10,7 +10,7 @@ const fixturesDir = path.resolve('tests/fixtures/news');
 const fixture = (name) => fs.readFileSync(path.join(fixturesDir, name), 'utf8');
 const LIST_URL = 'https://lnc.edu.cn/xyxw/xydt';
 const articleUrl = (id) => `https://lnc.edu.cn/xyxw/xydt/${id}`;
-const SERVICE_SPECIFIER = '../../services/news';
+const SERVICE_SPECIFIER = '../../services/news/index';
 
 const LIST_TITLES = [
   '向“新”而行，逐梦岭南——我校开展2026级新生入学教育',
