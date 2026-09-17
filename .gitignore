@@ -1,0 +1,19 @@
+# 本地凭据与微信开发者工具私人配置
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+project.private.config.json
+
+# 依赖、缓存与生成物
+node_modules/
+miniprogram_npm/
+dist/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.scratch/
+artifacts/
+submission-output/
