@@ -1,34 +1,34 @@
 /**
- * 资讯数据模型。
+ * 资讯数据模型（小程序侧）。
  *
- * 这些类型同时被「服务端解析模块」（parse.ts）和「客户端服务模块」（index.ts）使用；
- * 单独成文件是为了让解析模块不依赖客户端代码，将来可直接放进云函数。
+ * 与 `cloudfunctions/newsSync/types.ts` 保持一致：微信云函数按目录整体部署，没有跨目录
+ * 共享模块的机制，因此两份类型各自存在。字段名是云函数与小程序之间的数据契约，
+ * 改名时两侧必须同步——`tests/newsSync.test.cjs` 锁住了入库记录的字段列表。
  */
 
-/** 列表条目：官网列表页能提取到的最小字段。 */
+/** 列表条目：列表页需要的最小字段。 */
 export interface NewsListItem {
   /** 原文 URL 最后一段路径，例如 content_32118，用作页面间传参。 */
   id: string;
   title: string;
-  /** 原文绝对 URL，同时是跨页去重键。 */
+  /** 原文绝对 URL。 */
   url: string;
   /** YYYY-MM-DD；官网条目缺失日期时为空字符串。 */
   date: string;
 }
 
-/** 文章详情：列表条目加上清理后的正文。 */
+/** 文章详情：列表条目加上正文段落。 */
 export interface NewsArticle extends NewsListItem {
-  /** 清理后的正文段落；无正文时为空数组。 */
+  /** 正文段落；无正文时为空数组。 */
   paragraphs: string[];
 }
 
-/** 数据来源说明，页面必须如实展示，避免把快照说成实时同步。 */
+/** 数据来源说明，页面必须如实展示，不能让用户以为内容是实时的。 */
 export interface NewsSourceMeta {
-  /** 来源栏目列表 URL。 */
-  listUrl: string;
+  /** 来源栏目名称。 */
   label: string;
-  /** 内容快照的抓取日期（YYYY-MM-DD）。 */
-  capturedAt: string;
-  /** 是否来自服务端同步；随包快照恒为 false。 */
-  syncedFromServer: boolean;
+  /** 最近一次成功同步时间（ISO 8601）；没有数据时为空字符串。 */
+  syncedAt: string;
+  /** 数据是否来自服务端同步。客户端只读云数据库，恒为 true。 */
+  fromServer: boolean;
 }

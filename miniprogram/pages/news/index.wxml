@@ -3,16 +3,28 @@
     <view class="eyebrow">官网内容 · 原文可核对</view>
     <view class="news-title">校园动态</view>
     <view class="news-meta">来源：{{source.label}}</view>
-    <view class="news-meta">内容为 {{source.capturedAt}} 抓取的官网页面快照</view>
+    <view class="news-meta" wx:if="{{syncedAtText !== ''}}">数据同步于 {{syncedAtText}}</view>
   </view>
 
   <view class="news-notice">
-    云端同步尚未接入：这里的内容不会随官网自动更新。详情页为小程序自身页面，可复制原文链接到浏览器核对。
+    内容由云函数从官网同步，不是实时更新。详情页为小程序自身页面，可复制原文链接到浏览器核对。
   </view>
 
-  <view wx:if="{{empty}}" class="news-empty">
+  <view wx:if="{{status === 'loading'}}" class="news-empty">
+    <view class="section-title">加载中</view>
+    <view class="news-empty-copy">正在从云端读取校园动态…</view>
+  </view>
+
+  <view wx:elif="{{status === 'error'}}" class="news-empty">
+    <view class="section-title">暂时读不到内容</view>
+    <view class="news-empty-copy">{{errorMessage}}</view>
+    <button id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
+    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  </view>
+
+  <view wx:elif="{{status === 'empty'}}" class="news-empty">
     <view class="section-title">暂无资讯</view>
-    <view class="news-empty-copy">当前没有可显示的条目，抓取到官网文章后会出现在这里。</view>
+    <view class="news-empty-copy">云端还没有已同步的条目，同步成功后文章会出现在这里。</view>
     <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
