@@ -1,4 +1,4 @@
-/* 列表页私有样式；通用类（.page/.eyebrow/.section-title/.status-*/.home-button/.pressed）沿用 app.wxss。 */
+/* 列表页私有样式；通用类（.page、.eyebrow、.section-title、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。 */
 .news-heading { padding: 8rpx 0 32rpx; }
 .news-title { font-size: 42rpx; font-weight: 650; line-height: 1.4; margin-top: 14rpx; }
 .news-meta { color: #547367; font-size: 24rpx; margin-top: 8rpx; }

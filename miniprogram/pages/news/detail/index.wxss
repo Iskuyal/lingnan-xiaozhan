@@ -1,4 +1,4 @@
-/* 详情页私有样式；通用类（.page/.status-*/.home-button/.pressed）沿用 app.wxss。 */
+/* 详情页私有样式；通用类（.page、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。 */
 .detail-heading { padding: 8rpx 0 28rpx; }
 .detail-title { font-size: 40rpx; font-weight: 650; line-height: 1.5; }
 .detail-meta { color: #547367; font-size: 24rpx; margin-top: 14rpx; }
