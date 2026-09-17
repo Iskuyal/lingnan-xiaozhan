@@ -17,3 +17,6 @@ Thumbs.db
 .scratch/
 artifacts/
 submission-output/
+
+# 并行开发用 git worktree
+.worktrees/
