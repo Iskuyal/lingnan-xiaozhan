@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="news-heading">
+    <view class="eyebrow">官网内容 · 原文可核对</view>
+    <view class="news-title">校园动态</view>
+    <view class="news-meta">来源：{{source.label}}</view>
+    <view class="news-meta">内容为 {{source.capturedAt}} 抓取的官网页面快照</view>
+  </view>
+
+  <view class="news-notice">
+    云端同步尚未接入：这里的内容不会随官网自动更新。详情页为小程序自身页面，可复制原文链接到浏览器核对。
+  </view>
+
+  <view wx:if="{{empty}}" class="news-empty">
+    <view class="section-title">暂无资讯</view>
+    <view class="news-empty-copy">当前没有可显示的条目，抓取到官网文章后会出现在这里。</view>
+    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  </view>
+
+  <view wx:else class="news-list">
+    <view
+      class="news-item"
+      wx:for="{{items}}"
+      wx:key="id"
+      hover-class="pressed"
+      data-id="{{item.id}}"
+      bindtap="openDetail"
+    >
+      <view class="news-item-title">{{item.title}}</view>
+      <view class="news-item-foot">
+        <text class="news-item-date">{{item.date === '' ? '日期待核实' : item.date}}</text>
+        <text class="news-item-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>

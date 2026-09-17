@@ -3,7 +3,9 @@
     "pages/home/index",
     "pages/departments/index",
     "pages/departments/detail/index",
-    "pages/timetable/index"
+    "pages/timetable/index",
+    "pages/news/index",
+    "pages/news/detail/index"
   ],
   "window": {
     "navigationBarTitleText": "校园工具",
