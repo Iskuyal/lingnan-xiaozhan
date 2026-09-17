@@ -101,8 +101,10 @@ App({
 
 | 集合 | 客户端权限 | 配置方式 |
 | --- | --- | --- |
-| `news_articles` | 所有用户可读，任何客户端不可写 | 控制台选「所有用户可读」，等价于 `{"read": true, "write": false}` |
-| `sync_state` | 不对客户端开放 | 控制台选「所有用户不可读写」，等价于 `{"read": false, "write": false}`；更新时间由云函数返回 |
+| `news_articles` | 所有用户可读，任何客户端不可写 | **自定义安全规则** `{"read": true, "write": false}`；不要用预设「所有用户可读」，原因见下 |
+| `sync_state` | 不对客户端开放 | 预设「所有用户不可读写」，或自定义规则 `{"read": false, "write": false}`；更新时间由云函数返回 |
+
+**为什么 `news_articles` 用自定义规则而不是预设**：控制台数据权限页明确提示「除自定义权限外，其他权限均不支持无登录态用户访问」。无登录态即官方文档中的[未登录模式](https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloud/guide/database/security-rules)（例如小程序被分享到朋友圈后以单页模式打开），此时 `auth` 为空，预设权限会拒绝读取。自定义规则 `{"read": true, "write": false}` 不引用 `auth`，登录与未登录两种情况都能读，符合规格「无登录可看公开资讯」。官方文档也建议用安全规则取代基础权限配置。预设与自定义规则的换算关系：预设「所有用户可读」等价于该 JSON，但缺少对无登录态的覆盖。
 
 `sync_state` 设为完全不可读写，是因为它含 `lastError` 等内部信息。取「更新时间」的两种做法择一，实施时定：读取资讯的云函数在响应里附带 `sync_state.lastSuccessAt`（推荐，内部状态不外露）；或客户端直读该集合（需把它改成可读，代价是 `lastError` 也公开）。
 
@@ -113,11 +115,11 @@ App({
 
 1. 创建两个集合：`news_articles`、`sync_state`。
 2. **只给 `news_articles.url` 建唯一索引**；`sync_state` 用固定 `_id` 标识，不需要索引。
-3. 设置安全规则：`news_articles` 选「所有用户可读」，`sync_state` 选「所有用户不可读写」。
+3. 设置安全规则：`news_articles` 选「自定义安全规则」并填 `{"read": true, "write": false}`；`sync_state` 选「所有用户不可读写」。
 
 完成后在本节补记日期与截图路径。
 
-进度（2026-09-18）：`sync_state` 已创建；`news_articles` 集合及其 `url` 唯一索引、两个集合的安全规则待配置。
+进度（2026-09-18）：两个集合均已创建；`news_articles.url` 唯一索引 `url_1` 已建成（`MgolsUnique: true`）；`news_articles` 的数据权限需按上表改为自定义安全规则 `{"read": true, "write": false}`，`sync_state` 设为「所有用户不可读写」。
 
 ## 同步云函数
 
@@ -149,7 +151,7 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [ ] 云函数的 Node.js 运行时版本（创建云函数时选择）
 - [ ] `wx-server-sdk` 版本（以当前官方模板为准，写入云函数 `package.json` 并提交锁文件）
 - [ ] 基础库版本是否满足云开发的最低要求（本项目当前锁定 3.17.2）
-- [x] 数据库安全规则写法：已按官方文档核实——`news_articles` 用 `{"read": true, "write": false}`（控制台预设「所有用户可读」），`sync_state` 用 `{"read": false, "write": false}`（预设「所有用户不可读写」）；云函数端属管理端，不受规则限制
+- [x] 数据库安全规则写法：已核实——`news_articles` 用自定义规则 `{"read": true, "write": false}`（预设「所有用户可读」不支持无登录态访问，故不用预设），`sync_state` 用预设「所有用户不可读写」或 `{"read": false, "write": false}`；云函数端属管理端，不受规则限制
 - [ ] 云函数定时触发器的配置字段与 cron 格式
 - [ ] 云开发环境的地域、计费与额度实际值
 
