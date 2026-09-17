@@ -1,0 +1,20 @@
+.department-detail { padding-bottom: 8rpx; }
+.department-name { font-size: 42rpx; font-weight: 650; line-height: 1.4; margin-top: 12rpx; }
+.department-campus-line { display: flex; align-items: baseline; margin-top: 18rpx; font-size: 25rpx; color: #547367; }
+.department-campus-label { color: #7d8f86; margin-right: 14rpx; font-size: 23rpx; }
+.department-campus-note { margin-top: 12rpx; color: #6c7c73; font-size: 22rpx; line-height: 1.7; }
+.detail-block { margin-top: 32rpx; padding: 30rpx; background: #fff; border-radius: 24rpx; }
+.detail-copy { margin-top: 18rpx; color: #52685d; font-size: 28rpx; line-height: 1.9; }
+.detail-unit-note { margin-top: 16rpx; }
+.detail-units { display: flex; flex-wrap: wrap; margin-top: 8rpx; }
+.detail-unit { margin: 12rpx 12rpx 0 0; padding: 10rpx 20rpx; background: #eef4f0; color: #23664e; border-radius: 12rpx; font-size: 24rpx; }
+.detail-missing { margin-top: 18rpx; padding: 18rpx 22rpx; background: #f4f7f5; border-radius: 14rpx; color: #63786d; font-size: 25rpx; line-height: 1.7; }
+.detail-contact { margin-top: 14rpx; color: #52685d; font-size: 27rpx; }
+.detail-activity { padding: 20rpx 0; border-bottom: 1rpx solid #eef1ef; }
+.detail-activity:last-child { border-bottom: 0; padding-bottom: 0; }
+.detail-activity-title { color: #183c31; font-size: 27rpx; line-height: 1.7; }
+.detail-activity-date { margin-top: 8rpx; color: #6c7c73; font-size: 22rpx; }
+.detail-source { margin-top: 36rpx; padding-top: 26rpx; border-top: 1rpx solid #e8eeea; }
+.detail-source-label { font-size: 23rpx; color: #63786d; }
+.detail-verified-date { color: #6c7c73; font-size: 22rpx; margin-top: 4rpx; }
+.source-button { color: #23664e; background: #f0f5f2; margin: 20rpx 0 0; padding: 18rpx 24rpx; font-size: 25rpx; line-height: 1.5; border-radius: 12rpx; }
