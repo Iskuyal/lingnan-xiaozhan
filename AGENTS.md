@@ -21,7 +21,7 @@
 ## 比赛与提交
 
 规划功能或安排阶段时，阅读 `docs/competition.md` 和 `docs/workflow.md`；准备参赛材料时阅读 `docs/submission.md`。
-正式名称、选题和技术栈未定，决策前在 `CONTEXT.md` 保持待定；确认技术决策后写 ADR。
+开发前读取 `docs/development-spec.md`、`docs/development-phases.md` 及相关 ADR。原生微信小程序 + TypeScript 为已选定路线；正式名称、AI 功能和教务接入细节仍按文档中的决策关卡处理。
 Git 提交说明和提交报告使用中文，报告说明提交内容；允许 Conventional Commits 前缀。
 
 ## Agent skills

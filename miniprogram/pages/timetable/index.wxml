@@ -1,0 +1,7 @@
+<view class="page status-page">
+  <view class="status-icon"><image src="/assets/timetable.svg" mode="aspectFit" /></view>
+  <view class="status-title">课表接入中</view>
+  <view class="status-copy">这里将用于查看个人课程的时间与地点，按周安排校园生活。</view>
+  <view class="status-note">教务系统接入尚未完成，当前无需输入账号密码，也没有同步个人课表。</view>
+  <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+</view>

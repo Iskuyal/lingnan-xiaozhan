@@ -1,0 +1,25 @@
+{
+  "name": "wx-match",
+  "version": "0.1.0",
+  "private": true,
+  "description": "校园工具微信小程序",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test tests/*.test.cjs",
+    "verify:wechat": "node scripts/verify-wechat.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "5.2.3",
+    "miniprogram-automator": "0.12.1",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "miniprogram-automator": {
+      "jimp": "0.22.12"
+    }
+  }
+}

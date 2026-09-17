@@ -1,0 +1,36 @@
+<view class="page">
+  <view class="school-heading">
+    <view class="eyebrow">你的校园，随手可达</view>
+    <view class="school-name">{{school.name}}</view>
+    <view class="campuses"><view class="campus-dot"></view>{{school.campuses}}</view>
+  </view>
+
+  <view class="tools-section">
+    <view class="section-title">校园服务</view>
+    <view class="tools">
+      <button id="departments-entry" class="tool tool-departments" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，资料整理中">
+        <image class="tool-icon" src="/assets/departments.svg" mode="aspectFit" />
+        <view class="tool-title">学生部门</view>
+        <view class="tool-description">认识组织，找到联系</view>
+        <view class="tool-bottom"><text class="tool-status">资料整理中</text><text class="chevron">›</text></view>
+      </button>
+      <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，接入中">
+        <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
+        <view class="tool-title">我的课表</view>
+        <view class="tool-description">上课时间，一目了然</view>
+        <view class="tool-bottom"><text class="tool-status">接入中</text><text class="chevron">›</text></view>
+      </button>
+    </view>
+  </view>
+
+  <view class="school-about">
+    <view class="section-title">认识岭南</view>
+    <view class="introduction">{{school.introduction}}</view>
+    <view class="source-area">
+      <view class="source-label">资料来源：{{school.sourceLabel}}</view>
+      <view class="verified-date">核查于 {{school.verifiedAt}}</view>
+      <button id="copy-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
+    </view>
+  </view>
+  <view class="footer">从了解校园，到安排每一天</view>
+</view>
