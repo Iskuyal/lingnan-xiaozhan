@@ -10,6 +10,7 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 - [开发规格与功能边界](docs/development-spec.md)
 - [分段开发、依赖与验收](docs/development-phases.md)
 - [框架选择](docs/adr/0001-native-wechat-typescript.md)
+- [云开发环境与 P3 云端实施](docs/cloud-development.md)
 - [赛事要求、评分与待核实事项](docs/competition.md)
 - [比赛工作流与阶段验收](docs/workflow.md)
 - [作品说明模板与提交清单](docs/submission.md)
@@ -55,4 +56,4 @@ npm run verify:wechat
 
 ## 下一步
 
-P2 与 P3 的非云端部分已交付并经开发者工具验收；当前阻断项为 P3 云端同步（依赖 AppID 与云环境关联验证）、P4-A 教务接入可行性调研与 P5-A AI 能力定案。微信真机预览尚未执行。教务接入与 AI 能力按阶段单独验证；正式作品名仍待定。比赛截止日期按 [赛事要求](docs/competition.md) 管理，原文冲突需向组委会确认。
+P2 与 P3 的非云端部分已交付并经开发者工具验收；云开发环境已开通，P3 云端部分（云函数、数据库、构建接入）可按 [云开发环境与 P3 云端实施](docs/cloud-development.md) 开始，运行时与 SDK 版本在执行时核实锁定。其余阻断项为 P4-A 教务接入可行性调研与 P5-A AI 能力定案。微信真机预览尚未执行。教务接入与 AI 能力按阶段单独验证；正式作品名仍待定。比赛截止日期按 [赛事要求](docs/competition.md) 管理，原文冲突需向组委会确认。
