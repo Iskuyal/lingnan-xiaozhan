@@ -18,6 +18,11 @@ const BLOCK_END_TAGS = [
 const BLOCK_END_PATTERN = new RegExp('</(?:' + BLOCK_END_TAGS.join('|') + ')>', 'gi');
 /** 需要连同内容一起丢弃的标签：脚本与样式不是正文。 */
 const DROPPED_TAGS = ['script', 'style', 'noscript'];
+/**
+ * 正文结尾的编辑署名行前缀。官网在正文末尾统一附「供稿/初审/复审/终审」，
+ * 实测 4 篇文章都是这 4 行，其中 content_32039 用的是全角分号「复审；黄雅晴」。
+ */
+const SIGNOFF_PATTERN = /^(?:供稿|初审|复审|终审|编辑|责编|摄影|撰稿|排版)[:：;；]/;
 const NAMED_ENTITIES: Record<string, string> = {
   nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", middot: '·',
   ldquo: '“', rdquo: '”', lsquo: '‘', rsquo: '’', hellip: '…', mdash: '—', ndash: '–',
@@ -196,6 +201,18 @@ function parseArticleDate(html: string): string {
 }
 
 /**
+ * 去掉正文结尾连续的编辑署名行（供稿/初审/复审/终审/编辑/责编/摄影…）。
+ *
+ * 只处理尾部连续行：署名行之后若还有正文，说明它属于正文内容而不是页脚署名，
+ * 原样保留，避免误删正文里出现的「编辑：…」这类叙述。全部段落都是署名行时返回空数组。
+ */
+function stripTrailingSignoff(paragraphs: string[]): string[] {
+  let end = paragraphs.length;
+  while (end > 0 && SIGNOFF_PATTERN.test(paragraphs[end - 1])) end -= 1;
+  return paragraphs.slice(0, end);
+}
+
+/**
  * 文章正文：<div class="article-content"> 到 <div class="article-fd">（或 </article>）之间。
  * 右边界必须用 article-fd / </article>：页面的正文结束注释在 </article> 之后、
  * 包含分享脚本，不能作为正文结束位置。
@@ -205,7 +222,7 @@ function parseArticleParagraphs(html: string): string[] {
   if (open === null) return [];
   const rest = html.slice(open.index + open[0].length);
   const boundary = /<div[^>]*class="[^"]*article-fd[^"]*"[^>]*>|<\/article>/i.exec(rest);
-  return toParagraphs(boundary === null ? rest : rest.slice(0, boundary.index));
+  return stripTrailingSignoff(toParagraphs(boundary === null ? rest : rest.slice(0, boundary.index)));
 }
 
 /** 文章页 HTML → 标题、日期、正文；字段缺失时返回空字符串或空数组。 */

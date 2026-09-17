@@ -19,6 +19,8 @@ const LIST_TITLES = [
 ];
 const ARTICLE_TITLE = LIST_TITLES[0];
 const FIRST_PARAGRAPH = '金秋九月，青春启航。9月7日至11日，学校2026级新生入学教育如约而至。本届入学教育以“习惯养成、融入大学”为核心，坚守立德树人根本任务，在“品质教育+专业教育”双模块基础上，创新融入“5+3”双创实践、AI科技体验等特色模块，大健康、工科、文科三大阵营同向发力，各二级学院（书院）立足专业特色、深耕产教融合，为新生献上一场有温度、有深度、有特色的成长启蒙，用心扣好大学生涯“第一粒扣子”，助力新生以昂扬姿态开启青春新篇。';
+/** 官网正文尾部的编辑署名行前缀（实测 4 篇文章都有，其中 content_32039 用全角分号）。 */
+const SIGNOFF = /^(供稿|初审|复审|终审|编辑|责编|摄影|撰稿|排版)[:：;；]/;
 
 function loadModule(relativePath) {
   const filename = path.resolve(relativePath);
@@ -77,6 +79,47 @@ test('文章页真实片段解析出标题、日期与正文段落', () => {
   assert.equal(article.paragraphs.some((text) => text.trim() === ''), false, '空白段落应被移除');
 });
 
+test('文章页结尾的编辑署名行被剥离', () => {
+  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const article = parseNewsArticle(fixture('article-32118.html'), articleUrl('content_32118'));
+  const signoff = article.paragraphs.filter((text) => SIGNOFF.test(text));
+  assert.deepEqual(signoff, [], '尾部 4 行编辑署名不应留在正文里');
+  assert.equal(article.paragraphs[article.paragraphs.length - 1].startsWith('五天的入学教育'), true);
+  assert.ok(article.paragraphs.includes('中药学新生在药植园AI识别药植'), '图片说明段落应保留');
+});
+
+test('署名行的全角分号写法同样被剥离，前面的正文段落保留', () => {
+  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const article = parseNewsArticle(fixture('article-32039-tail.html'), articleUrl('content_32039'));
+  assert.equal(article.title, LIST_TITLES[1]);
+  assert.equal(article.date, '2026-09-04');
+  assert.equal(article.paragraphs.length, 2);
+  assert.equal(article.paragraphs[0].startsWith('全体志愿者起立进行庄严宣誓'), true);
+  assert.equal(article.paragraphs.join('').includes('复审；黄雅晴'), false);
+});
+
+test('署名行之后仍有正文时署名行不被剥离', () => {
+  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  // 用真实片段里的 <p> 标签组装输入（真实署名段 + 真实正文段），验证只剥离「尾部连续」的署名行。
+  const tail = fixture('article-32039-tail.html');
+  const signoffTags = tail.match(/<p[^>]*>[^<]*(?:供稿|初审|复审|终审)[^<]*<\/p>/g);
+  const bodyTag = /<p[^>]*>全体志愿者起立[\s\S]*?<\/p>/.exec(tail)[0];
+  const html = '<div class="article-content">' + signoffTags.join('') + bodyTag + '</div><div class="article-fd"></div>';
+  const article = parseNewsArticle(html, articleUrl('content_32039'));
+  assert.equal(article.paragraphs.length, signoffTags.length + 1);
+  assert.ok(article.paragraphs.includes('供稿：团委'));
+  assert.equal(article.paragraphs[article.paragraphs.length - 1].startsWith('全体志愿者起立'), true);
+});
+
+test('正文只由署名行组成时返回空段落数组', () => {
+  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const tail = fixture('article-32039-tail.html');
+  const signoffTags = tail.match(/<p[^>]*>[^<]*(?:供稿|初审|复审|终审)[^<]*<\/p>/g);
+  const html = '<div class="article-content">' + signoffTags.join('') + '</div><div class="article-fd"></div>';
+  const article = parseNewsArticle(html, articleUrl('content_32039'));
+  assert.deepEqual(article.paragraphs, []);
+});
+
 test('同一原文 URL 的条目去重后只保留首次出现', () => {
   const { parseNewsList, dedupeByUrl } = loadModule('dist/services/news/parse.js');
   const items = parseNewsList(fixture('list-page-1.html'), LIST_URL);
@@ -127,7 +170,7 @@ test('缺少列表容器或空输入时返回空数组', () => {
 });
 
 test('每个 fixture 都记录了来源 URL 与抓取日期', () => {
-  for (const name of ['list-page-1.html', 'list-no-items.html', 'article-32118.html']) {
+  for (const name of ['list-page-1.html', 'list-no-items.html', 'article-32118.html', 'article-32039-tail.html']) {
     const text = fixture(name);
     assert.match(text, /来源：https:\/\/lnc\.edu\.cn\/xyxw\/xydt/, name);
     assert.match(text, /抓取日期 2026-09-17/, name);
