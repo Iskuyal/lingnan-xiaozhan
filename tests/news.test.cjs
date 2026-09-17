@@ -52,7 +52,7 @@ function newsStub(service) {
 }
 
 test('列表页真实片段解析出全部条目，导航链接不被当作资讯', () => {
-  const { parseNewsList } = loadModule('dist/services/news/parse.js');
+  const { parseNewsList } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const items = parseNewsList(fixture('list-page-1.html'), LIST_URL);
   assert.deepEqual(items.map((item) => item.title), LIST_TITLES);
   assert.deepEqual(items.map((item) => item.date), ['2026-09-12', '2026-09-04', '2026-08-14']);
@@ -66,7 +66,7 @@ test('列表页真实片段解析出全部条目，导航链接不被当作资�
 });
 
 test('文章页真实片段解析出标题、日期与正文段落', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const article = parseNewsArticle(fixture('article-32118.html'), articleUrl('content_32118'));
   assert.equal(article.title, ARTICLE_TITLE);
   assert.equal(article.date, '2026-09-12');
@@ -80,7 +80,7 @@ test('文章页真实片段解析出标题、日期与正文段落', () => {
 });
 
 test('文章页结尾的编辑署名行被剥离', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const article = parseNewsArticle(fixture('article-32118.html'), articleUrl('content_32118'));
   const signoff = article.paragraphs.filter((text) => SIGNOFF.test(text));
   assert.deepEqual(signoff, [], '尾部 4 行编辑署名不应留在正文里');
@@ -89,7 +89,7 @@ test('文章页结尾的编辑署名行被剥离', () => {
 });
 
 test('署名行的全角分号写法同样被剥离，前面的正文段落保留', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const article = parseNewsArticle(fixture('article-32039-tail.html'), articleUrl('content_32039'));
   assert.equal(article.title, LIST_TITLES[1]);
   assert.equal(article.date, '2026-09-04');
@@ -99,7 +99,7 @@ test('署名行的全角分号写法同样被剥离，前面的正文段落保�
 });
 
 test('署名行之后仍有正文时署名行不被剥离', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   // 用真实片段里的 <p> 标签组装输入（真实署名段 + 真实正文段），验证只剥离「尾部连续」的署名行。
   const tail = fixture('article-32039-tail.html');
   const signoffTags = tail.match(/<p[^>]*>[^<]*(?:供稿|初审|复审|终审)[^<]*<\/p>/g);
@@ -112,7 +112,7 @@ test('署名行之后仍有正文时署名行不被剥离', () => {
 });
 
 test('正文只由署名行组成时返回空段落数组', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const tail = fixture('article-32039-tail.html');
   const signoffTags = tail.match(/<p[^>]*>[^<]*(?:供稿|初审|复审|终审)[^<]*<\/p>/g);
   const html = '<div class="article-content">' + signoffTags.join('') + '</div><div class="article-fd"></div>';
@@ -121,7 +121,7 @@ test('正文只由署名行组成时返回空段落数组', () => {
 });
 
 test('同一原文 URL 的条目去重后只保留首次出现', () => {
-  const { parseNewsList, dedupeByUrl } = loadModule('dist/services/news/parse.js');
+  const { parseNewsList, dedupeByUrl } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const items = parseNewsList(fixture('list-page-1.html'), LIST_URL);
   const repeated = [items[0], items[1], { ...items[0], title: `${items[0].title}（重复）` }, items[2], { ...items[1] }];
   const merged = dedupeByUrl(repeated);
@@ -131,7 +131,7 @@ test('同一原文 URL 的条目去重后只保留首次出现', () => {
 });
 
 test('条目缺少日期时保留条目并置空日期', () => {
-  const { parseNewsList } = loadModule('dist/services/news/parse.js');
+  const { parseNewsList } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   // 真实片段上移除日期节点，模拟官网条目缺失日期（实测第 1/2/60/120/126 页均未出现，属容错分支）。
   const html = fixture('list-page-1.html').replace('<span class="date">2026-09-04</span>', '');
   const items = parseNewsList(html, LIST_URL);
@@ -141,7 +141,7 @@ test('条目缺少日期时保留条目并置空日期', () => {
 });
 
 test('文章页缺少正文容器时仍返回标题与日期', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   const html = fixture('article-32118.html');
   // 真实片段上移除正文区块，模拟文章没有正文（官网抓取失败或纯图片正文）。
   const withoutBody = html.slice(0, html.indexOf('<div class="article-content"'))
@@ -153,7 +153,7 @@ test('文章页缺少正文容器时仍返回标题与日期', () => {
 });
 
 test('文章页缺少 h1.class="title" 时回退到 title 标签', () => {
-  const { parseNewsArticle } = loadModule('dist/services/news/parse.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   // 真实片段上替换标题标签，模拟模板变化，验证 <title> 回退分支。
   const html = fixture('article-32118.html')
     .replace('<h1 class="title">', '<h2 class="title">')
@@ -163,7 +163,7 @@ test('文章页缺少 h1.class="title" 时回退到 title 标签', () => {
 });
 
 test('缺少列表容器或空输入时返回空数组', () => {
-  const { parseNewsList } = loadModule('dist/services/news/parse.js');
+  const { parseNewsList } = loadModule('dist/cloudfunctions/newsSync/parse.js');
   assert.deepEqual(parseNewsList(fixture('list-no-items.html'), LIST_URL), []);
   assert.deepEqual(parseNewsList('<ul class="list list-intro"></ul>', LIST_URL), []);
   assert.deepEqual(parseNewsList('', LIST_URL), []);
