@@ -1,7 +1,40 @@
-<view class="page status-page">
-  <view class="status-icon"><image src="/assets/departments.svg" mode="aspectFit" /></view>
-  <view class="status-title">部门资料整理中</view>
-  <view class="status-copy">这里将汇集学生部门的介绍、职责、联系方式与动态，方便你找到需要的组织。</view>
-  <view class="status-note">资料核实后会在这里展示，目前暂无可查看的部门。</view>
+<view class="page">
+  <view class="departments-heading">
+    <view class="eyebrow">已核实名录</view>
+    <view class="section-title">学生部门</view>
+    <view class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。</view>
+  </view>
+
+  <view wx:if="{{!view.isEmpty}}" id="departments-list" class="departments-list">
+    <view
+      wx:for="{{view.items}}"
+      wx:key="id"
+      id="department-{{item.id}}"
+      class="department-item"
+      hover-class="pressed"
+      data-id="{{item.id}}"
+      bindtap="openDetail"
+      aria-role="button"
+      aria-label="查看{{item.name}}，{{item.campusLabel}}"
+    >
+      <view class="department-main">
+        <view class="department-name">{{item.name}}</view>
+        <view class="department-campus">{{item.campusLabel}}</view>
+      </view>
+      <text class="department-chevron">›</text>
+    </view>
+  </view>
+
+  <view wx:else id="departments-empty" class="departments-empty">
+    <view class="status-title">{{view.emptyTitle}}</view>
+    <view class="status-copy">{{view.emptyCopy}}</view>
+  </view>
+
+  <view id="departments-source" class="departments-source">
+    <view class="departments-source-label">资料来源：{{view.source.label}}</view>
+    <view class="departments-verified-date">核查于 {{view.source.verifiedAt}}</view>
+    <view class="departments-source-note">{{view.source.note}}</view>
+  </view>
+
   <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
 </view>
