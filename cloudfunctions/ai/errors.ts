@@ -26,18 +26,45 @@ const MESSAGE_ENV: Record<FailureClass, string> = {
   internal: 'AI_MSG_INTERNAL',
 };
 
+/**
+ * 图片输入专属的默认文案：一条被拒的图片没有「改一改再试」的余地，用户能做的只有换一张；
+ * 「请修改后重试」是文字语义。只覆盖需要区分的一类，其余类型与文字共用默认值。
+ */
+const DEFAULT_IMAGE_MESSAGES: Partial<Record<FailureClass, string>> = {
+  content_rejected: '这张图片没有通过内容安全检测，请换一张再试。',
+};
+
+/** 图片专属文案的环境变量覆盖（改措辞不用改代码，与文字版并列）。 */
+const IMAGE_MESSAGE_ENV: Partial<Record<FailureClass, string>> = {
+  content_rejected: 'AI_MSG_CONTENT_REJECTED_IMAGE',
+};
+
+/** 输入类型：决定取哪一套默认文案（服务端调用方知道被拒的是图还是字）。 */
+export type MessageInputKind = 'text' | 'image';
+
 /** 三类必需失败（供测试与文档核对；改动这里等于改动验收口径）。 */
 export const REQUIRED_FAILURE_CLASSES: FailureClass[] = ['model_unavailable', 'content_rejected', 'quota_exhausted'];
 
-/** 取某一类失败的用户文案：环境变量优先，缺省用代码里的默认值。 */
-export function messageFor(failureClass: FailureClass): string {
+/** 取某一类失败的用户文案：环境变量优先，缺省用代码里的默认值；`image` 时先看图片专属文案。 */
+export function messageFor(failureClass: FailureClass, inputKind: MessageInputKind = 'text'): string {
+  if (inputKind === 'image') {
+    const imageEnv = IMAGE_MESSAGE_ENV[failureClass];
+    const imageOverride = imageEnv === undefined ? undefined : process.env[imageEnv];
+    if (typeof imageOverride === 'string' && imageOverride.trim() !== '') return imageOverride.trim();
+    const imageDefault = DEFAULT_IMAGE_MESSAGES[failureClass];
+    if (imageDefault !== undefined) return imageDefault;
+  }
   const override = process.env[MESSAGE_ENV[failureClass]];
   if (typeof override === 'string' && override.trim() !== '') return override.trim();
   return DEFAULT_MESSAGES[failureClass];
 }
 
-/** 默认文案（不受环境变量影响），文档与测试据此核对「三类不合并」。 */
-export function defaultMessageFor(failureClass: FailureClass): string {
+/** 默认文案（不受环境变量影响），文档与测试据此核对「三类不合并」与图片专属措辞。 */
+export function defaultMessageFor(failureClass: FailureClass, inputKind: MessageInputKind = 'text'): string {
+  if (inputKind === 'image') {
+    const imageDefault = DEFAULT_IMAGE_MESSAGES[failureClass];
+    if (imageDefault !== undefined) return imageDefault;
+  }
   return DEFAULT_MESSAGES[failureClass];
 }
 

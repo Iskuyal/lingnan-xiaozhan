@@ -30,7 +30,11 @@ import {
   VISION_PROMPT,
   VISION_SYSTEM,
   parseVisionText,
+  photoFileName,
   planCompression,
+  resolvePhotoFormat,
+  toBytes,
+  unsupportedFormatLabel,
   CompressionStep,
 } from '../../../services/timetable/photo';
 
@@ -61,6 +65,16 @@ interface DraftItemView {
 interface DatasetEvent {
   currentTarget: { dataset: { index?: number } };
 }
+
+/** 压缩结果：成功给可用路径；失败要带原因，页面按真实原因措辞（不把一切都归成「超过 1MB」）。 */
+type CompressResult =
+  | { ok: true; path: string }
+  | { ok: false; reason: 'too-large' | 'compress-failed' };
+
+const TOO_LARGE_MESSAGE = '图片压缩后仍然超过 1MB，请换一张更清晰的课表截图，或改为文件导入。';
+const COMPRESS_FAILED_MESSAGE = '图片压缩失败或读不到图片大小，请换一张截图重试，或改为文件导入。';
+const FORMAT_UNKNOWN_MESSAGE = '无法确认图片格式（文件头和文件名都不是 PNG/JPG），请换一张课表截图，或改为文件导入。';
+const REVIEW_EXITS_NOTE = '识别结果可能不全：可以重试识别、改为文件导入，或先保存已识别的课程、再用「手工录入」补上未识别的部分。';
 
 function textOr(value: string, fallback: string): string {
   return value === '' ? fallback : value;
@@ -93,10 +107,15 @@ Page({
     blockedCount: 0,
     statsText: '',
     privacyText: FILE_PRIVACY,
+    isPhoto: false,
+    reviewExitsNote: REVIEW_EXITS_NOTE,
     saving: false,
   },
-  /** 上传成功后临时文件的路径：解析失败且调用未到达云端时用它清理。 */
-  cloudPath: '',
+  /**
+   * 上传成功后云存储返回的 fileID（`cloud://…`）：解析、清理与 vision 都用它。
+   * 不能用 `prepareUpload` 给的 cloudPath——那不是 fileID，云函数下载时会失败。
+   */
+  fileID: '',
   onLoad() {
     // 每次进入导入页都是全新会话；残留草稿（例如上次未保存就退出）不沿用。
     clearDraft();
@@ -122,15 +141,18 @@ Page({
         return this.startImport(picked);
       },
       fail: (error) => {
-        // 用户取消不算错误，只有真正的失败才提示。
+        // 用户取消不算错误，只有真正的失败才提示；从确认页发起的重选被取消时回到确认页。
         const message = messageOf(error);
-        if (/cancel/u.test(message)) return;
+        if (/cancel/u.test(message)) {
+          this.restoreReviewIfDraft();
+          return;
+        }
         this.setData({ step: 'error', photoError: false, errorMessage: `选择文件失败：${message}` });
       },
     });
   },
   startImport(file: ChosenFile) {
-    this.cloudPath = '';
+    this.fileID = '';
     this.setData({
       step: 'parsing',
       importKind: 'file',
@@ -142,25 +164,30 @@ Page({
       capWarning: '',
     });
     return prepareUpload(file.name)
-      .then((prepared) => {
-        this.cloudPath = prepared.cloudPath;
-        return uploadFile(prepared.cloudPath, file.path, (percent) => this.setData({ progress: percent }));
-      })
-      .then(() => {
+      .then((prepared) => uploadFile(prepared.cloudPath, file.path, (percent) => this.setData({ progress: percent })))
+      .then((uploaded) => {
+        this.fileID = uploaded.fileID;
         this.setData({ parsingText: '云端正在解析课表，解析期间不会写入任何课表数据…' });
-        return importDraft(this.cloudPath, file.name);
+        return importDraft(uploaded.fileID, file.name);
       })
       .then((draft) => {
-        this.cloudPath = '';
+        this.fileID = '';
         setDraft(draft);
         this.setData({ step: 'review' });
         this.refresh();
       })
       .catch((error) => {
-        if (this.cloudPath !== '') void discardUpload(this.cloudPath);
-        this.cloudPath = '';
+        if (this.fileID !== '') void discardUpload(this.fileID);
+        this.fileID = '';
         this.setData({ step: 'error', photoError: false, errorMessage: messageOf(error) });
       });
+  },
+  /** 从确认页发起的重试被用户取消时回到确认页，别把已有草稿藏起来。 */
+  restoreReviewIfDraft() {
+    if (getDraft() !== null) {
+      this.setData({ step: 'review' });
+      this.refresh();
+    }
   },
   /** 拍照/相册选图（Ticket 05）：选择成功后进入压缩 → 上传 → 识别流程。 */
   choosePhoto() {
@@ -181,15 +208,18 @@ Page({
         return this.startPhoto(path, size);
       },
       fail: (error) => {
-        // 用户取消不算错误。
+        // 用户取消不算错误；从确认页发起的重试被取消时回到确认页。
         const message = messageOf(error);
-        if (/cancel/u.test(message)) return;
+        if (/cancel/u.test(message)) {
+          this.restoreReviewIfDraft();
+          return;
+        }
         this.setData({ step: 'error', photoError: false, errorMessage: `选择图片失败：${message}` });
       },
     });
   },
   async startPhoto(filePath: string, bytes: number) {
-    this.cloudPath = '';
+    this.fileID = '';
     this.setData({
       step: 'parsing',
       importKind: 'photo',
@@ -201,58 +231,95 @@ Page({
       capWarning: '',
     });
     try {
-      const readyPath = await this.compressToLimit(filePath, bytes);
-      if (readyPath === null) {
+      const compressed = await this.compressToLimit(filePath, bytes);
+      if (!compressed.ok) {
         this.setData({
           step: 'error',
           photoError: true,
-          errorMessage: '图片压缩后仍然超过 1MB，请换一张更清晰的课表截图，或改为文件导入。',
+          errorMessage: compressed.reason === 'too-large' ? TOO_LARGE_MESSAGE : COMPRESS_FAILED_MESSAGE,
         });
         return;
       }
-      const prepared = await preparePhotoUpload('课表截图.png');
-      this.cloudPath = prepared.cloudPath;
-      await uploadFile(prepared.cloudPath, readyPath, (percent) => this.setData({ progress: percent }));
+      // 压缩产物可能是 JPEG（相机与 wx.compressImage 的常态），因此**压缩之后再定格式**：
+      // 文件头优先、路径扩展名兜底，两者都拿不到就拒绝上传，不替用户假定一个格式。
+      const header = await this.readHeader(compressed.path);
+      const format = resolvePhotoFormat(compressed.path, header);
+      if (format === null) {
+        const unsupported = unsupportedFormatLabel(header);
+        this.setData({
+          step: 'error',
+          photoError: true,
+          errorMessage: unsupported === ''
+            ? FORMAT_UNKNOWN_MESSAGE
+            : `这张图片是 ${unsupported} 格式，暂不支持；请换一张 PNG 或 JPG 的课表截图，或改为文件导入。`,
+        });
+        return;
+      }
+      const prepared = await preparePhotoUpload(photoFileName(format));
+      const uploaded = await uploadFile(prepared.cloudPath, compressed.path, (percent) => this.setData({ progress: percent }));
+      this.fileID = uploaded.fileID;
       this.setData({ parsingText: 'AI 正在识别截图，识别期间不会写入任何课表数据…' });
       const result = await callAi(visionEvent(
         'timetable-screenshot',
         VISION_SYSTEM,
         VISION_PROMPT,
-        { fileID: this.cloudPath },
+        { fileID: uploaded.fileID },
         VISION_MAX_TOKENS,
       ));
-      const cloudPath = this.cloudPath;
-      this.cloudPath = '';
-      if (cloudPath !== '') void discardUpload(cloudPath);
+      const fileID = this.fileID;
+      this.fileID = '';
+      if (fileID !== '') void discardUpload(fileID);
       if (!result.ok) {
-        this.setData({ step: 'error', photoError: true, errorMessage: userMessage(result), capWarning: result.capWarning });
+        // 上传的是图片：内容被拒时用图片语义的兜底文案（服务端 message 仍优先）。
+        this.setData({ step: 'error', photoError: true, errorMessage: userMessage(result, 'image'), capWarning: result.capWarning });
         return;
       }
       setDraft(parseVisionText(result.text));
       this.setData({ step: 'review' });
       this.refresh();
     } catch (error) {
-      if (this.cloudPath !== '') {
-        void discardUpload(this.cloudPath);
-        this.cloudPath = '';
+      if (this.fileID !== '') {
+        void discardUpload(this.fileID);
+        this.fileID = '';
       }
       this.setData({ step: 'error', photoError: true, errorMessage: messageOf(error) });
     }
   },
-  /** 压缩决策由 photo.ts 的纯函数给出，这里只执行 wx 调用；每一步后重新量大小。 */
-  async compressToLimit(filePath: string, bytes: number): Promise<string | null> {
+  /** 读文件头的前 12 字节用于判格式；读不到返回 null（由路径扩展名兜底，不阻断流程）。 */
+  readHeader(filePath: string): Promise<Uint8Array | null> {
+    return new Promise((resolve) => {
+      try {
+        const manager = wx.getFileSystemManager();
+        if (manager === undefined || typeof manager.readFile !== 'function') {
+          resolve(null);
+          return;
+        }
+        manager.readFile({
+          filePath,
+          position: 0,
+          length: 12,
+          success: (result) => resolve(toBytes(result.data)),
+          fail: () => resolve(null),
+        });
+      } catch {
+        resolve(null);
+      }
+    });
+  },
+  /** 压缩决策由 photo.ts 的纯函数给出，这里只执行 wx 调用；每一步后重新量大小，失败带上原因。 */
+  async compressToLimit(filePath: string, bytes: number): Promise<CompressResult> {
     let current = filePath;
     let size = bytes;
-    for (let attempt = 0; attempt < 5; attempt += 1) {
+    for (let attempt = 0; ; attempt += 1) {
       const step = planCompression(size, attempt);
-      if (step === 'none') return current;
-      if (step === 'give-up') return null;
+      if (step === 'none') return { ok: true, path: current };
+      // 阶梯走完仍超限：planCompression 给出可达的终点，页面按「压缩后仍超限」措辞。
+      if (step === 'give-up') return { ok: false, reason: 'too-large' };
       const next = await this.applyCompressionStep(step, current);
-      if (next === null) return null;
+      if (next === null) return { ok: false, reason: 'compress-failed' };
       current = next.path;
       size = next.size;
     }
-    return null;
   },
   applyCompressionStep(
     step: CompressionStep,
@@ -359,6 +426,7 @@ Page({
     const isPhoto = draft.meta.origin === 'photo';
     this.setData({
       items,
+      isPhoto,
       courseCount: draft.courses.length,
       warningCount: items.filter((item) => item.needsReview).length,
       blockedCount: blocked.length,
@@ -436,15 +504,19 @@ Page({
         wx.showModal({ title: '保存失败', content: messageOf(error), showCancel: false });
       });
   },
+  /** 改为文件导入：错误态与确认页（部分成功）都走这里；草稿留着，用户取消重选时回到确认页。 */
   retryChoose() {
     this.setData({ step: 'guide', errorMessage: '', fileName: '', progress: 0, photoError: false, capWarning: '', importKind: '' });
   },
-  /** 重试识别：回到引导后直接再次拉起选图。 */
+  /**
+   * 重试识别：回到引导后直接再次拉起选图。
+   * 确认页（识别部分成功）与错误态共用；新草稿生成前不删旧草稿，取消选图会回到确认页。
+   */
   retryPhoto() {
     this.setData({ step: 'guide', errorMessage: '', fileName: '', progress: 0, photoError: false, capWarning: '', importKind: '' });
     this.choosePhoto();
   },
-  /** 降级出口：Ticket 03 的手工录入入口，必须实际可走通。 */
+  /** 降级出口：Ticket 03 的手工录入入口，必须实际可走通（错误态与确认页都提供）。 */
   goManualAdd() {
     wx.navigateTo({ url: '/pages/timetable/edit/index?scope=new' });
   },

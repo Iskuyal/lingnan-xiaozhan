@@ -31,6 +31,11 @@ interface UploadResult {
   maxBytes: number;
 }
 
+/** 上传成功后的定位信息：**只回传 fileID**（`cloud://…`）——下载、删除与 vision 都只认它。 */
+export interface UploadedFile {
+  fileID: string;
+}
+
 /** 调用课表云函数；云函数返回 ok:false 时抛错，页面按错误文案提示。 */
 async function callTimetable<T>(data: Record<string, unknown>): Promise<T> {
   requireCloud();
@@ -80,14 +85,28 @@ export async function prepareUpload(fileName: string): Promise<UploadResult> {
   return callTimetable<UploadResult>({ action: 'prepareUpload', fileName });
 }
 
-/** 第二步：把选中的文件上传到该路径（带进度回调，页面显示上传中）。 */
-export function uploadFile(cloudPath: string, filePath: string, onProgress?: (percent: number) => void): Promise<void> {
+/**
+ * 第二步：把选中的文件上传到该路径（带进度回调，页面显示上传中）。
+ *
+ * **必须返回云存储的 `fileID`**：后续的 `importDraft` / `discardUpload` 与 ai 的 `vision`
+ * 都把它当文件标识；`uploadFile` 返回的 `cloudPath` 只是相对路径，直接当 fileID 传给
+ * `cloud.downloadFile` 会在部署后第一次调用就失败（Ticket 03 的老写法，已一并修正）。
+ */
+export function uploadFile(cloudPath: string, filePath: string, onProgress?: (percent: number) => void): Promise<UploadedFile> {
   requireCloud();
   return new Promise((resolve, reject) => {
     const task = wx.cloud.uploadFile({
       cloudPath,
       filePath,
-      success: () => resolve(),
+      success: (result) => {
+        const fileID = result === null || result === undefined ? '' : result.fileID;
+        if (typeof fileID !== 'string' || fileID === '') {
+          // 拿不到 fileID 就没有可用的文件标识，宁可在这里失败也不把 cloudPath 当 fileID 传下去。
+          reject(new Error('上传完成但没有拿到云存储 fileID，请重试'));
+          return;
+        }
+        resolve({ fileID });
+      },
       fail: (error) => reject(new Error(`上传失败：${messageOf(error)}`)),
     });
     if (onProgress !== undefined && task !== null && task !== undefined && typeof task.onProgressUpdate === 'function') {
@@ -96,16 +115,16 @@ export function uploadFile(cloudPath: string, filePath: string, onProgress?: (pe
   });
 }
 
-/** 第三步：请云函数下载并解析成草稿；解析阶段不写入任何课表记录。 */
-export async function importDraft(cloudPath: string, fileName: string): Promise<TimetableDraft> {
-  const result = await callTimetable<{ draft: TimetableDraft }>({ action: 'importDraft', cloudPath, fileName });
+/** 第三步：请云函数下载并解析成草稿；解析阶段不写入任何课表记录。传上传返回的 fileID。 */
+export async function importDraft(fileID: string, fileName: string): Promise<TimetableDraft> {
+  const result = await callTimetable<{ draft: TimetableDraft }>({ action: 'importDraft', fileID, fileName });
   return result.draft;
 }
 
-/** 解析失败且调用未到达云端时，清掉可能残留的临时文件（尽力而为）。 */
-export async function discardUpload(cloudPath: string): Promise<void> {
+/** 解析失败且调用未到达云端时，清掉可能残留的临时文件（尽力而为）。传上传返回的 fileID。 */
+export async function discardUpload(fileID: string): Promise<void> {
   try {
-    await callTimetable<{ deleted: boolean }>({ action: 'discardUpload', cloudPath });
+    await callTimetable<{ deleted: boolean }>({ action: 'discardUpload', fileID });
   } catch {
     // 清理失败不影响用户流程；云函数在每次成功解析后都会删除临时文件。
   }
@@ -144,9 +163,11 @@ export async function deleteCourse(id: string): Promise<number> {
   return typeof result.count === 'number' ? result.count : 0;
 }
 
-/** 截图上传与识别（Ticket 05）：申请本人 openid 下的截图上传路径（服务端同样校验扩展名与上限）。 */
-export const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
-
+/**
+ * 截图上传与识别（Ticket 05）：申请本人 openid 下的截图上传路径。
+ * 大小上限以服务端返回的 `maxBytes` 为准（客户端先把图压到 `MAX_PHOTO_BYTES` 以内再上传）；
+ * 上传后拿 cloudPath 传给 `uploadFile`，并把返回的 fileID 交给 ai 的 vision。
+ */
 export async function preparePhotoUpload(fileName: string): Promise<UploadResult> {
   return callTimetable<UploadResult>({ action: 'preparePhotoUpload', fileName });
 }

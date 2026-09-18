@@ -18,7 +18,7 @@
  */
 import * as cloud from 'wx-server-sdk';
 import { Config, ModelTarget, loadConfig, resolveModelTarget, secretsOf } from './config';
-import { AiFailure, describeError, fail, messageFor, redactSecrets, toFailure } from './errors';
+import { AiFailure, MessageInputKind, describeError, fail, messageFor, redactSecrets, toFailure } from './errors';
 import { isTimeoutError, withTimeout } from './http';
 import { ModelCallResult, ModelInvocation, callModel } from './providers';
 import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
@@ -528,9 +528,9 @@ function moderationUsage(log: RunLog, outcome: SafetyOutcome): CallUsage {
   return unknownUsage(fixedPriceYuan, log.config);
 }
 
-/** 内容被判违规：统一抛 `content_rejected`，细节留给维护者。 */
-function rejectContent(outcome: SafetyOutcome): never {
-  fail('content_rejected', rejectionDetail(outcome));
+/** 内容被判违规：统一抛 `content_rejected`，细节留给维护者；图片用专属文案（换一张）。 */
+function rejectContent(outcome: SafetyOutcome, inputKind: MessageInputKind = 'text'): never {
+  throw new AiFailure('content_rejected', rejectionDetail(outcome), { message: messageFor('content_rejected', inputKind) });
 }
 
 /**
@@ -572,7 +572,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): P
   // 1) 输入内容安全：**所有消息文字**（system / user / assistant）与上传的图片都要先过检测。
   if (image !== undefined) {
     const imageOutcome = await moderateImage(log, image, wechat, openid, startedAt);
-    if (imageOutcome.rejected) rejectContent(imageOutcome);
+    if (imageOutcome.rejected) rejectContent(imageOutcome, 'image');
   }
   const text = inputText(messages, system);
   if (text !== '') {
@@ -751,7 +751,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       if (outcome.rejected) {
         response.ok = false;
         response.failureClass = 'content_rejected';
-        response.message = messageFor('content_rejected');
+        // 图片检测入口：文案用图片专属默认值（换一张），与文字路径的「修改后重试」区分。
+        response.message = messageFor('content_rejected', 'image');
         response.detail = rejectionDetail(outcome);
       }
       return response;

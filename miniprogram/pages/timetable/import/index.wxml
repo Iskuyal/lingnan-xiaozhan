@@ -60,7 +60,7 @@
         <view class="imp-item-line">地点：{{item.locationText}}<block wx:if="{{item.noteText !== ''}}">（{{item.noteText}}）</block></view>
         <view class="imp-item-warning" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
         <view class="imp-item-blocked-hint" wx:if="{{item.blocking !== ''}}">{{item.blocking}}</view>
-        <view class="imp-item-raw" wx:if="{{item.needsReview}}">原文：{{item.rawText}}</view>
+        <view class="imp-item-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
         <view class="imp-item-ops">
           <button class="imp-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
           <button class="imp-op imp-op-delete" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
@@ -69,6 +69,12 @@
     </view>
 
     <button id="confirm-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认并保存 {{courseCount}} 门课程</button>
+    <block wx:if="{{isPhoto}}">
+      <view class="imp-guide imp-guide-note">{{reviewExitsNote}}</view>
+      <button id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+      <button id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
+      <button id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+    </block>
     <button id="abandon-import" class="home-button imp-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
     <view class="imp-privacy">{{privacyText}}</view>
   </block>
