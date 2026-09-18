@@ -100,6 +100,7 @@
         <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
       </view>
       <view class="qa-error" wx:if="{{assistantError !== ''}}">{{assistantError}}</view>
+      <view id="assistant-safety-note" class="qa-warn" wx:if="{{assistantSafetyNote !== ''}}">{{assistantSafetyNote}}</view>
       <view class="qa-cap" wx:if="{{assistantCapWarning !== ''}}">{{assistantCapWarning}}</view>
       <view class="qa-input-row">
         <input id="assistant-input" class="qa-input" value="{{assistantInput}}" bindinput="onAssistantInput" placeholder="例如：周三第几节有课？" confirm-type="send" bindconfirm="sendAssistant" />

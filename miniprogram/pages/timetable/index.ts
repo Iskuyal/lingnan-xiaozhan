@@ -18,16 +18,14 @@ import {
   updateCourse,
 } from '../../services/timetable/index';
 import { WEEKDAY_SHORT, WeekView, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
-import { callAi, chatEvent, transportMessage, userMessage } from '../../services/ai';
+import { ChatMessage, callAi, chatEvent, chatMessages, safetyNoteFor, transportMessage, userMessage } from '../../services/ai';
 import {
   AssistantReply,
-  AssistantTurn,
   ProposedCourse,
   buildChangeInput,
   buildSystemPrompt,
-  conversationMessages,
-  describeChange,
   parseAssistantReply,
+  summarizeChange,
 } from '../../services/timetable/assistant';
 
 type Status = 'loading' | 'empty' | 'ready' | 'error';
@@ -44,11 +42,12 @@ interface InputEvent {
   detail: { value?: unknown };
 }
 
+/** 待确认的变更：`content` 是确认框要展示的「当前值 → 变更后」摘要。 */
 interface PendingChange {
   action: 'add' | 'update';
   courseId: string;
   course: ProposedCourse;
-  message: string;
+  content: string;
 }
 
 /** 选择器变化时的通用取值：picker 的 value 是下标（字符串或数字）。 */
@@ -77,11 +76,12 @@ Page({
     fileGuide: FILE_GUIDE,
     offlineNote: OFFLINE_NOTE,
     assistantOpen: false,
-    assistantMessages: [] as AssistantTurn[],
+    assistantMessages: [] as ChatMessage[],
     assistantInput: '',
     assistantSending: false,
     assistantError: '',
     assistantCapWarning: '',
+    assistantSafetyNote: '',
     assistantNote: ASSISTANT_NOTE,
     pendingChange: null as PendingChange | null,
   },
@@ -174,6 +174,7 @@ Page({
       assistantMessages: [{ role: 'assistant', text: ASSISTANT_WELCOME }],
       assistantError: '',
       assistantCapWarning: '',
+      assistantSafetyNote: '',
     });
   },
   closeAssistant() {
@@ -187,32 +188,61 @@ Page({
   sendAssistant() {
     const text = this.data.assistantInput.trim();
     if (text === '' || this.data.assistantSending) return;
-    const history: AssistantTurn[] = this.data.assistantMessages.concat([{ role: 'user', text }]);
-    this.setData({ assistantMessages: history, assistantInput: '', assistantSending: true, assistantError: '' });
+    const history: ChatMessage[] = this.data.assistantMessages.concat([{ role: 'user', text }]);
+    this.setData({
+      assistantMessages: history,
+      assistantInput: '',
+      assistantSending: true,
+      assistantError: '',
+      assistantSafetyNote: '',
+    });
     return callAi(chatEvent(
       'timetable-assistant',
-      buildSystemPrompt(this.data.courses, this.data.semester),
-      conversationMessages(history),
+      buildSystemPrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length),
+      chatMessages(history),
     ))
       .then((result) => {
         if (!result.ok) {
-          this.setData({ assistantSending: false, assistantError: userMessage(result), assistantCapWarning: result.capWarning });
+          this.setData({
+            assistantSending: false,
+            assistantError: userMessage(result),
+            assistantCapWarning: result.capWarning,
+            assistantSafetyNote: '',
+          });
           return;
         }
         const reply: AssistantReply = parseAssistantReply(result.text);
+        // 服务端内容安全没有真正执行（checked !== true）时在对话里明说，不把「跳过」读成「干净」。
+        const safetyNote = safetyNoteFor(result.safety);
         if (reply.kind === 'change') {
-          if (reply.action === 'update' && !this.data.courses.some((course) => course.id === reply.courseId)) {
+          const current = reply.action === 'update'
+            ? this.data.courses.find((course) => course.id === reply.courseId)
+            : null;
+          if (reply.action === 'update' && current === undefined) {
             this.setData({
               assistantSending: false,
               assistantCapWarning: result.capWarning,
+              assistantSafetyNote: safetyNote,
               assistantMessages: history.concat([{ role: 'assistant', text: '助手指向的课程不在当前课表里，已忽略这次改动，请换个说法。' }]),
+            });
+            return;
+          }
+          const summary = summarizeChange(reply.course, reply.action, current ?? null);
+          if (!summary.changed) {
+            // 模型提出的字段与当前课表一致：不弹确认框，也不产生任何写入。
+            this.setData({
+              assistantSending: false,
+              assistantCapWarning: result.capWarning,
+              assistantSafetyNote: safetyNote,
+              assistantMessages: history.concat([{ role: 'assistant', text: summary.text }]),
             });
             return;
           }
           this.setData({
             assistantSending: false,
             assistantCapWarning: result.capWarning,
-            pendingChange: { action: reply.action, courseId: reply.courseId, course: reply.course, message: reply.message },
+            assistantSafetyNote: safetyNote,
+            pendingChange: { action: reply.action, courseId: reply.courseId, course: reply.course, content: summary.text },
           });
           this.confirmChange();
           return;
@@ -220,6 +250,7 @@ Page({
         this.setData({
           assistantSending: false,
           assistantCapWarning: result.capWarning,
+          assistantSafetyNote: safetyNote,
           assistantMessages: history.concat([{ role: 'assistant', text: reply.message }]),
         });
       })
@@ -227,14 +258,14 @@ Page({
         this.setData({ assistantSending: false, assistantError: transportMessage(error) });
       });
   },
-  /** 变更方案必须经学生确认；取消不写任何数据。 */
+  /** 变更方案必须经学生确认；确认框展示「当前值 → 变更后」，取消不写任何数据。 */
   confirmChange() {
     const pending = this.data.pendingChange;
     if (pending === null) return;
     const change = pending;
     wx.showModal({
       title: '确认课表变更',
-      content: describeChange(change.course, change.action),
+      content: change.content,
       confirmText: change.action === 'add' ? '添加' : '修改',
       success: (result) => {
         if (result.confirm) return this.applyChange(change);
@@ -247,7 +278,18 @@ Page({
   },
   /** 确认后的写入：走 03 的入口，成功后刷新课表。 */
   applyChange(change: PendingChange) {
-    const input = buildChangeInput(change.course);
+    const current = change.action === 'update'
+      ? this.data.courses.find((course) => course.id === change.courseId)
+      : null;
+    if (change.action === 'update' && current === undefined) {
+      this.setData({
+        pendingChange: null,
+        assistantMessages: this.data.assistantMessages.concat([{ role: 'assistant', text: '助手指向的课程不在当前课表里，已忽略这次改动，请换个说法。' }]),
+      });
+      return;
+    }
+    // 只应用这次真正指定的字段；修改时其余字段从当前课程原样带过来（buildChangeInput 内合并）。
+    const input = buildChangeInput(change.course, current ?? null);
     const task = change.action === 'add'
       ? createCourse(input, this.data.semester)
       : updateCourse(change.courseId, input);

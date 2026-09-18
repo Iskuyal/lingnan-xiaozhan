@@ -376,6 +376,8 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 
 **文件标识统一用 fileID**：客户端 `wx.cloud.uploadFile` 返回的 `cloud://…` 才是 fileID；`prepareUpload` / `preparePhotoUpload` 返回的 `cloudPath` 只是相对路径，只能交给 `uploadFile` 当上传目标。`importDraft` / `discardUpload` 接收的是 `fileID`，云函数**从 fileID 里解析出云存储路径**再校验「属于调用者 openid 前缀」（fileID 里的环境信息不参与比较），解析不出路径或不在本人前缀下都明确拒绝。把裸 cloudPath 当 fileID 传会在 `cloud.downloadFile` 处失败——那是 Ticket 03 的老写法，已修正并补了回归测试。
 
+**`updateCourse` 是部分更新（Ticket 06 两轴复核修复）**：只覆盖请求里**显式给出**的课程字段，未给出的字段保持原值；`owner` / `semester` / `rawText` / `source` / `createdAt` 等由服务端掌握，客户端传了也不生效。手工编辑表单提交的是完整字段集，课表助手（06）只提交这次真正改动的字段——两层都不允许「只改时间」把教师、地点、学分、周次或备注一起清空。要清空某个字段，必须在请求里显式给空字符串。
+
 代码位置与测试：
 
 | 文件 | 职责 |

@@ -309,6 +309,62 @@ test('没有微信身份或未知操作时给出明确错误', async () => {
   assert.match(unknown.error, /不支持的操作/u);
 });
 
+test('修改课程只覆盖显式给出的字段：未给出的保持原值，显式给空才清空', async () => {
+  const h = harness();
+  const saved = await h.run(STUDENT_A, {
+    action: 'saveDraft',
+    semester: '2026-2027学年第一学期',
+    courses: [{
+      name: '高等数学', credits: '1.5', teacher: '林加燕', weekday: 1,
+      startSection: 1, endSection: 2, sectionRanges: [{ start: 1, end: 2 }],
+      weeks: [1, 2, 3, 4], weeksRecognized: true, weekText: '[1-4]周',
+      location: '崇礼楼-306', campus: '清远校区', siteNumber: '44', note: '1班',
+      warnings: ['节次已按原文核对'], source: 'excel', rawText: '高等数学 1.5 林加燕 [1-4]周 1-2节',
+    }],
+  });
+  assert.equal(saved.ok, true);
+  const id = h.docs[0].id;
+
+  // 只改时间（Ticket 06 的「把高等数学改到周五第 5-6 节」）：其余字段一律保持原值。
+  const updated = await h.run(STUDENT_A, { action: 'updateCourse', id, course: { weekday: 5, sectionRanges: [{ start: 5, end: 6 }] } });
+  assert.equal(updated.ok, true);
+  const row = h.docs[0];
+  assert.equal(row.weekday, 5);
+  assert.deepEqual(row.sectionRanges, [{ start: 5, end: 6 }]);
+  assert.equal(row.startSection, 5);
+  assert.equal(row.endSection, 6);
+  assert.equal(row.name, '高等数学');
+  assert.equal(row.teacher, '林加燕');
+  assert.equal(row.location, '崇礼楼-306');
+  assert.equal(row.credits, '1.5');
+  assert.deepEqual(row.weeks, [1, 2, 3, 4]);
+  assert.equal(row.weeksRecognized, true);
+  assert.equal(row.weekText, '[1-4]周');
+  assert.equal(row.campus, '清远校区');
+  assert.equal(row.siteNumber, '44');
+  assert.equal(row.note, '1班');
+  assert.equal(row.source, 'excel', '修改不改变来源');
+  assert.deepEqual(row.warnings, ['节次已按原文核对']);
+  assert.equal(row.semester, '2026-2027学年第一学期');
+  assert.equal(row.rawText, '高等数学 1.5 林加燕 [1-4]周 1-2节', '原文不受修改影响');
+
+  // 要清空某个字段必须显式给空字符串（手工编辑表单的既有语义不受影响）。
+  const cleared = await h.run(STUDENT_A, { action: 'updateCourse', id, course: { teacher: '' } });
+  assert.equal(cleared.ok, true);
+  assert.equal(h.docs[0].teacher, '');
+  assert.equal(h.docs[0].credits, '1.5', '其它字段仍不受影响');
+
+  // 白名单之外（归属、学期、来源）即使传了也不生效。
+  const forged = await h.run(STUDENT_A, {
+    action: 'updateCourse', id,
+    course: { name: '高等数学', source: 'photo', semester: '2099学年', owner: STUDENT_B, createdAt: 'x' },
+  });
+  assert.equal(forged.ok, true);
+  assert.equal(h.docs[0].source, 'excel');
+  assert.equal(h.docs[0].semester, '2026-2027学年第一学期');
+  assert.equal(h.docs[0].owner, STUDENT_A);
+});
+
 test('preparePhotoUpload:仅放行 png/jpg 截图，路径落在本人 openid 前缀下', async () => {
   const h = harness();
   const ok = await h.run(STUDENT_A, { action: 'preparePhotoUpload', fileName: '课表截图.png' });

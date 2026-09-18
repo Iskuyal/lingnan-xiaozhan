@@ -7,6 +7,7 @@
  * 识别不出的字段只标记不猜——与导入解析同一纪律（docs/development-spec.md「课表导入」与 Ticket 03）。
  */
 import { DraftCourse, SectionRange, TimetableDraft } from './types';
+import { extractJson } from '../ai';
 import { parseWeekNotation } from './weeks';
 
 /** 图片大小上限（字节）：与 ai 云函数 AI_MAX_IMAGE_BYTES 默认值一致（微信官方图片检测接口限制 1MB）。 */
@@ -182,29 +183,6 @@ function asInt(value: unknown): number {
     return Number.isInteger(parsed) ? parsed : 0;
   }
   return 0;
-}
-
-/** 从模型输出里取出 JSON 对象：先整体解析，失败时截取第一个 { 到最后一个 } 再试（06 复用）。 */
-export function extractJson(text: string): Record<string, unknown> | null {
-  const trimmed = text.trim();
-  if (trimmed === '') return null;
-  const tryParse = (source: string): Record<string, unknown> | null => {
-    try {
-      const parsed: unknown = JSON.parse(source);
-      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        return parsed as Record<string, unknown>;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  };
-  const direct = tryParse(trimmed);
-  if (direct !== null) return direct;
-  const start = trimmed.indexOf('{');
-  const end = trimmed.lastIndexOf('}');
-  if (start < 0 || end <= start) return null;
-  return tryParse(trimmed.slice(start, end + 1));
 }
 
 function emptyDraft(problems: string[]): TimetableDraft {
