@@ -1,0 +1,10 @@
+{
+  "name": "ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI 统一调用入口：模型适配、内容安全、用量记账与月度成本上限",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "4.0.2"
+  }
+}

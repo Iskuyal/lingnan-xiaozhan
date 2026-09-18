@@ -172,6 +172,189 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - AI 密钥（P5）等一律放云函数的环境变量，由云开发控制台注入；不进 Git、不进小程序包、不写入数据库。ADR-0001 明确「微信前端不保存模型密钥」。
 - 环境 ID 不是密钥，可以入库。
 
+## AI 云函数（Ticket 01：统一调用入口、内容安全、用量与成本上限）
+
+**状态（2026-09-18，仅本地）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。密钥配置、部署、微信内容安全探测与真实端到端调用**全部未执行**——本轮没有模型密钥、没有云端权限，凡依赖它们的一律记 **未验证**，人工步骤见本节末尾。下面「微信内容安全探测记录」是空表，等维护者跑完探测动作回填。
+
+这一层是 05（课表截图识别）、06（课表助手）、07（部门问答）的共同前置：三处都只调这一个函数，避免各自重复实现「调模型 + 过内容安全 + 失败降级」。**本票不实现三个 AI 功能本身。**
+
+### 动作与调用契约
+
+云函数名 `ai`。事件与返回的字段就是 05/06/07 要依赖的接口，改动等于改动三处调用方。
+
+| 事件字段 | 取值 | 说明 |
+| --- | --- | --- |
+| `action` | `chat` / `vision` / `moderateText` / `moderateImage` / `usage` / `probe` | 必填 |
+| `feature` | 如 `department-qa`、`timetable-screenshot`、`timetable-assistant` | 只用于记账与统计，未知值不影响调用 |
+| `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本） |
+| `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
+| `text` | string | `moderateText` 用；按 2000 字窗口逐段检测（最多 2 万字），超出部分在报告里写明并置 `checked: false` |
+| `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request` |
+| `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束 |
+
+返回形状所有动作统一，调用方只需要看前三个字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `ok` | 是否完成。**入口不抛异常**：中转挂掉、超时、参数写错都返回 `false` |
+| `failureClass` | `model_unavailable` / `content_rejected` / `quota_exhausted` / `invalid_request` / `internal`；成功为空串 |
+| `message` | 用户可见文案；**成功时为空串**（`usage` 的上限告警在 `capWarning`，`probe` 的结论在 `message` 与 `probe.conclusion`） |
+| `text` | `chat` / `vision` 成功时的模型输出 |
+| `detail` | 维护者排查细节（密钥已剔除） |
+| `usage` / `usageSummary` / `capWarning` | 本次用量 / 当月累计 / 接近上限的告警 |
+| `safety` / `probe` / `warnings` | 检测结论（含 `checked`）/ 探测记录 / 非致命告警（如记账失败、`checked=false`） |
+
+`usage` 动作只读不拦（已超上限也要能查），其余动作的执行顺序是：
+
+**读当月用量 → 月度上限判定 → 输入内容安全 → 模型调用 → 输出内容安全**。
+`vision` 的输入检测**先图后文**（图片先过 `imgSecCheck` 再送模型）；`moderateText` / `moderateImage` 也先判上限再检测。
+超上限时一次外部请求都不发（连内容检测都不发）；图片被拒时不会送模型（Ticket 05 的硬要求）。
+
+**超时边界**：模型调用、第三方审核、**微信云调用与云存储下载**都有硬超时（见环境变量表），
+任一步超时都在 `AI_TOTAL_DEADLINE_MS` 之内以可识别的失败结束，不会无限挂起。
+其中检测类调用超时归入「模型不可用或超时」（可重试），与配置/权限类的 `internal` 区分开。
+
+### 数据模型（两个新集合）
+
+| 集合 | 内容 | 客户端权限 |
+| --- | --- | --- |
+| `ai_usage_records` | 每次子调用一条：`requestId`、`feature`、`kind`（`model` / `moderation`）、`provider`、`model`、`ok`、`failureClass`、`durationMs`、`promptTokens`、`completionTokens`、`totalTokens`、`estimated`、`usageUnknown`、`costYuan`、`month`、`createdAt` | 不对客户端开放（预设「所有用户不可读写」） |
+| `ai_usage_monthly` | 每月一条文档（`_id` 为东八区月份，如 `2026-09`）：`calls`、`failures`、三种 token 合计、`costYuan`、`updatedAt`；用原子自增累加 | 不对客户端开放 |
+
+- `usage` 动作、上限判定都读 `ai_usage_monthly`；读不到用量（数据库故障）时**拒绝调用**而不是当作零——上限判断不能因为读失败而失效。只有「文档不存在」（当月首次调用）才按零处理。
+- **月度汇总只允许两种写法**：原子自增，或当月文档不存在时用固定 `_id` 插入初值。写失败（非「文档不存在」）一律**向上抛出并记为可处理的记账失败**（返回值 `warnings` 里能看到），绝不回退成覆盖式写入——那会把当月累计冲成单次调用的数字，使成本上限失效。首次插入用月份作 `_id`：并发下只有一个能插入，另一个回到自增，因此不会各写一份丢计数。
+- 服务端不返回 usage 时按字符数估算（中文 1 token/字、英文 4 字符/token，图片按固定常数），并标记 `estimated: true`；不估算等于把成本记成 0。
+- **接口根本不返回用量时**（OpenAI `/moderations`）既不算 0 元也不编 token 数：记录里 `usageUnknown: true`、`totalTokens: 0`，金额按 `AI_SAFETY_CALL_PRICE_YUAN`（每次审核固定价，默认 0 表示不计入）计，返回值 `warnings` 写明这一次是怎么记的。
+- 两个集合需要人工在控制台创建（见人工步骤 B），索引暂无需要：按 `_id` 直读、记录集合只写不查。
+
+### 环境变量（密钥只在这里）
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `AI_PROVIDER` | `openai` | 模型接口格式：`openai`（本项目的中转）/ `anthropic` |
+| `AI_BASE_URL` | 无（必填） | OpenAI 兼容接口根地址，**中转的实际地址以服务商为准** |
+| `AI_API_KEY` | 无（必填） | 模型密钥；不写进代码、数据库、小程序包与文档 |
+| `AI_MODEL` | 无（必填） | 文本模型名；**中转的模型名未实测**（AI 资讯实测用的是官方 `deepseek-flash`），按服务商实际值填 |
+| `AI_VISION_MODEL` | 取 `AI_MODEL` | 多模态模型名 |
+| `AI_ANTHROPIC_BASE_URL` / `AI_ANTHROPIC_API_KEY` / `AI_ANTHROPIC_VERSION` | `https://api.anthropic.com` / 无 / `2023-06-01` | 走 Anthropic 格式时需要 |
+| `AI_TIMEOUT_MS` | `8000` | 单次模型调用超时（毫秒），必须 ≤ `AI_TOTAL_DEADLINE_MS` |
+| `AI_TOTAL_DEADLINE_MS` | `15000` | 一次云函数调用的总截止；模型、内容安全、云存储下载都受它约束，**必须小于云函数超时时间**（部署时按 20 秒设置） |
+| `AI_DOWNLOAD_TIMEOUT_MS` | `5000` | 云存储下载（`vision` 的 fileID 路径）单次超时；下载同样会一直不返回，超时归入「模型不可用或超时」 |
+| `AI_MAX_TOKENS` / `AI_TEMPERATURE` | `1024` / `0.2` | 默认生成参数 |
+| `AI_EXTRA_BODY_JSON` | 空 | 追加进请求体的 JSON，如关闭思考模式：`{"chat_template_kwargs":{"thinking":false}}`（AI 资讯实测记录该模型默认开启思考、输出 token 偏高，未测关闭后的降幅） |
+| `AI_PRICE_INPUT_PER_MILLION` / `AI_PRICE_OUTPUT_PER_MILLION` | `1` / `4` | 单价（元/百万 token）。默认值是实测的 DeepSeek **官方**空闲时段价（不是中转价）；**中转的实际单价未实测**，请按实际单价配置，否则上限判断偏低 |
+| `AI_MONTHLY_CAP_YUAN` | `50` | 月度成本上限（规格定案值）；达到即拒绝调用 |
+| `AI_CAP_WARN_RATIO` | `0.8` | 告警线比例：达到 `上限 × 比例` 起在返回值里带 `capWarning`，但不拦 |
+| `AI_MODERATE_OUTPUT` | `true` | 是否对模型输出做内容安全检测 |
+| `AI_MAX_IMAGE_BYTES` | `1048576` | 图片大小上限；默认与微信 `imgSecCheck` 的 1MB 限制对齐，Ticket 05 的截图需先压缩 |
+| `AI_SAFETY_PROVIDER` | `wechat` | 内容安全适配器：`wechat` / `openai` / `anthropic` / `off`。**`off` 是仅开发与排障使用的逃生口，生产不得使用**（规格把「AI 文字与用户图片都要过内容安全」列为硬约束）；用它时报告 `checked:false` 并进 `warnings` |
+| `AI_SAFETY_FAIL_MODE` | `closed` | 检测服务不可用时：`closed` 拒绝调用（默认）/ `open` 放行并在报告里写明「未检测」且 `checked:false`。**`open` 同样仅限开发与排障，生产不得使用** |
+| `AI_SAFETY_REVIEW_AS` | `reject` | 微信 `suggest=review`（需人工复审）的处置：默认按拒绝 |
+| `AI_SAFETY_OPENAI_MODE` | `chat` | 第三方审核的调用方式：`chat`（用审核提示词，任何兼容中转可用）/ `moderations`（走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`）。**接口格式由 `AI_SAFETY_PROVIDER` 决定**（选 `anthropic` 就用 Anthropic 格式），没有单独的 `AI_SAFETY_FORMAT` 开关 |
+| `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL` | 取模型配置 | 第三方审核的地址、密钥、模型（默认复用模型配置） |
+| `AI_SAFETY_TIMEOUT_MS` | `6000` | **访问微信云调用与第三方审核的单次超时**（毫秒）；第三方审核另有一层同值 +1 秒的兜底定时器。超时归入「模型不可用或超时」（可重试） |
+| `AI_SAFETY_CALL_PRICE_YUAN` | `0` | 每次审核调用的固定价（元）：接口不返回 token 用量时（`/moderations`）按它记账；`0` 表示不计入金额，但记录会带 `usageUnknown: true` 且返回值有告警 |
+| `AI_SAFETY_MAX_TOKENS` / `AI_SAFETY_SCENE` | `256` / `1` | 审核最大输出 token、微信 `msgSecCheck` 的 scene（1 资料 / 2 评论 / 3 论坛 / 4 社交日志） |
+| `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码** |
+
+### 失败分类与默认文案
+
+三类是开发规格要求「可区分、各自独立、不合并成一句」的失败；后两类是调用方与内部错误，同样各自成句。
+
+| `failureClass` | 默认文案（可被上表环境变量覆盖） | 触发条件 |
+| --- | --- | --- |
+| `model_unavailable` | AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。 | 连接失败、超时（模型 / 内容安全 / 云存储下载都算）、5xx、鉴权失败、返回非 JSON 或空内容、**429 瞬时限流** |
+| `content_rejected` | 内容未通过安全检测，请修改后重试。 | 输入或输出被内容安全适配器判为违规（`risky` / `87014` / `flagged` / `allowed=false`） |
+| `quota_exhausted` | 本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。 | 当月累计成本 ≥ `AI_MONTHLY_CAP_YUAN`，或模型服务返回 **402**（服务商额度/余额不足） |
+| `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断） |
+| `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等 |
+
+**默认文案是可供负责人修改的默认值**，改法见上一节的环境变量；三者不得合并成一句（有测试锁定）。
+**429 与 402 必须分开**：429 是瞬时限流（可重试），说成「本月额度已用尽，请下月再试」会让用户白等一个月；只有 402 才归「额度或配额用尽」。
+
+### 内容安全适配层
+
+- **文字与图片是两个独立入口**（`checkText` / `checkImage`）：微信侧本就是 `security.msgSecCheck` 与 `security.imgSecCheck` 两个云调用，第三方侧的请求体也不同。
+- **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。长文本按 2000 字窗口逐段送检（最多 10 段 = 2 万字）；仍超出时**只检前 2 万字并在报告里写明范围、置 `checked: false`**，不静默放过。
+- **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
+- **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid（如控制台手动探测）退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**这些形态来自官方文档，本项目尚未在云上实测**（探测结论回填后才算确认）。
+- **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001（**未实测**，见探测记录表）。
+- **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
+- **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：
+  - **超时**（微信云调用、第三方审核、云存储下载）→ `model_unavailable`（可重试，与模型超时同类）；
+  - **配置 / 权限 / 协议类不可用**（如 `cloud.openapi.security` 缺失、48001、判定 JSON 解析不了）→ `internal`（要改配置）；
+  - **`AI_SAFETY_FAIL_MODE=open`** → 放行，但报告 `checked: false`、`detail` 写明「未检测」，并进 `warnings`。
+    该开关与 `AI_SAFETY_PROVIDER=off` 都是**仅限开发与排障的逃生口，生产不得使用**：规格把「AI 生成的文字与用户上传的图片都要过内容安全检测」列为硬约束，发布前必须确认这两项是默认值（`wechat` / `closed`）。
+- 违规判定与「检测失败」在返回值里区分：违规是 `content_rejected`，检测服务本身出错是 `internal` / `model_unavailable`（或按 fail-open 放行并注明 `checked: false`）。
+
+<a id="微信内容安全探测记录"></a>
+
+### 微信内容安全探测记录（**待回填**）
+
+未认证小程序能否调用官方内容安全云调用，是本票要探明的第一件事。探测动作 `{"action":"probe"}` 用**固定良性文本**与一个现场生成的 8×8 PNG 各调一次接口，把 errcode/errmsg 原样记下来；**不发违规文本**（那是刻意不做的事，违规路径由错误码表与桩测试覆盖）。
+
+| 探测时间 | 环境 ID | 是否带 openid | `security.msgSecCheck` | `security.imgSecCheck` | 结论 | 建议适配器 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 待回填 | 待回填 | 待回填 | 待回填 | 待回填 | 待回填 | 待回填 |
+
+常见错误码的含义（**均为官方文档口径，本项目未实测**，以探测结论为准）：`0` 成功；`87014` 内容违规；`48001` / `48002` 接口未授权或被禁（**未认证小程序是否必然返回它们尚未验证**）；`61010` v2 需要 openid 近期访问过小程序；`40001` access_token 相关问题。探测会把「是否超时」也记进 `note`（接口不响应时按调用超时记录，不会挂住）。
+
+**切换方式**：探测结论为不可用或部分可用时，在云函数环境变量里把 `AI_SAFETY_PROVIDER` 改为 `openai` 或 `anthropic`，并按需配置 `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL`；改完重跑一次探测与一次 `chat`，确认返回值里 `safety.provider` 变成第三方。默认值保持 `wechat`（微信为主是负责人的定案），**本轮未验证**。
+
+<a id="ticket-01-人工步骤"></a>
+
+### Ticket 01 人工步骤（动作 / 对象 / 判据；**本轮全部未执行**）
+
+以下步骤本轮**没有执行**（无密钥、无云端权限，不部署、不探测），状态一律 **未验证**；本地桩测试结论见 [Ticket 01](tasks/tickets/01-ai-foundation.md)。
+
+**步骤 A：部署 `ai` 云函数**
+
+- **动作**：`npm run build` 后在开发者工具里右键 `dist/cloudfunctions/ai` →「上传并部署：云端安装依赖」（或 `cli.bat cloud functions deploy --project <仓库>/dist --names ai --remote-npm-install`）。
+- **对象**：云函数 `ai`（依赖只有 `wx-server-sdk@4.0.2`）。
+- **判据**：控制台「云函数」列表出现 `ai`；函数目录含 `index.js`、`package.json`、`config.json`（`config.json` 里的 `permissions.openapi` 是微信云调用的权限声明，必须随目录上传）。
+
+**步骤 B：建集合、配环境变量**
+
+- **动作**：控制台「数据库」新建 `ai_usage_records` 与 `ai_usage_monthly`，权限都选「所有用户不可读写」；再到「云函数 → ai → 配置 → 环境变量」逐项填密钥与地址（密钥只在控制台粘贴，不写进仓库或文档）。
+- **对象**：两个集合；`AI_BASE_URL`、`AI_API_KEY`、`AI_MODEL`、`AI_VISION_MODEL`、`AI_PRICE_*`、`AI_MONTHLY_CAP_YUAN`。
+- **判据**：控制台「测试」页运行 `{"action":"usage"}`，返回 `ok: true`，`usageSummary.capYuan` 为 50（或你配置的值）、`month` 为当前东八区月份；返回里不出现密钥。**只配密钥不够**：单价必须按中转实际价格填，否则成本上限偏低。
+
+**步骤 C：确认云函数超时与内存**
+
+- **动作**：控制台把 `ai` 的超时时间设为 **20 秒**（与 `newsSync` 一致；默认 3 秒会截断模型调用）。
+- **对象**：云函数 `ai` 的函数配置。
+- **判据**：读回为 20 秒，且 `AI_TOTAL_DEADLINE_MS`（默认 15 秒）小于它；一次 `chat` 调用的返回里 `elapsedMs` 明显小于 20000。
+
+**步骤 D：跑微信内容安全探测并回填上表**
+
+- **动作**：控制台「测试」页运行 `{"action":"probe"}`，把返回的 `probe`（或 `detail` 里那一行 JSON）粘贴到上面的记录表。
+- **对象**：`probe.checks[]` 两条（`security.msgSecCheck`、`security.imgSecCheck`）与 `probe.conclusion` / `probe.recommendedProvider`。
+- **判据**：两条都带 `errCode` / `errMsg` / `note`；`errcode 0` 表示该接口可调用；出现 `48001` / `48002` 时按上面的「切换方式」改 `AI_SAFETY_PROVIDER` 后重跑探测与一次 `chat`（原因是不是「未认证」要由这次探测结论确认，不要先当成事实）。**这条结论必须落到本表**，否则 05/06/07 的内容安全路径没有依据。
+
+**步骤 E：端到端验证一次，并检查密钥外泄**
+
+- **动作**：控制台「测试」页运行 `{"action":"chat","feature":"e2e-check","messages":[{"role":"user","text":"只回复四个字：链路已通"}]}`；随后读 `ai_usage_records` / `ai_usage_monthly`，并在开发者工具里检查小程序包（`dist` 下 `cloudfunctions/` 之外的 `.js`）与数据库内容。
+- **对象**：一次真实模型调用；两个用量集合；小程序包；数据库。
+- **判据**：返回值 `ok: true` 且 `text` 非空；`ai_usage_records` 新增一条 `kind: "model"`、`ok: true` 的记录并带耗时与 token；`ai_usage_monthly` 的 `calls` 与 `costYuan` 增加；小程序包里搜不到密钥字符串；数据库里搜不到密钥字符串。**这是票面「端到端验证：一句测试文本经模型返回结果，全过程无密钥外泄」的唯一证据来源。**
+
+**步骤 F：核对月度上限真的会拦**
+
+- **动作**：把 `AI_MONTHLY_CAP_YUAN` 临时改成一个小于当月已花金额的值，再跑一次 `chat`，然后把上限改回 50。
+- **对象**：上限判定路径。
+- **判据**：返回 `failureClass: "quota_exhausted"`，`message` 是额度类文案（与「模型不可用」「内容被拒」不同句），且这一次没有发起模型请求（`ai_usage_records` 不新增 `kind: "model"` 记录）。
+
+### 已知限制与未决问题（Ticket 01）
+
+- **中转的模型名与单价未核实**：AI 资讯实测用的是 DeepSeek **官方** API（`deepseek-flash`），中转（CommandCode）的接口地址、模型名与价格**没有公开依据**，因此 `AI_MODEL` / `AI_PRICE_*` 没有代码默认值，必须由维护者按服务商实际值配置。选型已验证的部分只有「该模型支持多模态、延迟约 164ms、43 次调用约 0.13 元」，**这是官方 API 的实测，不是中转的实测**。
+- **「中转也是 OpenAI 兼容格式」未实测**：适配层按 OpenAI 兼容与 Anthropic 两种接口格式实现，默认选 `openai`，但中转实际返回什么格式、模型名与单价如何，都要等联调验证后回填（票面里原先写成「实测也是该格式」的那句已按未实测口径改写）。
+- **成本量级参考**：按实测的官方单价，50 元约合 1.6 万次调用；走中转的实际价格可能不同，上限按实际单价判断。
+- **月度首次写入不再有竞态**：当月文档用固定 `_id`（月份）插入初值，并发下只有一个能插入，另一个回到原子自增；`update` 的其它失败一律抛出并记为可处理的记账失败，**不会**回退成覆盖式写入（否则会把当月累计冲掉，成本上限失效）。
+- **图片 token 为估算**：多模态请求里图片按固定常数计入估算（服务端若返回 usage 则以服务端为准）。
+- **用量未知的审核调用按固定价或标记计入**：OpenAI `/moderations` 不返回 token 用量，记录带 `usageUnknown: true`；金额按 `AI_SAFETY_CALL_PRICE_YUAN`（默认 0）计，返回值有告警。若长期使用该模式，负责人应把每次固定价配上，否则这部分成本不进上限。
+- **`ai_usage_records` 只增不删**：保留策略（滚动窗口/定期清理）未定，等真实调用量出来再决定。
+- **探测只能证明「接口可调用」**：不发违规文本是刻意选择，因此「违规内容一定会被拦」由官方错误码表 + 桩测试覆盖，不是探测结论。
+- **`invalid_request` / `internal` 两类失败**：规格只要求三类用户可见失败可区分；这两类是本票补的基础设施分类，文案同样独立。
+
 ## 待核实并锁定（实施时填写）
 
 ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本节：
@@ -183,6 +366,9 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [x] 数据库安全规则写法：已核实——`news_articles` 用自定义规则 `{"read": true, "write": false}`（预设「所有用户可读」不支持无登录态访问，故不用预设），`sync_state` 用预设「所有用户不可读写」或 `{"read": false, "write": false}`；云函数端属管理端，不受规则限制
 - [x] **云函数定时触发器的配置字段与 cron 格式**（2026-09-18 按官方文档核实，尚未部署验证）：云函数目录下的 `config.json` 声明 `triggers` 数组，**只支持一个触发器**；字段为 `name`（触发周期名，字母开头）、`type`（只支持 `timer`）、`config`（cron 表达式，七个必需字段「秒 分 时 日 月 星期 年」）；**触发器规则的时区为 UTC+8**；同一条定时消息可能被重复推送，需要去重。依据：[定时触发器](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/guide/functions/triggers.html)。本项目的 `cloudfunctions/newsSync/config.json` 即按此写成（`0 0 6 * * * *` = 每天 06:00），**是否真的按配置触发要等部署后观察，见下「Ticket 04 人工步骤」。**
 - [ ] 云开发环境的地域、计费与额度实际值（全量导入的调用量估算见「未决问题」，额度需在控制台核对）
+- [ ] **AI 云函数的运行时、超时与内存**（Ticket 01 未部署，未核实；建议与 `newsSync` 同为 Nodejs16.13 / 20 秒，内存按图片大小另行确认）
+- [ ] **中转（CommandCode）的接口地址、模型名与实际单价**（Ticket 01 只能提供配置项，无公开依据可核实）
+- [ ] **未认证状态下微信内容安全接口是否可用**（Ticket 01 提供探测动作，结论待维护者跑完后回填「微信内容安全探测记录」表）
 
 ## 课表云端实施（Ticket 03，待人工部署）
 
@@ -326,6 +512,7 @@ Ticket 04 改的是代码与配置，验证要在云上做。以下步骤本轮*
 - 小程序页面改为读云数据库：异步加载，区分「加载中 / 有数据 / 空 / 读取失败可重试」，失败不静默降级为旧内容。
 - 2026-09-18（Ticket 04，**仅本地**）：新增团委通知公告栏目的列表/正文解析规则与真实片段 fixture；同步改为按栏目分批续跑（间隔 1.3 秒、单批 ≤10 次页面请求、每步落盘、限速 403 停止并冷却 30 分钟、外链条目不抓正文）；`config.json` 写入每日 06:00 的定时触发器；页面时间文案改为「最近写入 / 最近一次成功写入」。**未部署、未在云端验证**，人工步骤见上。
 - 2026-09-18（Ticket 04 两轴审查修复，**仅本地**）：冷却改为**站点级**（`sync_state` 新增 `site` 文档），任一栏目撞 403 立即结束本轮、后续栏目不再请求；截止点判定移到「等够 1.3 秒之后、发请求之前」，同站跳转同样计数与节流，`WORK_DEADLINE_MS` 按 20 − 6 − 1 − 0.5 = 12.5 秒重算；`backfillDone` 改为**整轮零失败才置真**，有失败时新增 `missing` 清单并在 `resumeHint` 写明「还差 N 条、用 reset 补齐」；文章页解析不到「发布时间」时保留旧日期，不再每天重抓同一篇。新增 9 项测试（引擎 8 项：两栏目先后撞限速、站点冷却期内另一栏目零请求、冷却跨调用、等待越界不发请求、跳转节流、全量零失败才算完成、有失败不算完成、日期保留；解析 1 项：`title` 属性的标题与发表时间各自独立）。其中 8 项引擎测试**在修复前的代码上全部失败**（已把 HEAD 版本的 `index.ts` 装回本地跑过一遍确认），修复后 `npm test` 90 项全过。
+- 2026-09-18（Ticket 01，**仅本地**）：新增云函数 `cloudfunctions/ai/`——统一模型调用入口（OpenAI 兼容 / Anthropic 两种接口格式、文本与多模态）、可切换的内容安全适配层（微信云调用为主，第三方支持 OpenAI / Anthropic 格式，文字与图片分开）、每次调用的耗时与 token/金额记账、月度成本上限（默认 50 元，接近阈值告警、达到上限拒绝）、三类失败分类与独立文案、未认证状态下微信内容安全接口的探测动作。两轴复核后修掉 4 处真缺陷（月度用量覆盖、云调用与下载无超时、402/429 混类、跳过检测被读成「检过且干净」），并补 23 项测试；`npm test` 136 项全过。**未部署、未配密钥、未探测、未做真实端到端调用**，人工步骤见「Ticket 01 人工步骤」。
 
 ### 3 秒超时：默认同步量已经贴到上限（已解决，保留记录）
 

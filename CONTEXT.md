@@ -77,5 +77,11 @@
 | MVP | 验证核心用户价值所需的最小可运行产品 |
 | 成果证据 | 可关联到版本的截图、录屏、测试记录、用户反馈或上线凭证 |
 | 参赛包 | 按赛题规定命名的 ZIP，含源码、演示和作品说明等材料 |
+| 三类失败 | AI 调用对用户可见的三类失败：`model_unavailable`（模型不可用或超时）、`content_rejected`（内容被安全策略拒绝）、`quota_exhausted`（额度或配额用尽）。文案各自独立、不合并成一句；401/403/5xx/429 与各类超时都归第一类，402 与服务商额度用尽归第三类 |
+| 月度成本上限 | `AI_MONTHLY_CAP_YUAN`（默认 50 元）：当月累计成本达到上限即拒绝 AI 调用，判定读 `ai_usage_monthly`；读不到用量按拒绝处理（fail closed） |
+| 成本告警线 | 上限 × `AI_CAP_WARN_RATIO`（默认 0.8）：达到后调用仍成功，但返回值 `capWarning` 带告警 |
+| 用量未知 | 模型或审核接口不返回 token 用量（如 `/moderations`）：记录标记 `usageUnknown`，金额按可配置的每次固定价计或标记不计入，**不得静默当成 0 元** |
+| 内容安全适配器 | 可切换的内容安全检测层：`wechat`（默认，微信官方云调用）/ `openai` / `anthropic`；`AI_SAFETY_PROVIDER=off` 与 `AI_SAFETY_FAIL_MODE=open` 是**仅限开发与排障的逃生口，生产不得使用** |
+| 已检测 / 未检测 | `SafetyReport.checked`：为假表示这次**没有真正检测**（检测被关闭、fail-open 放行未检内容，或长文本只检了前一段）。`passed: true` 只代表「检过的范围内没发现问题」，不得读成「干净」 |
 
 赛事事实以 `docs/competition.md` 为索引，开发流程见 `docs/workflow.md`。
