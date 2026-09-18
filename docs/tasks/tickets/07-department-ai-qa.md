@@ -8,6 +8,8 @@
 
 **成果位置**：服务层 `miniprogram/services/departments-qa.ts`（提示词与语料注入、历史裁剪、云函数调用、失败映射、防幻觉守卫、按部门的会话状态、视图组装）；页面 `miniprogram/pages/departments/index.*`（进入模块即有对话框：提示 + 5 个可点选项）与 `miniprogram/pages/departments/detail/index.*`（就当前部门追问），共用模板与样式 `miniprogram/pages/departments/qa.wxml` / `qa.wxss`；验收脚本 `scripts/verify-wechat.cjs`；测试 `tests/departments-qa.test.cjs`；证据 [Ticket 07 验证记录](../../evidence/p5-b/README.md) 与 [10 题评估表](../../evidence/p5-b/department-qa-eval.md)。
 
+**PR：[#29](https://github.com/Iskuyal/wx-match/pull/29)**（分支 `feat/department-ai-qa-verified`）。**同一票另有一份并行实现 [#26](https://github.com/Iskuyal/wx-match/pull/26)**（分支 `feat/department-ai-qa`，由另一会话在 2026-09-19 提交）；两份改到同一批文件，**需择一合并**，#29 的 PR 描述里有逐项对比与建议。
+
 ## 一个必须先承认的现实
 
 部门语料只有 5 个组织、约两千字。**这一票的 AI 发挥空间有限**，它撑不起「AI 能力融合」那 20 分——那部分的论据主要来自 05 与 06。把它做好，但不要在材料里把它写成 AI 的核心价值。
