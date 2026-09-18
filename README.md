@@ -2,7 +2,7 @@
 
 AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，正式作品名称待定。
 
-当前阶段：P1 首页入口、P2 学生部门、P3-1 云端资讯链路已完成，云函数与数据库已部署。历史开发者工具验收见 [P2 / P3 验证记录](docs/evidence/p2-p3/README.md)；本轮审查修复与待部署项见 [审查验证记录](docs/review/p2-p3/verification.md)。P3-2、教务接入与 AI 能力按后续阶段推进。
+当前阶段：P1 首页入口、P2 学生部门、P3-1 云端资讯链路已完成并通过开发者工具验收，云函数与数据库已部署且线上收尾完成。历史验收见 [P2 / P3 验证记录](docs/evidence/p2-p3/README.md)；审查修复与部署状态见 [审查验证记录](docs/review/p2-p3/verification.md)。P3-2、P4-B 课表导入与 P5-B AI 三落点按后续阶段推进。
 
 ## 项目入口
 
@@ -14,6 +14,7 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 - [赛事要求、评分与待核实事项](docs/competition.md)
 - [赛事信息核实：已核实事实与待问清单](docs/tasks/competition-verification.md)
 - [候选场景对比与选题建议](docs/tasks/scenario-comparison.md)
+- [待实施 Ticket（9 票，含依赖关系）](docs/tasks/tickets/README.md)
 - [比赛工作流与阶段验收](docs/workflow.md)
 - [作品说明模板与提交清单](docs/submission.md)
 - [架构决策记录](docs/adr/README.md)
@@ -60,4 +61,8 @@ npm run verify:wechat
 
 ## 下一步
 
-P2 与 P3-1 已交付，云函数、数据库与构建接入已完成；先部署本轮审查修复并核实函数调用权限，再推进 P3-2。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。其余阻断项为 P4-A 教务接入可行性调研与 P5-A AI 能力定案。微信真机预览尚未执行；正式作品名仍待定。比赛截止日期按 [赛事要求](docs/competition.md) 管理，原文冲突需向组委会确认。
+P1、P2 与 P3-1 已交付，云函数、数据库、构建接入与线上收尾（超时 20 秒、`invoke: false`）均已完成。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。
+
+接下来：**P3-2**（首页资讯入口、逐页加载、扩大抓取与每日定时，需先做 5 项范围决策）与 **P4-B/P5-B**（课表改为**导入制**——教务系统下载的 Excel 或课表截图，不再接入教务账号；AI 三落点已定：部门问答、课表图片识别、课表助手）。规格见 [开发规格](docs/development-spec.md)，阶段见 [开发阶段](docs/development-phases.md)。
+
+微信真机预览尚未执行（单页模式实测被备案阻塞，挂在 P6）；正式作品名仍待定。赛事日期与冲突已由官方确认结清，见 [赛事要求](docs/competition.md)。
