@@ -18,3 +18,8 @@
 .news-item-arrow { color: #7d8f86; font-size: 34rpx; line-height: 1; }
 .news-empty { padding-top: 40rpx; }
 .news-empty-copy { color: #576c63; font-size: 27rpx; line-height: 1.8; margin-top: 16rpx; }
+.news-more { text-align: center; color: #6c7c73; font-size: 25rpx; padding: 28rpx 0 8rpx; }
+.news-more-tap { color: #23664e; }
+.news-more-error { display: flex; flex-direction: column; align-items: center; gap: 18rpx; }
+.news-more-copy { line-height: 1.7; }
+.news-more-button { margin: 0; padding: 12rpx 44rpx; background: #f0f5f2; color: #23664e; font-size: 25rpx; line-height: 1.5; border-radius: 12rpx; }

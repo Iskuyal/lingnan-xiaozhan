@@ -23,7 +23,7 @@
 | # | Ticket | 当前状态 | Blocked by |
 | --- | --- | --- | --- |
 | 01 | [AI 服务端基础设施](01-ai-foundation.md) | ready-for-human | P5-A 指标、成本、安全接入与降级决定 |
-| 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | ready-for-agent | 无 |
+| 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | **done（2026-09-18）** | — |
 | 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | ready-for-human | 真实样本、支持版式与手工编辑范围 |
 | 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | ready-for-human | 五项同步范围决策 |
 | 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-human | 01、03；识别失败时的降级与手工录入范围 |
@@ -34,7 +34,9 @@
 
 ## 当前可开工的任务
 
-**Ticket 02 可立即实施。** 01、03、04 先完成各自决策；05、06 同时等待决策与前置实现；07 的规格已明确，但仍须等待 01 完成。`ready-for-agent` 表示规格可执行，只有 `Blocked by` 也清空后才能开工。08 等发布条件，09 先作为阶段清单保留。
+**02 已完成**（2026-09-18，证据见 [Ticket 02 验证记录](../evidence/p3-2/README.md)）：首页最近资讯入口与列表逐页加载已在开发者工具通过 12 项检查；真实多页场景待 Ticket 04 扩大数据量后补验。
+
+01、03、04 先完成各自决策；05、06 同时等待决策与前置实现；07 的规格已明确，但仍须等待 01 完成。`ready-for-agent` 表示规格可执行，只有 `Blocked by` 也清空后才能开工。08 等发布条件，09 先作为阶段清单保留。
 
 ## 拆分时的三个判断（供回溯）
 
@@ -47,3 +49,5 @@
 按负责人要求，这些 ticket **不发到 GitHub Issues**，以本目录的文件管理。仓库里仍开着的 #3–#6 是阶段级粗票，不与之重复；本目录的票落地后可作为它们的执行细目。
 
 状态、依赖和成果更新在各票文件中，并同步本索引；具体操作见 [任务管理约定](../../agents/issue-tracker.md)。`blocked-until-published` 是本地票的发布阻塞说明，不新增 GitHub 分流标签。
+
+**本地票的完成状态用 `done`**：GitHub Issue 用关闭表示任务结束，本地票没有关闭动作，因此用 `done` 表示同一含义——验收达成并挂上成果与证据。`done` 不是 [分流标签](../../agents/triage-labels.md) 的一员，只用于本地票；开工前的分流状态仍只用那五个原始标签。

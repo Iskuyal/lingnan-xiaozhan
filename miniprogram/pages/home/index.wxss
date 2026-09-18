@@ -12,6 +12,16 @@
 .tool-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 26rpx; }
 .tool-status { font-size: 22rpx; color: #536b60; }
 .chevron { font-size: 38rpx; line-height: 1; }
+.news-section { margin-top: 48rpx; }
+.news-section-head { display: flex; align-items: center; justify-content: space-between; }
+.news-entry-link { margin: 0; padding: 8rpx 0 8rpx 24rpx; background: none; color: #23664e; font-size: 26rpx; line-height: 1.5; }
+.news-hint { margin-top: 22rpx; padding: 26rpx 24rpx; background: #fff; border-radius: 20rpx; color: #576c63; font-size: 26rpx; line-height: 1.8; }
+.news-hint-error { display: flex; flex-direction: column; align-items: flex-start; gap: 20rpx; }
+.news-retry { margin: 0; padding: 12rpx 32rpx; background: #f0f5f2; color: #23664e; font-size: 25rpx; line-height: 1.5; border-radius: 12rpx; }
+.news-recent-item { background: #fff; border-radius: 20rpx; padding: 26rpx 24rpx; margin-top: 18rpx; }
+.news-recent-title { font-size: 29rpx; font-weight: 600; line-height: 1.6; }
+.news-recent-date { color: #6c7c73; font-size: 23rpx; margin-top: 10rpx; }
+.news-source { color: #6c7c73; font-size: 22rpx; margin-top: 18rpx; }
 .school-about { margin-top: 48rpx; padding: 32rpx; background: #fff; border-radius: 24rpx; }
 .introduction { margin-top: 20rpx; color: #52685d; font-size: 28rpx; line-height: 1.9; }
 .source-area { border-top: 1rpx solid #e8eeea; margin-top: 28rpx; padding-top: 24rpx; }
