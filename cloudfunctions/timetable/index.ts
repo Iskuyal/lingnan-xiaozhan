@@ -190,7 +190,8 @@ async function handleDiscardUpload(event: CloudEvent, openid: string) {
   return { ok: true, deleted };
 }
 
-async function handleList(openid: string) {  const rows = await readOwnCourses(openid);
+async function handleList(openid: string) {
+  const rows = await readOwnCourses(openid);
   const courses = sortedCourses(rows);
   const updatedAt = rows.reduce((latest, row) => (row.updatedAt > latest ? row.updatedAt : latest), '');
   return {

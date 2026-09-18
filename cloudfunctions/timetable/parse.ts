@@ -64,7 +64,13 @@ export function splitCellEntries(text: string): string[] {
     .filter((line) => line !== '');
 }
 
-/** 展开周次写法；不认识的写法返回 recognized=false，由调用方标警告。 */
+/**
+ * 展开周次写法；不认识的写法返回 recognized=false，由调用方标警告。
+ *
+ * 上限与小程序侧 `miniprogram/services/timetable/weeks.ts` 保持一致：越界（小于 1、
+ * 大于 MAX_WEEK）与倒置区间都算「不认识」，保留原文交学生裁决——若这里放行，
+ * 保存时的整批校验会拒绝，学生只看到一句「保存失败」却无从下手。
+ */
 export function parseWeekNotation(token: string): { weeks: number[]; recognized: boolean } {
   const match = WEEK_TOKEN.exec(normalizeText(token));
   if (match === null) return { weeks: [], recognized: false };
@@ -74,10 +80,26 @@ export function parseWeekNotation(token: string): { weeks: number[]; recognized:
     const start = Number(bounds[0]);
     const end = bounds.length > 1 ? Number(bounds[1]) : start;
     if (!Number.isFinite(start) || !Number.isFinite(end)) return { weeks: [], recognized: false };
+    if (start < 1 || end > MAX_WEEK || end < start) return { weeks: [], recognized: false };
     for (let week = start; week <= end; week += 1) weeks.push(week);
   }
   if (weeks.length === 0) return { weeks: [], recognized: false };
   return { weeks: [...new Set(weeks)].sort((a, b) => a - b), recognized: true };
+}
+
+/**
+ * 周次 token 是纯数字写法、但超出 1-MAX_WEEK 或区间倒置：用来把提示写得具体，
+ * 而不是笼统说「写法未能识别」。非数字写法（如「单周」）返回 false。
+ */
+export function weekTokenOutOfRange(token: string): boolean {
+  const match = WEEK_TOKEN.exec(normalizeText(token));
+  if (match === null) return false;
+  return match[1].split(WEEK_SEPARATOR).some((part) => {
+    const bounds = part.split('-');
+    const start = Number(bounds[0]);
+    const end = bounds.length > 1 ? Number(bounds[1]) : start;
+    return Number.isFinite(start) && Number.isFinite(end) && (start < 1 || end > MAX_WEEK || end < start);
+  });
 }
 
 /** 合并节次区间：去重、按起始节排序，相邻或重叠的区间合并成一段。 */
@@ -119,9 +141,10 @@ export function parseCourseEntry(rawText: string, ctx: EntryContext, index: numb
     const parsed = parseWeekNotation(weekText);
     weeks = parsed.weeks;
     weeksRecognized = parsed.recognized;
-    if (!parsed.recognized) warnings.push(`周次写法未能识别（原文：${weekText}），已保留原文`);
-    if (weeks.some((week) => week < 1 || week > MAX_WEEK)) {
-      warnings.push(`周次超出 1-${MAX_WEEK} 周范围（原文：${weekText}），请核对`);
+    if (!parsed.recognized) {
+      warnings.push(weekTokenOutOfRange(weekText)
+        ? `周次超出 1-${MAX_WEEK} 周范围或区间倒置（原文：${weekText}），请核对`
+        : `周次写法未能识别（原文：${weekText}），已保留原文`);
     }
     before = tokens.slice(0, weekIndex);
     after = tokens.slice(weekIndex + 1).join(' ');
@@ -446,12 +469,9 @@ export function parseWorkbook(buffer: Buffer, fileName = ''): TimetableDraft {
       chosen = result;
       continue;
     }
-    // 同一文件有多个可解析的工作表：并入第一张（同一学生的课表只有一张，多出来的按附加表处理）。
-    chosen.courses = chosen.courses.concat(result.courses);
-    chosen.stats.sheets += 1;
-    chosen.stats.cells += result.stats.cells;
-    chosen.stats.entries += result.stats.entries;
-    chosen.problems.push(`工作表「${sheetName}」的课程已并入草稿`);
+    // 一份文件里有多张都能解析的表（例如另一个班的课表）：只取第一张，不把别人的课混进草稿。
+    // 「不猜」在这里同样适用——并表是替学生做了选择。
+    problems.push(`工作表「${sheetName}」也像课表，但一份课表只取一张，已跳过；若选错了工作表请重新导出`);
   }
 
   if (chosen === null) {

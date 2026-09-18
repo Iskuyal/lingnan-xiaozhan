@@ -200,6 +200,54 @@ test('周次写法不认识时保留原文并标记，不猜周次', () => {
   assert.match(missing.warnings.join(' '), /未找到周次/u);
 });
 
+test('越界与倒置的周次按「不认识」处理，且与小程序侧判断一致', () => {
+  const matrix = [
+    ['某某职业技术学院2026-2027学年第一学期班级课表'],
+    HEADER,
+    ['', '一', '越界课程 2 张三 [31-32]周 1-2节 教学楼-A101-教室 清远校区 40'],
+    ['', '二', '倒置课程 2 李四 [17-2]周 1-2节 教学楼-A102-教室 清远校区 40'],
+  ];
+  const result = parseSheetMatrix(matrix, '数据表');
+  const overflow = result.courses.find((course) => course.name === '越界课程');
+  assert.equal(overflow.weeksRecognized, false, '越界周次不得当成识别成功');
+  assert.deepEqual(overflow.weeks, [], '越界周次不得进周课表');
+  assert.equal(overflow.weekText, '[31-32]周', '原文保留');
+  assert.match(overflow.warnings.join(' '), /超出 1-30 周范围或区间倒置/u);
+  const inverted = result.courses.find((course) => course.name === '倒置课程');
+  assert.equal(inverted.weeksRecognized, false);
+  assert.deepEqual(inverted.weeks, []);
+
+  // 两侧（云函数解析 / 小程序手工表单）对同一写法的判断必须一致，否则手工改过的课程会保存失败。
+  const clientWeeks = require('../dist/services/timetable/weeks.js');
+  for (const token of ['[31-32]周', '[17-2]周', '[0]周', '[1-16,31]周', '[1-16,8-17]周', '4周']) {
+    const client = clientWeeks.parseWeekNotation(token);
+    const server = parseWeekNotation(token);
+    assert.equal(client.recognized, server.recognized, token);
+    assert.deepEqual(client.weeks, server.weeks, token);
+  }
+});
+
+test('一份文件里有多张课表工作表时只取第一张，不做静默并表', () => {
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+    ['某某职业技术学院2026-2027学年第一学期班级课表'],
+    HEADER,
+    ['', '一', '第一张的课 2 张三 [1-8]周 1-2节 教学楼-A101-教室 清远校区 40'],
+  ]), '第一个班');
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+    ['某某职业技术学院2026-2027学年第一学期班级课表'],
+    HEADER,
+    ['', '二', '第二个班的课 2 李四 [1-8]周 3-4节 教学楼-A102-教室 清远校区 41'],
+  ]), '第二个班');
+  const draft = parseWorkbook(XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }), '两个班.xlsx');
+  assert.deepEqual(draft.courses.map((course) => course.name), ['第一张的课']);
+  assert.equal(draft.stats.sheets, 1);
+  assert.ok(
+    draft.problems.some((problem) => problem.includes('第二个班') && problem.includes('跳过')),
+    `应明确写出跳过了哪张工作表：${JSON.stringify(draft.problems)}`,
+  );
+});
+
 test('非课表矩阵与空文件给出可理解的失败信息', () => {
   const grades = buildWorkbook([
     ['成绩表'],
