@@ -17,7 +17,8 @@
     "miniprogram-api-typings": "5.2.3",
     "miniprogram-automator": "0.12.1",
     "typescript": "5.9.3",
-    "wx-server-sdk": "4.0.2"
+    "wx-server-sdk": "4.0.2",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
     "miniprogram-automator": {
