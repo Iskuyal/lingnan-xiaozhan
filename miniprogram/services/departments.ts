@@ -93,8 +93,8 @@ export const NOT_FOUND_COPY = '这个部门不在已核实名录中，可以返�
 export const departmentsSource: DepartmentsSource = {
   label: '学校官网 · 团委 · 学生组织',
   sourceUrl: 'https://lnc.edu.cn/tw/sygk/xszz',
-  verifiedAt: '2026-09-17',
-  note: '组织名称与介绍转录自该页面的「学生组织机构简介」表格；官网未公布组织联系方式。',
+  verifiedAt: '2026-09-18',
+  note: '组织名称与介绍转录自该页面的「学生组织机构简介」表格；组织动态取自团委各栏目 2025-2026 年文章，日期为官网「发布时间」；官网未公布组织联系方式。',
 };
 
 export const departments: Department[] = [
@@ -110,14 +110,29 @@ export const departments: Department[] = [
     contacts: [],
     activities: [
       {
+        title: '对话榜样｜笃行团务，砺己争先',
+        publishedAt: '2026-06-30',
+        sourceUrl: 'https://lnc.edu.cn/tw/kjcx/qcby/content_30203',
+      },
+      {
+        title: '关于2026年广东大学生“青马工程” 培训班学员推荐名单的公示',
+        publishedAt: '2026-06-18',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/tqsd/content_29791',
+      },
+      {
+        title: '我校组织参加2026年全省高校无偿献血工作动员视频会议',
+        publishedAt: '2026-04-30',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_28456',
+      },
+      {
         title: '述职收官，逐光前行 2025-2026学年第一学期学生干部述职大会圆满落幕',
         publishedAt: '2026-03-10',
         sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27039',
       },
       {
-        title: '学生社团招新 2025“社“聚新能量，青春燃校园',
-        publishedAt: '2025-10-27',
-        sourceUrl: 'https://lnc.edu.cn/tw/xywt/stfc/content_24789',
+        title: '规范团务强本领 挺膺担当启新程——我校举办2025年共青团“岁末年初”专题工作培训',
+        publishedAt: '2026-03-10',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27016',
       },
     ],
     sourceUrl: departmentsSource.sourceUrl,
@@ -135,19 +150,34 @@ export const departments: Department[] = [
     contacts: [],
     activities: [
       {
-        title: '学生社团招新 2025“社“聚新能量，青春燃校园',
-        publishedAt: '2025-10-27',
-        sourceUrl: 'https://lnc.edu.cn/tw/xywt/stfc/content_24789',
+        title: '广东岭南职业技术学院第十四次学生代表大会顺利召开',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27001',
+      },
+      {
+        title: '青春向党悟思想 挺膺担当启新程——我校学生会主席团参加广东学联2025-2026学年第一次集体学习',
+        publishedAt: '2026-03-10',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27018',
+      },
+      {
+        title: '第四届校园提案大赛圆满结束',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27004',
+      },
+      {
+        title: '校长接待日｜校长面对面，这些后勤诉求全回应！',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27006',
+      },
+      {
+        title: '我为同学做实事 校学生会助力2025年大学生体质健康测试工作',
+        publishedAt: '2026-03-06',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_26964',
       },
       {
         title: '我为同学做实事|校园摆起 "权益小摊"，校学生会为校园消费撑起 "保护伞"',
         publishedAt: '2025-03-31',
         sourceUrl: 'https://lnc.edu.cn/tw/lndt/wwtxzss/content_22115',
-      },
-      {
-        title: '我为同学做实事 | 模拟法庭进校园，法治教育的生动实践!',
-        publishedAt: '2024-08-19',
-        sourceUrl: 'https://lnc.edu.cn/tw/lndt/wwtxzss/content_19177',
       },
     ],
     sourceUrl: departmentsSource.sourceUrl,
@@ -165,19 +195,24 @@ export const departments: Department[] = [
     contacts: [],
     activities: [
       {
+        title: '学生社团进社区｜第二期圆满落幕，下期敬请期待！',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_26999',
+      },
+      {
+        title: '学生社团进社区 第三期圆满落幕，下期未完待续！',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27005',
+      },
+      {
+        title: '学生社团进社区｜第一期圆满落幕，下期精彩待续！',
+        publishedAt: '2026-03-06',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_26965',
+      },
+      {
         title: '学生社团招新 2025“社“聚新能量，青春燃校园',
         publishedAt: '2025-10-27',
         sourceUrl: 'https://lnc.edu.cn/tw/xywt/stfc/content_24789',
-      },
-      {
-        title: '社团年审｜2024年度学生社团年审答辩会顺利举行',
-        publishedAt: '2024-12-25',
-        sourceUrl: 'https://lnc.edu.cn/tw/xywt/stfc/content_20821',
-      },
-      {
-        title: '社团要闻 | 社团管理部召开秋季学期第一次社团会长见面大会',
-        publishedAt: '2023-09-22',
-        sourceUrl: 'https://lnc.edu.cn/tw/xywt/stfc/content_15108',
       },
     ],
     sourceUrl: departmentsSource.sourceUrl,
@@ -195,6 +230,11 @@ export const departments: Department[] = [
     contacts: [],
     activities: [
       {
+        title: '2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行',
+        publishedAt: '2026-04-15',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27865',
+      },
+      {
         title: '“青”志愿｜共建文明新校园，红荔聚力志愿行',
         publishedAt: '2026-03-10',
         sourceUrl: 'https://lnc.edu.cn/tw/lnpp/zyhd/content_27017',
@@ -203,6 +243,16 @@ export const departments: Department[] = [
         title: '“青”志愿｜岭南热血 双城同心',
         publishedAt: '2026-03-10',
         sourceUrl: 'https://lnc.edu.cn/tw/lnpp/zyhd/content_27022',
+      },
+      {
+        title: '“青”young行 绘彩童心专项行（三十一）',
+        publishedAt: '2026-03-10',
+        sourceUrl: 'https://lnc.edu.cn/tw/lnpp/zyhd/content_27027',
+      },
+      {
+        title: '“青”志愿 稻香伴“星“影，田垄齐漫步',
+        publishedAt: '2026-03-09',
+        sourceUrl: 'https://lnc.edu.cn/tw/lnpp/zyhd/content_26998',
       },
     ],
     sourceUrl: departmentsSource.sourceUrl,
@@ -218,7 +268,13 @@ export const departments: Department[] = [
     unitNote: '服务站下设 2 个职能部门。',
     units: ['宣秘团', '督勤部'],
     contacts: [],
-    activities: [],
+    activities: [
+      {
+        title: '述职收官，逐光前行 2025-2026学年第一学期学生干部述职大会圆满落幕',
+        publishedAt: '2026-03-10',
+        sourceUrl: 'https://lnc.edu.cn/tw/djxf/djhd/content_27039',
+      },
+    ],
     sourceUrl: departmentsSource.sourceUrl,
     verifiedAt: departmentsSource.verifiedAt,
   },
@@ -228,9 +284,9 @@ export function listDepartments(): Department[] {
   return departments;
 }
 
-export function findDepartmentById(id: unknown): Department | null {
+export function findDepartmentById(id: unknown, source: Department[] = departments): Department | null {
   if (typeof id !== 'string' || id.length === 0) return null;
-  const found = departments.find((item) => item.id === id);
+  const found = source.find((item) => item.id === id);
   return found ?? null;
 }
 
@@ -253,8 +309,8 @@ export function buildDepartmentList(source: Department[] = departments): Departm
 }
 
 /** 组装详情页数据；未知 id 返回 null，由页面显示未找到状态。 */
-export function buildDepartmentDetail(id: unknown): DepartmentDetailView | null {
-  const department = findDepartmentById(id);
+export function buildDepartmentDetail(id: unknown, source: Department[] = departments): DepartmentDetailView | null {
+  const department = findDepartmentById(id, source);
   if (!department) return null;
   return {
     id: department.id,

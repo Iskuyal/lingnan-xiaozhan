@@ -47,7 +47,7 @@ test('本地内容服务返回 5 个已核实的学生组织，来源与核查�
     '青年志愿者联合会',
     '退役军人事务服务部',
   ]);
-  assert.equal(departmentsSource.verifiedAt, '2026-09-17');
+  assert.equal(departmentsSource.verifiedAt, '2026-09-18');
   assert.equal(departmentsSource.sourceUrl, 'https://lnc.edu.cn/tw/sygk/xszz');
   for (const item of departments) {
     assert.ok(item.id, `${item.name} 缺少 id`);
@@ -107,23 +107,31 @@ test('详情视图包含介绍、下设部门与来源，缺失联系方式如�
   assert.deepEqual(plain(detail.contactItems), []);
   assert.equal(detail.contactMissingText, MISSING_CONTACT_TEXT);
   assert.equal(detail.sourceUrl, 'https://lnc.edu.cn/tw/sygk/xszz');
-  assert.equal(detail.verifiedAt, '2026-09-17');
+  assert.equal(detail.verifiedAt, '2026-09-18');
 });
 
-test('没有公开动态的组织返回动态缺失文案，有动态的返回标题与日期', () => {
-  const { buildDepartmentDetail, MISSING_ACTIVITY_TEXT } = service();
-  const veteran = buildDepartmentDetail('veteran-affairs-service');
-  assert.deepEqual(plain(veteran.activities), []);
-  assert.equal(veteran.activityMissing, true);
-  assert.equal(veteran.activityMissingText, MISSING_ACTIVITY_TEXT);
-  const union = buildDepartmentDetail('student-union');
-  assert.ok(union.activities.length >= 1);
-  assert.equal(union.activityMissing, false);
-  for (const activity of union.activities) {
-    assert.ok(activity.title);
-    assert.match(activity.publishedAt, /^\d{4}-\d{2}-\d{2}$/);
-    assert.match(activity.sourceUrl, /^https:\/\/lnc\.edu\.cn\/tw\//);
+test('每个组织都有 2025-2026 年的官网动态，标题、日期与来源可逐条核对', () => {
+  const { buildDepartmentDetail } = service();
+  for (const id of ['student-youth-league', 'student-union', 'student-club-management',
+    'young-volunteers', 'veteran-affairs-service']) {
+    const detail = buildDepartmentDetail(id);
+    assert.ok(detail.activities.length >= 1, `${id} 应至少有一条官网动态`);
+    assert.equal(detail.activityMissing, false);
+    for (const activity of detail.activities) {
+      assert.ok(activity.title, `${id} 动态缺标题`);
+      assert.match(activity.publishedAt, /^202[56]-/, `${id} 动态日期应落在 2025-2026`);
+      assert.match(activity.sourceUrl, /^https:\/\/lnc\.edu\.cn\/tw\//);
+    }
   }
+});
+
+test('没有公开动态的组织返回动态缺失文案', () => {
+  const { buildDepartmentDetail, listDepartments, MISSING_ACTIVITY_TEXT } = service();
+  const withoutActivities = listDepartments().map((item) => ({ ...item, activities: [] }));
+  const detail = buildDepartmentDetail('student-union', withoutActivities);
+  assert.deepEqual(plain(detail.activities), []);
+  assert.equal(detail.activityMissing, true);
+  assert.equal(detail.activityMissingText, MISSING_ACTIVITY_TEXT);
 });
 
 test('未知部门 id 返回 null，详情页显示未找到状态且能返回列表', () => {
