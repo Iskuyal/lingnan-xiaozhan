@@ -1,3 +1,4 @@
+<import src="../qa.wxml" />
 <view class="page">
   <block wx:if="{{detail}}">
     <view id="department-detail" class="department-detail">
@@ -8,6 +9,8 @@
         <text class="department-campus">{{detail.campusLabel}}</text>
       </view>
       <view wx:if="{{detail.campusNote}}" class="department-campus-note">{{detail.campusNote}}</view>
+
+      <template is="department-qa" data="{{...qa}}" />
 
       <view class="detail-block">
         <view class="section-title">组织介绍</view>

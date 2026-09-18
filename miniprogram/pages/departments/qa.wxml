@@ -1,0 +1,89 @@
+<!--
+  部门 AI 问答面板（Ticket 07）：部门列表页与详情页共用。
+  事件处理函数写在引用它的页面上（openOption / askSuggestion / onDraftInput / sendQuestion / restartConversation），
+  样式在同目录 qa.wxss，由两个页面 @import。
+-->
+<template name="department-qa">
+  <view class="qa-panel">
+    <view class="qa-head">
+      <text class="qa-badge">AI 助手</text>
+      <text class="qa-head-note">只依据官网已核实资料回答</text>
+    </view>
+
+    <view class="qa-row qa-row-assistant">
+      <view id="qa-prompt" class="qa-bubble qa-bubble-assistant">
+        <view class="qa-bubble-text">{{prompt}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{showOptions}}" class="qa-options">
+      <view
+        wx:for="{{options}}"
+        wx:key="id"
+        id="qa-option-{{item.id}}"
+        class="qa-option {{item.active ? 'qa-option-active' : ''}}"
+        hover-class="pressed"
+        data-id="{{item.id}}"
+        bindtap="openOption"
+        aria-role="button"
+        aria-label="了解{{item.name}}"
+      >
+        <view class="qa-option-name">{{item.name}}</view>
+        <view class="qa-option-campus">{{item.campusLabel}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{!hasActive}}" id="qa-idle" class="qa-idle">{{idleHint}}</view>
+
+    <view wx:if="{{hasActive}}" id="qa-transcript" class="qa-transcript">
+      <view wx:if="{{truncated}}" class="qa-truncated">较早的对话已省略</view>
+      <view
+        wx:for="{{bubbles}}"
+        wx:key="id"
+        id="qa-bubble-{{index}}"
+        class="qa-row qa-row-{{item.role}} {{item.role === 'assistant' ? 'qa-answer' : ''}}"
+      >
+        <view class="qa-bubble {{item.isNotice ? 'qa-bubble-notice' : (item.role === 'user' ? 'qa-bubble-user' : 'qa-bubble-assistant')}}">
+          <view class="qa-bubble-text">{{item.text}}</view>
+          <view wx:if="{{item.source}}" class="qa-bubble-source">{{item.source}}</view>
+        </view>
+      </view>
+      <view wx:if="{{pending}}" id="qa-pending" class="qa-row qa-row-assistant">
+        <view class="qa-bubble qa-bubble-assistant qa-bubble-pending">正在依据核实资料回答…</view>
+      </view>
+    </view>
+
+    <view wx:if="{{showSuggestions}}" class="qa-suggestions">
+      <view
+        wx:for="{{suggestions}}"
+        wx:key="*this"
+        id="qa-suggestion-{{index}}"
+        class="qa-suggestion"
+        hover-class="pressed"
+        data-text="{{item}}"
+        bindtap="askSuggestion"
+        aria-role="button"
+      >{{item}}</view>
+    </view>
+
+    <view wx:if="{{hasActive}}" class="qa-ask">
+      <input
+        id="qa-input"
+        class="qa-input"
+        value="{{draft}}"
+        placeholder="{{placeholder}}"
+        confirm-type="send"
+        disabled="{{pending}}"
+        bindinput="onDraftInput"
+        bindconfirm="sendQuestion"
+      />
+      <button id="qa-send" class="qa-send" hover-class="pressed" disabled="{{!canSend}}" bindtap="sendQuestion">发送</button>
+    </view>
+
+    <view wx:if="{{hasActive && bubbles.length > 0}}" class="qa-restart">
+      <button id="qa-restart" class="qa-restart-button" hover-class="pressed" bindtap="restartConversation">重新开始对话</button>
+    </view>
+
+    <view wx:if="{{showOffline}}" id="qa-offline" class="qa-offline">{{offlineNote}}</view>
+  </view>
+</template>

@@ -1,0 +1,67 @@
+/* 部门 AI 问答（Ticket 07）共用样式：列表页与详情页 @import 同一份，类名统一 qa- 前缀。 */
+.qa-panel {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+}
+.qa-head { display: flex; align-items: center; margin-bottom: 20rpx; }
+.qa-badge { background: #23664e; color: #fff; font-size: 22rpx; padding: 6rpx 16rpx; border-radius: 10rpx; }
+.qa-head-note { color: #6c7c73; font-size: 22rpx; margin-left: 14rpx; }
+.qa-row { display: flex; margin-top: 16rpx; }
+.qa-row-user { justify-content: flex-end; }
+.qa-row-assistant { justify-content: flex-start; }
+.qa-bubble { max-width: 86%; border-radius: 18rpx; padding: 18rpx 20rpx; font-size: 28rpx; line-height: 1.7; }
+.qa-bubble-assistant { background: #f0f5f2; color: #183c31; }
+.qa-bubble-user { background: #23664e; color: #fff; }
+.qa-bubble-notice { background: #fdf1e3; color: #7a4a12; }
+.qa-bubble-pending { color: #576c63; }
+.qa-bubble-text { word-break: break-all; }
+.qa-bubble-source { color: #547367; font-size: 22rpx; margin-top: 10rpx; }
+.qa-options { display: flex; flex-wrap: wrap; }
+.qa-option {
+  background: #f0f5f2;
+  border: 2rpx solid #d7e5dc;
+  border-radius: 16rpx;
+  padding: 18rpx 20rpx;
+  margin: 12rpx 12rpx 0 0;
+  width: calc(50% - 12rpx);
+}
+.qa-option-active { border-color: #23664e; background: #e4f0e9; }
+.qa-option-name { font-size: 28rpx; font-weight: 600; }
+.qa-option-campus { color: #6c7c73; font-size: 22rpx; margin-top: 4rpx; }
+.qa-idle { color: #576c63; font-size: 24rpx; line-height: 1.8; margin-top: 18rpx; }
+.qa-transcript { margin-top: 8rpx; }
+.qa-truncated { color: #6c7c73; font-size: 22rpx; text-align: center; margin-top: 14rpx; }
+.qa-suggestions { display: flex; flex-wrap: wrap; margin-top: 20rpx; }
+.qa-suggestion {
+  background: #e7edf4;
+  color: #46596b;
+  font-size: 24rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
+  margin: 0 12rpx 12rpx 0;
+}
+.qa-ask { display: flex; align-items: center; margin-top: 22rpx; }
+.qa-input { flex: 1; background: #f4f7f5; border-radius: 14rpx; padding: 16rpx 20rpx; font-size: 27rpx; }
+.qa-send {
+  margin: 0 0 0 14rpx;
+  background: #23664e;
+  color: #fff;
+  font-size: 26rpx;
+  line-height: 1.5;
+  padding: 14rpx 30rpx;
+  border-radius: 14rpx;
+}
+.qa-send[disabled] { background: #b8ccc2; color: #eef4f1; }
+.qa-restart { margin-top: 16rpx; text-align: center; }
+.qa-restart-button {
+  margin: 0;
+  display: inline-block;
+  background: #f0f5f2;
+  color: #23664e;
+  font-size: 23rpx;
+  line-height: 1.5;
+  padding: 8rpx 26rpx;
+  border-radius: 999rpx;
+}
+.qa-offline { color: #6c7c73; font-size: 22rpx; line-height: 1.7; margin-top: 14rpx; }

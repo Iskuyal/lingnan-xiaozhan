@@ -92,7 +92,9 @@ P5-B 的页面和接口按三个落点分别实现。AI 密钥只放云函数环
 
 **执行票已拆分**：见 [待实施 Ticket](tasks/tickets/README.md) 的 **01**（AI 服务端基础设施）、**05**、**06**、**07**（部门问答）。三处 AI 共用 01 的模型调用、内容安全与失败降级。
 
-**Ticket 01 状态（2026-09-18，仅本地）**：统一调用入口、两种接口格式适配、可切换的内容安全适配层、每次调用的耗时与成本记账、月度上限（默认 50 元）与三类失败分类已在 `cloudfunctions/ai/` 实现，`npm test` 113 项全过（本票新增 55 项桩测试）；**未部署、未配密钥、未探测微信内容安全接口、未做真实端到端调用**，因此 P5-B 仍未开始；逐项人工步骤见 [云开发文档](cloud-development.md#ticket-01-人工步骤)。
+**Ticket 01 状态（2026-09-19 更新）**：统一调用入口、两种接口格式适配、可切换的内容安全适配层、每次调用的耗时与成本记账、月度上限（默认 50 元）与三类失败分类已在 `cloudfunctions/ai/` 实现，`npm test` 136 项全过（本票 78 项桩测试），逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)。**云函数已部署、可从小程序端调用（2026-09-19 由 Ticket 07 验收顺带确认）**：`usage` 返回 `ok:true`、当月上限 50 元；`chat` 因缺少 `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` 返回 `internal`；同一次返回里微信 `msgSecCheck` 实测可用（`checked: true`、`errcode=0`）。**人工步骤 B（配置密钥与环境变量）、`imgSecCheck` 探测与真实端到端调用仍未完成**；逐项人工步骤见 [云开发文档](cloud-development.md#ticket-01-人工步骤)。
+
+**Ticket 07 状态（2026-09-19）**：部门问答的对话框、追问、按部门的会话、失败分类与降级、防幻觉守卫已完成（`miniprogram/services/departments-qa.ts` 与 `pages/departments/*`）；`npm run typecheck` 通过，`npm test` 228 项全过（本票新增 17 项），开发者工具 18 项检查通过（新增 4 项），证据见 [Ticket 07 验证记录](evidence/p5-b/README.md)。**回答质量与「防幻觉 100%」这条达标线仍未验证**——模型密钥未配置，[10 题评估表](evidence/p5-b/department-qa-eval.md) 未执行；P5-B 的其余部分（05、06）仍等 01 与 03 收口。
 
 ## P6：联调与交付
 

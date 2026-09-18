@@ -28,7 +28,7 @@
 | 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **in-progress（代码与本地测试完成；待部署与触发器实测）** | — |
 | 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-agent | 01、03 |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-agent | 01、03 |
-| 07 | [部门 AI 问答](07-department-ai-qa.md) | ready-for-agent | 01 |
+| 07 | [部门 AI 问答](07-department-ai-qa.md) | **in-progress（页面与服务层完成，开发者工具提示/选项/追问三条路径通过；真实模型回答待 Ticket 01 配密钥）** | 01 |
 | 08 | [发布后补测未登录单页模式](08-post-publish-single-page-mode.md) | blocked-until-published | 外部：认证 + 备案 + 发布 |
 | 09 | [P6 参赛材料与包](09-p6-submission.md) | needs-info | 04、05、06、07；作品名、校内交付安排及细拆 |
 
@@ -36,9 +36,13 @@
 
 **2026-09-18 决策关口已清空**：P5-A 收尾（Ticket 01）、P4-B 范围（Ticket 03）、P3-2 五项范围（Ticket 04）全部由负责人确定，结论分别写入 [开发规格](../../development-spec.md)、[P3-2 文档](../p3-2-news-updates.md) 与 [CONTEXT](../../../CONTEXT.md)。
 
-**04 可立即开工**；**03 代码完成但未收口**：集合与云函数部署、云存储权限、超时调整是控制台人工步骤（见 [云开发文档](../../cloud-development.md) 的「课表云端实施」），在这些步骤完成并补测「导入到展示到周次切换」之前，03 不转 `done`，05/06 也还不能算依赖已满足。01 是 AI 三票的共同前置（仍可开工）；05、06 等 01 与 03 收口；07 等 01；08 等发布条件；09 待 04–07 落地并按实际范围细拆。
+**04 可立即开工**；**03 代码完成但未收口**：集合与云函数部署、云存储权限、超时调整是控制台人工步骤（见 [云开发文档](../../cloud-development.md) 的「课表云端实施」），在这些步骤完成并补测「导入到展示到周次切换」之前，03 不转 `done`，05/06 也还不能算依赖已满足。01 是 AI 三票的共同前置；07 的界面与降级路径已落地，剩下的真实模型验证与 05、06 一样卡在 01 的密钥；08 等发布条件；09 待 04–07 落地并按实际范围细拆。
 
 **01 的本地实现已完成（2026-09-18）**：代码、桩测试与文档在 `cloudfunctions/ai/` 落地，但部署、密钥、微信内容安全探测与真实端到端调用仍是人工步骤；在取得云端证据前，05、06、07 只能按已发布的调用契约开发界面，**不应把「本地桩测试通过」当成 01 验收通过**（见 [Ticket 01](01-ai-foundation.md)）。
+
+**ai 云函数已部署，但模型环境变量未配置（2026-09-19 由 Ticket 07 验收顺带确认）**：`{"action":"usage"}` 返回 `ok:true`；`{"action":"chat"}` 返回 `internal` 并写明缺少 `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL`；同一次返回里 `safety.checked: true`、微信 `msgSecCheck` `errcode=0`。即**函数可用、内容安全可用，模型还没接上**——01 的人工步骤 B 仍未完成，`security.imgSecCheck` 与正式探测记录也仍待回填。
+
+**07 已完成可本地验证的部分（2026-09-19）**：对话框（提示 + 5 个可点选项 + 追问 + 返回后继续）、按部门的会话、失败分类与降级、防幻觉守卫都在 `miniprogram/services/departments-qa.ts` 与两个部门页面落地；`npm test` 228 项全过（本票新增 17 项），开发者工具 18 项检查通过（新增 4 项），证据见 [Ticket 07 验证记录](../evidence/p5-b/README.md)。**回答质量与「防幻觉 100%」未验证**：模型密钥未配置，10 题评估表 [未执行](../evidence/p5-b/department-qa-eval.md)；05、06 仍等 01 与 03 收口。
 
 **02 已完成**（2026-09-18，证据见 [Ticket 02 验证记录](../evidence/p3-2/README.md)）：首页最近资讯入口与列表逐页加载已在开发者工具通过 12 项检查；真实多页场景待 Ticket 04 扩大数据量后补验。
 

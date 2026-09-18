@@ -1,9 +1,12 @@
+<import src="./qa.wxml" />
 <view class="page">
   <view class="departments-heading">
     <view class="eyebrow">已核实名录</view>
     <view class="section-title">学生部门</view>
-    <view class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。</view>
+    <view class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。有疑问可以直接问 AI 助手，它只依据这些已核实资料回答。</view>
   </view>
+
+  <template is="department-qa" data="{{...qa}}" />
 
   <view wx:if="{{!view.isEmpty}}" id="departments-list" class="departments-list">
     <view

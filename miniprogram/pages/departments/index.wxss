@@ -1,6 +1,8 @@
+@import "./qa.wxss";
+
 .departments-heading { padding: 8rpx 0 32rpx; }
 .departments-intro { margin-top: 16rpx; color: #576c63; font-size: 26rpx; line-height: 1.8; }
-.departments-list { display: flex; flex-direction: column; }
+.departments-list { display: flex; flex-direction: column; margin-top: 30rpx; }
 .department-item { display: flex; align-items: center; justify-content: space-between; padding: 30rpx 28rpx; background: #fff; border-radius: 22rpx; margin-bottom: 18rpx; }
 .department-main { min-width: 0; }
 .department-name { font-size: 32rpx; font-weight: 600; }
