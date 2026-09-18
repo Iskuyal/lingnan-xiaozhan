@@ -14,11 +14,11 @@
         <view class="tool-description">认识组织，找到联系</view>
         <view class="tool-bottom"><text class="tool-status">已可查看</text><text class="chevron">›</text></view>
       </button>
-      <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，接入中">
+      <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，可导入课表文件或手工添加">
         <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
         <view class="tool-title">我的课表</view>
-        <view class="tool-description">上课时间，一目了然</view>
-        <view class="tool-bottom"><text class="tool-status">接入中</text><text class="chevron">›</text></view>
+        <view class="tool-description">导入课表，按周查看</view>
+        <view class="tool-bottom"><text class="tool-status">可导入</text><text class="chevron">›</text></view>
       </button>
     </view>
   </view>
@@ -46,7 +46,7 @@
         <view class="news-recent-title">{{item.title}}</view>
         <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
       </view>
-      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 同步于 {{newsSyncedAtText}}</block></view>
+      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
     </block>
   </view>
 

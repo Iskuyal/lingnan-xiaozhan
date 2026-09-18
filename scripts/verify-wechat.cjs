@@ -50,15 +50,45 @@ async function run() {
     await (await listAgain.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
-    // 课表：状态页仍为未接入状态
+    // 课表：入口 → 周课表页。云函数未部署或读不到时应显示可重试的错误状态，不白屏。
     const homeAgain = await mini.currentPage();
     await (await homeAgain.$('#timetable-entry')).tap();
     const timetable = await waitForPage('pages/timetable/index');
-    await timetable.waitFor(800);
-    assert.equal(await (await timetable.$('.status-title')).text(), '课表接入中');
+    await timetable.waitFor(1200);
+    assert.equal(await (await timetable.$('.section-title')).text(), '我的课表');
+    const importEntry = await timetable.$('#import-entry');
+    const retryLoad = await timetable.$('#retry-load');
+    assert.ok(importEntry || retryLoad, '课表页既没有导入入口也没有重试入口');
+    if (retryLoad) {
+      const errorText = await (await timetable.$('.tt-hint-copy')).text();
+      assert.ok(errorText.length > 0, '读取失败时应给出说明文案');
+      console.log(`课表读取状态：${errorText}`);
+    }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
     await (await timetable.$('#back-home')).tap();
     await waitForPage('pages/home/index');
+
+    // 导入引导文案：只能从微信聊天记录选择（文件选择本身无法自动化，这里验证引导与入口存在）
+    await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
+    const importPage = await waitForPage('pages/timetable/import/index');
+    await importPage.waitFor(800);
+    const guide = await (await importPage.$('#file-guide')).text();
+    assert.match(guide, /聊天记录/u, '导入引导必须写明只能从聊天记录选择');
+    assert.match(guide, /文件传输助手/u, '导入引导要给出可操作的中转办法');
+    assert.ok(await importPage.$('#choose-file'), '导入页缺少选择文件入口');
+    assert.ok(await importPage.$('#back-from-import'), '导入页缺少返回入口');
+    await mini.screenshot({ path: path.join(output, 'timetable-import.png') });
+
+    // 手工新增入口：表单字段与保存按钮渲染正常（保存需要已部署的云函数，这里只验证页面）
+    await mini.callWxMethod('reLaunch', { url: '/pages/timetable/edit/index?scope=new' });
+    const editPage = await waitForPage('pages/timetable/edit/index');
+    await editPage.waitFor(800);
+    for (const selector of ['#field-name', '#field-teacher', '#field-location', '#field-weekday', '#field-start', '#field-end', '#field-weeks', '#save-course']) {
+      assert.ok(await editPage.$(selector), `课程表单缺少 ${selector}`);
+    }
+    await mini.screenshot({ path: path.join(output, 'timetable-edit.png') });
+    await (await editPage.$('#back-from-edit')).tap();
+    await waitForPage('pages/timetable/index');
 
     // 直接打开部门详情：已知 id 显示组织，未知 id 显示未找到状态
     await mini.callWxMethod('reLaunch', { url: '/pages/departments/detail/index?id=student-union' });
@@ -79,7 +109,7 @@ async function run() {
     await (await directList.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
-    // 直接打开课表状态页后返回首页
+    // 直接打开课表页后返回首页
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/index' });
     const directTimetable = await waitForPage('pages/timetable/index');
     await directTimetable.waitFor(800);
@@ -131,7 +161,10 @@ async function run() {
       model: system.model, SDKVersion: system.SDKVersion,
       checks: ['学校名称', '学生部门入口与返回', '部门列表显示组织名称与校区',
         '部门详情显示介绍、联系方式或缺失、动态或缺失', '未知部门 id 显示未找到状态',
-        '课表入口与返回', '直接进入部门列表后返回首页', '直接进入课表状态页后返回首页',
+        '课表入口与返回（周课表页显示标题、导入或重试入口，不白屏）',
+        '导入页显示「只能从聊天记录选择、先发给文件传输助手」引导与选择文件入口',
+        '课程表单显示课程名、星期、起止节、周次与保存入口',
+        '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
         '资讯详情显示标题、正文段落与复制原文链接入口', '列表与详情之间可往返'],
       result: 'passed', realDevice: false };
