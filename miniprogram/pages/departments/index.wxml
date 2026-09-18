@@ -44,10 +44,14 @@
         <button class="qa-close" hover-class="pressed" bindtap="closeQa">收起</button>
       </view>
       <view class="qa-messages">
-        <view wx:for="{{qaMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
+        <block wx:for="{{qaMessages}}" wx:key="index">
+          <view class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
+          <view class="qa-flag" wx:if="{{item.warning}}">{{item.warning}}</view>
+        </block>
       </view>
+      <view id="qa-safety-note" class="qa-warn" wx:if="{{qaSafetyNote !== ''}}">{{qaSafetyNote}}</view>
       <view class="qa-options" wx:if="{{qaOptions.length > 0}}">
-        <button wx:for="{{qaOptions}}" wx:key="id" class="qa-chip" hover-class="pressed" data-id="{{item.id}}" bindtap="pickDepartment">{{item.name}}</button>
+        <button wx:for="{{qaOptions}}" wx:key="id" class="qa-chip" hover-class="pressed" data-id="{{item.id}}" bindtap="openDetail">{{item.name}}</button>
       </view>
       <view class="qa-error" wx:if="{{qaError !== ''}}">{{qaError}}</view>
       <view class="qa-cap" wx:if="{{qaCapWarning !== ''}}">{{qaCapWarning}}</view>

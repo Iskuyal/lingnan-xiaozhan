@@ -44,17 +44,19 @@ P1 不添加校园动态列表，留到 P3 完成真实内容链路；不要求�
 ```text
 miniprogram/             原生页面、组件、各功能服务和静态公开资料
   pages/home/            简介与功能入口
-  pages/departments/     部门列表和详情
+  pages/departments/     部门列表、详情与部门 AI 问答对话框
   pages/timetable/       接入状态与后续周课表
   pages/news/            P3 添加的资讯列表与详情
   services/              按 school/departments/news/timetable 分功能
-cloudfunctions/          P3 起按资讯读取、同步等能力添加
+  services/ai.ts         AI 云函数的客户端封装（05/06/07 共用，跨功能）
+  services/cloud.ts      云调用传输层公共部分（requireCloud 与失败文案映射）
+cloudfunctions/          P3 起按资讯读取、同步等能力添加；P5 起含 ai 云函数
 scripts/                 构建与维护者内容导入
 tests/                   内容转换、服务返回和课表行为验证
 dist/                    生成的小程序包，不手工修改
 ```
 
-首页、部门列表与详情、资讯页面及同步云函数已创建；课表导入与周课表已按本规格实现（云函数 `timetable` + 导入确认页 + 周课表页 + 手工增删改），**云函数部署与端到端验收待执行**；AI 模块尚待实现。
+首页、部门列表与详情、资讯页面及同步云函数已创建；课表导入与周课表已按本规格实现（云函数 `timetable` + 导入确认页 + 周课表页 + 手工增删改），**云函数部署与端到端验收待执行**；AI 侧已有云函数 `ai`（Ticket 01，统一模型调用 / 内容安全 / 用量与上限）与客户端封装 `services/ai.ts`，07 部门问答已接入（部门页对话框），**AI 云函数未部署、未配密钥，真实调用未验证**，05 课表截图识别与 06 课表助手待实现。
 
 ## 教务接入：已明确改为导入制（2026-09-18 负责人决定）
 

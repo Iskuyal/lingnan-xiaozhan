@@ -73,6 +73,11 @@ function latestSyncTime(rows: ArticleRow[]): string {
   return latest;
 }
 
+/**
+ * 云开发不可用的判定与 services/cloud.ts 的 requireCloud 相同，但这里不复用它：
+ * 资讯服务不做技术性失败分类（messageOf 只做原样透传），复用会把资讯模块
+ * 与 AI / 课表的传输层文案绑在一起，收益不足。
+ */
 function database() {
   if (typeof wx === 'undefined' || wx.cloud === undefined) {
     throw new Error('云开发不可用：请确认基础库版本与 app.ts 中的 wx.cloud.init');

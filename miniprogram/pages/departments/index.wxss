@@ -23,6 +23,10 @@
 .qa-msg { font-size: 26rpx; line-height: 1.7; padding: 14rpx 20rpx; border-radius: 16rpx; margin-bottom: 12rpx; }
 .qa-msg-ai { background: #f2f6f3; color: #33483f; }
 .qa-msg-user { background: #e3efe9; color: #33483f; }
+/* 被标记的回答（如出现语料外的联系方式）：提示行贴在对应回答下方。 */
+.qa-flag { color: #b3543a; font-size: 23rpx; line-height: 1.7; margin: -4rpx 0 14rpx 6rpx; }
+/* 本轮未真正做内容安全检测时的提示行。 */
+.qa-warn { color: #b3543a; font-size: 23rpx; line-height: 1.7; margin: 8rpx 0 12rpx; }
 .qa-options { display: flex; flex-wrap: wrap; margin: 6rpx 0 14rpx; }
 .qa-chip { font-size: 24rpx; color: #2e6e5b; background: #e3efe9; border-radius: 999rpx; padding: 0 22rpx; margin: 0 12rpx 12rpx 0; border: none; line-height: 2.2; }
 .qa-chip::after { border: none; }
