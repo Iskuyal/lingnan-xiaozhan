@@ -6,7 +6,7 @@
  * 校验失败时返回错误文案，页面直接展示，不做静默修正。
  */
 import { Course, CourseInput, DraftCourse, SectionRange } from './types';
-import { MAX_WEEK, condenseWeeks, parseWeekNotation } from './weeks';
+import { condenseWeeks, parseWeekNotation } from './weeks';
 
 export interface CourseForm {
   name: string;

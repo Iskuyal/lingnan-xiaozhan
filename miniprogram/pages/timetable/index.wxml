@@ -48,7 +48,7 @@
       <view class="grid">
         <view class="grid-row grid-head">
           <view class="grid-cell grid-corner">节次</view>
-          <view class="grid-cell grid-th" wx:for="{{['一','二','三','四','五','六','日']}}" wx:key="*this">{{item}}</view>
+          <view class="grid-cell grid-th" wx:for="{{weekdayShort}}" wx:key="*this">{{item}}</view>
         </view>
         <view class="grid-row" wx:for="{{view.rows}}" wx:for-item="row" wx:key="index">
           <view class="grid-cell grid-corner">{{row.sectionLabel}}</view>

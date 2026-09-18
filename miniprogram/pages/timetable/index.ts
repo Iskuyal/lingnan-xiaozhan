@@ -6,7 +6,7 @@
  */
 import { Course } from '../../services/timetable/types';
 import { FILE_GUIDE, OFFLINE_NOTE, deleteCourse, listCourses, messageOf } from '../../services/timetable/index';
-import { WeekView, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
+import { WEEKDAY_SHORT, WeekView, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
 
 type Status = 'loading' | 'empty' | 'ready' | 'error';
 
@@ -30,7 +30,9 @@ Page({
     errorMessage: '',
     courses: [] as Course[],
     count: 0,
+    semester: '',
     semesterText: '',
+    weekdayShort: WEEKDAY_SHORT,
     updatedAtText: '',
     week: 1,
     weekOptions: [] as number[],
@@ -53,6 +55,7 @@ Page({
         this.setData({
           courses,
           count: feed.count,
+          semester: feed.semester,
           semesterText: semesterLabel(feed.semester),
           updatedAtText: formatUpdatedAt(feed.updatedAt),
           weekOptions: options,
@@ -93,7 +96,7 @@ Page({
     wx.navigateTo({ url: '/pages/timetable/import/index' });
   },
   openCreate() {
-    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=new&semester=${encodeURIComponent(this.data.semesterText === '未标注学期' ? '' : this.data.semesterText)}` });
+    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=new&semester=${encodeURIComponent(this.data.semester)}` });
   },
   openEdit(event: DatasetEvent) {
     const id = event.currentTarget.dataset.id;
