@@ -300,15 +300,55 @@ async function handleCreateCourse(event: CloudEvent, openid: string) {
   return { ok: true, course: toClientCourse(record), count: existing.length + 1 };
 }
 
+/**
+ * `updateCourse` 允许被覆盖的课程字段白名单（顺序无关）。
+ *
+ * 白名单之外的一律不碰：`id` / `owner` / `semester` / `rawText` / `createdAt` / `batch`
+ * 与 `source` 都由服务端掌握——来源在新增时定为 `manual`、导入时由 `saveDraft` 决定，
+ * 修改课程不改变它，客户端即使传了也不生效。
+ */
+const COURSE_FIELD_KEYS = [
+  'name',
+  'credits',
+  'teacher',
+  'weekday',
+  'startSection',
+  'endSection',
+  'sectionRanges',
+  'weeks',
+  'weeksRecognized',
+  'weekText',
+  'location',
+  'campus',
+  'siteNumber',
+  'note',
+  'warnings',
+] as const;
+
 async function handleUpdateCourse(event: CloudEvent, openid: string) {
   const id = typeof event.id === 'string' ? event.id : '';
   if (id === '') return { ok: false, error: '缺少要修改的课程标识' };
-  const normalized = normalizeCourseFields(event.course);
-  if (!normalized.ok) return { ok: false, error: normalized.error };
-  const rows = await queryData<{ _id: string }>(db.collection(COLLECTION).where({ owner: openid, id }).limit(1));
+  if (event.course === null || typeof event.course !== 'object' || Array.isArray(event.course)) {
+    return { ok: false, error: '缺少要修改的课程数据' };
+  }
+  const patch = event.course as Record<string, unknown>;
+  const rows = await queryData<StoredCourse & { _id: string }>(
+    db.collection(COLLECTION).where({ owner: openid, id }).limit(1),
+  );
   if (rows.length === 0) return { ok: false, error: '未找到要修改的课程，可能已被删除' };
+
+  // **部分更新**：只应用客户端显式给出的字段，未给出的字段保持原值。
+  // 「只改时间」不得把教师/地点/学分/周次/备注等一起清空（Ticket 03 的表单外字段保留契约，
+  // Ticket 06 的助手改动也按这条提交）；要清空某个字段必须在请求里显式给空字符串。
+  const merged: Record<string, unknown> = { ...rows[0] };
+  for (const key of COURSE_FIELD_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(patch, key)) merged[key] = patch[key];
+  }
+  const normalized = normalizeCourseFields(merged);
+  if (!normalized.ok) return { ok: false, error: normalized.error };
+
   const now = new Date().toISOString();
-  // 只改课程字段与更新时间；semester 由服务端保留，不受客户端影响。
+  // semester 由服务端保留，不受客户端影响；只写规范化后的课程字段与更新时间。
   await db.collection(COLLECTION).doc(rows[0]._id).update({ data: { ...normalized.value, updatedAt: now } });
   return { ok: true, id, updatedAt: now };
 }

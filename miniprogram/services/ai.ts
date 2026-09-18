@@ -8,6 +8,10 @@
  *
  * 失败文案以**服务端返回的 `message` 为准**（服务端可用环境变量改措辞），
  * 本地 `AI_MESSAGES` 只在服务端没给文案时兜底；传输层错误映射见 `services/cloud.ts`。
+ *
+ * 三处 AI 功能共用的纯逻辑也放在这里，避免各票各写一份：
+ * 对话历史裁剪与消息形状（`ChatMessage` / `chatMessages`）、从模型输出取 JSON（`extractJson`）、
+ * 内容安全结论的用户提示（`safetyChecked` / `safetyNoteFor`）。
  */
 import { requireCloud, transportMessage as sharedTransportMessage } from './cloud';
 
@@ -94,10 +98,76 @@ export interface AiCallResult {
   warnings: string[];
 }
 
+/**
+ * 服务端内容安全没有真正执行时的提示行（`safety.checked !== true`）。
+ *
+ * 依据 docs/cloud-development.md：`checked: false` 表示这次没有真正检测
+ * （`AI_SAFETY_PROVIDER=off` 或 `AI_SAFETY_FAIL_MODE=open` 放行未检内容、长文本只检了前一段），
+ * 调用方与日志都不得把「跳过」读成「干净」——07 与 06 都在对话里明说。
+ */
+export const UNCHECKED_SAFETY_NOTE = '⚠️ 本轮回答没有经过内容安全检测（服务端未执行或跳过了检测），请谨慎参考。';
+
+/**
+ * 服务端内容安全是否**真的执行过**。
+ *
+ * 只有 `safety.checked === true` 才算检测过：字段缺失、`safety` 为 null、
+ * `checked: false`（检测被关闭/跳过/只检了一段）一律按「未检测」处理，
+ * 宁可多提示一次，也不把跳过读成干净。
+ */
+export function safetyChecked(safety: { checked: boolean } | null | undefined): boolean {
+  return safety !== null && safety !== undefined && safety.checked === true;
+}
+
+/** 未真正检测时对话里显示的提示行；检测过则为空串（页面据此隐藏该行）。 */
+export function safetyNoteFor(safety: { checked: boolean } | null | undefined): string {
+  return safetyChecked(safety) ? '' : UNCHECKED_SAFETY_NOTE;
+}
+
 /** 一条对话消息；07 部门问答与 06 课表助手共用（服务端 `messages` 的元素形状）。 */
 export interface ChatMessage {
   role: 'user' | 'assistant';
   text: string;
+}
+
+/** 多轮历史最多带多少条（与 ai 云函数 MAX_MESSAGES=20 对齐）；07 与 06 共用同一份。 */
+export const MAX_HISTORY = 20;
+
+/**
+ * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后。
+ *
+ * 展示用的轮次可能比 `ChatMessage` 多带标记字段（如 07 的 `warning`），
+ * 这里只取服务端认识的 `role` / `text` 两个字段，标记不混进送给模型的历史。
+ */
+export function chatMessages(history: ChatMessage[]): ChatMessage[] {
+  return history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
+}
+
+/**
+ * 从模型输出文本里取出 JSON 对象：先整体解析，失败时截取第一个 `{` 到最后一个 `}` 再试。
+ *
+ * 模型常把 JSON 包在 ```json 代码块或一句解释里，因此两步容错；非对象（数组、字符串）
+ * 一律返回 null，由各调用方按自己的纪律回退（05 留空草稿、06 回退普通消息）。
+ */
+export function extractJson(text: string): Record<string, unknown> | null {
+  const trimmed = text.trim();
+  if (trimmed === '') return null;
+  const tryParse = (source: string): Record<string, unknown> | null => {
+    try {
+      const parsed: unknown = JSON.parse(source);
+      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+  const direct = tryParse(trimmed);
+  if (direct !== null) return direct;
+  const start = trimmed.indexOf('{');
+  const end = trimmed.lastIndexOf('}');
+  if (start < 0 || end <= start) return null;
+  return tryParse(trimmed.slice(start, end + 1));
 }
 
 /** 只接受服务端声明的分类名；未知值收敛成空串，由服务端 `message` 兜底。 */

@@ -88,5 +88,27 @@
   </block>
 
   <view class="tt-footer">课表按节次展示；学校作息与具体时刻尚未核实，不臆造上课时间。</view>
+
+  <block wx:if="{{status !== 'loading' && status !== 'error'}}">
+    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="home-button tt-assistant-open" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+    <view wx:else class="qa-panel tt-qa" id="assistant-panel">
+      <view class="qa-head">
+        <view class="qa-title">课表助手</view>
+        <button class="qa-close" hover-class="pressed" bindtap="closeAssistant">收起</button>
+      </view>
+      <view class="qa-messages">
+        <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
+      </view>
+      <view class="qa-error" wx:if="{{assistantError !== ''}}">{{assistantError}}</view>
+      <view id="assistant-safety-note" class="qa-warn" wx:if="{{assistantSafetyNote !== ''}}">{{assistantSafetyNote}}</view>
+      <view class="qa-cap" wx:if="{{assistantCapWarning !== ''}}">{{assistantCapWarning}}</view>
+      <view class="qa-input-row">
+        <input id="assistant-input" class="qa-input" value="{{assistantInput}}" bindinput="onAssistantInput" placeholder="例如：周三第几节有课？" confirm-type="send" bindconfirm="sendAssistant" />
+        <button id="assistant-send" class="qa-send" hover-class="pressed" disabled="{{assistantSending}}" bindtap="sendAssistant">发送</button>
+      </view>
+      <view class="qa-note">{{assistantNote}}</view>
+    </view>
+  </block>
+
   <button wx:if="{{status !== 'error'}}" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
 </view>

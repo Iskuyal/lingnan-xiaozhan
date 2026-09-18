@@ -40,3 +40,23 @@
 .course-op-delete { background: #f8efe2; color: #9a5b1e; }
 .tt-secondary { background: #eef5f1; color: #23664e; }
 .tt-footer { color: #6b7f76; font-size: 23rpx; margin-top: 40rpx; }
+
+.tt-assistant-open { margin-top: 24rpx; }
+.tt-qa { margin-top: 24rpx; }
+.qa-panel { background: #fff; border-radius: 22rpx; padding: 26rpx 28rpx; }
+.qa-head { display: flex; align-items: center; justify-content: space-between; }
+.qa-title { font-size: 30rpx; font-weight: 600; }
+.qa-close { font-size: 24rpx; color: #547367; padding: 0; margin: 0; background: none; border: none; line-height: 1; }
+.qa-close::after { border: none; }
+.qa-messages { margin-top: 20rpx; }
+.qa-msg { font-size: 26rpx; line-height: 1.7; padding: 14rpx 20rpx; border-radius: 16rpx; margin-bottom: 12rpx; }
+.qa-msg-ai { background: #f2f6f3; color: #33483f; }
+.qa-msg-user { background: #e3efe9; color: #33483f; }
+.qa-error { color: #b3543a; font-size: 24rpx; margin: 8rpx 0; }
+.qa-warn { color: #b3543a; font-size: 23rpx; line-height: 1.7; margin: 8rpx 0 12rpx; }
+.qa-cap { color: #a5762b; font-size: 22rpx; margin: 4rpx 0 8rpx; }
+.qa-input-row { display: flex; align-items: center; margin-top: 12rpx; }
+.qa-input { flex: 1; background: #f2f6f3; border-radius: 999rpx; padding: 14rpx 26rpx; font-size: 26rpx; }
+.qa-send { margin-left: 14rpx; background: #2e6e5b; color: #fff; font-size: 26rpx; border-radius: 999rpx; padding: 0 30rpx; line-height: 2.2; }
+.qa-send[disabled] { background: #a9c4bb; color: #fff; }
+.qa-note { margin-top: 16rpx; color: #63786d; font-size: 22rpx; line-height: 1.6; }

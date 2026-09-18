@@ -11,8 +11,19 @@
  * - `safetyNoteFor`：服务端内容安全没有真正执行（`checked: false`）时在对话里明说。
  * 两者都只是**后置标记**，不构成「不会编造」「已检干净」的事实性保证。
  */
-import { ChatMessage } from '../../services/ai';
+import {
+  ChatMessage,
+  MAX_HISTORY,
+  UNCHECKED_SAFETY_NOTE,
+  chatMessages,
+  safetyChecked,
+  safetyNoteFor,
+} from '../../services/ai';
 import { Department, departments, departmentsSource } from '../../services/departments';
+
+// 对话历史裁剪、消息形状与「未检测」提示行统一放在 services/ai.ts（05/06/07 共用一份），
+// 这里原样转出，页面与既有测试的引用路径不变。
+export { MAX_HISTORY, UNCHECKED_SAFETY_NOTE, chatMessages, safetyChecked, safetyNoteFor };
 
 /** AI 主动询问的欢迎语；措辞与 Ticket 07 验收第一条一致。 */
 export const WELCOME_TEXT = '你想了解什么部门？可以点下面的选项进入对应页面，也可以直接打字问我。';
@@ -34,14 +45,11 @@ export const QA_SOURCE_NOTE = 'AI 答案的依据是学校官网已核实的学�
  * 依据 docs/cloud-development.md：`checked: false` 表示这次没有真正检测
  * （`AI_SAFETY_PROVIDER=off` 或 `AI_SAFETY_FAIL_MODE=open` 放行未检内容、长文本只检了前一段），
  * 调用方与日志都不得把「跳过」读成「干净」——所以要在对话里明说。
+ * 提示行与判定函数本身在 `services/ai.ts`（05/06/07 共用），这里只保留引用。
  */
-export const UNCHECKED_SAFETY_NOTE = '⚠️ 本轮回答没有经过内容安全检测（服务端未执行或跳过了检测），请谨慎参考。';
 
 /** 回答里出现语料之外的联系方式时的提示行（后置标记，不是「已确认编造」的结论）。 */
 export const FABRICATED_CONTACT_NOTE = '⚠️ 这条回答出现了资料里没有的联系方式，请以官网为准，不要直接使用。';
-
-/** 多轮历史最多带多少条（与 ai 云函数 MAX_MESSAGES=20 对齐）。 */
-export const MAX_HISTORY = 20;
 
 export interface QaOption {
   id: string;
@@ -103,27 +111,6 @@ export function buildWelcome(): { text: string; options: QaOption[] } {
     text: WELCOME_TEXT,
     options: departments.map((department) => ({ id: department.id, name: department.name })),
   };
-}
-
-/** 把页面上的多轮历史映射成 ai 云函数的消息数组，只保留最近 MAX_HISTORY 条。 */
-export function chatMessages(history: ChatTurn[]): ChatMessage[] {
-  return history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
-}
-
-/**
- * 服务端内容安全是否**真的执行过**。
- *
- * 只有 `safety.checked === true` 才算检测过：字段缺失、`safety` 为 null、
- * `checked: false`（检测被关闭/跳过/只检了一段）一律按「未检测」处理，
- * 宁可多提示一次，也不把跳过读成干净。
- */
-export function safetyChecked(safety: { checked: boolean } | null | undefined): boolean {
-  return safety !== null && safety !== undefined && safety.checked === true;
-}
-
-/** 未真正检测时对话里显示的提示行；检测过则为空串（页面据此隐藏该行）。 */
-export function safetyNoteFor(safety: { checked: boolean } | null | undefined): string {
-  return safetyChecked(safety) ? '' : UNCHECKED_SAFETY_NOTE;
 }
 
 /** 页脚来源说明；本轮未真正检测时补一句，避免脚注被读成「这次也检过了」。 */
