@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "build": "node scripts/build.mjs",
-    "test": "npm run build && node --test tests/*.test.cjs",
+    "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs"
   },
   "engines": {
@@ -17,7 +17,8 @@
     "miniprogram-api-typings": "5.2.3",
     "miniprogram-automator": "0.12.1",
     "typescript": "5.9.3",
-    "wx-server-sdk": "4.0.2"
+    "wx-server-sdk": "4.0.2",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
     "miniprogram-automator": {

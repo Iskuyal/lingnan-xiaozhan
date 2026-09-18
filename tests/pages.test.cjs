@@ -63,6 +63,8 @@ test('从入口进入的状态页返回上页，直接打开状态页返回首�
   }
 });
 
+// 注意：这个测试会重建 dist，并发的其它测试文件可能短暂读不到产物，
+// 因此 `npm test` 用 --test-concurrency=1 串行执行。
 test('重新构建会移除不再属于源代码的旧产物', () => {
   const stale = 'dist/removed-page.js';
   fs.writeFileSync(stale, '// 模拟已删除页面留下的旧编译产物');
