@@ -264,3 +264,32 @@ test('没有微信身份或未知操作时给出明确错误', async () => {
   assert.equal(unknown.ok, false);
   assert.match(unknown.error, /不支持的操作/u);
 });
+
+test('preparePhotoUpload:仅放行 png/jpg 截图，路径落在本人 openid 前缀下', async () => {
+  const h = harness();
+  const ok = await h.run(STUDENT_A, { action: 'preparePhotoUpload', fileName: '课表截图.png' });
+  assert.equal(ok.ok, true);
+  assert.ok(ok.cloudPath.startsWith(ownerPrefix(STUDENT_A)));
+  assert.match(ok.cloudPath, /\.png$/u);
+  for (const fileName of ['课表.gif', '课表.xls', '课表']) {
+    const bad = await h.run(STUDENT_A, { action: 'preparePhotoUpload', fileName });
+    assert.equal(bad.ok, false, fileName);
+    assert.match(bad.error, /png|jpg/u);
+  }
+});
+
+test('saveDraft:截图识别来源 photo 入库并被保存', async () => {
+  const h = harness();
+  const courses = [{
+    name: '识别出来的课', teacher: '某某', weekday: 1,
+    startSection: 1, endSection: 2, sectionRanges: [{ start: 1, end: 2 }],
+    weeks: [1, 2], weeksRecognized: true, weekText: '[1-2]周',
+    location: '崇礼楼-306', campus: '', siteNumber: '', note: '',
+    warnings: [], source: 'photo', rawText: '', credits: '',
+    sourceRowLabel: '', sourceWeekdayLabel: '',
+  }];
+  const saved = await h.run(STUDENT_A, { action: 'saveDraft', courses, semester: '2026-2027学年第一学期' });
+  assert.equal(saved.ok, true);
+  const list = await h.run(STUDENT_A, { action: 'list' });
+  assert.equal(list.courses[0].source, 'photo');
+});

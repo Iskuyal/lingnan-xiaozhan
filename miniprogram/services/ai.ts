@@ -161,3 +161,22 @@ export function transportMessage(error: unknown): string {
 export function chatEvent(feature: string, system: string, messages: ChatMessage[]): Record<string, unknown> {
   return { action: 'chat', feature, system, messages };
 }
+
+/** vision 动作的事件组装（05 课表截图识别用）：图片走事件顶层 image，fileID 或 base64 二选一。 */
+export function visionEvent(
+  feature: string,
+  system: string,
+  prompt: string,
+  image: { fileID: string } | { base64: string; mimeType: string },
+  maxTokens?: number,
+): Record<string, unknown> {
+  const event: Record<string, unknown> = {
+    action: 'vision',
+    feature,
+    system,
+    messages: [{ role: 'user', text: prompt }],
+    image,
+  };
+  if (maxTokens !== undefined) event.maxTokens = maxTokens;
+  return event;
+}

@@ -30,6 +30,9 @@ const MAX_COURSES = 300;
 /** 上传文件大小上限（客户端先按同样数值拦截，服务端再兜一次）。 */
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ['.xls', '.xlsx'];
+/** 截图上传（Ticket 05）：仅放行 png/jpg，上限 2MB（客户端会先压到 1MB 以内再上传）。 */
+const PHOTO_ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg'];
+const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
 
 interface CloudEvent {
   action?: unknown;
@@ -145,6 +148,17 @@ async function handlePrepareUpload(event: CloudEvent, openid: string) {
   }
   const cloudPath = `${ownerPrefix(openid)}${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}${extension}`;
   return { ok: true, cloudPath, maxBytes: MAX_FILE_BYTES };
+}
+
+/** 截图识别（Ticket 05）：给本人 openid 分配截图上传路径；识别由 ai 云函数完成，这里只管路径。 */
+async function handlePreparePhotoUpload(event: CloudEvent, openid: string) {
+  const fileName = typeof event.fileName === 'string' ? event.fileName : '';
+  const extension = extensionOf(fileName);
+  if (!PHOTO_ALLOWED_EXTENSIONS.includes(extension)) {
+    return { ok: false, error: '只支持 .png 或 .jpg 的课表截图' };
+  }
+  const cloudPath = `${ownerPrefix(openid)}${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}${extension}`;
+  return { ok: true, cloudPath, maxBytes: PHOTO_MAX_BYTES };
 }
 
 async function handleImportDraft(event: CloudEvent, openid: string) {
@@ -283,6 +297,8 @@ export async function main(event: CloudEvent = {}) {
     switch (action) {
       case 'prepareUpload':
         return await handlePrepareUpload(event, openid);
+      case 'preparePhotoUpload':
+        return await handlePreparePhotoUpload(event, openid);
       case 'importDraft':
         return await handleImportDraft(event, openid);
       case 'discardUpload':

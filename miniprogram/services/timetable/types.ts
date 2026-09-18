@@ -40,7 +40,7 @@ export interface Course {
   note: string;
   /** 待核对提示；空数组表示解析无疑点。 */
   warnings: string[];
-  source: 'excel' | 'manual';
+  source: 'excel' | 'manual' | 'photo';
   /** 学期标注，如「2026-2027学年第一学期」；空字符串表示未标注。 */
   semester: string;
   /** 导入时的单元格原文；手工录入为空。 */
@@ -67,7 +67,7 @@ export interface DraftCourse {
   siteNumber: string;
   note: string;
   warnings: string[];
-  source: 'excel';
+  source: 'excel' | 'photo';
   rawText: string;
   sourceRowLabel: string;
   sourceWeekdayLabel: string;
@@ -76,6 +76,8 @@ export interface DraftCourse {
 export interface DraftMeta {
   sheetName: string;
   fileName: string;
+  /** 草稿来源：文件解析或截图识别。仅客户端组装（截图识别走 05）时使用，云解析不返回该字段。 */
+  origin?: 'excel' | 'photo';
   school: string;
   semester: string;
   exportedAt: string;
@@ -118,5 +120,5 @@ export interface CourseInput {
   siteNumber: string;
   note: string;
   warnings: string[];
-  source: 'excel' | 'manual';
+  source: 'excel' | 'manual' | 'photo';
 }

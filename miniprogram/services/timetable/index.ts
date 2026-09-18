@@ -143,3 +143,10 @@ export async function deleteCourse(id: string): Promise<number> {
   const result = await callTimetable<{ count: number }>({ action: 'deleteCourse', id });
   return typeof result.count === 'number' ? result.count : 0;
 }
+
+/** 截图上传与识别（Ticket 05）：申请本人 openid 下的截图上传路径（服务端同样校验扩展名与上限）。 */
+export const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
+
+export async function preparePhotoUpload(fileName: string): Promise<UploadResult> {
+  return callTimetable<UploadResult>({ action: 'preparePhotoUpload', fileName });
+}

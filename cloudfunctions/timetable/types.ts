@@ -49,8 +49,8 @@ export interface CourseFields {
   note: string;
   /** 待核对提示；空数组表示解析无疑点。 */
   warnings: string[];
-  /** 记录来源：导入或手工录入。 */
-  source: 'excel' | 'manual';
+  /** 记录来源：文件导入、截图识别或手工录入。 */
+  source: 'excel' | 'manual' | 'photo';
 }
 
 /** 解析出来的草稿课程：业务字段 + 原文与来源位置，供确认页展示与裁决。 */
@@ -63,7 +63,7 @@ export interface DraftCourse extends CourseFields {
   sourceRowLabel: string;
   /** 星期列原文（如「星期一」）。 */
   sourceWeekdayLabel: string;
-  source: 'excel';
+  source: 'excel' | 'photo';
 }
 
 /** 课表文件的元信息，取自文件头几行。 */
