@@ -6,7 +6,7 @@
 
 **Status:** done（2026-09-18 验收达成；本地票的 `done` 等价于 Issue 的关闭，口径见 [Ticket 索引](README.md)）
 
-**成果与证据：** 实现见本次提交；开发者工具 12 项检查通过，截图与原始结果见 [Ticket 02 验证记录](../../evidence/p3-2/README.md) 与 [verification.json](../../evidence/p3-2/verification.json)。
+**成果与证据：** 实现见 [PR #18](https://github.com/Iskuyal/wx-match/pull/18)（分支 `feat/ticket-02-home-news-paging`）；开发者工具 12 项检查通过，截图与原始结果见 [Ticket 02 验证记录](../../evidence/p3-2/README.md) 与 [verification.json](../../evidence/p3-2/verification.json)。
 
 - [x] 首页展示最近若干条资讯，含真实标题、发布日期与来源
 - [x] 首页有进入资讯列表的入口，且不与现有「学生部门」「我的课表」入口冲突
