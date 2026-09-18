@@ -18,6 +18,37 @@ async function run() {
     }
     throw new Error(`等待页面超时：${route}`);
   }
+  /**
+   * 等这一次追问的结果。两条路径都算「有反应」：
+   * ① 多了一条助手气泡（`.qa-answer`，模型答出来了）；
+   * ② 页面上出现降级提示（`#qa-offline`）或失败文案（`.qa-error`）——
+   *    云函数未部署 / 未配密钥时走这条，不能因为「没有回答」就判失败（PR #29 的断言口径）。
+   * 两条都没等到才返回 null（页面真的没反应）。
+   */
+  async function waitForReply(page, before, timeoutMs = 25000) {
+    const deadline = Date.now() + timeoutMs;
+    for (;;) {
+      const rows = await page.$$('.qa-answer');
+      if (rows.length > before) return { kind: 'answer', text: await rows[rows.length - 1].text() };
+      const offline = await page.$('#qa-offline');
+      const error = await page.$('.qa-error');
+      if (offline || error) {
+        const notice = offline === null ? error : offline;
+        return { kind: 'degraded', text: await notice.text() };
+      }
+      if (Date.now() >= deadline) return null;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+  }
+  /** 面板被用户收起过（本地持久标记）时不会自动展开，验收里显式点开，不然命不中元素。 */
+  async function ensurePanelOpen(page, label) {
+    const open = await page.$('#qa-open');
+    if (open === null) return true;
+    await open.tap();
+    await page.waitFor(600);
+    console.log(`${label}：对话框处于收起状态（此前被关过），已手动点开`);
+    return (await page.$('#qa-prompt')) !== null;
+  }
   try {
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
     const home = await waitForPage('pages/home/index');
@@ -36,7 +67,105 @@ async function run() {
     assert.ok(firstName, '部门条目缺少组织名称');
     assert.ok(await (await firstItem.$('.department-campus')).text(), '部门条目缺少所属校区或缺失文案');
     await mini.screenshot({ path: path.join(output, 'departments.png') });
-    await firstItem.tap();
+
+    // 部门 AI 问答（Ticket 07）：提示、选项、追问、返回后继续四条路径。
+    // 云函数 `ai` 未部署或未配密钥时追问会落到降级提示，两种结果都算通过，
+    // 但同时要验证「AI 不可用时部门资料照常展示」。
+    assert.ok(
+      await ensurePanelOpen(list, '部门列表页'),
+      '部门列表页既没有对话框也没有打开入口（#qa-open 与 #qa-prompt 都命不中）',
+    );
+    const prompt = await (await list.$('#qa-prompt')).text();
+    assert.match(prompt, /你想了解什么部门/u, `对话框没有提示选择部门：${prompt}`);
+    assert.match(prompt, /官网未公布/u, '对话框要说清资料里没有的会回答官网未公布');
+    const options = await list.$$('.qa-option');
+    assert.equal(options.length, 5, `AI 选项数量应为 5，实际 ${options.length}`);
+    for (const item of options) {
+      assert.ok(await (await item.$('.qa-option-name')).text(), 'AI 选项缺少组织名称');
+    }
+    const unionOption = await list.$('#qa-option-student-union');
+    assert.ok(unionOption, 'AI 选项里没有校学生会');
+    // 开发者工具不会在两次验收之间重启小程序，上一次运行留下的对话还在；
+    // 先清空当前部门的对话，让后续断言从干净状态开始。
+    const leftoverRestart = await list.$('#qa-restart');
+    if (leftoverRestart) {
+      await leftoverRestart.tap();
+      await list.waitFor(600);
+    }
+    await mini.screenshot({ path: path.join(output, 'departments-qa-list.png') });
+    await unionOption.tap();
+    const chatDetail = await waitForPage('pages/departments/detail/index');
+    await chatDetail.waitFor(1000);
+    assert.equal(await (await chatDetail.$('.department-name')).text(), '校学生会', '点选项进入的不是对应部门页');
+    assert.ok(
+      await ensurePanelOpen(chatDetail, '部门详情页'),
+      '部门详情页没有问答面板（#qa-open 与 #qa-prompt 都命不中）',
+    );
+    assert.match(await (await chatDetail.$('#qa-prompt')).text(), /关于校学生会/u);
+    const suggestions = await chatDetail.$$('.qa-suggestion');
+    assert.equal(suggestions.length, 4, `详情页追问建议应为 4 条，实际 ${suggestions.length}`);
+    const qaInput = await chatDetail.$('#qa-input');
+    assert.ok(qaInput, '详情页缺少追问输入框');
+    // 气泡按数量增量判定，不按下标：这样即使有历史残留也能等到这一次的新气泡。
+    const rowsBefore = (await chatDetail.$$('.qa-answer')).length;
+    await suggestions[0].tap();
+    const reply = await waitForReply(chatDetail, rowsBefore);
+    // 云函数已配好密钥时应是资料里的回答；未配置或未部署时必须是可识别的降级提示，
+    // 不能白屏或假成功。两种都算通过，但降级时要额外说明部门资料仍可查看。
+    assert.ok(reply !== null, '发送追问后既没有回答也没有降级提示（页面没有反应）');
+    if (reply.kind === 'degraded') {
+      assert.match(
+        reply.text,
+        /暂时不可用|超时|内部错误|额度|未通过安全检测|尚未部署|权限/u,
+        `降级提示无法识别：${reply.text}`,
+      );
+      const note = await chatDetail.$('#qa-offline');
+      assert.ok(note, '降级时没有说明部门资料仍可查看');
+      assert.match(await note.text(), /仍可正常查看/u, '降级说明没有写清部门资料仍可查看');
+      console.log(`部门问答降级提示：${reply.text}`);
+    } else {
+      assert.ok(reply.text.length > 0, '回答内容为空');
+      console.log(`部门问答回答：${reply.text}`);
+    }
+    assert.ok(await chatDetail.$('#department-contact'), '追问后部门资料区块消失了');
+    assert.ok(await chatDetail.$('#department-activities'), '追问后组织动态区块消失了');
+    await mini.screenshot({ path: path.join(output, 'departments-qa-detail.png') });
+
+    // 返回列表后对话不丢，可以直接接着问。
+    await (await chatDetail.$('#back-to-list')).tap();
+    const listWithChat = await waitForPage('pages/departments/index');
+    await listWithChat.waitFor(800);
+    const kept = await listWithChat.$$('.qa-row-user');
+    assert.ok(kept.length >= 1, '返回列表后对话被清空');
+    assert.ok(await listWithChat.$('#qa-transcript'), '返回列表后没有对话记录区');
+    const listInput = await listWithChat.$('#qa-input');
+    assert.ok(listInput, '返回列表后无法继续追问');
+    const beforeRows = (await listWithChat.$$('.qa-answer')).length;
+    await listInput.input('这个部门有联系方式吗？');
+    await (await listWithChat.$('#qa-send')).tap();
+    const resumed = await waitForReply(listWithChat, beforeRows);
+    assert.ok(resumed !== null, '在列表页继续追问后既没有回答也没有降级提示');
+    console.log(`列表页继续追问（${resumed.kind}）：${resumed.text}`);
+    await mini.screenshot({ path: path.join(output, 'departments-qa-resume.png') });
+
+    // 诊断（不作为断言）：直接调一次 `ai` 云函数的用量动作，记录它当前能否正常应答。
+    // 只读、不产生模型调用；结论写进验证记录，避免把「界面通过」当成「AI 已配好」。
+    try {
+      const usage = await mini.evaluate(() =>
+        wx.cloud
+          .callFunction({ name: 'ai', data: { action: 'usage' } })
+          .then((response) => JSON.stringify(response.result))
+          .catch((error) => `调用失败：${error.errMsg || error.message || error}`),
+      );
+      console.log(`ai 云函数诊断（usage）：${usage}`);
+    } catch (error) {
+      console.log(`ai 云函数诊断未执行：${error && error.message ? error.message : error}`);
+    }
+
+    // 返回列表后页面实例已重建，重新取条目再进入详情。
+    const firstItemAgain = await listWithChat.$('.department-item');
+    assert.ok(firstItemAgain, '返回列表后条目消失');
+    await firstItemAgain.tap();
     const detail = await waitForPage('pages/departments/detail/index');
     await detail.waitFor(800);
     assert.ok(await detail.$('#department-detail'), '部门详情未渲染');
@@ -161,6 +290,10 @@ async function run() {
       model: system.model, SDKVersion: system.SDKVersion,
       checks: ['学校名称', '学生部门入口与返回', '部门列表显示组织名称与校区',
         '部门详情显示介绍、联系方式或缺失、动态或缺失', '未知部门 id 显示未找到状态',
+        'AI 对话框提示「你想了解什么部门」并列出 5 个可点选项',
+        '点选项进入对应部门页，追问建议、输入框与回答/降级提示均可渲染',
+        'AI 不可用时部门资料区块仍在，降级提示写明资料仍可浏览',
+        '返回列表后对话不丢，可直接继续追问',
         '课表入口与返回（周课表页显示标题、导入或重试入口，不白屏）',
         '导入页显示「只能从聊天记录选择、先发给文件传输助手」引导与选择文件入口',
         '课程表单显示课程名、星期、起止节、周次与保存入口',

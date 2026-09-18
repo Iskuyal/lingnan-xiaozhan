@@ -1,0 +1,102 @@
+<!--
+  部门 AI 问答面板（Ticket 07）：部门列表页与详情页共用（做法移植自 PR #29 的 qa.wxml）。
+
+  事件处理函数写在引用它的页面上（openQa / closeQa / openDetail / askSuggestion /
+  onQaInput / sendQuestion / restartConversation），两个页面都实现了这一组方法；
+  面板数据由 pages/departments/qa.ts 的 qaPanelPatch 组装，字段名与这里一一对应，
+  样式在同目录 qa.wxss，由两个页面的 wxss @import。
+
+  对话的第一条（页面提示语）单独渲染成 #qa-prompt，其余轮次按气泡渲染；
+  class 里的 qa-answer 是「回答或失败提示」的标记，开发者工具验收靠它数气泡，
+  测试锁住这个标记防止脚本数错。
+-->
+<template name="department-qa">
+  <view class="qa">
+    <button wx:if="{{!qaOpen}}" id="qa-open" class="home-button qa-open" hover-class="pressed" bindtap="openQa">问问 AI：部门答疑</button>
+    <view wx:else class="qa-panel">
+      <view class="qa-head">
+        <text class="qa-badge">AI 助手</text>
+        <text class="qa-head-note">只依据官网已核实资料回答</text>
+        <button class="qa-close" hover-class="pressed" bindtap="closeQa">收起</button>
+      </view>
+
+      <view class="qa-row qa-row-assistant">
+        <view id="qa-prompt" class="qa-bubble qa-bubble-assistant">
+          <view class="qa-bubble-text">{{qaPrompt}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{qaOptions.length > 0}}" class="qa-options">
+        <view
+          wx:for="{{qaOptions}}"
+          wx:key="id"
+          id="qa-option-{{item.id}}"
+          class="qa-option {{item.active ? 'qa-option-active' : ''}}"
+          hover-class="pressed"
+          data-id="{{item.id}}"
+          bindtap="openDetail"
+          aria-role="button"
+          aria-label="了解{{item.name}}"
+        >
+          <view class="qa-option-name">{{item.name}}</view>
+          <view class="qa-option-campus">{{item.campusLabel}}</view>
+        </view>
+      </view>
+
+      <view id="qa-transcript" class="qa-transcript">
+        <block wx:for="{{qaMessages}}" wx:key="index">
+          <view
+            wx:if="{{index > 0}}"
+            class="qa-row qa-row-{{item.role}} {{item.role === 'assistant' ? 'qa-answer' : ''}}"
+          >
+            <view class="qa-bubble {{item.role === 'user' ? 'qa-bubble-user' : 'qa-bubble-assistant'}}">
+              <view class="qa-bubble-text">{{item.text}}</view>
+              <view wx:if="{{item.warning}}" class="qa-flag">{{item.warning}}</view>
+            </view>
+          </view>
+        </block>
+        <view wx:if="{{qaSending}}" class="qa-row qa-row-assistant">
+          <view class="qa-bubble qa-bubble-assistant qa-bubble-pending">正在依据核实资料回答…</view>
+        </view>
+      </view>
+
+      <view wx:if="{{qaSuggestionList.length > 0}}" class="qa-suggestions">
+        <view
+          wx:for="{{qaSuggestionList}}"
+          wx:key="*this"
+          id="qa-suggestion-{{index}}"
+          class="qa-suggestion"
+          hover-class="pressed"
+          data-text="{{item}}"
+          bindtap="askSuggestion"
+          aria-role="button"
+        >{{item}}</view>
+      </view>
+
+      <view class="qa-input-row">
+        <input
+          id="qa-input"
+          class="qa-input"
+          value="{{qaInput}}"
+          bindinput="onQaInput"
+          placeholder="例如：校学生会下设哪些部门？"
+          confirm-type="send"
+          bindconfirm="sendQuestion"
+          disabled="{{qaSending}}"
+        />
+        <button id="qa-send" class="qa-send" hover-class="pressed" disabled="{{qaSending}}" bindtap="sendQuestion">发送</button>
+      </view>
+
+      <view id="qa-safety-note" class="qa-warn" wx:if="{{qaSafetyNote !== ''}}">{{qaSafetyNote}}</view>
+      <view class="qa-error" wx:if="{{qaError !== ''}}">{{qaError}}</view>
+      <view id="qa-offline" class="qa-offline" wx:if="{{qaError !== ''}}">{{qaOfflineNote}}</view>
+      <view class="qa-cap" wx:if="{{qaCapWarning !== ''}}">{{qaCapWarning}}</view>
+
+      <view class="qa-restart" wx:if="{{qaMessages.length > 1}}">
+        <button id="qa-restart" class="qa-restart-button" hover-class="pressed" bindtap="restartConversation">重新开始对话</button>
+      </view>
+
+      <view class="qa-note">{{qaSourceNote}}</view>
+    </view>
+  </view>
+</template>

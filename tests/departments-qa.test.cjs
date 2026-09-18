@@ -479,3 +479,339 @@ test('部门页:发送中不可重复发送,空输入不发起调用', async () 
   page.sendQuestion();
   assert.equal(cloud.calls.length, 0, '空白输入不得调用云函数');
 });
+
+// ---------------------------------------------------------------------------
+// 以下为 PR #29 移植部分（防幻觉守卫、详情页问答面板、会话共享）的测试。
+// 原作者 SU5114；守卫的联系方式一路与上面既有的记号扫描合并成一套。
+// ---------------------------------------------------------------------------
+
+const departmentsOf = () => loadCompiled('dist/services/departments.js').listDepartments();
+const findDepartment = (id) => departmentsOf().find((item) => item.id === id);
+/** 页面共用的会话是模块级状态：拿到页面 require 的同一份实例，用例之间先清空。 */
+const sharedQa = () => createRequire(path.resolve('dist/pages/departments/index.js'))('./qa');
+
+test('防幻觉守卫:未公布字段上的编造整条替换,并记下命中类别', () => {
+  const { guardAnswer, unsupportedAnswerText } = qa();
+  const union = findDepartment('student-union');
+  const fallback = unsupportedAnswerText(union, [{ reason: '负责人表述', token: '负责人' }]);
+  assert.ok(fallback.includes('官网未公布'), '替换文案必须明确说「官网未公布」');
+  assert.ok(fallback.includes('校学生会'), '替换文案要点名是哪个部门');
+  assert.ok(fallback.includes('负责人'), '替换文案要点出命中的类别');
+  const fabricated = [
+    ['校学生会的联系电话是 020-22305555，欢迎咨询。', '联系方式记号'],
+    ['可以发邮件到 xsh@example.edu.cn 联系。', '联系方式记号'],
+    ['负责人是张三，有问题找他。', '负责人表述'],
+    ['校学生会位于广州校区。', '校区表述'],
+    ['校学生会成立于 2019 年。', '成立时间'],
+    ['详见 https://example.com/student-union 的介绍。', '资料外链接'],
+    ['联系方式：微信公众号「岭南学生会」', '联系方式表述'],
+  ];
+  for (const [answer, reason] of fabricated) {
+    const result = guardAnswer(answer, { department: union });
+    assert.equal(result.replaced, true, `未拦下编造内容：${answer}`);
+    assert.ok(result.reasons.includes(reason), `${answer} 的命中原因应为 ${reason}，实际 ${result.reasons}`);
+    assert.ok(result.text.includes('官网未公布'), '替换后的文本必须是如实回答');
+    assert.ok(result.text.includes('校学生会'), '替换文案点名是哪个部门的回答');
+    assert.ok(result.note.length > 0, '命中后要有提示行说明这条回答被复核过');
+  }
+});
+
+test('防幻觉守卫:资料支持的如实回答原样放行,不误伤', () => {
+  const { guardAnswer } = qa();
+  const union = findDepartment('student-union');
+  const volunteers = findDepartment('young-volunteers');
+  const veteran = findDepartment('veteran-affairs-service');
+  const grounded = [
+    [union, '校学生会设权益部、文娱部、器材部、体育部、学创部 5 个部门。'],
+    [union, '官网未公布校学生会的联系方式，页面上只有来源链接可以核对。'],
+    [union, '组织架构是「主席团+工作部门」模式，围绕思想引领和服务同学开展工作。'],
+    [union, '校学生会的所属校区官网未公布。'],
+    [union, '资料里没有该组织的负责人信息，可以打开来源链接自行核对。'],
+    [volunteers, '青年志愿者联合会据活动报道在广州校区、清远校区都有志愿服务队。'],
+    [veteran, '退役军人事务服务部成立于 2022 年 5 月，由退役大学生组成。'],
+    [union, `资料来源：${union.sourceUrl}`],
+    [union, '活动动态里有「对话榜样」这篇报道（2026-06-30）。'],
+  ];
+  for (const [department, answer] of grounded) {
+    const result = guardAnswer(answer, { department });
+    assert.equal(result.replaced, false, `误伤了如实回答：${answer}（${result.reasons}）`);
+    assert.equal(result.text, answer);
+    assert.equal(result.note, '');
+  }
+});
+
+test('防幻觉守卫:联系方式只用一套规则,与 findUnverifiedContacts 同源', () => {
+  const { buildCorpusText, contactWarningFor, findUnverifiedContacts, guardAnswer } = qa();
+  const corpus = buildCorpusText();
+  const answer = '可以打 13800138000，座机 020-12345678，QQ：123456789，微信：lingnan_helper，邮箱 help@example.com。';
+  const tokens = Array.from(findUnverifiedContacts(answer, corpus));
+  assert.equal(tokens.length, 5, '五类记号都要找出来');
+  const result = guardAnswer(answer, { corpus });
+  assert.equal(result.replaced, true, '语料外的联系方式要触发整条替换');
+  const hits = Array.from(result.hits)
+    .filter((hit) => hit.reason === '联系方式记号')
+    .map((hit) => hit.token)
+    .sort();
+  assert.deepEqual(hits, tokens.slice().sort(), '守卫与记号清单必须出自同一套规则');
+  for (const token of tokens) {
+    assert.ok(result.text.includes(token), `替换文案要点出命中的记号：${token}`);
+  }
+  assert.equal(result.note, contactWarningFor(answer, corpus), '联系方式命中的提示行沿用既有的记号级措辞');
+  // 语料里确实有的联系方式不算编造（同一套规则的另一面）。
+  const withContacts = corpus + '\n\n【示例组织】联系方式：办公室：0763-1234567；邮箱：tw@lnc.edu.cn';
+  assert.deepEqual(
+    Array.from(findUnverifiedContacts('可拨打 0763-1234567 或发邮件 tw@lnc.edu.cn。', withContacts)),
+    [],
+  );
+  assert.equal(
+    guardAnswer('可拨打 0763-1234567 或发邮件 tw@lnc.edu.cn。', { corpus: withContacts }).replaced,
+    false,
+    '语料里有的联系方式不得触发替换',
+  );
+});
+
+test('防幻觉守卫:拦不下什么必须如实写在测试里（裸姓名、招新时间）', () => {
+  const { guardAnswer } = qa();
+  const union = findDepartment('student-union');
+  // 这些是守卫的已知盲区：命中只认关键词与记号，裸内容管不了。文档口径与这里一致，
+  // 评估时不得因为「加了守卫」就放宽防幻觉判定。
+  const blind = [
+    '张三负责日常值班，有问题可以找他。',
+    '招新时间是 9 月 1 日到 9 月 10 日。',
+    '报名截止到 2026 年 9 月 30 日，请留意通知。',
+  ];
+  for (const answer of blind) {
+    const result = guardAnswer(answer, { department: union });
+    assert.equal(result.replaced, false, `这条本就不该被守卫命中（是已知盲区，不是回归）：${answer}`);
+    assert.deepEqual(Array.from(result.reasons), []);
+  }
+});
+
+test('防幻觉守卫:校区检查按「回答在讲哪个部门」判定，列表页也能认出唯一组织', () => {
+  const { guardAnswer } = qa();
+  const union = findDepartment('student-union');
+  const campusLine = '校学生会位于广州校区。';
+  // 有部门上下文：该部门资料写明未标注校区 → 任何校区名都是编造。
+  assert.equal(guardAnswer(campusLine, { department: union }).replaced, true);
+  // 列表页没给部门，但回答里只提到一个组织 → 按那个组织判定（编造校区多是「安上别的组织的校区」）。
+  assert.equal(guardAnswer(campusLine).replaced, true, '认得出是校学生会就该按校学生会判定');
+  // 语料里有校区依据的组织：资料写明的校区不算编造。
+  assert.equal(
+    guardAnswer('青年志愿者联合会据活动报道在广州校区、清远校区都有志愿服务队。').replaced,
+    false,
+  );
+  // 一个组织都认不出来时退回语料级判定：语料里出现过的校区名放行（已知弱点，文档有写）。
+  assert.equal(guardAnswer('这个组织在广州校区有活动。').replaced, false);
+});
+
+test('送进模型的历史保留模型原话,守卫只替换上屏的回答', async () => {
+  const cloud = cloudStub({ chat: () => okAnswer('校学生会的联系电话是 020-22305555。') });
+  const wx = baseWx(cloud, {});
+  const page = loadPage('departments', wx);
+  page.openQa();
+  page.onQaInput({ detail: { value: '怎么联系校学生会？' } });
+  page.sendQuestion();
+  await new Promise((resolve) => setImmediate(resolve));
+  const shown = page.data.qaMessages[2];
+  assert.equal(shown.replaced, true, '命中守卫的回答要标记成已替换');
+  assert.equal(shown.modelText, '校学生会的联系电话是 020-22305555。', '模型原话要留在轮次里');
+  assert.ok(shown.text.includes('官网未公布'), '上屏的是如实回答');
+  assert.ok(shown.text.includes('020-22305555'), '替换文案点出命中的记号（main 既有提示口径）');
+  assert.match(shown.warning, /资料里没有的联系方式/u);
+  // 第二轮：送进模型的历史是模型原话，不是替换后的上屏文本。
+  page.onQaInput({ detail: { value: '那邮箱呢？' } });
+  page.sendQuestion();
+  await new Promise((resolve) => setImmediate(resolve));
+  const sent = cloud.calls[1].data.messages.filter((message) => message.role === 'assistant');
+  assert.ok(
+    sent.some((message) => message.text.includes('020-22305555')),
+    '历史里要保留模型原话，才不算改写模型的上下文',
+  );
+  assert.ok(
+    sent.every((message) => !message.text.includes('已按「官网未公布」处理')),
+    '替换文案不得混进送进模型的历史',
+  );
+});
+
+test('详情页:进入自动展开一次、可收起且关过不再弹,追问建议与输入框可用', async () => {
+  sharedQa().resetAllConversations();
+  const cloud = cloudStub({ chat: () => okAnswer('校学生会设权益部、文娱部、器材部、体育部、学创部 5 个部门。') });
+  const storage = storageStub();
+  const wx = baseWx(cloud, storage);
+  const page = loadPage('departments/detail', wx);
+  page.onLoad({ id: 'student-union' });
+  page.onShow();
+  assert.equal(page.data.qaOpen, true, '进入详情页自动展开一次');
+  assert.match(page.data.qaPrompt, /关于校学生会/u, '详情页提示要把范围收到这个部门');
+  assert.match(page.data.qaPrompt, /官网未公布/u, '提示要说明资料里没有的会答什么');
+  assert.equal(page.data.qaSuggestionList.length, 4, '追问建议 4 条');
+  assert.equal(page.data.qaMessages.length, 1, '开场只有提示语');
+  page.onShow();
+  assert.equal(page.data.qaMessages.length, 1, '再次显示不重置对话');
+  // 点追问建议 = 填入并发送。
+  await page.askSuggestion({ currentTarget: { dataset: { text: '校学生会的联系方式是什么？' } } });
+  assert.equal(cloud.calls.length, 1);
+  assert.equal(cloud.calls[0].data.action, 'chat');
+  assert.equal(cloud.calls[0].data.feature, 'department-qa');
+  assert.equal(cloud.calls[0].data.messages[1].text, '校学生会的联系方式是什么？');
+  assert.equal(page.data.qaMessages.length, 3);
+  assert.match(page.data.qaMessages[2].text, /权益部/u);
+  assert.equal(page.data.qaMessages[2].warning, undefined, '干净回答不加标记');
+  assert.equal(page.data.qaInput, '');
+  assert.equal(page.data.qaError, '');
+  // 收起 → 关过不再弹；用户主动打开仍可用。
+  page.closeQa();
+  assert.equal(page.data.qaOpen, false);
+  assert.equal(storage.store['departments-qa-dismissed'], true, '关闭要留下同一条持久标记');
+  const again = loadPage('departments/detail', baseWx(cloudStub({}), storage));
+  again.onLoad({ id: 'student-union' });
+  again.onShow();
+  assert.equal(again.data.qaOpen, false, '关过之后不再自动弹');
+  again.openQa();
+  assert.equal(again.data.qaOpen, true, '用户主动打开仍然可用');
+});
+
+test('详情页:未知部门不给对话框,模型不可用时给降级说明且资料照常展示', async () => {
+  sharedQa().resetAllConversations();
+  const missing = loadPage('departments/detail', baseWx(cloudStub({})));
+  missing.onLoad({ id: 'not-a-department' });
+  assert.equal(missing.data.notFound, true);
+  assert.equal(missing.data.qaOpen, false, '未找到部门不自动展开对话框');
+  missing.onShow();
+  assert.equal(missing.data.qaOpen, false);
+
+  const cloud = cloudStub({
+    chat: () => ({ ok: false, failureClass: 'model_unavailable', message: '', text: '', capWarning: '' }),
+  });
+  const page = loadPage('departments/detail', baseWx(cloud));
+  page.onLoad({ id: 'student-union' });
+  page.onShow();
+  page.onQaInput({ detail: { value: '校学生会是什么？' } });
+  page.sendQuestion();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.match(page.data.qaError, /暂时不可用/u);
+  assert.doesNotMatch(page.data.qaError, /安全/u, '模型不可用的文案不得与内容被拒混淆');
+  assert.match(page.data.qaOfflineNote, /仍可正常查看/u, '降级时要说明部门资料仍可查看');
+  assert.equal(page.data.qaMessages.length, 2, '失败保留提问，但不产生假回答');
+  assert.equal(page.data.detail.name, '校学生会', 'AI 失败不影响部门资料');
+  // 收起再打开不重置详情页的对话（列表页是重置，详情页是接着问）。
+  page.closeQa();
+  page.openQa();
+  assert.equal(page.data.qaMessages.length, 2);
+  // 「重新开始对话」才清空。
+  page.restartConversation();
+  assert.equal(page.data.qaMessages.length, 1);
+});
+
+test('部门问答会话:详情页追问后返回列表，对话不丢且可在列表页接着问', async () => {
+  sharedQa().resetAllConversations();
+  const cloud = cloudStub({ chat: () => okAnswer('设权益部、文娱部、器材部、体育部、学创部 5 个部门。') });
+  const list = loadPage('departments', baseWx(cloud));
+  list.onShow();
+  assert.equal(list.data.qaMessages.length, 1);
+  // 点选项进入该部门：对话跟着人去那个部门。
+  list.openDetail({ currentTarget: { dataset: { id: 'student-union' } } });
+  assert.equal(list.data.qaDepartmentId, 'student-union');
+
+  const detail = loadPage('departments/detail', baseWx(cloud));
+  detail.onLoad({ id: 'student-union' });
+  detail.onShow();
+  await detail.askSuggestion({ currentTarget: { dataset: { text: '校学生会下设哪些部门？' } } });
+
+  // 返回列表：onShow 重新读共享会话，问答还在。
+  list.onShow();
+  assert.equal(list.data.qaMessages.length, 3, '返回列表后对话不丢');
+  assert.equal(list.data.qaMessages[1].role, 'user');
+  assert.match(list.data.qaMessages[2].text, /权益部/u);
+  assert.equal(list.data.qaMessages[0].warning, undefined, '提示行只贴在回答上');
+  // 列表页接着问：同一份会话，历史里带着上一轮。
+  list.onQaInput({ detail: { value: '这个部门的联系方式呢？' } });
+  list.sendQuestion();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(cloud.calls.length, 2);
+  assert.equal(cloud.calls[1].data.messages.length, 4, '历史 = 开场 + 上一轮 + 本轮');
+  assert.equal(cloud.calls[1].data.messages[3].text, '这个部门的联系方式呢？');
+  assert.equal(list.data.qaMessages.length, 5);
+  // 不同部门的对话分开存放，不互相污染。
+  const other = loadPage('departments/detail', baseWx(cloudStub({})));
+  other.onLoad({ id: 'young-volunteers' });
+  other.onShow();
+  assert.equal(other.data.qaMessages.length, 1, '另一个部门从开场白开始');
+  assert.match(other.data.qaPrompt, /关于青年志愿者联合会/u);
+});
+
+test('两个部门页面共用一份问答模板与样式，产物里带上这两个文件', () => {
+  const listWxml = fs.readFileSync('miniprogram/pages/departments/index.wxml', 'utf8');
+  const detailWxml = fs.readFileSync('miniprogram/pages/departments/detail/index.wxml', 'utf8');
+  assert.match(listWxml, /<import src="\.\/qa\.wxml"/u);
+  assert.match(detailWxml, /<import src="\.\.\/qa\.wxml"/u);
+  for (const content of [listWxml, detailWxml]) {
+    assert.match(content, /<template\s+is="department-qa"/u);
+  }
+  assert.match(fs.readFileSync('miniprogram/pages/departments/index.wxss', 'utf8'), /@import "\.\/qa\.wxss"/u);
+  assert.match(fs.readFileSync('miniprogram/pages/departments/detail/index.wxss', 'utf8'), /@import "\.\.\/qa\.wxss"/u);
+  for (const file of ['qa.wxml', 'qa.wxss']) {
+    assert.ok(fs.existsSync(`dist/pages/departments/${file}`), `构建产物缺少 ${file}`);
+  }
+  // 开发者工具验收按这些 id 找元素，模板里必须留着。
+  const template = fs.readFileSync('miniprogram/pages/departments/qa.wxml', 'utf8');
+  for (const id of ['qa-prompt', 'qa-option-{{item.id}}', 'qa-input', 'qa-send',
+    'qa-suggestion-{{index}}', 'qa-transcript', 'qa-restart', 'qa-offline']) {
+    assert.ok(template.includes(id), `问答模板缺少 ${id}`);
+  }
+  // 验收脚本靠 .qa-answer 数「回答/提示」气泡（排除开场提示与「正在回答」），锁住这个标记。
+  assert.match(
+    template,
+    /class="qa-row qa-row-\{\{item\.role\}\} \{\{item\.role === 'assistant' \? 'qa-answer' : ''\}\}"/u,
+    '助手气泡缺少 qa-answer 标记，验收脚本会数错气泡',
+  );
+  // 降级说明必须是「模型不可用」这条路径上渲染的（脚本按 #qa-offline 判定）。
+  const offlineLine = template.split('\n').find((line) => line.includes('id="qa-offline"'));
+  assert.ok(offlineLine !== undefined && offlineLine.includes('qaError'), '降级说明要绑定在失败状态上');
+});
+
+test('对话框视图:列表页给提示语与 5 个可点选项,详情页给追问建议与离线说明', () => {
+  const qaModule = qa();
+  const welcome = qaModule.buildWelcome('student-union');
+  assert.match(welcome.text, /你想了解什么部门/u);
+  assert.match(welcome.text, /官网未公布/u, '开场提示要说明资料里没有的会答什么');
+  assert.equal(welcome.options.length, 5);
+  assert.equal(welcome.options.find((option) => option.id === 'student-union').active, true);
+  assert.ok(welcome.options.every((option) => option.campusLabel.length > 0), '选项要带校区说明');
+
+  const list = qaModule.qaPanelPatch({ departmentId: '', withOptions: true });
+  assert.equal(list.qaOptions.length, 5);
+  assert.equal(list.qaSuggestionList.length, 0, '列表页不显示追问建议');
+  assert.equal(list.qaMessages.length, 1);
+  assert.match(list.qaMessages[0].text, /你想了解什么部门/u);
+
+  const detail = qaModule.qaPanelPatch({ departmentId: 'student-union' });
+  assert.equal(detail.qaOptions.length, 0, '详情页不再列一遍部门选项');
+  assert.equal(detail.qaSuggestionList.length, 4);
+  assert.match(detail.qaPrompt, /关于校学生会/u);
+  assert.match(detail.qaOfflineNote, /仍可正常查看/u);
+  assert.equal(detail.qaOfflineNote, qaModule.QA_OFFLINE_NOTE);
+  assert.deepEqual(
+    Array.from(qaModule.qaPanelPatch({ departmentId: 'not-a-department' }).qaSuggestionList),
+    [],
+  );
+});
+
+test('历史映射:被替换的回答用模型原话,裁剪与字段收窄仍由 services/ai.ts 负责', () => {
+  const { MAX_HISTORY, historyMessages } = qa();
+  const history = [
+    { role: 'assistant', text: '开场' },
+    { role: 'user', text: '问题' },
+    { role: 'assistant', text: '替换后的如实回答', modelText: '模型原话（编造的号码 020-22305555）', replaced: true, warning: '提示行' },
+  ];
+  assert.deepEqual(plain(historyMessages(history)), [
+    { role: 'assistant', text: '开场' },
+    { role: 'user', text: '问题' },
+    { role: 'assistant', text: '模型原话（编造的号码 020-22305555）' },
+  ], '替换文案与标记都不进历史');
+  const many = [];
+  for (let index = 0; index < MAX_HISTORY + 4; index += 1) {
+    many.push({ role: index % 2 === 0 ? 'user' : 'assistant', text: `消息${index}` });
+  }
+  assert.equal(historyMessages(many).length, MAX_HISTORY);
+});

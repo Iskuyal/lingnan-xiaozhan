@@ -28,7 +28,7 @@
 | 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **in-progress（代码与本地测试完成；待部署与触发器实测）** | — |
 | 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | **in-progress（代码与本地测试完成；端到端与评估待 01/03 部署与真实截图）** | 01、03（代码均已合入；云端部署未完成） |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | **in-progress（代码与本地测试完成；端到端与评估待 01/03 部署与真实模型）** | 01、03（代码均已合入；云端部署未完成） |
-| 07 | [部门 AI 问答](07-department-ai-qa.md) | **in-progress（代码与本地测试完成；待 PR 审查与部署后人工验证）** | 01（已合入 main） |
+| 07 | [部门 AI 问答](07-department-ai-qa.md) | **in-progress（代码与本地测试完成；2026-09-19 在 `feat/department-qa-guard` 移植 PR #29 的防幻觉守卫、详情页问答面板与开发者工具检查；开发者工具与真实模型验证待人工执行）** | 01（已合入 main） |
 | 08 | [发布后补测未登录单页模式](08-post-publish-single-page-mode.md) | blocked-until-published | 外部：认证 + 备案 + 发布 |
 | 09 | [P6 参赛材料与包](09-p6-submission.md) | needs-info | 04、05、06、07；作品名、校内交付安排及细拆 |
 
