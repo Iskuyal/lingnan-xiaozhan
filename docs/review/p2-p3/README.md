@@ -1,6 +1,6 @@
-# P2 / P3 审查包（待审查）
+# P2 / P3 审查包与修复记录
 
-**状态：待审查。** 本文件夹是 P2 与 P3 的待审材料，等待负责人逐项核查；审查通过后再据此生成完整报告文档，并开启下一轮工作。
+**状态：本轮代码审查与本地修复验证已完成，负责人已授权提交合并。** 49 项测试与类型检查通过；修复版本的云端部署和函数调用权限仍待验收，详见 verification.md。下方规模统计为原审查基准。
 
 本文件夹是 P2（学生部门）与 P3（官网资讯，含云端同步）的审查材料，供负责人逐项核查后再决定合并与进入下一阶段。
 
@@ -9,9 +9,9 @@
 | 项 | 值 |
 | --- | --- |
 | 代码分支 | `feat/p2-p3-integration`（**尚未合入 main**；main 停在 `287a0d4`） |
-| 提交数 | 15 个（相对 main） |
-| 改动规模 | 55 个文件，+4271 / −54 行 |
-| 自动化测试 | `npm test` 43 项全过；`npm run typecheck` 通过（小程序 + 云函数两份配置） |
+| 提交数 | 16 个（审查基准 `98044c8` 相对 main，不含后续修复提交） |
+| 改动规模 | 60 个文件，+4731 / −54 行（审查基准，不含本轮修复） |
+| 自动化测试 | 历史基准 `npm test` 43 项全过；本轮结果见 verification.md；`npm run typecheck` 通过（小程序 + 云函数两份配置） |
 | 开发者工具验收 | `npm run verify:wechat` 10 项通过，截图见 `docs/evidence/p2-p3/` |
 | 云环境 | `cloudbase-d2gjtbbwu3575cd7b`，云函数 `newsSync` 已部署 |
 
@@ -36,8 +36,8 @@
 
 ```powershell
 cd F:\VibeCoding\wx-match
-git log --oneline main..HEAD          # 15 个提交
-npm run typecheck && npm test          # 43 项测试
+git log --oneline main..HEAD          # 审查基准为 16 个提交；以当前输出为准
+npm run typecheck && npm test          # 构建后执行当前全部测试
 git diff main...HEAD --stat            # 改动清单
 
 # 云端数据核对（需开发者工具已开启服务端口）
@@ -64,7 +64,8 @@ git diff main...HEAD --stat            # 改动清单
 11. **安全规则用自定义规则而非控制台预设**：控制台提示预设权限不支持无登录态用户访问（单页模式等场景 `auth` 为空），故用 `{"read": true, "write": false}`。
 12. **`sync_state` 里保留了 `lastError`**（该集合完全不对客户端开放），错误详情同时进云函数日志。
 
-## 审查后的下一步（待你确认）
+## 审查后的下一步
 
-- 合并 `feat/p2-p3-integration` 到 main（需要你确认，因为按 workflow.md 这一步要过审查）。
+- 负责人已授权将 `feat/p2-p3-integration` 合并到 main；实际合并状态以 PR #10 为准。
+- 部署修复后的云函数并核实函数调用权限，不能以 Git 合并代替云端验收。
 - 之后进入 P3-2：定时触发、首页最近资讯入口、列表逐页加载、全栏目抓取；或按你的判断调整优先级。

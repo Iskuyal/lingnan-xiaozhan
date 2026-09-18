@@ -1,6 +1,6 @@
 # 云开发环境与 P3 云端实施
 
-状态：环境已开通并记录；云函数、数据库与构建接入尚未实施。本文档是 P3 云端部分的实施依据，版本类信息一律在实施时核实后填写，不预先编造。
+状态：P3-1 云函数、数据库与构建接入已完成，负责人已确认。原部署的实测记录见 docs/evidence/p2-p3/；本轮代码修复尚未重新部署，函数调用权限待控制台核实。
 
 ## 环境信息
 
@@ -21,7 +21,7 @@ ADR-0001 已选定**微信云开发**（云函数 + 文档数据库），小程�
 
 ## 前端接入
 
-当前 `miniprogram/app.ts` 是空壳（`App({})`），需要加入云能力初始化：
+`miniprogram/app.ts` 已加入云能力初始化：
 
 ```ts
 App({
@@ -44,21 +44,12 @@ App({
 - `traceUser` 用于在控制台按用户查看调用记录，便于排查。是否保留由实施者决定，不涉及数据正确性。
 - 初始化失败时不要静默：资讯页需要能显示「云能力不可用」，不能白屏。
 
-## 构建与目录接入（当前完全未接入）
+## 构建与目录接入（已完成）
 
-这是 P3 实施最容易漏的一环。现状：
-
-- `scripts/build.mjs` 只做两件事：把 `miniprogram/` 经 tsc 编译并复制到 `dist/`，再把根目录 `project.config.json` 复制进 `dist/`。
-- `tsconfig.json` 的 `rootDir` 是 `miniprogram`、`outDir` 是 `dist`。
-- 仓库里没有 `cloudfunctions/`，`project.config.json` 里没有 `cloudfunctionRoot`。
-- 开发者工具打开的是 `dist`，所以**云函数必须出现在 `dist` 内**才能被上传部署。
-
-因此实施时需要：
-
-1. 新建 `cloudfunctions/`，每个云函数一个子目录（含自己的 `package.json` 与 `index.ts`）。
-2. 为云函数单独配置 tsconfig（`rootDir`/`outDir` 与小程序不同），不要和 `miniprogram` 共用一份配置。
-3. 修改 `scripts/build.mjs`：编译云函数并复制到 `dist/cloudfunctions/`。构建仍是「清空 dist 后重建」，既有的「移除不再属于源代码的旧产物」测试需要继续通过。
-4. 在 `project.config.json` 增加 `cloudfunctionRoot`，指向 `dist` 内云函数目录的相对路径。
+- `scripts/build.mjs` 清理并重建 `dist`，编译小程序并复制页面资源。
+- 云函数使用 `cloudfunctions/tsconfig.json` 独立编译至 `dist/cloudfunctions/`，并复制函数的 `package.json`。
+- 根目录 `project.config.json` 配置 `cloudfunctionRoot: "cloudfunctions/"`，构建时复制至 `dist`；开发者工具导入 `dist`。
+- `npm run typecheck` 检查两份配置；`npm test` 构建后运行测试。云函数依赖在部署时安装。
 
 ## 数据模型
 
@@ -68,11 +59,11 @@ App({
 | --- | --- | --- |
 | `_id` | string | 云数据库自动生成 |
 | `url` | string | 原文绝对 URL，**去重键**，需唯一索引 |
+| `id` | string | 原文 URL 末段，用于页面传参 |
 | `title` | string | 文章标题，取自原文 |
 | `date` | string | 发布日期 `YYYY-MM-DD`，取自原文；缺失时为空字符串 |
-| `paragraphs` | string[] | 已清理的正文段落（与小程序现有快照结构一致） |
+| `paragraphs` | string[] | 已清理的正文段落（客户端读取此字段，不再提供随包快照） |
 | `sourceLabel` | string | 来源栏目，如「学校官网 · 校园动态」 |
-| `publishedAt` | string | 原文发布时间（含时分秒）若可得 |
 | `capturedAt` | string | 本条文抓取日期 |
 | `updatedAt` | string | 本条记录最后写入时间 |
 
@@ -86,14 +77,14 @@ App({
 
 | 字段 | 说明 |
 | --- | --- |
-| `lastSuccessAt` | 最后一次成功同步时间，用于页面显示「更新时间」 |
+| `lastSuccessAt` | 最后一次整批成功同步时间；部分成功和全部失败均保留原值 |
 | `lastAttemptAt` | 最后一次尝试时间 |
 | `lastError` | 最后一次失败信息；成功时清空 |
 | `column` | 栏目标识，如 `xyxw/xydt` |
 
-标识方式：每个栏目一条状态文档，用固定的 `_id`（如 `xyxw-xydt`）写入，覆盖写即可。**该集合没有 `url` 字段，不需要 `url` 索引**；当前只有「校园动态」一个栏目，也不需要为 `column` 建索引。将来同步多个栏目时，每个栏目用一个固定 `_id`；只有在需要按 `column` 字段查询时，才为它建唯一索引。
+标识方式：每个栏目一条状态文档，用固定的 `_id`（如 `xyxw-xydt`）写入，更新时合并字段，失败不得覆盖最后成功时间。**该集合没有 `url` 字段，不需要 `url` 索引**；当前只有「校园动态」一个栏目，也不需要为 `column` 建索引。将来同步多个栏目时，每个栏目用一个固定 `_id`；只有在需要按 `column` 字段查询时，才为它建唯一索引。
 
-失败保留旧数据：同步失败时**不删除**既有文章，只更新 `sync_state.lastError`，页面继续展示旧内容并显示 `lastSuccessAt`。这是规格「失败保留最后成功的数据并展示更新时间」的落点。
+失败保留旧数据：HTTP 失败、标题为空或正文为空均作为单篇失败，不覆盖该篇旧记录。日期缺失仍可入库。部分成功时只更新有效文章，`lastOutcome` 为 `partial`；全部失败为 `failed`；仅整批成功才更新 `lastSuccessAt`。页面显示所展示文章中最新的 `updatedAt`，它表示文章写入时间，不保证整批同步成功。纯图片正文暂不入库，需按失败记录核查原文。
 
 ## 权限
 
@@ -102,42 +93,37 @@ App({
 | 集合 | 客户端权限 | 配置方式 |
 | --- | --- | --- |
 | `news_articles` | 所有用户可读，任何客户端不可写 | **自定义安全规则** `{"read": true, "write": false}`；不要用预设「所有用户可读」，原因见下 |
-| `sync_state` | 不对客户端开放 | 预设「所有用户不可读写」，或自定义规则 `{"read": false, "write": false}`；更新时间由云函数返回 |
+| `sync_state` | 不对客户端开放 | 预设「所有用户不可读写」，或自定义规则 `{"read": false, "write": false}`；页面时间取文章 `updatedAt` |
 
 **为什么 `news_articles` 用自定义规则而不是预设**：控制台数据权限页明确提示「除自定义权限外，其他权限均不支持无登录态用户访问」。无登录态即官方文档中的[未登录模式](https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloud/guide/database/security-rules)（例如小程序被分享到朋友圈后以单页模式打开），此时 `auth` 为空，预设权限会拒绝读取。自定义规则 `{"read": true, "write": false}` 不引用 `auth`，登录与未登录两种情况都能读，符合规格「无登录可看公开资讯」。官方文档也建议用安全规则取代基础权限配置。预设与自定义规则的换算关系：预设「所有用户可读」等价于该 JSON，但缺少对无登录态的覆盖。
 
-`sync_state` 设为完全不可读写，是因为它含 `lastError` 等内部信息。取「更新时间」的两种做法择一，实施时定：读取资讯的云函数在响应里附带 `sync_state.lastSuccessAt`（推荐，内部状态不外露）；或客户端直读该集合（需把它改成可读，代价是 `lastError` 也公开）。
+`sync_state` 保持私有，因为含 `lastError`。客户端使用文章记录的 `updatedAt`，不读取内部状态。
 
 - 数据库权限分小程序端与管理端：**云函数端与控制台属管理端，拥有全部读写权限，不受安全规则限制**，因此写公开内容只发生在云函数内。依据：[数据库安全规则](https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloud/guide/database/security-rules)。
 - 小程序端只读，绝不出现写公开内容的接口。
 
-需要人工在控制台完成的配置（没有 CLI 命令替代，属负责人操作）：
+已完成的数据库配置（历史记录）：
 
 1. 创建两个集合：`news_articles`、`sync_state`。
 2. **只给 `news_articles.url` 建唯一索引**；`sync_state` 用固定 `_id` 标识，不需要索引。
 3. 设置安全规则：`news_articles` 选「自定义安全规则」并填 `{"read": true, "write": false}`；`sync_state` 选「所有用户不可读写」。
 
-完成后在本节补记日期与截图路径。
+历史验证位置：`docs/evidence/p2-p3/README.md`。
 
 进度（2026-09-18）：两项配置均已按上表完成——`news_articles` 为自定义安全规则 `{"read": true, "write": false}`（已用客户端直写测试确认返回 `DATABASE_PERMISSION_DENIED`），`sync_state` 为「所有用户不可读写」；`news_articles.url` 唯一索引 `url_1` 已建成（`MgolsUnique: true`）。
 
 ## 同步云函数
 
-建议单个云函数 `newsSync`，职责：抓取栏目 → 解析 → 按 URL upsert → 更新 `sync_state`。
+已实现云函数 `newsSync`，职责：抓取栏目 → 解析 → 按 URL upsert → 更新 `sync_state`。
 
 - **手动触发**：维护者在云开发控制台「测试」运行，或经 CLI 调用；用于首次导入与问题排查。
 - **定时触发**：在云函数目录的 `config.json` 中声明定时触发器（具体字段名与 cron 格式**在实施时按当时官方文档核实**，ADR-0001 要求不在无工程时编造）。初始目标为每天一次；实际生效时间在 P3-2 验证。
 
-## 解析逻辑只保留一份实现
+## 解析逻辑与测试
 
-`miniprogram/services/news/parse.ts` 是列表与正文的纯函数解析器，当初就是按「将来运行在服务端」写的（文件头有说明）。云函数必须复用它，**不要另写一份**——两份实现会立刻漂移，而「标题日期正文对应原文」是验收项。
-
-实施时需要在两者之间共享同一份源文件。可选做法（实施时定，倾向于第一种）：
-
-1. 把纯解析逻辑移到共享目录（如 `shared/news/`），小程序与云函数各自编译进来；
-2. 保持现状，构建时把同一份文件复制到云函数目录。
-
-无论哪种，`tests/news.test.cjs` 的 fixture 用例都应继续覆盖这份实现。
+解析器已迁至 `cloudfunctions/newsSync/parse.ts`，客户端不再引用；只维护这一份实现。
+`tests/news.test.cjs` 使用真实官网片段验证解析，`tests/newsSync-flow.test.cjs` 在网络与数据库桩上运行真实云函数入口，覆盖无效正文、整批失败、部分成功和重复同步。
+`tests/newsSync.test.cjs` 将真实解析与入库输出交给真实客户端服务，检查列表、详情及时间字段；不是仅对照手写字段清单。
 
 ## 凭据
 
@@ -149,8 +135,8 @@ App({
 ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本节：
 
 - [ ] 云函数的 Node.js 运行时版本（创建云函数时选择）
-- [ ] `wx-server-sdk` 版本（以当前官方模板为准，写入云函数 `package.json` 并提交锁文件）
-- [ ] 基础库版本是否满足云开发的最低要求（本项目当前锁定 3.17.2）
+- [x] `wx-server-sdk` 直接依赖固定为 `4.0.2`；根目录锁文件锁定本地依赖，云函数远端安装的传递依赖尚无函数级锁文件
+- [x] 基础库锁定 `3.17.2`，历史开发者工具验收已成功读取云端数据
 - [x] 数据库安全规则写法：已核实——`news_articles` 用自定义规则 `{"read": true, "write": false}`（预设「所有用户可读」不支持无登录态访问，故不用预设），`sync_state` 用预设「所有用户不可读写」或 `{"read": false, "write": false}`；云函数端属管理端，不受规则限制
 - [ ] 云函数定时触发器的配置字段与 cron 格式
 - [ ] 云开发环境的地域、计费与额度实际值
@@ -163,8 +149,8 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [x] 一篇真实文章贯穿：抓取 → 入库 → 小程序列表 → 详情，来源与日期与原文一致
 - [x] 客户端可读公开资讯且**写入被拒绝**：直写返回 `DATABASE_PERMISSION_DENIED`；安全规则不引用 `auth`，因此也覆盖未登录模式（未在单页模式下单独实测）
 - [x] 同一 URL 重复同步不产生重复条目：第二次同步 `inserted: 0, updated: 10`，集合仍为 10 条
-- [x] 抓取失败时保留最后成功数据：首次调用因官网 403 失败，`sync_state` 记录 `lastError` 且未删除任何文章；页面「数据同步于」取自已入库记录，失败不会推进
-- [x] 维护者可手动触发同步：经小程序调用与云开发控制台「测试」均可
+- [x] 历史列表页 403 失败保留数据；本轮本地回归补充无效正文、全部文章失败和部分成功，修复版本待部署
+- [x] 维护者可手动触发同步：历史验收通过小程序调用与控制台测试完成；收紧函数权限后仅保留管理端触发
 - [ ] 定时触发按配置生效：尚未配置定时触发器（首次同步范围与失败处理先验证，见下）
 - [ ] 首页最近资讯入口与列表逐页加载（P3-2）
 - [x] 验证记录写入 `docs/evidence/`，与 [P2 / P3 验证记录](evidence/p2-p3/README.md) 并列
@@ -179,10 +165,28 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 
 首次调用云函数时，抓取 `https://lnc.edu.cn/xyxw/xydt` 返回 **403**；同一地址在本机 `curl` 返回 200。给请求加上常见浏览器请求头（`User-Agent`、`Accept`、`Accept-Language`）后恢复正常，因此判断为官网对缺少浏览器特征的请求做了拦截。云函数不携带 Cookie、不涉及身份伪装，只读取公开页面。
 
-若后续再次出现 403，先检查请求头是否被改动，再考虑是否为官网调整了策略——那条失败信息会原样写进 `sync_state.lastError` 并出现在云函数日志里。
+若后续再次出现 403，先检查请求头是否被改动，再考虑是否为官网调整了策略——失败信息会写进 `sync_state.lastError` 并由调用结果返回。
 
 ## 未决问题
 
 - 全量抓取的范围：目前只实测过「校园动态」一个栏目，其余栏目（学校要闻、创新创业、产教融合、媒体报道）模板是否一致未核实；首次同步是只导入该栏目还是多栏目，由负责人在 P3-2 决定。
 - 正文图片：需要为云函数或小程序配置图片域名后才能展示，当前只保留图片说明文字，页面已注明以原文为准。
 - 数据保留策略（保留全部历史还是滚动窗口）未定。
+
+## 本轮权限修复：函数调用权限与数据库权限分开
+
+`newsSync` 是云函数名，数据库集合是 `news_articles` 和 `sync_state`。数据库禁止客户端写入不能代替函数的调用权限。
+
+采用 [CloudBase 官方函数安全规则](https://docs.cloudbase.net/cloud-function/security-rules)：给 `newsSync` 设置 `invoke: false`，禁止客户端调用；管理端 API、控制台和定时触发器不受此客户端规则限制。无需给小程序新增维护者登录功能。
+
+配置样例见 [newsSync-permissions.json](newsSync-permissions.json)。在云开发控制台「云函数 → 权限控制」读取现有环境规则，保留现有 `*` 和其他函数条目，只合并 `newsSync: { "invoke": false }`。文件里的 `*` 仅供无现有规则时参考，不要用它覆盖其他函数的权限。
+
+**状态：规则已准备，尚未应用或核实线上值；此文件不会随构建自动部署。** 原云函数与数据库已完成，这项是本轮权限补充，不撤销原部署状态。
+
+部署本轮 `dist/cloudfunctions/newsSync` 后验收：
+
+1. 普通小程序端调用 `newsSync` 应被权限规则拒绝。
+2. 维护者从控制台测试/管理端调用应成功，重复同步不增加重复条目。
+3. 小程序列表、详情仍可直接读取 `news_articles`。
+
+本轮未调用线上同步、未修改线上数据或权限，也未宣称新代码已部署。

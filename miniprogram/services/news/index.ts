@@ -48,8 +48,8 @@ function toArticle(row: ArticleRow): NewsArticle {
 }
 
 /**
- * 更新时间取这批记录里最新的 updatedAt：云函数每次成功同步都会刷新抓取到的那批文章，
- * 因此页面看到的最近时间即「数据最后更新时间」。失败时云函数不写入，这个时间自然保持不变。
+ * 更新时间取这批记录里最新的 updatedAt，表示所展示文章最近一次成功写入的时间。
+ * 部分成功时有效文章仍会更新；这不是整批成功时间（后者记录在私有 sync_state 中）。
  */
 function latestSyncTime(rows: ArticleRow[]): string {
   let latest = '';

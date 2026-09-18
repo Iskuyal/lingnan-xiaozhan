@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createRequire } = require('node:module');
+const vm = require('node:vm');
 
 function loadModule(relativePath) {
   const filename = path.resolve(relativePath);
@@ -28,6 +29,36 @@ test('入库记录字段与小程序读取侧的约定一致', () => {
   assert.equal(record.url, article.url);
   assert.equal(record.sourceLabel, '学校官网 · 校园动态');
   assert.equal(record.paragraphs.length, 2);
+});
+
+test('真实服务端记录可被客户端列表和详情完整读取', async () => {
+  const { toArticleRecord } = loadModule('dist/cloudfunctions/newsSync/record.js');
+  const { parseNewsArticle } = loadModule('dist/cloudfunctions/newsSync/parse.js');
+  const article = parseNewsArticle(
+    fs.readFileSync('tests/fixtures/news/article-32118.html', 'utf8'),
+    'https://lnc.edu.cn/xyxw/xydt/content_32118',
+  );
+  const row = toArticleRecord(article, '学校官网 · 校园动态', '2026-09-18', '2026-09-18T02:00:00.000Z');
+  const chain = {
+    field() { return this; }, orderBy() { return this; }, limit() { return this; },
+    where({ id }) { assert.equal(id, row.id); return this; },
+    async get() { return { data: [row] }; },
+  };
+  const context = {
+    exports: {},
+    wx: { cloud: { database: () => ({ collection: () => chain }) } },
+  };
+  vm.runInNewContext(fs.readFileSync('dist/services/news/index.js', 'utf8'), context);
+  const feed = await context.exports.listNews();
+  const detail = await context.exports.getNewsDetail(article.id);
+  for (const key of ['id', 'url', 'title', 'date']) {
+    assert.equal(feed.items[0][key], article[key], `列表字段 ${key}`);
+    assert.equal(detail.article[key], article[key], `详情字段 ${key}`);
+  }
+  assert.deepEqual(Array.from(detail.article.paragraphs), article.paragraphs);
+  assert.equal(feed.meta.syncedAt, row.updatedAt);
+  assert.equal(detail.meta.syncedAt, row.updatedAt);
+  assert.equal(detail.meta.label, row.sourceLabel);
 });
 
 test('构建把云函数放进 dist，cloudfunctionRoot 指向该目录', () => {

@@ -5,10 +5,10 @@
 - 参加 AI 微信小程序开发挑战赛，以“微信小程序能力 + AI 能力 + 真实业务场景”为产品目标。
 - 仓库为 `Iskuyal/wx-match`，初始化为私有；仓库代号不代表正式作品名称。
 - 使用 GitHub Issues 管理需求，单一领域上下文配合 ADR 记录决策。
-- 当前 P1 首页与入口已实现并通过微信开发者工具验证，记录见 `docs/evidence/p1/README.md`；真实 AppID、真机预览、部门资料、教务接入与上线均未完成。
+- 当前 P1 首页入口、P2 部门列表与详情、P3-1 云端资讯链路已实现，真实 AppID 已配置；开发者工具验证见 `docs/evidence/p1/README.md` 与 `docs/evidence/p2-p3/README.md`。真机预览、教务接入与上线仍未完成。
 - 主题为“AI 赋能校园生活”，目标用户覆盖普通学生与学生组织，产品为整合校园信息流的微信小程序。
 - 交付平台明确为微信小程序：采用原生框架 + TypeScript/WXML/WXSS，P3 起引入微信云开发；理由与约束见 `docs/adr/0001-native-wechat-typescript.md`。
-- 云开发环境已开通（环境 ID `cloudbase-d2gjtbbwu3575cd7b`，与项目 AppID 关联）；接入方式、数据模型、权限与待锁定版本见 `docs/cloud-development.md`。云函数与数据库尚未实施。
+- 云开发环境已开通（环境 ID `cloudbase-d2gjtbbwu3575cd7b`，与项目 AppID 关联）；云函数与数据库已完成，接入方式、数据模型、权限和审查修复的部署状态见 `docs/cloud-development.md`。
 - 视觉方向已确定为简洁实用的校园工具，突出功能入口、清晰信息层级与移动端可读性，学校简介保持精简。
 - 首版面向广东岭南职业技术学院（官网正式名称）；学校官网为 https://lnc.edu.cn/ ，统一门户为 https://portals.lnc.edu.cn/#/ 。具体校区范围待定。
 - 当前首个制作切片：学校简介首页，以及学生部门、课表功能入口。部门详情和教务登录接入分后续切片完成，入口不代表已实现对应功能。

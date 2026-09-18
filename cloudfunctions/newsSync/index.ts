@@ -135,6 +135,11 @@ export async function main(event: { limit?: unknown } = {}) {
       try {
         const articleHtml = await fetchHtml(item.url);
         const article = parseNewsArticle(articleHtml, item.url);
+        // HTTP 200 也可能是维护页或已改版页面，不能用解析空值覆盖最后成功内容。
+        // 日期缺失仍允许入库；纯图片正文暂不支持，留待人工核查原文。
+        if (article.title.trim() === '' || article.paragraphs.length === 0) {
+          throw new Error('文章标题或正文未解析到，保留已有内容');
+        }
         const record = toArticleRecord(article, SOURCE_LABEL, capturedAt, attemptedAt);
         const existing = await findArticleByUrl(article.url);
         if (existing !== null) {
@@ -152,9 +157,9 @@ export async function main(event: { limit?: unknown } = {}) {
     const elapsedMs = Date.now() - startedAt;
     const lastError = failures.length > 0 ? failures.join(' | ') : '';
     await saveSyncState({
-      lastSuccessAt: attemptedAt,
+      ...(failures.length === 0 ? { lastSuccessAt: attemptedAt } : {}),
       lastAttemptAt: attemptedAt,
-      lastOutcome: failures.length === 0 ? 'ok' : 'partial',
+      lastOutcome: failures.length === 0 ? 'ok' : inserted + updated > 0 ? 'partial' : 'failed',
       lastError,
       elapsedMs,
       inserted,
