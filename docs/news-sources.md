@@ -18,6 +18,33 @@
 
 本轮只把「校园动态」当作已实测栏目，其余栏目仅确认链接存在，未核实其模板是否与校园动态一致。
 
+### 通知公告类栏目（2026-09-18 实测）
+
+为核实「是否存在含学生行动项的栏目」，对三个部门站点做了公开页面实测：
+
+| 站点 / 栏目 | 列表 URL | 实测 |
+| --- | --- | --- |
+| 团委 · 通知公告 | `https://lnc.edu.cn/tw/djxf/tqsd` | 页脚「共 155 条信息 / 共 16 页」；第 1 页 10 条，最新 2026-09-18、最旧 2026-03-06；条目为通知与公示（如「关于开展 2026 年迎新志愿服务活动总结表彰工作的通知」「拟推荐名单的公示」） |
+| 教务处 · 通知公告 | `https://lnc.edu.cn/jwc/jxfw/hbqd` | 页脚「共 108 条信息 / 共 11 页」；第 1 页最新 2026-09-18；**部分条目正文不在官网**——首条「勿忘九一八！」直接链到 `mp.weixin.qq.com` |
+| 学生工作部 | `https://lnc.edu.cn/xsc` → 跳转 `/xsgzb` | 首页是聚合页（学工新闻 `/xsgzb/xgxw`、媒体报道 `/xsgzb/mtbd`），**没有独立的通知公告栏目** |
+
+#### 模板与校园动态不同构（关键结论）
+
+实测 `/tw/djxf/tqsd` 的列表与文章页，**不能复用现有解析规则**：
+
+| 位置 | 校园动态（现有解析器） | 通知公告（实测） |
+| --- | --- | --- |
+| 列表容器 | `<ul class="list list-intro">` | `<ul class="newsList">` |
+| 条目标题 | `<div class="title">` 下 `<a class="tit" href title>` | `<li>` 直挂 `<a href title>`，**无 `a.tit`**；`title` 形如「标题：… 点击数：… 发表时间：…」 |
+| 条目日期 | `<div class="con">` 下 `<span class="date">` | `<li>` 直挂 `<span class="date">` |
+| 文章标题 | `<h1 class="title">` | `<h2 class="title">` |
+| 文章元信息 | `div.article-hd > div.meta` 的「发布时间：」，回退 `name="PubDate"` | `<div class="property"><span>发布时间：…</span>`，**无 PubDate 回退** |
+| 正文容器 | `<div class="article-content"> … <div class="article-fd">` | `<div class="printArea" data-power-area='content'>` |
+
+实测样本：列表页 `/tw/djxf/tqsd`，文章页 `/tw/djxf/tqsd/content_32355`（2026-09-18）。两站同属一套站群 CMS（页面含 `data-power-*` 属性），分页写法与页脚「共 N 条 / 共 M 页」一致。
+
+据此，Ticket 04 若要纳入团委通知公告，**需新增一套列表与正文解析规则及对应测试**，而不是改一个栏目 URL。
+
 - 分页格式：第 1 页 `https://lnc.edu.cn/xyxw/xydt`，第 N 页 `https://lnc.edu.cn/xyxw/xydt_N`（`N ≥ 2`）。
 - 分页实测：第 1 页页脚为 `共1252条信息/共126页`，`尾页` 指向 `/xyxw/xydt_126`；实测第 60、120、126 页返回 HTTP 200，页脚同样为 1252 条 / 126 页。
 - 每页条数：第 1–125 页各 10 条，第 126 页 2 条（125 × 10 + 2 = 1252，与页脚一致）。

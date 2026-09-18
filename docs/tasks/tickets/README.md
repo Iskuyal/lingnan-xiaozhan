@@ -22,21 +22,25 @@
 
 | # | Ticket | 当前状态 | Blocked by |
 | --- | --- | --- | --- |
-| 01 | [AI 服务端基础设施](01-ai-foundation.md) | ready-for-human | P5-A 指标、成本、安全接入与降级决定 |
+| 01 | [AI 服务端基础设施](01-ai-foundation.md) | **ready-for-agent** | — |
 | 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | **done（2026-09-18）** | — |
-| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | ready-for-human | 真实样本、支持版式与手工编辑范围 |
-| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | ready-for-human | 五项同步范围决策 |
-| 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-human | 01、03；识别失败时的降级与手工录入范围 |
-| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-human | 01、03；独立手工编辑的降级验收边界 |
+| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | **ready-for-agent** | — |
+| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **ready-for-agent** | — |
+| 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-agent | 01、03 |
+| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-agent | 01、03 |
 | 07 | [部门 AI 问答](07-department-ai-qa.md) | ready-for-agent | 01 |
 | 08 | [发布后补测未登录单页模式](08-post-publish-single-page-mode.md) | blocked-until-published | 外部：认证 + 备案 + 发布 |
-| 09 | [P6 参赛材料与包](09-p6-submission.md) | needs-info | 02、04、05、06、07；作品名、校内交付安排及细拆 |
+| 09 | [P6 参赛材料与包](09-p6-submission.md) | needs-info | 04、05、06、07；作品名、校内交付安排及细拆 |
 
 ## 当前可开工的任务
 
+**2026-09-18 决策关口已清空**：P5-A 收尾（Ticket 01）、P4-B 范围（Ticket 03）、P3-2 五项范围（Ticket 04）全部由负责人确定，结论分别写入 [开发规格](../../development-spec.md)、[P3-2 文档](../p3-2-news-updates.md) 与 [CONTEXT](../../../CONTEXT.md)。
+
+**01、03、04 三票可立即开工**（互不依赖，可并行）：01 是 AI 三票的共同前置，03 是课表骨干，04 依赖的栏目与参数已定。05、06 等 01 与 03 完成；07 等 01；08 等发布条件；09 待 04–07 落地并按实际范围细拆。
+
 **02 已完成**（2026-09-18，证据见 [Ticket 02 验证记录](../evidence/p3-2/README.md)）：首页最近资讯入口与列表逐页加载已在开发者工具通过 12 项检查；真实多页场景待 Ticket 04 扩大数据量后补验。
 
-01、03、04 先完成各自决策；05、06 同时等待决策与前置实现；07 的规格已明确，但仍须等待 01 完成。`ready-for-agent` 表示规格可执行，只有 `Blocked by` 也清空后才能开工。08 等发布条件，09 先作为阶段清单保留。
+`ready-for-agent` 表示规格可执行，只有 `Blocked by` 也清空后才能开工。
 
 ## 拆分时的三个判断（供回溯）
 
