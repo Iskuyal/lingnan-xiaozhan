@@ -20,6 +20,8 @@
     <view class="detail-note" wx:if="{{syncedAtText !== ''}}">
       内容由云函数同步自官网，同步于 {{syncedAtText}}；正文图片未同步，请以原文为准。
     </view>
+
+    <button id="back-from-detail" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
   </block>
 
   <view wx:elif="{{status === 'loading'}}" class="status-page">

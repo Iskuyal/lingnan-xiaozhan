@@ -40,7 +40,7 @@ test('真实服务端记录可被客户端列表和详情完整读取', async ()
   );
   const row = toArticleRecord(article, '学校官网 · 校园动态', '2026-09-18', '2026-09-18T02:00:00.000Z');
   const chain = {
-    field() { return this; }, orderBy() { return this; }, limit() { return this; },
+    field() { return this; }, orderBy() { return this; }, skip() { return this; }, limit() { return this; },
     where({ id }) { assert.equal(id, row.id); return this; },
     async get() { return { data: [row] }; },
   };

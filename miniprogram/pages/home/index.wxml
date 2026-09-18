@@ -23,6 +23,33 @@
     </view>
   </view>
 
+  <view class="news-section">
+    <view class="news-section-head">
+      <view class="section-title">校园资讯</view>
+      <button id="news-entry" class="news-entry-link" hover-class="pressed" bindtap="openNews" aria-label="查看全部校园资讯">查看全部 ›</button>
+    </view>
+    <view wx:if="{{newsStatus === 'loading'}}" class="news-hint">正在读取最近资讯…</view>
+    <view wx:elif="{{newsStatus === 'error'}}" class="news-hint news-hint-error">
+      <view>{{newsError}}</view>
+      <button id="news-retry" class="news-retry" hover-class="pressed" bindtap="retryNews">重试</button>
+    </view>
+    <block wx:else>
+      <view wx:if="{{recentNews.length === 0}}" class="news-hint">云端还没有已同步的资讯，稍后再来看看。</view>
+      <view
+        class="news-recent-item"
+        wx:for="{{recentNews}}"
+        wx:key="id"
+        hover-class="pressed"
+        data-id="{{item.id}}"
+        bindtap="openNewsDetail"
+      >
+        <view class="news-recent-title">{{item.title}}</view>
+        <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
+      </view>
+      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 同步于 {{newsSyncedAtText}}</block></view>
+    </block>
+  </view>
+
   <view class="school-about">
     <view class="section-title">认识岭南</view>
     <view class="introduction">{{school.introduction}}</view>

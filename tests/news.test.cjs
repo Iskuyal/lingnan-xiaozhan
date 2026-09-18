@@ -54,7 +54,7 @@ const EMPTY_META = { label: '学校官网 · 校园动态', syncedAt: '', fromSe
  * 页面通过 require 引入资讯服务；列表页与详情页的相对路径不同，桩要同时覆盖两者。
  * 服务本身访问云数据库，测试里一律替换为桩，不触碰真实云环境。
  */
-function newsStub(listNews, getNewsDetail) {
+function newsStub(listNews, getNewsDetail, listLimit = 20) {
   const service = {
     listNews,
     getNewsDetail,
@@ -67,7 +67,9 @@ function newsStub(listNews, getNewsDetail) {
       }
       return error === null || error === undefined ? '未知错误' : String(error);
     },
-    LIST_LIMIT: 20,
+    LIST_LIMIT: listLimit,
+    RECENT_LIMIT: 3,
+    SOURCE_LABEL: '学校官网 · 校园动态',
   };
   return {
     '../../services/news/index': service,
@@ -214,6 +216,7 @@ test('服务把云端记录映射为页面字段，列表按日期倒序并取�
   const chain = {
     field() { calls.push('field'); return chain; },
     orderBy(field, order) { calls.push(`orderBy:${field}:${order}`); return chain; },
+    skip(count) { calls.push(`skip:${count}`); return chain; },
     limit(count) { calls.push(`limit:${count}`); return chain; },
     where(condition) { calls.push(`where:${JSON.stringify(condition)}`); return chain; },
     async get() { return { data: rows }; },
@@ -240,6 +243,33 @@ test('服务把云端记录映射为页面字段，列表按日期倒序并取�
     const before = calls.length;
     assert.equal(await service.getNewsDetail(''), null);
     assert.equal(calls.length, before, '空 id 不应发起云端查询');
+  } finally {
+    delete globalThis.wx;
+  }
+});
+
+test('列表分页按日期倒序、同日期按 id 倒序稳定排序，skip 决定页起点', async () => {
+  const calls = [];
+  const chain = {
+    field() { return chain; },
+    orderBy(field, order) { calls.push(`orderBy:${field}:${order}`); return chain; },
+    skip(count) { calls.push(`skip:${count}`); return chain; },
+    limit(count) { calls.push(`limit:${count}`); return chain; },
+    async get() { return { data: [] }; },
+  };
+  globalThis.wx = {
+    cloud: { database: () => ({ collection: () => chain }) },
+  };
+  try {
+    const service = loadModule('dist/services/news/index.js');
+    await service.listNews(20, 40);
+    assert.deepEqual(
+      calls.filter((entry) => entry.startsWith('orderBy') || entry.startsWith('skip') || entry.startsWith('limit')),
+      ['orderBy:date:desc', 'orderBy:id:desc', 'skip:40', 'limit:20'],
+      '同日期条目需要确定性的 id 次序，否则逐页加载会重复或遗漏',
+    );
+    await service.listNews();
+    assert.ok(calls.includes('skip:0'), '首页读取从第 0 条开始');
   } finally {
     delete globalThis.wx;
   }
@@ -310,6 +340,74 @@ test('资讯列表页区分空数据与读取失败，并可重试', async () =>
   assert.equal(retryable.data.status, 'ready');
   await retryable.retry();
   assert.equal(calls, 2, '重试应重新读取数据');
+});
+
+// ---------- 逐页加载（Ticket 02） ----------
+
+/** 生成分页测试条目，id 连续便于构造重叠场景。 */
+function makeItems(start, count) {
+  return Array.from({ length: count }, (_, offset) => {
+    const id = `content_${start + offset}`;
+    return { id, title: `标题${start + offset}`, url: articleUrl(id), date: '2026-09-12' };
+  });
+}
+
+/** 分页桩：pages 依调用次序给出每页返回（数组），Error 实例表示该次读取失败。 */
+function pagingStub(pages) {
+  const calls = [];
+  const listNews = async (limit, skip) => {
+    calls.push({ limit, skip });
+    const next = pages[calls.length - 1];
+    if (next instanceof Error) throw next;
+    return { items: next, meta: EMPTY_META };
+  };
+  return { calls, listNews };
+}
+
+test('资讯列表逐页加载：追加下一页，不足一页即已无更多', async () => {
+  const paging = pagingStub([makeItems(1, 3), makeItems(4, 2)]);
+  const stubs = newsStub(paging.listNews, async () => null, 3);
+  const page = loadPage('news', {}, { stack: [{}], stubs });
+  await page.onLoad();
+  assert.equal(page.data.status, 'ready');
+  assert.equal(page.data.items.length, 3);
+  assert.equal(page.data.hasMore, true, '首页读满一页时假定还有更多');
+  await page.loadMore();
+  assert.deepEqual(paging.calls[1], { limit: 3, skip: 3 }, '下一页从已读条数之后开始');
+  assert.equal(page.data.items.length, 5);
+  assert.equal(page.data.hasMore, false, '返回不足一页表示没有更多');
+  assert.equal(page.data.moreState, 'idle');
+  await page.loadMore();
+  assert.equal(paging.calls.length, 2, '已无更多时不再发起读取');
+});
+
+test('加载下一页失败时保留已加载条目，重试不重复追加', async () => {
+  const paging = pagingStub([makeItems(1, 3), new Error('网络中断'), makeItems(4, 3)]);
+  const stubs = newsStub(paging.listNews, async () => null, 3);
+  const page = loadPage('news', {}, { stack: [{}], stubs });
+  await page.onLoad();
+  const before = page.data.items.map((item) => item.id);
+  await page.loadMore();
+  assert.equal(page.data.moreState, 'error');
+  assert.equal(page.data.errorMessage, '网络中断');
+  assert.deepEqual(page.data.items.map((item) => item.id), before, '失败不能清空已有条目');
+  assert.equal(page.data.hasMore, true, '失败后仍可继续加载');
+  await page.retryMore();
+  assert.deepEqual(paging.calls[2], { limit: 3, skip: 3 }, '重试仍从上次的页起点开始');
+  assert.equal(page.data.items.length, 6);
+  assert.equal(page.data.moreState, 'idle');
+});
+
+test('连续加载遇到重叠条目不重复追加', async () => {
+  const overlap = makeItems(3, 1)[0];
+  const paging = pagingStub([makeItems(1, 3), [overlap, ...makeItems(4, 2)]]);
+  const stubs = newsStub(paging.listNews, async () => null, 3);
+  const page = loadPage('news', {}, { stack: [{}], stubs });
+  await page.onLoad();
+  await page.loadMore();
+  const ids = page.data.items.map((item) => item.id);
+  assert.equal(page.data.items.length, 5, '重叠条目只保留一次');
+  assert.equal(new Set(ids).size, ids.length, '条目 id 不应重复');
 });
 
 test('资讯详情页展示云端返回的标题、日期与正文段落', async () => {
@@ -397,6 +495,81 @@ test('资讯详情页来自列表时返回上一页，直接打开时回到首�
     page.goHome();
     assert.deepEqual(actions, [stack.length > 1 ? 'back' : '/pages/home/index']);
   }
+});
+
+test('首页展示最近资讯，提供进入列表与详情的入口', async () => {
+  const visited = [];
+  const items = makeItems(1, 2);
+  const stubs = newsStub(
+    async (limit) => {
+      assert.equal(limit, 3, '首页只取最近几条');
+      return { items, meta: { label: '学校官网 · 校园动态', syncedAt: '2026-09-17T09:12:00.000Z', fromServer: true } };
+    },
+    async () => null,
+  );
+  const page = loadPage('home', { navigateTo: ({ url }) => visited.push(url) }, { stack: [{}], stubs });
+  await page.onLoad();
+  assert.equal(page.data.newsStatus, 'ready');
+  assert.deepEqual(page.data.recentNews, items);
+  assert.equal(page.data.newsSyncedAtText, 'FORMATTED');
+  page.openNews();
+  page.openNewsDetail({ currentTarget: { dataset: { id: 'content_1' } } });
+  page.openNewsDetail({ currentTarget: { dataset: { id: undefined } } });
+  assert.deepEqual(visited, ['/pages/news/index', '/pages/news/detail/index?id=content_1']);
+  const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
+  for (const url of visited) {
+    assert.ok(app.pages.includes(url.slice(1).split('?')[0]), `${url} 应是已注册页面`);
+  }
+});
+
+test('首页资讯读取失败时显示错误并可重试，不影响既有入口', async () => {
+  let calls = 0;
+  const stubs = newsStub(
+    async () => {
+      calls += 1;
+      if (calls === 1) throw new Error('云开发不可用');
+      return { items: makeItems(1, 1), meta: EMPTY_META };
+    },
+    async () => null,
+  );
+  const page = loadPage('home', {}, { stack: [{}], stubs });
+  await page.onLoad();
+  assert.equal(page.data.newsStatus, 'error');
+  assert.equal(page.data.newsError, '云开发不可用');
+  await page.retryNews();
+  assert.equal(page.data.newsStatus, 'ready');
+  assert.equal(page.data.recentNews.length, 1);
+  assert.equal(page.data.newsError, '');
+});
+
+test('资讯详情页正常状态返回上一页，直接打开则回到资讯列表', async () => {
+  const article = { id: 'content_1', title: '标题', url: articleUrl('content_1'), date: '2026-09-01', paragraphs: ['正文'] };
+  for (const stack of [[{}, {}], [{}]]) {
+    const actions = [];
+    const stubs = newsStub(async () => ({ items: [], meta: EMPTY_META }), async () => ({ article, meta: EMPTY_META }));
+    const page = loadPage('news/detail', {
+      navigateBack: () => actions.push('back'),
+      reLaunch: ({ url }) => actions.push(url),
+    }, { stack, stubs });
+    await page.onLoad({ id: 'content_1' });
+    page.goBack();
+    assert.deepEqual(actions, [stack.length > 1 ? 'back' : '/pages/news/index']);
+  }
+});
+
+test('资讯列表与详情的正常状态都提供返回入口', () => {
+  // 正常状态没有页内返回按钮时，直接打开详情的用户只能靠系统返回；列表页同理。
+  const list = fs.readFileSync('miniprogram/pages/news/index.wxml', 'utf8');
+  const listReady = list.slice(list.indexOf('class="news-list"'));
+  assert.ok(/id="back-home"[^>]*bindtap="goHome"/.test(listReady), '资讯列表正常状态缺少返回首页按钮');
+  const detail = fs.readFileSync('miniprogram/pages/news/detail/index.wxml', 'utf8');
+  const start = detail.indexOf('<block wx:if="{{status === \'ready\'}}">');
+  const detailReady = detail.slice(start, detail.indexOf('</block>', start));
+  assert.ok(/id="back-from-detail"[^>]*bindtap="goBack"/.test(detailReady), '资讯详情正常状态缺少返回按钮');
+  assert.equal(
+    /goBackToList/.test(fs.readFileSync('miniprogram/pages/news/detail/index.ts', 'utf8')), false,
+    '详情页的返回方法不应再叫 goBackToList：它从首页进入时不会回到列表',
+  );
 });
 
 test('资讯页面已注册且构建产物齐全', () => {

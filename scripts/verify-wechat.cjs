@@ -86,14 +86,31 @@ async function run() {
     await (await directTimetable.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
-    // 资讯：列表 → 详情。首页最近资讯入口属 P3-2（未完成），此处直接导航。
-    await mini.callWxMethod('reLaunch', { url: '/pages/news/index' });
+    // 资讯：首页最近资讯入口 → 列表 →（分页页脚状态）→ 详情 → 返回列表 → 返回首页
+    const homeForNews = await mini.currentPage();
+    await homeForNews.waitFor(800);
+    assert.ok(await homeForNews.$('#news-entry'), '首页缺少校园资讯入口');
+    const recentItems = await homeForNews.$$('.news-recent-item');
+    assert.ok(recentItems.length > 0, '首页没有展示最近资讯');
+    const recentTitle = await (await recentItems[0].$('.news-recent-title')).text();
+    assert.ok(recentTitle.length > 0, '首页资讯条目缺少标题');
+    assert.ok(await (await recentItems[0].$('.news-recent-date')).text(), '首页资讯条目缺少日期文案');
+    await mini.screenshot({ path: path.join(output, 'home-news.png') });
+    await (await homeForNews.$('#news-entry')).tap();
     const newsList = await waitForPage('pages/news/index');
     await newsList.waitFor(1000);
     const newsItems = await newsList.$$('.news-item');
     assert.ok(newsItems.length > 0, '资讯列表没有条目');
     const newsTitle = await (await newsItems[0].$('.news-item-title')).text();
-    assert.ok(newsTitle.length > 0, '资讯条目缺少标题');
+    assert.equal(newsTitle, recentTitle, '首页最近资讯首条应与列表首条一致');
+    // 分页页脚：现有云端数据不足一页时显示已无更多；数据超过一页时提供继续加载入口。
+    const moreFooter = await newsList.$('.news-more');
+    assert.ok(moreFooter, '资讯列表底部缺少分页状态提示');
+    const moreText = await moreFooter.text();
+    assert.ok(
+      moreText.includes('已经到底了') || moreText.includes('加载更多'),
+      `分页状态文案未知：${moreText}`,
+    );
     await mini.screenshot({ path: path.join(output, 'news.png') });
     await newsItems[0].tap();
     const newsDetail = await waitForPage('pages/news/detail/index');
@@ -102,6 +119,12 @@ async function run() {
     assert.ok((await newsDetail.$$('.detail-paragraph')).length > 0, '资讯详情没有正文段落');
     assert.ok(await newsDetail.$('#copy-article-source'), '资讯详情缺少复制原文链接入口');
     await mini.screenshot({ path: path.join(output, 'news-detail.png') });
+    await (await newsDetail.$('#back-from-detail')).tap();
+    const newsListAgain = await waitForPage('pages/news/index');
+    await newsListAgain.waitFor(600);
+    assert.ok((await newsListAgain.$$('.news-item')).length > 0, '返回列表后条目被清空');
+    await (await newsListAgain.$('#back-home')).tap();
+    await waitForPage('pages/home/index');
 
     const system = await mini.systemInfo();
     const report = { verifiedAt: new Date().toISOString(), platform: system.platform,
@@ -109,7 +132,8 @@ async function run() {
       checks: ['学校名称', '学生部门入口与返回', '部门列表显示组织名称与校区',
         '部门详情显示介绍、联系方式或缺失、动态或缺失', '未知部门 id 显示未找到状态',
         '课表入口与返回', '直接进入部门列表后返回首页', '直接进入课表状态页后返回首页',
-        '资讯列表显示条目与标题', '资讯详情显示标题、正文段落与复制原文链接入口'],
+        '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
+        '资讯详情显示标题、正文段落与复制原文链接入口', '列表与详情之间可往返'],
       result: 'passed', realDevice: false };
     writeFileSync(path.join(output, 'verification.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));

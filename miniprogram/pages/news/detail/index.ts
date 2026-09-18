@@ -1,4 +1,4 @@
-import { getNewsDetail, formatSyncTime, messageOf } from '../../../services/news/index';
+import { getNewsDetail, formatSyncTime, messageOf, SOURCE_LABEL } from '../../../services/news/index';
 import { NewsSourceMeta } from '../../../services/news/types';
 
 /** 正文按段落渲染，带上序号作为 wx:key，避免重复段落触发列表警告。 */
@@ -16,8 +16,6 @@ interface ArticleView {
 }
 
 type Status = 'loading' | 'ready' | 'missing' | 'error';
-
-const SOURCE_LABEL = '学校官网 · 校园动态';
 
 function decodeId(raw: string | undefined): string {
   if (raw === undefined || raw === '') return '';
@@ -86,5 +84,13 @@ Page({
   goHome() {
     if (getCurrentPages().length > 1) wx.navigateBack();
     else wx.reLaunch({ url: '/pages/home/index' });
+  },
+  /**
+   * 正常状态从上一页返回。详情既能从资讯列表进入，也能从首页最近资讯进入，
+   * 因此按钮只说「返回」，不承诺回到列表；直接打开（分享或路径直达）时无处可返，回到资讯列表。
+   */
+  goBack() {
+    if (getCurrentPages().length > 1) wx.navigateBack();
+    else wx.reLaunch({ url: '/pages/news/index' });
   },
 });

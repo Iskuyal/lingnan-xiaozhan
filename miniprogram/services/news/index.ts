@@ -8,9 +8,12 @@
 import { NewsArticle, NewsListItem, NewsSourceMeta } from './types';
 
 const COLLECTION = 'news_articles';
-const SOURCE_LABEL = '学校官网 · 校园动态';
-/** 单次读取条数：列表页一次展示这么多，逐页加载属 P3-2。 */
+/** 来源栏目名称。页面在数据到达前也要如实展示来源，因此由服务导出，避免各处各写一份。 */
+export const SOURCE_LABEL = '学校官网 · 校园动态';
+/** 每页读取条数：列表页逐页加载每次读取这么多。 */
 export const LIST_LIMIT = 20;
+/** 首页「最近资讯」展示条数。 */
+export const RECENT_LIMIT = 3;
 
 export interface NewsFeed {
   items: NewsListItem[];
@@ -89,12 +92,18 @@ export function messageOf(error: unknown): string {
   return error === null || error === undefined ? '未知错误' : String(error);
 }
 
-/** 读取资讯列表（按发布日期倒序）。 */
-export async function listNews(limit: number = LIST_LIMIT): Promise<NewsFeed> {
+/**
+ * 读取资讯列表（按发布日期倒序，skip 决定页起点）。
+ * 同日期条目按 id 倒序补一个确定性次序：字符串序不代表官网发布先后，
+ * 但能保证逐页加载不重复、不遗漏；不依赖它表达时间语义。
+ */
+export async function listNews(limit: number = LIST_LIMIT, skip: number = 0): Promise<NewsFeed> {
   const result = await database()
     .collection(COLLECTION)
     .field({ id: true, title: true, url: true, date: true, updatedAt: true })
     .orderBy('date', 'desc')
+    .orderBy('id', 'desc')
+    .skip(skip)
     .limit(limit)
     .get();
   const rows = (result.data || []) as ArticleRow[];
