@@ -88,7 +88,7 @@ export interface CourseCard {
   weekLabel: string;
   needsReview: boolean;
   warningText: string;
-  source: 'excel' | 'manual';
+  source: 'excel' | 'manual' | 'photo';
 }
 
 export function toCard(course: Course): CourseCard {

@@ -51,6 +51,20 @@ export const AI_MESSAGES: Record<FailureClass, string> = {
 };
 
 /**
+ * 图片输入（课表截图）的兜底文案覆盖项。
+ *
+ * 「换个说法」是文字语义：图片被拒时用户能做的只有换一张图，因此图片路径的
+ * `content_rejected` 兜底改为「换一张」。仍然只在**服务端没给 `message`** 时使用
+ * （服务端文案优先，云函数侧另有图片专属默认文案 `AI_MSG_CONTENT_REJECTED_IMAGE`）。
+ */
+export const AI_IMAGE_MESSAGES: Partial<Record<FailureClass, string>> = {
+  content_rejected: '这张图片没有通过内容安全检测，请换一张再试',
+};
+
+/** 本地兜底文案按输入类型选择：`image` 表示这次调用上传的是图片。 */
+export type AiInputKind = 'text' | 'image';
+
+/**
  * 服务端的内容安全结论（`safety` 字段）。
  *
  * `passed` 与 `checked` 是两件事：`passed: true` 只表示「检过的范围内没发现问题」，
@@ -131,11 +145,18 @@ export async function callAi(data: Record<string, unknown>): Promise<AiCallResul
 /**
  * 业务失败的用户文案：**服务端 `message` 优先**（改措辞不用改代码），为空才回退本地表；
  * 本地表也没有时兜底内部错误文案。三类用户可见失败的服务端文案本就各自独立。
+ *
+ * `inputKind` 只影响本地兜底：图片输入时 `content_rejected` 用 `AI_IMAGE_MESSAGES` 的
+ * 「换一张」而不是文字语义的「换个说法」。
  */
-export function userMessage(result: AiCallResult): string {
+export function userMessage(result: AiCallResult, inputKind: AiInputKind = 'text'): string {
   if (result.ok) return '';
   if (result.message !== '') return result.message;
   if (result.failureClass !== '') {
+    if (inputKind === 'image') {
+      const forImage = AI_IMAGE_MESSAGES[result.failureClass];
+      if (forImage !== undefined && forImage !== '') return forImage;
+    }
     const known = AI_MESSAGES[result.failureClass];
     if (known !== '') return known;
   }
@@ -160,4 +181,28 @@ export function transportMessage(error: unknown): string {
 /** chat 动作的事件组装（07 部门问答、06 课表助手共用）。 */
 export function chatEvent(feature: string, system: string, messages: ChatMessage[]): Record<string, unknown> {
   return { action: 'chat', feature, system, messages };
+}
+
+/**
+ * vision 动作的事件组装（05 课表截图识别用）：图片走事件顶层 `image` 的 fileID。
+ *
+ * 客户端只上传到云存储再用 fileID 调用（服务端仍支持 base64，那是给控制台探测与其它
+ * 调用方留的入口；客户端侧没有这条路径，因此这里不声明 base64 分支）。
+ */
+export function visionEvent(
+  feature: string,
+  system: string,
+  prompt: string,
+  image: { fileID: string },
+  maxTokens?: number,
+): Record<string, unknown> {
+  const event: Record<string, unknown> = {
+    action: 'vision',
+    feature,
+    system,
+    messages: [{ role: 'user', text: prompt }],
+    image,
+  };
+  if (maxTokens !== undefined) event.maxTokens = maxTokens;
+  return event;
 }

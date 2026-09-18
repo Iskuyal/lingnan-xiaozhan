@@ -142,7 +142,8 @@ test('导入页：引导文案写清只能从聊天记录选文件，且解析�
     chooseMessageFile: (options) => options.success({ tempFiles: [{ path: '/tmp/课表.xls', name: '课表.xls', size: 2048 }] }),
   });
   wx.cloud.uploadFile = (options) => {
-    options.success();
+    // 真实 wx.cloud.uploadFile 一定回传 fileID；页面必须用它（不是 cloudPath）继续调用云函数。
+    options.success({ fileID: `cloud://test-env.test-bucket/${options.cloudPath}` });
     return { onProgressUpdate: () => undefined };
   };
   const page = loadPage('timetable/import', wx);
@@ -163,6 +164,12 @@ test('导入页：引导文案写清只能从聊天记录选文件，且解析�
   assert.equal(cloud.calls[0].data.action, 'prepareUpload');
   assert.equal(cloud.calls[1].data.action, 'importDraft');
   assert.equal(cloud.calls[1].data.fileName, '课表.xls');
+  assert.equal(
+    cloud.calls[1].data.fileID,
+    'cloud://test-env.test-bucket/timetable-imports/abc/x.xls',
+    'importDraft 必须传上传返回的 fileID',
+  );
+  assert.equal(cloud.calls[1].data.cloudPath, undefined, '不得再把裸 cloudPath 当 fileID 传下去');
 
   page.confirmSave();
   await new Promise((resolve) => setImmediate(resolve));
@@ -194,7 +201,7 @@ test('导入页：缺节次的条目在确认页标出，修正或删除前不�
     },
   });
   wx.cloud.uploadFile = (options) => {
-    options.success();
+    options.success({ fileID: `cloud://test-env.test-bucket/${options.cloudPath}` });
     return { onUpdateProgress: undefined };
   };
   const page = loadPage('timetable/import', wx);
@@ -232,7 +239,8 @@ test('导入页：放弃导入不写入任何数据', async () => {
     chooseMessageFile: (options) => options.success({ tempFiles: [{ path: '/tmp/课表.xls', name: '课表.xls', size: 2048 }] }),
   });
   wx.cloud.uploadFile = (options) => {
-    options.success();
+    // 真实 wx.cloud.uploadFile 一定回传 fileID；页面必须用它（不是 cloudPath）继续调用云函数。
+    options.success({ fileID: `cloud://test-env.test-bucket/${options.cloudPath}` });
     return { onProgressUpdate: () => undefined };
   };
   const page = loadPage('timetable/import', wx);
@@ -269,7 +277,8 @@ test('导入页：格式不符与解析失败都给出可理解的提示，不�
   // 再试一个非课表矩阵的 Excel：云端解析失败，不进确认页
   Object.assign(wx, { chooseMessageFile: (options) => options.success({ tempFiles: [{ path: '/tmp/成绩.xlsx', name: '成绩.xlsx', size: 2048 }] }) });
   wx.cloud.uploadFile = (options) => {
-    options.success();
+    // 真实 wx.cloud.uploadFile 一定回传 fileID；页面必须用它（不是 cloudPath）继续调用云函数。
+    options.success({ fileID: `cloud://test-env.test-bucket/${options.cloudPath}` });
     return { onProgressUpdate: () => undefined };
   };
   page.chooseFile();

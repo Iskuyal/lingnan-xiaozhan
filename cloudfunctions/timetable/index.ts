@@ -8,6 +8,11 @@
  * - `saveDraft`：确认页确认后整份替换本人课表（先写新批次，成功后再删旧批次，失败回滚本次写入）；
  * - `createCourse` / `updateCourse` / `deleteCourse`：独立于导入的手工新增、修改、删除。
  *
+ * 文件标识统一用 `wx.cloud.uploadFile` 返回的 **fileID**（`cloud://…`）：
+ * `cloud.downloadFile` / `cloud.deleteFile` 只认 fileID，把 `prepareUpload` 给的裸
+ * cloudPath 当 fileID 传下去会直接失败。归属校验因此改为**从 fileID 解析出云存储路径**，
+ * 再要求它落在调用者自己的 openid 前缀下（fileID 前的环境信息不参与比较）。
+ *
  * 集合 `timetable_courses` 的权限取最严格预设（所有用户不可读写）：读写都只发生在这里。
  * 函数本身需要允许客户端调用（与 `newsSync` 不同），见 docs/cloud-development.md 的控制台步骤。
  */
@@ -30,6 +35,11 @@ const MAX_COURSES = 300;
 /** 上传文件大小上限（客户端先按同样数值拦截，服务端再兜一次）。 */
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ['.xls', '.xlsx'];
+/** 截图上传（Ticket 05）：只放行 png/jpg，上限 2MB（客户端会先压到 1MB 以内再上传）。 */
+const PHOTO_ALLOWED_EXTENSIONS = ['.png', '.jpg'];
+const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
+/** fileID 的固定前缀；不是这个形状的一律按「传错标识」处理，不去猜。 */
+const FILE_ID_PREFIX = 'cloud://';
 
 interface CloudEvent {
   action?: unknown;
@@ -46,6 +56,40 @@ function ownerPrefix(openid: string): string {
 function extensionOf(name: string): string {
   const match = /\.[A-Za-z0-9]+$/u.exec(name);
   return match === null ? '' : match[0].toLowerCase();
+}
+
+/**
+ * fileID → 云存储相对路径：
+ * `cloud://环境.桶/timetable-imports/<hash>/x.xls` → `timetable-imports/<hash>/x.xls`。
+ * 不是 fileID 形状（例如裸 cloudPath）或解析不出路径时返回空字符串，由调用方拒绝。
+ */
+function storagePathOf(fileID: string): string {
+  if (!fileID.startsWith(FILE_ID_PREFIX)) return '';
+  const rest = fileID.slice(FILE_ID_PREFIX.length);
+  const slash = rest.indexOf('/');
+  if (slash <= 0 || slash === rest.length - 1) return '';
+  return rest.slice(slash + 1);
+}
+
+function baseName(path: string): string {
+  const parts = path.split('/');
+  return parts[parts.length - 1] ?? '';
+}
+
+/**
+ * 归属校验：**从 fileID 解析出云存储路径**，要求它落在调用者自己的 openid 前缀下。
+ * 传裸路径（Ticket 03 的老写法）在这里被明确挡下——它不是合法 fileID，
+ * 传下去只会在 `downloadFile` 处得到一个指错方向的失败。
+ */
+function ownFilePath(fileID: string, openid: string, actionLabel: string): { ok: true; path: string } | { ok: false; error: string } {
+  if (fileID === '' || !fileID.startsWith(FILE_ID_PREFIX)) {
+    return { ok: false, error: '请传入上传成功后返回的 fileID（cloud:// 开头），不要传裸路径' };
+  }
+  const path = storagePathOf(fileID);
+  if (path === '' || !path.startsWith(ownerPrefix(openid)) || path.includes('..')) {
+    return { ok: false, error: `文件不属于当前微信身份，已拒绝${actionLabel}` };
+  }
+  return { ok: true, path };
 }
 
 /**
@@ -147,12 +191,21 @@ async function handlePrepareUpload(event: CloudEvent, openid: string) {
   return { ok: true, cloudPath, maxBytes: MAX_FILE_BYTES };
 }
 
-async function handleImportDraft(event: CloudEvent, openid: string) {
-  const cloudPath = typeof event.cloudPath === 'string' ? event.cloudPath : '';
-  const prefix = ownerPrefix(openid);
-  if (cloudPath === '' || !cloudPath.startsWith(prefix) || cloudPath.includes('..')) {
-    return { ok: false, error: '文件路径不属于当前微信身份，已拒绝解析' };
+/** 截图识别（Ticket 05）：给本人 openid 分配截图上传路径；识别由 ai 云函数完成，这里只管路径。 */
+async function handlePreparePhotoUpload(event: CloudEvent, openid: string) {
+  const fileName = typeof event.fileName === 'string' ? event.fileName : '';
+  const extension = extensionOf(fileName);
+  if (!PHOTO_ALLOWED_EXTENSIONS.includes(extension)) {
+    return { ok: false, error: '只支持 .png 或 .jpg 的课表截图' };
   }
+  const cloudPath = `${ownerPrefix(openid)}${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}${extension}`;
+  return { ok: true, cloudPath, maxBytes: PHOTO_MAX_BYTES };
+}
+
+async function handleImportDraft(event: CloudEvent, openid: string) {
+  const fileID = typeof event.fileID === 'string' ? event.fileID.trim() : '';
+  const own = ownFilePath(fileID, openid, '解析');
+  if (!own.ok) return { ok: false, error: own.error };
   const fileName = typeof event.fileName === 'string' ? event.fileName : '';
   if (fileName !== '' && !ALLOWED_EXTENSIONS.includes(extensionOf(fileName))) {
     return { ok: false, error: '只支持教务系统导出的 .xls 或 .xlsx 课表文件' };
@@ -160,17 +213,17 @@ async function handleImportDraft(event: CloudEvent, openid: string) {
 
   let buffer: Buffer;
   try {
-    const downloaded = await cloud.downloadFile({ fileID: cloudPath });
+    const downloaded = await cloud.downloadFile({ fileID });
     buffer = downloaded.fileContent as Buffer;
   } catch (error) {
     // 下载失败也要清掉临时文件，避免用户云存储里堆积。
-    await deleteStoredFile(cloudPath);
+    await deleteStoredFile(fileID);
     const message = error instanceof Error ? error.message : String(error);
     return { ok: false, error: `无法从云存储读取所选文件：${message}` };
   }
   // 先删后解析：解析失败时同样不会留下临时文件；解析只用内存里的字节。
-  const tempFileDeleted = await deleteStoredFile(cloudPath);
-  const draft = parseWorkbook(buffer, fileName === '' ? cloudPath : fileName);
+  const tempFileDeleted = await deleteStoredFile(fileID);
+  const draft = parseWorkbook(buffer, fileName === '' ? baseName(own.path) : fileName);
   return {
     ok: true,
     draft,
@@ -181,12 +234,10 @@ async function handleImportDraft(event: CloudEvent, openid: string) {
 
 /** 清理未能进入解析阶段的临时文件（例如上传成功但解析调用没到达云端）。 */
 async function handleDiscardUpload(event: CloudEvent, openid: string) {
-  const cloudPath = typeof event.cloudPath === 'string' ? event.cloudPath : '';
-  const prefix = ownerPrefix(openid);
-  if (cloudPath === '' || !cloudPath.startsWith(prefix) || cloudPath.includes('..')) {
-    return { ok: false, error: '文件路径不属于当前微信身份，已拒绝删除' };
-  }
-  const deleted = await deleteStoredFile(cloudPath);
+  const fileID = typeof event.fileID === 'string' ? event.fileID.trim() : '';
+  const own = ownFilePath(fileID, openid, '删除');
+  if (!own.ok) return { ok: false, error: own.error };
+  const deleted = await deleteStoredFile(fileID);
   return { ok: true, deleted };
 }
 
@@ -283,6 +334,8 @@ export async function main(event: CloudEvent = {}) {
     switch (action) {
       case 'prepareUpload':
         return await handlePrepareUpload(event, openid);
+      case 'preparePhotoUpload':
+        return await handlePreparePhotoUpload(event, openid);
       case 'importDraft':
         return await handleImportDraft(event, openid);
       case 'discardUpload':

@@ -8,6 +8,7 @@
 .imp-file { color: #576c63; font-size: 26rpx; margin-top: 8rpx; }
 .imp-progress { color: #23664e; font-size: 26rpx; margin-top: 8rpx; }
 .imp-error { background: #f8efe2; color: #7a4a12; border-radius: 14rpx; padding: 20rpx 24rpx; font-size: 27rpx; line-height: 1.7; margin: 20rpx 0; }
+.imp-cap { color: #a5762b; font-size: 24rpx; margin-top: -8rpx; }
 .imp-secondary { background: #eef5f1; color: #23664e; }
 .imp-summary { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-top: 24rpx; }
 .imp-summary-title { font-size: 30rpx; font-weight: 600; margin-bottom: 8rpx; }

@@ -29,7 +29,7 @@ export interface CourseExtras {
   note: string;
   rawText: string;
   warnings: string[];
-  source: 'excel' | 'manual';
+  source: 'excel' | 'manual' | 'photo';
 }
 
 export interface CourseFormSource {
@@ -49,7 +49,7 @@ export interface CourseFormSource {
   note: string;
   rawText: string;
   warnings: string[];
-  source: 'excel' | 'manual';
+  source: 'excel' | 'manual' | 'photo';
 }
 
 export const EMPTY_FORM: CourseForm = {
@@ -162,12 +162,12 @@ export function buildCourseInput(form: CourseForm, extras: CourseExtras): FormBu
   };
 }
 
-/** 把编辑结果写回导入草稿：原文与来源位置保留，不改动。 */
+/** 把编辑结果写回导入草稿：原文与来源位置保留，不改动；来源保持原值（截图识别不被打回 excel）。 */
 export function draftFromInput(course: DraftCourse, input: CourseInput): DraftCourse {
   return {
     ...course,
     ...input,
-    source: 'excel',
+    source: course.source,
     rawText: course.rawText,
     sourceRowLabel: course.sourceRowLabel,
     sourceWeekdayLabel: course.sourceWeekdayLabel,

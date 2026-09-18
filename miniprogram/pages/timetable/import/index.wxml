@@ -11,21 +11,28 @@
       <view class="imp-step">3. 回到这里点下面的按钮，从聊天记录里选它</view>
     </view>
     <button id="choose-file" class="home-button" hover-class="pressed" bindtap="chooseFile">从微信聊天记录选择课表文件</button>
+    <view class="imp-guide imp-guide-note">{{photoGuide}}</view>
+    <button id="choose-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="choosePhoto">拍照或从相册选择课表截图</button>
     <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
   </view>
 
   <view wx:elif="{{step === 'parsing'}}" class="imp-block">
     <view class="section-title">正在解析</view>
     <view class="imp-copy">{{parsingText}}</view>
-    <view class="imp-file">已选文件：{{fileName}}</view>
+    <view class="imp-file">已选{{importKind === 'photo' ? '图片' : '文件'}}：{{fileName}}</view>
     <view class="imp-progress" wx:if="{{progress > 0}}">上传进度 {{progress}}%</view>
   </view>
 
   <view wx:elif="{{step === 'error'}}" class="imp-block">
     <view class="section-title">导入没有完成</view>
     <view id="import-error" class="imp-error">{{errorMessage}}</view>
+    <view class="imp-cap" wx:if="{{capWarning !== ''}}">{{capWarning}}</view>
     <view class="imp-copy">没有写入任何课表数据；如果问题出在文件本身，可以重新导出后再试。</view>
     <button id="retry-import" class="home-button" hover-class="pressed" bindtap="retryChoose">重新选择文件</button>
+    <block wx:if="{{photoError}}">
+      <button id="retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+      <button id="to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+    </block>
     <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
   </view>
 
@@ -53,7 +60,7 @@
         <view class="imp-item-line">地点：{{item.locationText}}<block wx:if="{{item.noteText !== ''}}">（{{item.noteText}}）</block></view>
         <view class="imp-item-warning" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
         <view class="imp-item-blocked-hint" wx:if="{{item.blocking !== ''}}">{{item.blocking}}</view>
-        <view class="imp-item-raw" wx:if="{{item.needsReview}}">原文：{{item.rawText}}</view>
+        <view class="imp-item-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
         <view class="imp-item-ops">
           <button class="imp-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
           <button class="imp-op imp-op-delete" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
@@ -62,7 +69,13 @@
     </view>
 
     <button id="confirm-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认并保存 {{courseCount}} 门课程</button>
+    <block wx:if="{{isPhoto}}">
+      <view class="imp-guide imp-guide-note">{{reviewExitsNote}}</view>
+      <button id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+      <button id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
+      <button id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+    </block>
     <button id="abandon-import" class="home-button imp-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
-    <view class="imp-privacy">保存后才写入数据库，且只写入你自己的课表；临时文件在解析后已从云存储删除。</view>
+    <view class="imp-privacy">{{privacyText}}</view>
   </block>
 </view>

@@ -106,7 +106,8 @@ export function normalizeCourseFields(input: unknown): NormalizedCourse {
     }
   }
 
-  const kind: 'manual' | 'excel' = source.source === 'manual' ? 'manual' : 'excel';
+  const kind: 'manual' | 'excel' | 'photo' =
+    source.source === 'manual' ? 'manual' : source.source === 'photo' ? 'photo' : 'excel';
   const first = sectionRanges[0];
   return {
     ok: true,
