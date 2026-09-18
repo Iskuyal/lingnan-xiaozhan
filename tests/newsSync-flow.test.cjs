@@ -14,12 +14,6 @@ const OLD_TIME = '2026-09-01T00:00:00.000Z';
 /** 请求间隔与单批上限是票面确定的参数，测试按同样的数值核对（见 columns.ts）。 */
 const REQUEST_INTERVAL_MS = 1300;
 const MAX_REQUESTS_PER_CALL = 10;
-/** 同步状态文档的字段契约：落盘字段写错会让续跑与排查失效，这里锁住集合。 */
-const STATE_FIELDS = [
-  'column', 'backfillDone', 'backfillPage', 'pending', 'pendingKind', 'round', 'lockUntil',
-  'lastAttemptAt', 'lastSuccessAt', 'lastOutcome', 'lastError', 'lastRequestAt', 'lastRunAtLocal',
-  'lastTrigger', 'lastTriggerName', 'rateLimitedAt', 'elapsedMs',
-];
 
 /**
  * 最小可用的官网页面桩：结构照抄实测模板（见 docs/news-sources.md 的「通知公告类栏目」）。
@@ -242,11 +236,13 @@ test('每完成一次请求就落盘同步状态，中断不会丢进度', async
   const state = app.stateDocs['tw-tqsd'];
   assert.equal(state.pending.length + (app.requests.length - 1), 10, '已抓正文的条目数与队列长度应覆盖整页 10 条');
   assert.equal(state.lockUntil, '', '调用结束后应释放运行锁');
+  // 字段契约直接取云函数导出的那份，避免测试里再抄一遍清单导致两边漂移。
   assert.deepEqual(
     Object.keys(state).filter((key) => key !== '_id').sort(),
-    [...STATE_FIELDS].sort(),
-    '状态文档字段应与契约一致',
+    plain(app.exports.SYNC_STATE_FIELDS).slice().sort(),
+    '状态文档字段应与云函数声明的契约一致',
   );
+  assert.ok(Object.keys(state).includes('missing'), '缺失条目清单必须落盘，否则「还差几条」无从查起');
 });
 
 test('限速 403：立即停止本轮、记录时间与错误，并对后续调用冷却', async () => {
@@ -561,6 +557,187 @@ test('待抓队列里的坏条目被丢弃，不会卡住续跑', async () => {
   assert.equal(result.columns[0].failed, 0, '坏条目不算失败');
   assert.equal(result.columns[0].inserted, 1);
   assert.deepEqual(plain(result.columns[0].pagesRead), [1, 2, 3], '丢弃坏条目后仍能继续回看');
+});
+
+// ---------- 站点级冷却与截止点（两轴审查修复） ----------
+
+test('任一栏目撞上限速 403：本轮立即结束，后面的栏目不再请求同一台主机', async () => {
+  const app = harness({
+    responses: (url) => {
+      if (url === XYXW_LIST_URL) return { status: 200, html: fixture('list-page-1.html') };
+      if (url.includes('/xyxw/xydt/')) return { status: 403, html: '每秒不能多于1个页面请求' };
+      return { status: 200, html: articleStub('团委条目', '2026-09-18') };
+    },
+  });
+  const result = await app.run({});
+  assert.equal(app.requests.length, 2, '校园动态的列表 + 第一篇正文之后必须停下');
+  assert.equal(
+    app.requests.some((request) => request.url.includes('/tw/djxf/tqsd')),
+    false,
+    '第一个栏目撞上限速后，第二个栏目一个请求都不能再发（共用出口 IP）',
+  );
+  assert.equal(result.columns.length, 2, '两个栏目都要有结果说明，不能静默跳过');
+  assert.equal(result.columns[0].rateLimited, true);
+  assert.match(result.columns[1].skippedReason, /限速|立即结束/);
+  assert.match(app.stateDocs['site'].rateLimitedAt, /^2026-09-17T22:20:00/, '冷却写在站点级文档上');
+  assert.equal(result.missing, 0, '撞限速不是条目失败，不该记进缺失清单');
+});
+
+test('站点级冷却期内任何栏目都不发请求（含未标记过的那一栏）', async () => {
+  for (const [name, stateDocs, column] of [
+    ['站点级记录', { site: { _id: 'site', rateLimitedAt: '2026-09-17T22:19:00.000Z' } }, 'tw-tqsd'],
+    ['栏目级记录（升级前的写法仍然生效）', { 'xyxw-xydt': { _id: 'xyxw-xydt', rateLimitedAt: '2026-09-17T22:19:00.000Z' } }, 'xyxw-xydt'],
+  ]) {
+    const app = harness({
+      now: '2026-09-17T22:20:00.000Z',
+      stateDocs,
+      responses: () => ({ status: 200, html: fixture('tw-list-page-1.html') }),
+    });
+    const result = await app.run({ column });
+    assert.equal(app.requests.length, 0, `${name}：冷却期内不得发起任何请求`);
+    assert.match(result.columns[0].skippedReason, /冷却/, name);
+    assert.equal(result.columns[0].rateLimited, false, name);
+  }
+});
+
+test('撞限速后的第二次调用仍然不发请求（冷却跨调用生效）', async () => {
+  const app = harness({
+    now: '2026-09-17T22:20:00.000Z',
+    responses: (url) => (url === LIST_URL
+      ? { status: 200, html: fixture('tw-list-page-1.html') }
+      : { status: 403, html: '每秒不能多于1个页面请求' }),
+  });
+  const first = await app.run({ column: 'tw-tqsd' });
+  assert.equal(first.columns[0].rateLimited, true);
+  const before = app.requests.length;
+  const second = await app.run({ column: 'tw-tqsd' });
+  assert.equal(app.requests.length, before, '冷却期内第二次调用不得再请求官网');
+  assert.match(second.columns[0].skippedReason, /冷却/);
+  assert.equal(app.stateDocs['tw-tqsd'].lastSuccessAt, '', '撞限速不推进整批成功时间');
+});
+
+test('等够 1.3 秒之后才判断截止点：等待把人推到截止点之后就不发请求', async () => {
+  const app = harness({
+    // lastRequestAt 落在未来：等完 1.3 秒的间隔后已经越过本次调用的截止点。
+    stateDocs: { 'tw-tqsd': { _id: 'tw-tqsd', lastRequestAt: '2026-09-17T22:21:00.000Z' } },
+    responses: () => ({ status: 200, html: fixture('tw-list-page-1.html') }),
+  });
+  const result = await app.run({ column: 'tw-tqsd' });
+  assert.equal(app.requests.length, 0, '截止点之后不得再发起请求');
+  assert.equal(result.totals.failed, 0, '预算用尽不是失败');
+  assert.equal(result.columns[0].roundComplete, false);
+  assert.match(result.columns[0].message, /时间上限|续跑/);
+  const state = app.stateDocs['tw-tqsd'];
+  assert.equal(state.lastOutcome, 'running');
+  assert.equal(state.backfillPage, 1, '没读到的列表页游标不动');
+  assert.equal(state.pending.length, 0);
+  assert.equal(state.lockUntil, '', '预算用尽也要释放运行锁');
+});
+
+test('同站跳转算一次请求，并同样按 1.3 秒节流', async () => {
+  const target = `${LIST_URL}/content_1`;
+  const app = harness({
+    responses: (url) => {
+      if (url === LIST_URL) {
+        return { status: 200, html: listStub([{ href: '/tw/djxf/tqsd/content_1', title: '跳转条目', date: '2026-09-18' }]) };
+      }
+      if (url === target) return { status: 302, html: '', headers: { location: `${LIST_URL}/content_1/` } };
+      return { status: 200, html: articleStub('跳转条目', '2026-09-18') };
+    },
+  });
+  const result = await app.run({ column: 'tw-tqsd', maxRequests: 3 });
+  assert.deepEqual(
+    app.requests.map((request) => request.url),
+    [LIST_URL, target, `${LIST_URL}/content_1/`],
+    '列表页、跳转前的地址、跳转后的地址各算一次请求',
+  );
+  assertPaced(app.requests);
+  assert.equal(result.requestsUsed, 3);
+  assert.equal(result.totals.inserted, 1);
+});
+
+// ---------- 全量完成口径与日期保留（两轴审查修复） ----------
+
+test('全量导入零失败才算完成，resumeHint 转入增量', async () => {
+  const app = harness({
+    stateDocs: { 'tw-tqsd': { _id: 'tw-tqsd', backfillPage: 16 } },
+    responses: (url) => (url === `${LIST_URL}_16`
+      ? { status: 200, html: listStub([{ href: '/tw/djxf/tqsd/content_1', title: '条目一', date: '2026-09-18' }]) }
+      : { status: 200, html: articleStub('条目一', '2026-09-18') }),
+  });
+  const result = await app.run({ column: 'tw-tqsd' });
+  assert.equal(app.requests.length, 2, '最后一页：1 次列表 + 1 篇正文');
+  assert.equal(result.backfillDone, true);
+  assert.equal(result.batchComplete, true);
+  assert.equal(result.missing, 0);
+  assert.equal(result.columns[0].backfillDone, true);
+  assert.match(result.columns[0].message, /全量导入完成/);
+  assert.match(result.resumeHint, /增量回看/);
+  const state = app.stateDocs['tw-tqsd'];
+  assert.equal(state.backfillDone, true);
+  assert.notEqual(state.lastSuccessAt, '');
+  assert.deepEqual(plain(state.missing), [], '零失败完成时不该留下缺失条目');
+});
+
+test('全量读完但有条目没取到：不算完成，状态与 resumeHint 说明还差几条、如何补齐', async () => {
+  const broken = `${LIST_URL}/content_1`;
+  const app = harness({
+    stateDocs: { 'tw-tqsd': { _id: 'tw-tqsd', backfillPage: 16 } },
+    responses: (url) => (url === `${LIST_URL}_16`
+      ? { status: 200, html: listStub([{ href: '/tw/djxf/tqsd/content_1', title: '条目一', date: '2026-09-18' }]) }
+      : { status: 500, html: 'boom' }),
+  });
+  const result = await app.run({ column: 'tw-tqsd' });
+  assert.equal(result.backfillDone, false, '有失败就不能宣称全量完成');
+  assert.equal(result.missing, 1);
+  assert.deepEqual(plain(app.stateDocs['tw-tqsd'].missing), [broken], '缺失清单要留下具体 URL');
+  assert.equal(app.stateDocs['tw-tqsd'].backfillDone, false);
+  assert.match(result.resumeHint, /还差 1 条/);
+  assert.match(result.resumeHint, /reset/);
+  assert.match(result.columns[0].message, /还差 1 条/);
+  assert.match(result.columns[0].message, /reset/);
+  assert.match(app.stateDocs['tw-tqsd'].lastError, /reset/);
+
+  // 再调用一次：游标已经在末页之后，不会重复请求，但「还差 1 条」必须继续如实保留。
+  const before = app.requests.length;
+  const again = await app.run({ column: 'tw-tqsd' });
+  assert.equal(app.requests.length, before, '没有可跑的全量页时不应再发请求');
+  assert.equal(again.missing, 1, '缺失清单跨调用保留');
+  assert.equal(again.backfillDone, false);
+  assert.match(again.resumeHint, /还差 1 条/);
+});
+
+test('文章页缺「发布时间」时保留记录里的旧日期，不再每天重抓同一篇', async () => {
+  const itemUrl = `${LIST_URL}/content_1`;
+  const noDatePage = '<article class="articleCon"><div class="printArea" data-power-area=\'content\'>'
+    + '<h2 class="title">条目一<div class="subheading"></div></h2>'
+    + '<div class="property"><span>来源： </span></div>'
+    + '<div class="conTxt"><p>正文仍在。</p></div>'
+    + '<div class="userControl">分享到：</div></div></article>';
+  const app = harness({
+    stateDocs: { 'tw-tqsd': { _id: 'tw-tqsd', backfillPage: 16 } },
+    articles: [{ _id: 'seed-1', id: 'content_1', url: itemUrl, title: '条目一', date: '2026-09-18', paragraphs: ['旧正文'], updatedAt: OLD_TIME }],
+    responses: (url) => {
+      // 正文地址以列表地址开头，先判它；其余列表页（含增量回看第 1-3 页）都返回同一份列表。
+      if (url === itemUrl) return { status: 200, html: noDatePage };
+      if (url.startsWith(LIST_URL)) {
+        return { status: 200, html: listStub([{ href: '/tw/djxf/tqsd/content_1', title: '条目一', date: '2026-09-18' }]) };
+      }
+      return { status: 404, html: 'Not Found' };
+    },
+  });
+  const first = await app.run({ column: 'tw-tqsd' });
+  assert.equal(first.backfillDone, true);
+  const row = app.articles[0];
+  assert.equal(row.date, '2026-09-18', '解析不到发布时间时保留旧日期，不能被空字符串覆盖');
+  assert.deepEqual(plain(row.paragraphs), ['正文仍在。']);
+
+  // 下一轮增量回看：标题与日期都没变，应当直接跳过、不再抓正文。
+  const articleRequests = () => app.requests.filter((request) => request.url === itemUrl).length;
+  const before = articleRequests();
+  const second = await app.run({ column: 'tw-tqsd' });
+  assert.equal(second.columns[0].skipped, 3, '第 1-3 页各有 1 条未变化的条目，全部跳过');
+  assert.equal(articleRequests(), before, '未变化的条目不应重复抓正文');
 });
 
 // ---------- 触发方式与状态字段 ----------

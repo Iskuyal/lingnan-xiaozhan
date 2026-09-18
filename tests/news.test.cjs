@@ -204,6 +204,19 @@ test('缺少列表容器或空输入时返回空数组', () => {
 
 // ---------- 团委通知公告：第二套模板（Ticket 04） ----------
 
+test('团委列表的 title 属性解析：标题与发表时间各自独立，标题里的年份不当日期', () => {
+  const { parseAnnouncementAttribute } = loadModule(PARSE_MODULE);
+  const raw = '标题：关于2025-2026年度广东省“两红两优”拟推荐名单的公示&#xD;&#xA;点击数：1478&#xD;&#xA;发表时间：2026-06-04';
+  assert.deepEqual(parseAnnouncementAttribute(raw), {
+    title: '关于2025-2026年度广东省“两红两优”拟推荐名单的公示',
+    date: '2026-06-04',
+  });
+  // 没有「标题：」前缀时整串当标题；没有发表时间时日期为空
+  assert.deepEqual(parseAnnouncementAttribute('只有标题'), { title: '只有标题', date: '' });
+  assert.deepEqual(parseAnnouncementAttribute(''), { title: '', date: '' });
+  assert.deepEqual(parseAnnouncementAttribute('标题：无时间的标题 点击数：3'), { title: '无时间的标题', date: '' });
+});
+
 test('团委通知公告列表页真实片段解析出全部 10 条，标题与日期齐全', () => {
   const { parseAnnouncementList } = loadModule(PARSE_MODULE);
   const items = parseAnnouncementList(fixture('tw-list-page-1.html'), TW_LIST_URL);

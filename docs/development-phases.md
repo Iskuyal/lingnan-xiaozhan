@@ -2,7 +2,7 @@
 
 这是正式开发的 P 编号，替代此前访谈中的 P0–P5 设定编号。比赛提交时间仍由 [比赛工作流](workflow.md) 管理，不按工作日/周末限制任务。
 
-当前状态：P0 框架规格、P1 首页入口、P2 学生部门与 P3-1 云端资讯链路已交付；P3-1 的线上收尾（修复版部署、超时 20 秒、`newsSync` 调用权限收紧）已于 2026-09-18 完成并复核。P3-2 的首页资讯入口与列表逐页加载（[Ticket 02](tasks/tickets/02-home-news-entry-and-paging.md)）已于 2026-09-18 完成并通过开发者工具验收，证据见 [Ticket 02 验证记录](evidence/p3-2/README.md)；P3-2 剩余部分（扩大抓取与每日定时）等待五项范围决策。历史开发者工具验收见 [P2 / P3 验证记录](evidence/p2-p3/README.md) 与 [P1 验证记录](evidence/p1/README.md)。**真机渲染与未登录单页模式仍未实测，转入 P6 跟踪，不计为已通过。** P3-2 剩余部分、P4-B、P5-B 与 P6 尚未完成。
+当前状态：P0 框架规格、P1 首页入口、P2 学生部门与 P3-1 云端资讯链路已交付；P3-1 的线上收尾（修复版部署、超时 20 秒、`newsSync` 调用权限收紧）已于 2026-09-18 完成并复核。P3-2 的首页资讯入口与列表逐页加载（[Ticket 02](tasks/tickets/02-home-news-entry-and-paging.md)）已于 2026-09-18 完成并通过开发者工具验收，证据见 [Ticket 02 验证记录](evidence/p3-2/README.md)；P3-2 剩余部分（扩大抓取与每日定时）的五项范围决策已于 2026-09-18 确定，[Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md) 处于 **in-progress（代码与本地测试完成；待部署与触发器实测）**。历史开发者工具验收见 [P2 / P3 验证记录](evidence/p2-p3/README.md) 与 [P1 验证记录](evidence/p1/README.md)。**真机渲染与未登录单页模式仍未实测，转入 P6 跟踪，不计为已通过。** P3-2 剩余部分、P4-B、P5-B 与 P6 尚未完成。
 
 **2026-09-18 决策关口清空**：P3-2 五项范围、P4-B 课表导入范围、P5-A 收尾（指标、成本、内容安全接入、降级文案）与微信生态能力取舍均由负责人确定，结论写入 [开发规格](development-spec.md)、[P3-2 文档](tasks/p3-2-news-updates.md) 与 [CONTEXT](../CONTEXT.md)。Ticket 01、03、04 因此转为可开工；05、06、07 仍等 01（05、06 另等 03）。当前 MVP 为部门与课表，三个 AI 落点已定；P4-A 教务账号接入已取消。
 
@@ -60,9 +60,9 @@ P3-1 的云端和开发者工具验证已完成：云开发环境 `cloudbase-d2g
 
 依赖 P3-1。
 
-独立任务见 [P3-2 栏目同步、首页资讯与分页](tasks/p3-2-news-updates.md)，线上前置已解除；执行拆为 [Ticket 02](tasks/tickets/02-home-news-entry-and-paging.md)（首页入口与分页，**2026-09-18 已完成**）与 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)（扩大同步与定时，等待五项范围决策）。按负责人要求不创建新的 GitHub Issue。
+独立任务见 [P3-2 栏目同步、首页资讯与分页](tasks/p3-2-news-updates.md)，线上前置已解除；执行拆为 [Ticket 02](tasks/tickets/02-home-news-entry-and-paging.md)（首页入口与分页，**2026-09-18 已完成**）与 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)（扩大同步与定时，**in-progress：代码与本地测试完成，待部署与触发器实测**——五项范围决策已于 2026-09-18 确定并落进代码）。按负责人要求不创建新的 GitHub Issue。
 
-- [ ] 抓取选定栏目并按原文 URL 去重，处理文章更新；维护者可触发同步，再配置每日定时。（**范围已定**：校园动态 + 团委通知公告，两个栏目全量，增量回看 3 页，间隔 1.3 秒 / 每批 ≤10 页，每日 06:00 Asia/Shanghai；团委栏目需新增一套模板解析，见 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)）
+- [ ] 抓取选定栏目并按原文 URL 去重，处理文章更新；维护者可触发同步，再配置每日定时。（**范围已定**：校园动态 + 团委通知公告，两个栏目全量，增量回看 3 页，间隔 1.3 秒 / 每批 ≤10 页，每日 06:00 Asia/Shanghai；团委栏目需新增一套模板解析，见 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)。**代码与本地测试已完成、云端未验证**：全量导入、定时触发实测与客户端权限复核仍需按 [云开发文档的人工步骤](cloud-development.md#ticket-04-人工步骤) 执行）
 - [x] 首页增加最近资讯入口与条目；列表支持逐页加载。（**2026-09-18 完成**，开发者工具 12 项检查通过，见 [Ticket 02 验证记录](evidence/p3-2/README.md)；真实多页待 Ticket 04 扩大数据量后补验）
 - [ ] 使用公开页面样本验证重复同步、缺失日期、无正文和抓取失败；失败仍能查看最后成功内容并识别更新时间。
 

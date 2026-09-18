@@ -40,6 +40,11 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 const db = cloud.database();
 const NEWS_COLLECTION = 'news_articles';
 const STATE_COLLECTION = 'sync_state';
+/**
+ * 站点级状态文档的 `_id`：官网限速（WAF）冻结的是出口 IP，不区分栏目，
+ * 冷却必须整站生效，因此单独一条文档记录「最近一次撞上限速的时间」。
+ */
+const SITE_STATE_ID = 'site';
 /** 状态与日志里的时间语义：定时触发器与官网都在东八区。 */
 const TIME_ZONE = 'Asia/Shanghai（UTC+8）';
 /** 一个栏目一次最多保留的失败摘要条数，避免状态文档无限增长。 */
@@ -49,6 +54,13 @@ const MAX_FAILURE_NOTES = 10;
  * 全量一轮覆盖 1400 多条，正常情况不会有条目失败；上限只防状态文档被异常情况撑大。
  */
 const MAX_ROUND_RETRIES = 100;
+/**
+ * 一个栏目最多记住多少条「已知没取到」的条目 URL（`sync_state.missing`）。
+ * 这些条目不会被自动重访，计数与 URL 用于向维护者说明「还差几条、用 reset 补齐」。
+ */
+const MAX_MISSING_URLS = 200;
+/** 跟随同站跳转的次数上限；每次跳转都算一次页面请求并同样按 1.3 秒节流。 */
+const MAX_REDIRECTS = 3;
 /**
  * 请求头：官网对缺少浏览器特征的请求返回 403（实测云函数环境如此，本机 curl 正常）。
  * 这里用常见浏览器请求头读取公开页面，不携带 Cookie，也不涉及任何身份伪装。
@@ -68,8 +80,19 @@ class RateLimitedError extends Error {}
  */
 class OffsiteBodyError extends Error {}
 
+/**
+ * 请求预算或本次调用的截止点已到：**不是失败**。
+ * 在等够 1.3 秒之后、真正发请求之前才判定，因此不会出现「检查时还没到点、发出去时已经超时」。
+ * 队列与游标都不动，下一次调用从原处续跑。
+ */
+class BudgetExhaustedError extends Error {}
+
 type Phase = 'backfill' | 'incremental';
 type Mode = Phase | 'auto';
+/** 一轮同步的结果：整批成功 / 部分成功 / 全部失败 / 本轮没跑完 / 撞上限速；空字符串表示还没跑过。 */
+type LastOutcome = 'ok' | 'partial' | 'failed' | 'running' | 'rate-limited' | '';
+/** 调用来源：定时触发器还是维护者手动触发。 */
+type TriggerKind = 'timer' | 'manual';
 
 interface RoundState {
   /** 是否有一轮同步正在进行（跨调用累计计数）。 */
@@ -104,14 +127,16 @@ interface ColumnState {
   lockUntil: string;
   lastAttemptAt: string;
   lastSuccessAt: string;
-  lastOutcome: string;
+  lastOutcome: LastOutcome;
   lastError: string;
   lastRequestAt: string;
   lastRunAtLocal: string;
   /** 最近一次调用来自定时触发器还是维护者手动触发；定时触发额外记录触发器名。 */
-  lastTrigger: string;
+  lastTrigger: TriggerKind | '';
   lastTriggerName: string;
   rateLimitedAt: string;
+  /** 已知没取到的条目 URL（重试后仍失败）：不会被自动重访，需要 reset 重跑补齐。 */
+  missing: string[];
   elapsedMs: number;
 }
 
@@ -138,27 +163,27 @@ interface ColumnRun {
   rateLimited: boolean;
   skippedReason: string;
   failures: string[];
+  /** 本栏目已知没取到的条目数（`sync_state.missing` 的长度）。 */
+  missing: number;
   lastSuccessAt: string;
   message: string;
 }
 
+/** 一次 HTTP GET 的结果：拿到正文，或者一个需要跟随的跳转。 */
+type FetchOutcome = { kind: 'html'; html: string } | { kind: 'redirect'; location: string };
+
 /**
- * 取官网页面 HTML。只接受 200；最多跟随 3 次跳转；403/429 视为限速并抛 RateLimitedError。
- * 跳转目标若离开官网（如 mp.weixin.qq.com）则抛 OffsiteBodyError，不把外链内容抓回入库。
+ * 取一次官网页面。只接受 200；3xx 带 Location 时把跳转交回给调用方（由它按节流继续跟随）；
+ * 403/429 视为限速并抛 RateLimitedError。
  */
-function fetchHtml(url: string, redirects = 0): Promise<string> {
+function fetchOnce(url: string): Promise<FetchOutcome> {
   return new Promise((resolve, reject) => {
     const request = https.get(url, { timeout: REQUEST_TIMEOUT_MS, headers: REQUEST_HEADERS }, (response) => {
       const status = response.statusCode ?? 0;
       const location = response.headers.location;
-      if (status >= 300 && status < 400 && location && redirects < 3) {
+      if (status >= 300 && status < 400 && location) {
         response.resume();
-        const target = new URL(location, url).toString();
-        if (isOffsiteUrl(target)) {
-          reject(new OffsiteBodyError(`页面跳转到官网之外（${target}），正文不入库`));
-          return;
-        }
-        resolve(fetchHtml(target, redirects + 1));
+        resolve({ kind: 'redirect', location });
         return;
       }
       if (status !== 200) {
@@ -176,7 +201,7 @@ function fetchHtml(url: string, redirects = 0): Promise<string> {
       }
       const chunks: Buffer[] = [];
       response.on('data', (chunk: Buffer) => chunks.push(chunk));
-      response.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+      response.on('end', () => resolve({ kind: 'html', html: Buffer.concat(chunks).toString('utf8') }));
     });
     request.on('timeout', () => request.destroy(new Error(`请求超时：${url}`)));
     request.on('error', reject);
@@ -228,11 +253,26 @@ class RequestGate {
   }
 }
 
-/** 经闸门发起一次页面请求（列表页与文章页都算一次）。 */
+/**
+ * 经闸门发起一次页面请求（列表页、正文与同站跳转都各算一次）。
+ *
+ * 判定顺序是刻意的：**先按 1.3 秒节流等待，再判断还能不能发**。
+ * 等待本身可能把人推到本次调用的截止点之后，若在等待前判断，「检查通过、发出去时已超时」
+ * 就会真的发生。跳转同样走这套闸门，因此同站跳转之间的间隔也不会短于 1.3 秒。
+ */
 async function fetchWithGate(gate: RequestGate, url: string): Promise<string> {
-  await gate.waitTurn();
-  gate.markRequest();
-  return fetchHtml(url);
+  let target = url;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
+    await gate.waitTurn();
+    if (!gate.canRequest()) throw new BudgetExhaustedError(`请求预算或时间已用完：${target}`);
+    gate.markRequest();
+    const outcome = await fetchOnce(target);
+    if (outcome.kind === 'html') return outcome.html;
+    const next = new URL(outcome.location, target).toString();
+    if (isOffsiteUrl(next)) throw new OffsiteBodyError(`页面跳转到官网之外（${next}），正文不入库`);
+    target = next;
+  }
+  throw new Error(`跳转次数过多（超过 ${MAX_REDIRECTS} 次）：${url}`);
 }
 
 function describeError(error: unknown): string {
@@ -245,13 +285,13 @@ function describeError(error: unknown): string {
 }
 
 /** 东八区可读时间，如 2026-09-18 06:00:12 +08:00；用于记录定时任务的实际运行时间。 */
-export function shanghaiStamp(date: Date): string {
+function shanghaiStamp(date: Date): string {
   const shifted = new Date(date.getTime() + 8 * 3600 * 1000);
   return `${shifted.toISOString().slice(0, 19).replace('T', ' ')} +08:00`;
 }
 
 /** 东八区日期（YYYY-MM-DD）。定时任务在 06:00（UTC 前一天 22:00）运行，不能用 UTC 日期。 */
-export function shanghaiDate(date: Date): string {
+function shanghaiDate(date: Date): string {
   return new Date(date.getTime() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
@@ -283,13 +323,36 @@ function detectTrigger(event: { Type?: unknown; TriggerName?: unknown }): { kind
 }
 
 /** 正文是否不在官网：外链条目（如 mp.weixin.qq.com）只存标题、日期与原文链接。 */
-export function isOffsiteUrl(url: string): boolean {
+function isOffsiteUrl(url: string): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase();
     return !(host === 'lnc.edu.cn' || host.endsWith('.lnc.edu.cn'));
   } catch {
     return true;
   }
+}
+
+/**
+ * 限速冷却的截止时间（毫秒时间戳）。没有记录或时间非法时返回 0，表示没有冷却。
+ * 传入多个来源时取最晚的一个：站点级记录与栏目自己的记录都要算，
+ * 这样升级前写下的栏目级 `rateLimitedAt` 仍然生效。
+ */
+function cooldownDeadline(...stamps: string[]): number {
+  let until = 0;
+  for (const stamp of stamps) {
+    if (stamp === '') continue;
+    const parsed = Date.parse(stamp);
+    if (Number.isNaN(parsed)) continue;
+    until = Math.max(until, parsed + RATE_LIMIT_COOLDOWN_MS);
+  }
+  return until;
+}
+
+/** 冷却提示文案（栏目级与站点级记录取更早的那个时间作为「何时撞上的」）。 */
+function cooldownNotice(until: number, startedAt: number, ...stamps: string[]): string {
+  const since = stamps.filter((stamp) => stamp !== '').sort()[0] ?? '';
+  const minutes = Math.ceil((until - startedAt) / 60000);
+  return `限速冷却中：${since} 触发了官网限速 403，约 ${minutes} 分钟后可再试。本次未发起任何请求。`;
 }
 
 function emptyRound(): RoundState {
@@ -314,6 +377,7 @@ function emptyState(column: NewsColumn): ColumnState {
     lastTrigger: '',
     lastTriggerName: '',
     rateLimitedAt: '',
+    missing: [],
     elapsedMs: 0,
   };
 }
@@ -367,11 +431,19 @@ function normalizeState(column: NewsColumn, raw: unknown): ColumnState {
       retried: Array.isArray(round.retried) ? round.retried.filter((url) => typeof url === 'string') : [],
     };
   }
-  for (const key of ['lockUntil', 'lastAttemptAt', 'lastSuccessAt', 'lastOutcome', 'lastError', 'lastRequestAt', 'lastRunAtLocal', 'lastTrigger', 'lastTriggerName', 'rateLimitedAt'] as const) {
+  for (const key of ['lockUntil', 'lastAttemptAt', 'lastSuccessAt', 'lastError', 'lastRequestAt', 'lastRunAtLocal', 'lastTriggerName', 'rateLimitedAt'] as const) {
     if (typeof source[key] === 'string') state[key] = source[key] as string;
   }
+  state.lastOutcome = normalizeOutcome(source.lastOutcome);
+  state.lastTrigger = source.lastTrigger === 'timer' || source.lastTrigger === 'manual' ? source.lastTrigger : '';
+  state.missing = Array.isArray(source.missing) ? source.missing.filter((url) => typeof url === 'string') : [];
   if (typeof source.elapsedMs === 'number' && Number.isFinite(source.elapsedMs)) state.elapsedMs = source.elapsedMs;
   return state;
+}
+
+/** 只接受已知的结果取值；旧文档或人工改坏的值退回「还没跑过」。 */
+function normalizeOutcome(raw: unknown): LastOutcome {
+  return raw === 'ok' || raw === 'partial' || raw === 'failed' || raw === 'running' || raw === 'rate-limited' ? raw : '';
 }
 
 /** 落盘字段：显式列出，避免把 _id 之类的文档字段写回，也便于测试锁定字段集合。 */
@@ -393,6 +465,7 @@ function stateFields(state: ColumnState): Record<string, unknown> {
     lastTrigger: state.lastTrigger,
     lastTriggerName: state.lastTriggerName,
     rateLimitedAt: state.rateLimitedAt,
+    missing: state.missing,
     elapsedMs: state.elapsedMs,
   };
 }
@@ -401,7 +474,7 @@ function stateFields(state: ColumnState): Record<string, unknown> {
 export const SYNC_STATE_FIELDS: string[] = [
   'column', 'backfillDone', 'backfillPage', 'pending', 'pendingKind', 'round', 'lockUntil',
   'lastAttemptAt', 'lastSuccessAt', 'lastOutcome', 'lastError', 'lastRequestAt', 'lastRunAtLocal',
-  'lastTrigger', 'lastTriggerName', 'rateLimitedAt', 'elapsedMs',
+  'lastTrigger', 'lastTriggerName', 'rateLimitedAt', 'missing', 'elapsedMs',
 ];
 
 async function readState(column: NewsColumn): Promise<ColumnState> {
@@ -421,6 +494,34 @@ async function readState(column: NewsColumn): Promise<ColumnState> {
  */
 async function saveState(state: ColumnState): Promise<void> {
   await db.collection(STATE_COLLECTION).doc(state.column).set({ data: stateFields(state) });
+}
+
+interface SiteState {
+  /** 最近一次撞上官网限速 403 的时间（ISO）；没有记录时为空字符串。 */
+  rateLimitedAt: string;
+}
+
+/**
+ * 站点级冷却记录。
+ *
+ * 官网 WAF 冻结的是出口 IP 而不是某个栏目，所以冷却必须整站生效：任一栏目撞上 403，
+ * 之后 30 分钟内任何栏目都不再发起请求。文档不存在或读失败都按「没有冷却」处理
+ * （栏目自己的 `rateLimitedAt` 仍会兜住同一个调用链）。
+ */
+async function readSiteState(): Promise<SiteState> {
+  try {
+    const result = (await db.collection(STATE_COLLECTION).doc(SITE_STATE_ID).get()) as { data?: unknown };
+    const data = result === null || result === undefined ? null : result.data;
+    if (data === null || data === undefined || typeof data !== 'object') return { rateLimitedAt: '' };
+    const value = (data as { rateLimitedAt?: unknown }).rateLimitedAt;
+    return { rateLimitedAt: typeof value === 'string' ? value : '' };
+  } catch {
+    return { rateLimitedAt: '' };
+  }
+}
+
+async function saveSiteRateLimit(at: string): Promise<void> {
+  await db.collection(STATE_COLLECTION).doc(SITE_STATE_ID).set({ data: { column: SITE_STATE_ID, rateLimitedAt: at } });
 }
 
 /**
@@ -445,9 +546,13 @@ async function findArticleByUrl(url: string): Promise<ExistingArticle | null> {
 /** 已有记录与列表页元信息一致且正文非空时，增量回看可以跳过正文抓取（省一次请求）。 */
 function isUnchanged(existing: ExistingArticle, item: NewsListItem): boolean {
   const paragraphs = Array.isArray(existing.paragraphs) ? existing.paragraphs : [];
+  // 列表页缺日期时没有可比信息，只比标题：否则这类条目会因为「记录有日期、列表页没有」
+  // 每天都被判定成变化而重抓一次。
+  const dateMatches = item.date === ''
+    || (typeof existing.date === 'string' && existing.date === item.date);
   return paragraphs.length > 0
     && typeof existing.title === 'string' && existing.title === item.title
-    && typeof existing.date === 'string' && existing.date === item.date;
+    && dateMatches;
 }
 
 async function insertArticle(record: NewsArticleRecord): Promise<void> {
@@ -486,6 +591,27 @@ async function saveOffsiteItem(
 function pushFailure(round: RoundState, note: string): void {
   round.failed += 1;
   if (round.failures.length < MAX_FAILURE_NOTES) round.failures.push(note);
+}
+
+/**
+ * 记下「重试后仍没取到」的条目。这些条目不会被自动重访（列表游标已经越过它们所在的页），
+ * 因此必须留在状态里，让维护者知道还差几条、用 `reset` 重跑补齐。
+ */
+function noteMissing(state: ColumnState, url: string): void {
+  if (state.missing.includes(url) || state.missing.length >= MAX_MISSING_URLS) return;
+  state.missing.push(url);
+}
+
+/** 条目成功写入（或确认无需写入）后，把它从缺失清单里摘掉：清单只表示「现在仍然缺」。 */
+function clearMissing(state: ColumnState, url: string): void {
+  const index = state.missing.indexOf(url);
+  if (index !== -1) state.missing.splice(index, 1);
+}
+
+/** 缺失条目的提示文案；没有缺失时返回空字符串。 */
+function missingHint(state: ColumnState): string {
+  if (state.missing.length === 0) return '';
+  return `｜还差 ${state.missing.length} 条未取到，修复原因后加 {"reset":true} 重跑补齐（按原文 URL 幂等，不会产生重复条目）`;
 }
 
 function summarizeFailures(failures: string[]): string {
@@ -552,23 +678,25 @@ function beginRound(state: ColumnState, phase: Phase): void {
 }
 
 /**
- * 结束当前轮：只有整轮没有任何失败（含外链条目）才算「整批成功」，
- * 失败与部分成功都不推进 lastSuccessAt。空跑的一轮（例如全量导入已完成又要求重跑）
- * 不改写成功时间与结果，避免用「什么都没做」冒充一次成功同步。
+ * 结束当前轮：只有整轮没有任何失败（含外链条目）才算「整批成功」，失败与部分成功都不推进
+ * lastSuccessAt。**全量导入同理：有失败就不算完成**——没取到的条目不会再被访问，
+ * 状态与 resumeHint 要如实说明「还差 N 条、用 reset 补齐」，不能对外宣称已完成。
+ * 空跑的一轮（游标已越过末页、没有任何处理量）不改写结果，避免用「什么都没做」冒充一次成功同步。
  */
 function finishRound(state: ColumnState, complete: boolean, nowIso: string): void {
   const round = state.round;
   if (complete) {
-    if (round.phase === 'backfill') state.backfillDone = true;
     const succeeded = round.inserted + round.updated + round.skipped + round.offsite;
     round.active = false;
     if (succeeded + round.failed === 0) return;
     state.lastOutcome = round.failed === 0 ? 'ok' : succeeded > 0 ? 'partial' : 'failed';
     if (round.failed === 0) {
+      if (round.phase === 'backfill') state.backfillDone = true;
       state.lastSuccessAt = nowIso;
       state.lastError = '';
     } else {
-      state.lastError = summarizeFailures(round.failures);
+      // 全量导入有失败：保持未完成，并把「还差几条」写进状态，避免误判进度。
+      state.lastError = summarizeFailures(round.failures) + missingHint(state);
     }
   } else {
     // 阶段被切换或调用被中断：本轮还没跑完，不能声称成功，进度保留在游标里。
@@ -594,6 +722,7 @@ function emptyRun(column: NewsColumn, state: ColumnState): ColumnRun {
     rateLimited: false,
     skippedReason: '',
     failures: [],
+    missing: state.missing.length,
     lastSuccessAt: state.lastSuccessAt,
     message: '',
   };
@@ -610,6 +739,7 @@ function syncRunCounters(run: ColumnRun, state: ColumnState): void {
   run.offsite = state.round.offsite;
   run.failed = state.round.failed;
   run.failures = state.round.failures.slice();
+  run.missing = state.missing.length;
   run.lastSuccessAt = state.lastSuccessAt;
 }
 
@@ -653,13 +783,45 @@ async function processPendingItem(
   if (article.title.trim() === '' || article.paragraphs.length === 0) {
     throw new Error('文章标题或正文未解析到，保留已有内容');
   }
-  const record = toArticleRecord(article, column.label, context.capturedAt, context.nowIso);
+  // 文章页偶尔没有「发布时间」：新解析出的日期为空时保留旧值，否则旧记录里正确的日期
+  // 会被清空，之后每次增量回看都因日期不一致而重抓同一篇（也永远无法判定「内容未变」）。
+  const keepDate = article.date === '' && existing !== null && typeof existing.date === 'string' && existing.date !== '';
+  const record = toArticleRecord(
+    keepDate ? { ...article, date: existing.date as string } : article,
+    column.label,
+    context.capturedAt,
+    context.nowIso,
+  );
   if (existing === null) {
     await insertArticle(record);
     return 'inserted';
   }
   await updateArticle(existing._id, record as unknown as Record<string, unknown>);
   return 'updated';
+}
+
+/** 本轮计数的可读摘要。 */
+function countSummary(state: ColumnState): string {
+  const round = state.round;
+  return `插入 ${round.inserted}、更新 ${round.updated}、跳过 ${round.skipped}、外链 ${round.offsite}、失败 ${round.failed}`;
+}
+
+/**
+ * 全量导入收尾文案。**有失败时不能宣称完成**：那些条目不会再被自动重访，
+ * 必须让维护者看到「还差几条」与补齐方式。
+ */
+function backfillSummary(state: ColumnState, lastPage: number): string {
+  if (state.backfillDone) return `全量导入完成：共 ${lastPage} 页，${countSummary(state)}`;
+  if (state.missing.length > 0) {
+    return `全量列表已读完（共 ${lastPage} 页）但尚未完成：${missingHint(state).replace('｜', '')}；本轮 ${countSummary(state)}`;
+  }
+  return `全量列表已读完（共 ${lastPage} 页）但尚未完成：本批没有处理任何页（游标已在第 ${lastPage + 1} 页）；加 {"reset":true} 可重跑补齐。`;
+}
+
+/** 增量回看收尾文案。 */
+function incrementalSummary(state: ColumnState, lastPage: number): string {
+  const suffix = state.missing.length > 0 ? `；另有 ${state.missing.length} 条早前失败的条目未取到，可用 {"reset":true} 重跑补齐` : '';
+  return `增量同步完成：回看最近 ${lastPage} 页，更新 ${state.round.updated}、跳过 ${state.round.skipped}、外链 ${state.round.offsite}、失败 ${state.round.failed}${suffix}`;
 }
 
 /**
@@ -685,21 +847,25 @@ async function syncColumn(options: {
       if (state.pending.length > 0) {
         const item = state.pending[0];
         let retry = false;
+        let succeeded = false;
         try {
           const outcome = await processPendingItem(column, item, { state, gate, context });
           if (outcome === 'inserted') state.round.inserted += 1;
           else if (outcome === 'updated') state.round.updated += 1;
           else if (outcome === 'skipped') state.round.skipped += 1;
           else state.round.offsite += 1;
+          succeeded = true;
         } catch (error) {
-          // 限速 403：条目留在队列里，停止本轮，下一次调用从原处续跑（不重试）。
-          if (error instanceof RateLimitedError) throw error;
+          // 限速 403 与预算用尽：条目留在队列里，本轮停止，下一次调用从原处续跑（不重试）。
+          if (error instanceof RateLimitedError || error instanceof BudgetExhaustedError) throw error;
           pushFailure(state.round, `${item.url}：${describeError(error)}`);
           // 同一轮内给每篇一次重试机会（放回队尾）：首次全量有 1500 多次请求，偶发 HTTP 抖动
           // 不该在库里留下永久空洞。重试仍会失败的话，下一次走到它时不再重试。
           retry = !state.round.retried.includes(item.url) && state.round.retried.length < MAX_ROUND_RETRIES;
           if (retry) state.round.retried.push(item.url);
+          else noteMissing(state, item.url);
         }
+        if (succeeded) clearMissing(state, item.url);
         state.pending = state.pending.slice(1);
         if (retry) state.pending.push(item);
         state.round.requests = gate.used;
@@ -721,9 +887,7 @@ async function syncColumn(options: {
         finishRound(state, true, context.nowIso);
         await saveState(state);
         run.roundComplete = true;
-        run.message = isBackfill
-          ? `全量导入完成：共 ${lastPage} 页，插入 ${state.round.inserted}、更新 ${state.round.updated}、跳过 ${state.round.skipped}、外链 ${state.round.offsite}、失败 ${state.round.failed}`
-          : `增量同步完成：回看最近 ${lastPage} 页，更新 ${state.round.updated}、跳过 ${state.round.skipped}、外链 ${state.round.offsite}、失败 ${state.round.failed}`;
+        run.message = isBackfill ? backfillSummary(state, lastPage) : incrementalSummary(state, lastPage);
         break;
       }
 
@@ -750,11 +914,15 @@ async function syncColumn(options: {
       state.lastOutcome = 'rate-limited';
       state.lastError = note;
       run.message = '官网返回限速 403，已停止本轮并记录；冷却期内不再发起请求，下一次调用可续跑。';
+    } else if (error instanceof BudgetExhaustedError) {
+      // 预算或截止点用尽：不是失败，本轮未结束，进度已随每次请求落盘。
+      state.lastOutcome = 'running';
+      run.message = '本次调用已用完请求配额或到时间上限，进度已保存，继续调用即可续跑。';
     } else {
       // 第 3 步（列表页）或状态读写失败：本轮中断但游标保留，重跑即续。
       state.lastOutcome = 'running';
       pushFailure(state.round, note);
-      state.lastError = summarizeFailures(state.round.failures);
+      state.lastError = summarizeFailures(state.round.failures) + missingHint(state);
       run.message = `本轮中断：${note}`;
     }
     state.lastRequestAt = gate.lastRequestAt;
@@ -798,6 +966,8 @@ export async function main(event: { mode?: unknown; column?: unknown; maxRequest
     const budget = resolveBudget(event);
     const quotas = allocateBudget(budget, columns.length);
     const deadline = startedAt + WORK_DEADLINE_MS;
+    // 冷却按站点读一次：官网 WAF 冻结的是出口 IP，栏目之间不隔离。
+    const site = await readSiteState();
     let pacingFrom = '';
 
     for (let index = 0; index < columns.length; index += 1) {
@@ -808,11 +978,11 @@ export async function main(event: { mode?: unknown; column?: unknown; maxRequest
       state.lastTrigger = trigger;
       state.lastTriggerName = triggerName;
 
-      // 冷却：最近触发过限速 403 时，本次调用不再发起任何请求（继续重试会延长官网冻结）。
-      const cooldownUntil = state.rateLimitedAt === '' ? Number.NaN : Date.parse(state.rateLimitedAt) + RATE_LIMIT_COOLDOWN_MS;
-      if (!Number.isNaN(cooldownUntil) && startedAt < cooldownUntil) {
-        const minutes = Math.ceil((cooldownUntil - startedAt) / 60000);
-        runs.push(skippedRun(column, state, `限速冷却中：${state.rateLimitedAt} 触发了官网限速 403，约 ${minutes} 分钟后可再试。本次未发起任何请求。`));
+      // 冷却：站点级记录与栏目自己的记录取更晚的一个（升级前写下的栏目级记录仍然生效）。
+      // 冷却期内本栏目不发任何请求——继续重试只会延长官网的冻结。
+      const until = cooldownDeadline(site.rateLimitedAt, state.rateLimitedAt);
+      if (until > 0 && startedAt < until) {
+        runs.push(skippedRun(column, state, cooldownNotice(until, startedAt, site.rateLimitedAt, state.rateLimitedAt)));
         continue;
       }
 
@@ -837,6 +1007,16 @@ export async function main(event: { mode?: unknown; column?: unknown; maxRequest
       state.lastRequestAt = laterIso(state.lastRequestAt, result.gate.lastRequestAt);
       await saveState(state);
       runs.push(result.run);
+
+      if (result.run.rateLimited) {
+        // 撞上限速立刻结束本轮：所有栏目共用同一个出口 IP，后面的栏目一个请求都不能再发。
+        await saveSiteRateLimit(nowIso);
+        for (const rest of columns.slice(index + 1)) {
+          const restState = await readState(rest);
+          runs.push(skippedRun(rest, restState, '前一个栏目返回限速 403，本轮立即结束（共用出口 IP，冷却期内不再请求官网）。'));
+        }
+        break;
+      }
     }
   } catch (error) {
     const message = describeError(error);
@@ -865,6 +1045,8 @@ export async function main(event: { mode?: unknown; column?: unknown; maxRequest
   const backfillDone = runs.every((run) => run.backfillDone);
   const rateLimited = runs.some((run) => run.rateLimited);
   const requestsUsed = runs.reduce((sum, run) => sum + run.requests, 0);
+  const missing = runs.reduce((sum, run) => sum + run.missing, 0);
+  const resetHint = '按栏目加 {"reset":true} 重跑补齐（按原文 URL 幂等，不会产生重复条目）';
 
   return {
     ok: !rateLimited && totals.failed === 0,
@@ -878,11 +1060,16 @@ export async function main(event: { mode?: unknown; column?: unknown; maxRequest
     columns: runs,
     totals,
     backfillDone,
+    missing,
     // `ok` 只说明「本次调用没有失败」，不代表整批导入完成：分批进行时单批成功也会返回 true。
     // 是否跑完整批看 batchComplete / backfillDone / columns[].roundComplete。
     batchComplete: runs.every((run) => run.roundComplete),
     resumeHint: backfillDone
-      ? '全量导入已完成；下一次调用执行增量回看（最近 3 页）。'
-      : '全量导入未完成，继续调用本函数即可按页续跑（每次调用最多 10 次页面请求）。',
+      ? (missing > 0
+        ? `全量导入已完成；仍有 ${missing} 条早前失败的条目未取到（见 sync_state.missing），需要时 ${resetHint}。下一次调用执行增量回看（最近 3 页）。`
+        : '全量导入已完成；下一次调用执行增量回看（最近 3 页）。')
+      : (missing > 0
+        ? `全量导入还差 ${missing} 条未取到：${resetHint}。`
+        : '全量导入未完成，继续调用本函数即可按页续跑（每次调用最多 10 次页面请求）。'),
   };
 }
