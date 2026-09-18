@@ -10,6 +10,9 @@ const fixturesDir = path.resolve('tests/fixtures/news');
 const fixture = (name) => fs.readFileSync(path.join(fixturesDir, name), 'utf8');
 const LIST_URL = 'https://lnc.edu.cn/xyxw/xydt';
 const articleUrl = (id) => `https://lnc.edu.cn/xyxw/xydt/${id}`;
+/** 团委通知公告（Ticket 04 新增的第二套模板）：列表与正文见 docs/news-sources.md。 */
+const TW_LIST_URL = 'https://lnc.edu.cn/tw/djxf/tqsd';
+const TW_ARTICLE_URL = `${TW_LIST_URL}/content_32355`;
 /** 解析模块随云函数部署，测试直接从云函数产物加载。 */
 const PARSE_MODULE = 'dist/cloudfunctions/newsSync/parse.js';
 
@@ -19,6 +22,8 @@ const LIST_TITLES = [
   '长沙文创艺术职业学院领导一行到我校参观交流',
 ];
 const ARTICLE_TITLE = LIST_TITLES[0];
+/** 团委通知公告第 1 页首条的标题（真实片段 tw-list-page-1.html / tw-article-32355.html）。 */
+const TW_FIRST_TITLE = '关于开展2026年迎新志愿服务活动总结表彰工作的通知';
 const FIRST_PARAGRAPH = '金秋九月，青春启航。9月7日至11日，学校2026级新生入学教育如约而至。本届入学教育以“习惯养成、融入大学”为核心，坚守立德树人根本任务，在“品质教育+专业教育”双模块基础上，创新融入“5+3”双创实践、AI科技体验等特色模块，大健康、工科、文科三大阵营同向发力，各二级学院（书院）立足专业特色、深耕产教融合，为新生献上一场有温度、有深度、有特色的成长启蒙，用心扣好大学生涯“第一粒扣子”，助力新生以昂扬姿态开启青春新篇。';
 /** 官网正文尾部的编辑署名行前缀（实测 4 篇文章都有，其中 content_32039 用全角分号）。 */
 const SIGNOFF = /^(供稿|初审|复审|终审|编辑|责编|摄影|撰稿|排版)[:：;；]/;
@@ -197,11 +202,148 @@ test('缺少列表容器或空输入时返回空数组', () => {
   assert.deepEqual(parseNewsList('', LIST_URL), []);
 });
 
+// ---------- 团委通知公告：第二套模板（Ticket 04） ----------
+
+test('团委列表的 title 属性解析：标题与发表时间各自独立，标题里的年份不当日期', () => {
+  const { parseAnnouncementAttribute } = loadModule(PARSE_MODULE);
+  const raw = '标题：关于2025-2026年度广东省“两红两优”拟推荐名单的公示&#xD;&#xA;点击数：1478&#xD;&#xA;发表时间：2026-06-04';
+  assert.deepEqual(parseAnnouncementAttribute(raw), {
+    title: '关于2025-2026年度广东省“两红两优”拟推荐名单的公示',
+    date: '2026-06-04',
+  });
+  // 没有「标题：」前缀时整串当标题；没有发表时间时日期为空
+  assert.deepEqual(parseAnnouncementAttribute('只有标题'), { title: '只有标题', date: '' });
+  assert.deepEqual(parseAnnouncementAttribute(''), { title: '', date: '' });
+  assert.deepEqual(parseAnnouncementAttribute('标题：无时间的标题 点击数：3'), { title: '无时间的标题', date: '' });
+});
+
+test('团委通知公告列表页真实片段解析出全部 10 条，标题与日期齐全', () => {
+  const { parseAnnouncementList } = loadModule(PARSE_MODULE);
+  const items = parseAnnouncementList(fixture('tw-list-page-1.html'), TW_LIST_URL);
+  assert.equal(items.length, 10, '第 1 页应解析出 10 条，与页脚「共155条信息/共16页」的第 1 页吻合');
+  assert.deepEqual(items.map((item) => item.date), [
+    '2026-09-18', '2026-06-18', '2026-06-04', '2026-05-15', '2026-04-10',
+    '2026-03-10', '2026-03-09', '2026-03-06', '2026-03-06', '2026-03-06',
+  ]);
+  assert.deepEqual(items.map((item) => item.id), [
+    'content_32355', 'content_29791', 'content_29144', 'content_28737', 'content_27674',
+    'content_27028', 'content_26994', 'content_26930', 'content_26929', 'content_26928',
+  ]);
+  assert.equal(items[0].title, '关于开展2026年迎新志愿服务活动总结表彰工作的通知', '标题取 title 属性的「标题：」段，而不是整串含点击数的文本');
+  assert.equal(items[0].url, `${TW_LIST_URL}/content_32355`);
+  assert.deepEqual(
+    items.filter((item) => item.title === '' || item.date === ''),
+    [],
+    '第 1 页所有条目都应解析出标题与日期',
+  );
+  assert.equal(
+    items.some((item) => item.title === '通知公告' || item.title === '焦点新闻'),
+    false,
+    '侧栏 menuList 的导航项不应成为条目',
+  );
+});
+
+test('团委列表的日期：span.date 优先，缺失时回退 title 属性里的「发表时间」', () => {
+  const { parseAnnouncementList } = loadModule(PARSE_MODULE);
+  const raw = fixture('tw-list-page-1.html');
+  // (a) 真实片段首条：li 直挂 span.date，以它为准
+  assert.equal(parseAnnouncementList(raw, TW_LIST_URL)[0].date, '2026-09-18');
+  // (b) 真实片段上改掉首条的 span.date，验证 span 优先于 title 属性里的发表时间
+  const changed = raw.replace('<span class="date">2026-09-18</span>', '<span class="date">2026-01-01</span>');
+  assert.equal(parseAnnouncementList(changed, TW_LIST_URL)[0].date, '2026-01-01');
+  // (c) 真实片段上删掉首条的 span.date：退回 title 属性里的「发表时间」（同一页面的真实字段）
+  const withoutSpan = parseAnnouncementList(raw.replace('<span class="date">2026-09-18</span>', ''), TW_LIST_URL);
+  assert.equal(withoutSpan[0].date, '2026-09-18', '缺 span.date 时用 title 属性中的发表时间');
+  assert.equal(withoutSpan[0].title, TW_FIRST_TITLE, '标题里的年份不参与日期解析');
+  assert.equal(withoutSpan[1].title, '关于2026年广东大学生“青马工程” 培训班学员推荐名单的公示');
+  assert.equal(withoutSpan[1].date, '2026-06-18');
+});
+
+test('团委列表的日期与发表时间都缺时置空日期，条目仍保留', () => {
+  const { parseAnnouncementList } = loadModule(PARSE_MODULE);
+  const raw = fixture('tw-list-page-1.html');
+  // 真实片段上同时删掉 span.date 与 title 属性里的「发表时间：」，模拟官网条目缺日期（容错分支）。
+  const html = raw
+    .replace('<span class="date">2026-09-18</span>', '')
+    .replace(/&#xD;&#xA;发表时间：2026-09-18/, '');
+  const items = parseAnnouncementList(html, TW_LIST_URL);
+  assert.equal(items.length, 10);
+  assert.equal(items[0].title, TW_FIRST_TITLE, '缺日期仍保留标题与链接');
+  assert.equal(items[0].date, '');
+  assert.equal(items[1].date, '2026-06-18', '其余条目不受影响');
+});
+
+test('团委文章页真实片段解析出标题、日期与正文段落', () => {
+  const { parseAnnouncementArticle } = loadModule(PARSE_MODULE);
+  const article = parseAnnouncementArticle(fixture('tw-article-32355.html'), TW_ARTICLE_URL);
+  assert.equal(article.title, TW_FIRST_TITLE, '标题取 h2.title（该模板没有 h1.title）');
+  assert.equal(article.date, '2026-09-18', '日期取 div.property 里的「发布时间」');
+  assert.equal(article.id, 'content_32355');
+  assert.equal(article.url, TW_ARTICLE_URL);
+  assert.ok(article.paragraphs.length > 10, `正文段落数偏少：${article.paragraphs.length}`);
+  assert.equal(article.paragraphs.some((text) => text.includes('<')), false, '正文不应残留标签');
+  assert.equal(article.paragraphs.some((text) => text.includes('分享到')), false, '分享区块不属于正文');
+  assert.equal(article.paragraphs.some((text) => text.includes('浏览次数')), false, '元信息块不属于正文');
+  assert.equal(article.paragraphs.some((text) => text.trim() === ''), false, '空白段落应被移除');
+  assert.equal(
+    article.paragraphs.join('').includes('扫一扫') === false,
+    true,
+    '页面脚本与二维码提示不应混进正文',
+  );
+  assert.equal(
+    /^\d{4}年\d{1,2}月\d{1,2}日$/.test(article.paragraphs[article.paragraphs.length - 1]),
+    true,
+    '末尾落款日期应保留（该模板署名只有「终审：团委」一行，不影响落款）',
+  );
+  assert.equal(
+    article.paragraphs.some((text) => /^(供稿|初审|复审|终审)[:：;；]/.test(text)),
+    false,
+    '尾部编辑署名不应留在正文里',
+  );
+});
+
+test('团委文章页缺少 h2.class="title" 时回退到 title 标签', () => {
+  const { parseAnnouncementArticle } = loadModule(PARSE_MODULE);
+  // fixture 是正文片段，不含 <head>；这里按官网 <title> 的真实格式（标题_通知公告_团委_学校）
+  // 补一行，再删掉 h2.title，验证回退分支。
+  const html = '<title>' + TW_FIRST_TITLE + '_通知公告_团委_广东岭南职业技术学院</title>'
+    + fixture('tw-article-32355.html').replace('<h2 class="title">', '<h3 class="title">');
+  const article = parseAnnouncementArticle(html, TW_ARTICLE_URL);
+  assert.equal(article.title, TW_FIRST_TITLE, '<title> 回退时截掉后面的站点分段');
+});
+
+test('团委文章页缺少正文容器时仍返回标题与日期', () => {
+  const { parseAnnouncementArticle } = loadModule(PARSE_MODULE);
+  const html = fixture('tw-article-32355.html').replace('class="printArea"', 'class="noBody"');
+  const article = parseAnnouncementArticle(html, TW_ARTICLE_URL);
+  assert.equal(article.title, TW_FIRST_TITLE);
+  assert.equal(article.date, '2026-09-18');
+  assert.deepEqual(article.paragraphs, []);
+});
+
+test('两套模板各自分派：容器与标题锚点不同，交叉套用解析不出条目', () => {
+  const { parseList, parseArticle } = loadModule(PARSE_MODULE);
+  assert.equal(parseList(fixture('tw-list-page-1.html'), TW_LIST_URL, 'newsList').length, 10);
+  assert.equal(parseList(fixture('list-page-1.html'), LIST_URL, 'xyxw').length, 3);
+  assert.deepEqual(parseList(fixture('tw-list-page-1.html'), TW_LIST_URL, 'xyxw'), [], 'ul.newsList 不是校园动态的列表容器');
+  assert.deepEqual(parseList(fixture('list-page-1.html'), LIST_URL, 'newsList'), [], 'ul.list-intro 不是通知公告的列表容器');
+  const twAsXyxw = parseArticle(fixture('tw-article-32355.html'), TW_ARTICLE_URL, 'xyxw');
+  assert.equal(twAsXyxw.title, '', '团委文章页没有 h1.title');
+  assert.deepEqual(twAsXyxw.paragraphs, [], '团委文章页没有 div.article-content');
+  assert.equal(parseArticle(fixture('tw-article-32355.html'), TW_ARTICLE_URL, 'newsList').date, '2026-09-18');
+});
+
 test('每个 fixture 都记录了来源 URL 与抓取日期', () => {
   for (const name of ['list-page-1.html', 'list-no-items.html', 'article-32118.html', 'article-32039-tail.html']) {
     const text = fixture(name);
     assert.match(text, /来源：https:\/\/lnc\.edu\.cn\/xyxw\/xydt/, name);
     assert.match(text, /抓取日期 2026-09-17/, name);
+  }
+  // 团委通知公告的第二套模板片段（Ticket 04，2026-09-18 抓取）
+  for (const name of ['tw-list-page-1.html', 'tw-article-32355.html']) {
+    const text = fixture(name);
+    assert.match(text, /来源：https:\/\/lnc\.edu\.cn\/tw\/djxf\/tqsd/, name);
+    assert.match(text, /抓取日期 2026-09-18/, name);
   }
 });
 

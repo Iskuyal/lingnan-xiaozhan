@@ -25,7 +25,7 @@
 | 01 | [AI 服务端基础设施](01-ai-foundation.md) | **ready-for-agent** | — |
 | 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | **done（2026-09-18）** | — |
 | 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | **in-progress（代码与测试完成，待云函数部署后做端到端验收）** | — |
-| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **ready-for-agent** | — |
+| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **in-progress（代码与本地测试完成；待部署与触发器实测）** | — |
 | 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-agent | 01、03 |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-agent | 01、03 |
 | 07 | [部门 AI 问答](07-department-ai-qa.md) | ready-for-agent | 01 |
@@ -56,4 +56,4 @@
 
 **本地票的完成状态用 `done`**：GitHub Issue 用关闭表示任务结束，本地票没有关闭动作，因此用 `done` 表示同一含义——验收达成并挂上成果与证据。`done` 不是 [分流标签](../../agents/triage-labels.md) 的一员，只用于本地票；开工前的分流状态仍只用那五个原始标签。
 
-**`in-progress` 同样只用于本地票**，表示代码与测试已落地、但验收条件尚未满足（例如需要人工部署云端后才能跑端到端）。它既不是完成，也不代表还能重复开工；条件满足后转 `done`。
+**本地票的中间状态用 `in-progress`**：代码、测试与文档已完成，但验收依赖人的操作（部署、控制台配置、真机等）而尚未取得云端证据时使用，写成 `in-progress（已完成的部分；待谁做什么）`，并逐条区分「本地已验证」与「云端未验证」——**不把本地桩测试通过当成验收通过**。它既不是完成，也不代表还能重复开工；取得云端证据后按上面的 `done` 收尾，并同步本索引与对应阶段文档。

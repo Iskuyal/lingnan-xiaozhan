@@ -8,8 +8,11 @@
 import { NewsArticle, NewsListItem, NewsSourceMeta } from './types';
 
 const COLLECTION = 'news_articles';
-/** 来源栏目名称。页面在数据到达前也要如实展示来源，因此由服务导出，避免各处各写一份。 */
-export const SOURCE_LABEL = '学校官网 · 校园动态';
+/**
+ * 列表聚合多个栏目（校园动态、团委通知公告）时的来源名：这些内容都来自学校官网，
+ * 具体栏目由每条记录的 `sourceLabel` 给出，详情页按它展示，列表不冒充单一栏目。
+ */
+export const SOURCE_LABEL = '学校官网';
 /** 每页读取条数：列表页逐页加载每次读取这么多。 */
 export const LIST_LIMIT = 20;
 /** 首页「最近资讯」展示条数。 */
@@ -26,11 +29,18 @@ interface ArticleRow {
   url?: unknown;
   date?: unknown;
   paragraphs?: unknown;
+  sourceLabel?: unknown;
   updatedAt?: unknown;
 }
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+/** 记录的来源栏目名；老记录缺字段时退回列表用的通用来源名，不显示空白。 */
+function sourceLabelOf(row: ArticleRow): string {
+  const label = asString(row.sourceLabel);
+  return label === '' ? SOURCE_LABEL : label;
 }
 
 function toListItem(row: ArticleRow): NewsListItem {
@@ -119,8 +129,9 @@ export async function getNewsDetail(id: string): Promise<{ article: NewsArticle;
   const result = await database().collection(COLLECTION).where({ id }).limit(1).get();
   const rows = (result.data || []) as ArticleRow[];
   if (rows.length === 0) return null;
+  const label = sourceLabelOf(rows[0]);
   return {
     article: toArticle(rows[0]),
-    meta: { label: SOURCE_LABEL, syncedAt: latestSyncTime(rows), fromServer: true },
+    meta: { label, syncedAt: latestSyncTime(rows), fromServer: true },
   };
 }

@@ -1,18 +1,18 @@
 <view class="page">
   <view class="news-heading">
     <view class="eyebrow">官网内容 · 原文可核对</view>
-    <view class="news-title">校园动态</view>
+    <view class="news-title">校园资讯</view>
     <view class="news-meta">来源：{{source.label}}</view>
-    <view class="news-meta" wx:if="{{syncedAtText !== ''}}">数据同步于 {{syncedAtText}}</view>
+    <view class="news-meta" wx:if="{{syncedAtText !== ''}}">本页条目最近一次写入：{{syncedAtText}}</view>
   </view>
 
   <view class="news-notice">
-    内容由云函数从官网同步，不是实时更新。详情页为小程序自身页面，可复制原文链接到浏览器核对。
+    内容由云函数从官网同步，不是实时更新，也不代表整批同步都成功。详情页为小程序自身页面，可复制原文链接到浏览器核对。
   </view>
 
   <view wx:if="{{status === 'loading'}}" class="news-empty">
     <view class="section-title">加载中</view>
-    <view class="news-empty-copy">正在从云端读取校园动态…</view>
+    <view class="news-empty-copy">正在从云端读取校园资讯…</view>
   </view>
 
   <view wx:elif="{{status === 'error'}}" class="news-empty">

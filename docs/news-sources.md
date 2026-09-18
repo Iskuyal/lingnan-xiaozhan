@@ -45,6 +45,20 @@
 
 据此，Ticket 04 若要纳入团委通知公告，**需新增一套列表与正文解析规则及对应测试**，而不是改一个栏目 URL。
 
+#### 解析实现与实测结果（2026-09-18，Ticket 04）
+
+已实现：`cloudfunctions/newsSync/parse.ts` 的 `parseAnnouncementList` / `parseAnnouncementArticle`，由栏目记录的 `NewsTemplate`（`xyxw` / `newsList`）经 `parseList` / `parseArticle` 分派；真实片段 fixture 为 `tests/fixtures/news/tw-list-page-1.html` 与 `tw-article-32355.html`（均带来源 URL 与抓取日期注释），测试见 `tests/news.test.cjs`。
+
+对当日抓取的原始页面跑编译后的解析模块，实测结果：
+
+- 列表第 1 页 10 条**全部**解析出标题与日期，日期区间 2026-09-18 ~ 2026-03-06，与 page 页脚「共155条信息/共16页」吻合；条目 ID 为 `content_<数字>`。
+- 标题取 `<a title>` 中「标题：」之后、「点击数：」之前的部分（该属性实测为「标题：… 点击数：… 发表时间：…」三段）；日期优先 `li` 直挂的 `span.date`，该节点缺失时才用 `title` 属性里的「发表时间」，且只在该字段内部解析日期（避免标题里的年份被当成日期）。
+- 必须**先定位 `ul.newsList` 容器**：侧栏 `ul.menuList`（通知公告 / 焦点新闻 / 外媒报道 / 获奖情况）同样使用 `<li>`；`<li class="split">` 这类分隔条没有锚点，被跳过。
+- 文章页 `/tw/djxf/tqsd/content_32355`：`h2.title` 标题、`div.property` 内的「发布时间：2026-09-18 17:48:25」、`div.printArea` 正文 26 段。正文容器里混着整段脚本、`div.property` 与 `h2.title`，因此先按右边界（`div.userControl` / `div#relativeInfo` / `</article>`）截断，再剔脚本与这两个块；结尾署名只有「终审：团委」一行，按既有的尾部署名规则剥离。
+- 正文大量用 `<span>`/`<font>` 按字形切分文字（例如把「2026」拆成 `<span>202</span><span>6</span>`）：剥离行内标签时**删除而不替换空格**，否则会写出「202 6 年 9 月」。这条规则对校园动态模板同样生效。
+- 该模板**没有** `<meta name="PubDate">`，日期只认 `div.property` 里的「发布时间」（容器缺失时才退回整页搜索同一文案），不引入页面以外的来源。
+- 已知形态差异（不视为解析问题）：通知公告正文常以居中重复的标题开头（公文版式），详情页会同时显示标题与正文首段；解析按真实页面内容保留，不做去重。
+
 - 分页格式：第 1 页 `https://lnc.edu.cn/xyxw/xydt`，第 N 页 `https://lnc.edu.cn/xyxw/xydt_N`（`N ≥ 2`）。
 - 分页实测：第 1 页页脚为 `共1252条信息/共126页`，`尾页` 指向 `/xyxw/xydt_126`；实测第 60、120、126 页返回 HTTP 200，页脚同样为 1252 条 / 126 页。
 - 每页条数：第 1–125 页各 10 条，第 126 页 2 条（125 × 10 + 2 = 1252，与页脚一致）。
