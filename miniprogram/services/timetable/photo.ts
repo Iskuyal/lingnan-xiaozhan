@@ -100,8 +100,8 @@ function asInt(value: unknown): number {
   return 0;
 }
 
-/** 从模型输出里取出 JSON 对象：先整体解析，失败时截取第一个 { 到最后一个 } 再试。 */
-function extractJson(text: string): Record<string, unknown> | null {
+/** 从模型输出里取出 JSON 对象：先整体解析，失败时截取第一个 { 到最后一个 } 再试（06 复用）。 */
+export function extractJson(text: string): Record<string, unknown> | null {
   const trimmed = text.trim();
   if (trimmed === '') return null;
   const tryParse = (source: string): Record<string, unknown> | null => {
