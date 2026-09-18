@@ -1,6 +1,6 @@
 # 待实施 Ticket
 
-2026-09-18 由负责人确认的拆分。共 9 票，按依赖顺序编号，**编号越小越先可开工**。
+2026-09-18 由负责人确认的拆分，共 9 票。编号用于引用；开工顺序由实现依赖和决策关卡共同决定。
 
 拆分依据：[开发规格](../../development-spec.md)、[开发阶段](../../development-phases.md)、[候选场景对比](../scenario-comparison.md)（MVP 与 AI 落点的定案记录）。
 
@@ -10,29 +10,31 @@
 01 AI 服务端基础设施 ──┬─→ 05 课表截图识别导入 ─┐
                       ├─→ 06 课表 AI 助手      ├─→ 09 P6 材料与包
                       └─→ 07 部门 AI 问答     ─┘
-03 课表 Excel 导入 ───┴─→ 05、06
-02 首页资讯入口与分页
+03 课表 Excel 导入 ─────→ 05、06
+02 首页资讯入口与分页 ───────────────────────→ 09
 04 扩大同步范围并每日定时 ─────────────────────→ 09
 08 发布后补测单页模式（等备案与发布，不卡其他票）
 ```
 
+以上为实现依赖；01、03、04 等票的人工决策关卡见下表及各票正文。
+
 ## 各票一览
 
-| # | Ticket | Blocked by |
-| --- | --- | --- |
-| 01 | [AI 服务端基础设施](01-ai-foundation.md) | 无 |
-| 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | 无 |
-| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | 无 |
-| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | 无（**需先做 5 项范围决策**） |
-| 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | 01、03 |
-| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | 01、03 |
-| 07 | [部门 AI 问答](07-department-ai-qa.md) | 01 |
-| 08 | [发布后补测未登录单页模式](08-post-publish-single-page-mode.md) | 外部：认证 + 备案 + 发布 |
-| 09 | [P6 参赛材料与包](09-p6-submission.md) | 04、05、06、07（执行前需细拆） |
+| # | Ticket | 当前状态 | Blocked by |
+| --- | --- | --- | --- |
+| 01 | [AI 服务端基础设施](01-ai-foundation.md) | ready-for-human | P5-A 指标、成本、安全接入与降级决定 |
+| 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | ready-for-agent | 无 |
+| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | ready-for-human | 真实样本、支持版式与手工编辑范围 |
+| 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | ready-for-human | 五项同步范围决策 |
+| 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-human | 01、03；识别失败时的降级与手工录入范围 |
+| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-human | 01、03；独立手工编辑的降级验收边界 |
+| 07 | [部门 AI 问答](07-department-ai-qa.md) | ready-for-agent | 01 |
+| 08 | [发布后补测未登录单页模式](08-post-publish-single-page-mode.md) | blocked-until-published | 外部：认证 + 备案 + 发布 |
+| 09 | [P6 参赛材料与包](09-p6-submission.md) | needs-info | 02、04、05、06、07；作品名、校内交付安排及细拆 |
 
-## 当前可开工的 frontier
+## 当前可开工的任务
 
-**01、02、03** 三票无阻塞，可并行开始。**04** 技术上也随即能开，但要先有范围决策。
+**Ticket 02 可立即实施。** 01、03、04 先完成各自决策；05、06 同时等待决策与前置实现；07 的规格已明确，但仍须等待 01 完成。`ready-for-agent` 表示规格可执行，只有 `Blocked by` 也清空后才能开工。08 等发布条件，09 先作为阶段清单保留。
 
 ## 拆分时的三个判断（供回溯）
 
@@ -43,3 +45,5 @@
 ## 与 GitHub Issues 的关系
 
 按负责人要求，这些 ticket **不发到 GitHub Issues**，以本目录的文件管理。仓库里仍开着的 #3–#6 是阶段级粗票，不与之重复；本目录的票落地后可作为它们的执行细目。
+
+状态、依赖和成果更新在各票文件中，并同步本索引；具体操作见 [任务管理约定](../../agents/issue-tracker.md)。`blocked-until-published` 是本地票的发布阻塞说明，不新增 GitHub 分流标签。

@@ -24,7 +24,7 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 
 ## 协作
 
-任务在 [GitHub Issues](https://github.com/Iskuyal/wx-match/issues) 管理。每个任务包含问题、范围、验收标准和成果证据；开发使用短期分支和 PR，提交说明及交付报告使用中文。
+阶段任务在 [GitHub Issues](https://github.com/Iskuyal/wx-match/issues) 管理；当前 9 张执行票按负责人要求保存在 [本地 Ticket](docs/tasks/tickets/README.md)，不重复建 Issue。每个任务包含问题、范围、验收标准和成果证据；开发使用短期分支和 PR，提交说明及交付报告使用中文。
 
 开始工作前阅读 [AGENTS.md](AGENTS.md)。原生 TypeScript 小程序代码位于 `miniprogram/`，构建产物位于 `dist/`，后台在 P3 引入微信云开发。
 
@@ -63,6 +63,6 @@ npm run verify:wechat
 
 P1、P2 与 P3-1 已交付，云函数、数据库、构建接入与线上收尾（超时 20 秒、`invoke: false`）均已完成。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。
 
-接下来：**P3-2**（首页资讯入口、逐页加载、扩大抓取与每日定时，需先做 5 项范围决策）与 **P4-B/P5-B**（课表改为**导入制**——教务系统下载的 Excel 或课表截图，不再接入教务账号；AI 三落点已定：部门问答、课表图片识别、课表助手）。规格见 [开发规格](docs/development-spec.md)，阶段见 [开发阶段](docs/development-phases.md)。
+接下来：**Ticket 02 首页资讯入口与分页可先行**；扩大同步与定时（04）等待五项范围决策。**P4-B/P5-B** 按导入制课表与三个 AI 落点推进，先补齐导入范围和 P5-A 决策。当前状态与依赖见 [Ticket 索引](docs/tasks/tickets/README.md)，功能边界见 [开发规格](docs/development-spec.md)。
 
 微信真机预览尚未执行（单页模式实测被备案阻塞，挂在 P6）；正式作品名仍待定。赛事日期与冲突已由官方确认结清，见 [赛事要求](docs/competition.md)。
