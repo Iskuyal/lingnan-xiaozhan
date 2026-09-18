@@ -1,0 +1,7 @@
+# 密钥绝不入库
+key.txt
+.env
+*.key
+
+# 抓取的官网正文全文（可复现，不入库）
+data/news.json

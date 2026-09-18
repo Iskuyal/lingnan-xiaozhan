@@ -1,0 +1,642 @@
+{
+  "model": "deepseek-flash",
+  "baseUrl": "https://api.deepseek.com",
+  "startedAt": "2026-09-18T10:02:39.662Z",
+  "calls": [
+    {
+      "articleId": "content_32354",
+      "test": "summary",
+      "promptTokens": 729,
+      "completionTokens": 96,
+      "ms": 234
+    },
+    {
+      "articleId": "content_32354",
+      "test": "extract",
+      "promptTokens": 791,
+      "completionTokens": 1909,
+      "ms": 113
+    },
+    {
+      "articleId": "content_32354",
+      "test": "classify",
+      "promptTokens": 559,
+      "completionTokens": 1182,
+      "ms": 228
+    },
+    {
+      "articleId": "content_32354",
+      "test": "actions",
+      "promptTokens": 796,
+      "completionTokens": 51,
+      "ms": 136
+    },
+    {
+      "articleId": "content_32354",
+      "test": "targeted",
+      "promptTokens": 733,
+      "completionTokens": 186,
+      "ms": 461
+    },
+    {
+      "articleId": "content_32353",
+      "test": "summary",
+      "promptTokens": 603,
+      "completionTokens": 202,
+      "ms": 112
+    },
+    {
+      "articleId": "content_32353",
+      "test": "extract",
+      "promptTokens": 665,
+      "completionTokens": 631,
+      "ms": 123
+    },
+    {
+      "articleId": "content_32353",
+      "test": "classify",
+      "promptTokens": 573,
+      "completionTokens": 256,
+      "ms": 106
+    },
+    {
+      "articleId": "content_32353",
+      "test": "actions",
+      "promptTokens": 670,
+      "completionTokens": 364,
+      "ms": 138
+    },
+    {
+      "articleId": "content_32353",
+      "test": "targeted",
+      "promptTokens": 589,
+      "completionTokens": 73,
+      "ms": 134
+    },
+    {
+      "articleId": "content_32118",
+      "test": "summary",
+      "promptTokens": 2084,
+      "completionTokens": 104,
+      "ms": 140
+    },
+    {
+      "articleId": "content_32118",
+      "test": "extract",
+      "promptTokens": 2146,
+      "completionTokens": 4455,
+      "ms": 173
+    },
+    {
+      "articleId": "content_32118",
+      "test": "classify",
+      "promptTokens": 630,
+      "completionTokens": 537,
+      "ms": 215
+    },
+    {
+      "articleId": "content_32118",
+      "test": "actions",
+      "promptTokens": 2151,
+      "completionTokens": 63,
+      "ms": 115
+    },
+    {
+      "articleId": "content_32118",
+      "test": "targeted",
+      "promptTokens": 2081,
+      "completionTokens": 45,
+      "ms": 215
+    },
+    {
+      "articleId": "content_32039",
+      "test": "summary",
+      "promptTokens": 462,
+      "completionTokens": 146,
+      "ms": 268
+    },
+    {
+      "articleId": "content_32039",
+      "test": "extract",
+      "promptTokens": 524,
+      "completionTokens": 472,
+      "ms": 103
+    },
+    {
+      "articleId": "content_32039",
+      "test": "classify",
+      "promptTokens": 499,
+      "completionTokens": 1363,
+      "ms": 112
+    },
+    {
+      "articleId": "content_32039",
+      "test": "actions",
+      "promptTokens": 529,
+      "completionTokens": 150,
+      "ms": 219
+    },
+    {
+      "articleId": "content_32039",
+      "test": "targeted",
+      "promptTokens": 460,
+      "completionTokens": 51,
+      "ms": 217
+    },
+    {
+      "articleId": "content_31144",
+      "test": "summary",
+      "promptTokens": 669,
+      "completionTokens": 169,
+      "ms": 153
+    },
+    {
+      "articleId": "content_31144",
+      "test": "extract",
+      "promptTokens": 731,
+      "completionTokens": 1884,
+      "ms": 104
+    },
+    {
+      "articleId": "content_31144",
+      "test": "classify",
+      "promptTokens": 554,
+      "completionTokens": 757,
+      "ms": 197
+    },
+    {
+      "articleId": "content_31144",
+      "test": "actions",
+      "promptTokens": 736,
+      "completionTokens": 63,
+      "ms": 115
+    },
+    {
+      "articleId": "content_31144",
+      "test": "targeted",
+      "promptTokens": 674,
+      "completionTokens": 34,
+      "ms": 117
+    },
+    {
+      "articleId": "content_30930",
+      "test": "summary",
+      "promptTokens": 745,
+      "completionTokens": 184,
+      "ms": 146
+    },
+    {
+      "articleId": "content_30930",
+      "test": "extract",
+      "promptTokens": 807,
+      "completionTokens": 393,
+      "ms": 176
+    },
+    {
+      "articleId": "content_30930",
+      "test": "classify",
+      "promptTokens": 635,
+      "completionTokens": 293,
+      "ms": 108
+    },
+    {
+      "articleId": "content_30930",
+      "test": "actions",
+      "promptTokens": 812,
+      "completionTokens": 70,
+      "ms": 142
+    },
+    {
+      "articleId": "content_30930",
+      "test": "targeted",
+      "promptTokens": 738,
+      "completionTokens": 90,
+      "ms": 173
+    },
+    {
+      "articleId": "content_30929",
+      "test": "summary",
+      "promptTokens": 885,
+      "completionTokens": 110,
+      "ms": 109
+    },
+    {
+      "articleId": "content_30929",
+      "test": "extract",
+      "promptTokens": 947,
+      "completionTokens": 990,
+      "ms": 100
+    },
+    {
+      "articleId": "content_30929",
+      "test": "classify",
+      "promptTokens": 563,
+      "completionTokens": 439,
+      "ms": 109
+    },
+    {
+      "articleId": "content_30929",
+      "test": "actions",
+      "promptTokens": 952,
+      "completionTokens": 47,
+      "ms": 195
+    },
+    {
+      "articleId": "content_30929",
+      "test": "targeted",
+      "promptTokens": 887,
+      "completionTokens": 136,
+      "ms": 174
+    },
+    {
+      "articleId": "content_30873",
+      "test": "summary",
+      "promptTokens": 695,
+      "completionTokens": 298,
+      "ms": 181
+    },
+    {
+      "articleId": "content_30873",
+      "test": "extract",
+      "promptTokens": 757,
+      "completionTokens": 870,
+      "ms": 104
+    },
+    {
+      "articleId": "content_30873",
+      "test": "classify",
+      "promptTokens": 545,
+      "completionTokens": 674,
+      "ms": 105
+    },
+    {
+      "articleId": "content_30873",
+      "test": "actions",
+      "promptTokens": 762,
+      "completionTokens": 121,
+      "ms": 217
+    },
+    {
+      "articleId": "content_30873",
+      "test": "targeted",
+      "promptTokens": 692,
+      "completionTokens": 38,
+      "ms": 108
+    },
+    {
+      "articleId": "RAG",
+      "test": "rag:我校棒球队取得了什么成绩？",
+      "promptTokens": 6569,
+      "completionTokens": 136,
+      "ms": 221
+    },
+    {
+      "articleId": "RAG",
+      "test": "rag:2026级新生入学教育是什么时候开展的？",
+      "promptTokens": 6572,
+      "completionTokens": 61,
+      "ms": 158
+    },
+    {
+      "articleId": "RAG",
+      "test": "rag:学校图书馆的开放时间是几点？",
+      "promptTokens": 6569,
+      "completionTokens": 95,
+      "ms": 267
+    }
+  ],
+  "perArticle": [
+    {
+      "id": "content_32354",
+      "title": "我校受邀参加清远长护服务产业园揭牌仪式",
+      "date": "2026-09-12",
+      "charCount": 1157,
+      "outputs": {
+        "summary": "9月12日，我校作为唯一指定参展高校受邀参加清远长护服务产业园揭牌仪式，党委副书记、纪委书记李浩带队出席并设专属展区展示大健康办学成果。李浩与各方深入交流，表示将深化产教融合、优化人才培养，为清远长护服务产业提供人才与智力支撑。活动现场，我校三大院系师生承担服务保障工作，优秀毕业生邱洢桐担任核心讲解获一致认可。",
+        "extract": {
+          "raw": "{\"date\":\"2026年9月12日\",\"place\":\"清远市清城区清远星谷科技园\",\"organizer\":[\"清远市医疗保障局\",\"广东岭南职业技术学院\"],\"eventType\":\"活动\"}",
+          "parsed": {
+            "date": "2026年9月12日",
+            "place": "清远市清城区清远星谷科技园",
+            "organizer": [
+              "清远市医疗保障局",
+              "广东岭南职业技术学院"
+            ],
+            "eventType": "活动"
+          }
+        },
+        "classify": {
+          "raw": "[\"校企合作\",\"教学科研\",\"志愿服务\"]",
+          "parsed": [
+            "校企合作",
+            "教学科研",
+            "志愿服务"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及该报道发生在哪个校区。资料仅提及揭牌仪式在清远市清城区清远星谷科技园举行。"
+      }
+    },
+    {
+      "id": "content_32353",
+      "title": "访企拓岗聚力赋能，产教融汇共启新局——副校长翟树芹带队赴广州视源电子科技股份有限公司调研",
+      "date": "2026-09-12",
+      "charCount": 926,
+      "outputs": {
+        "summary": "2026年9月11日，副校长翟树芹带队赴广州视源电子科技股份有限公司调研，双方围绕智慧教学平台共建、课程资源开发、实训基地建设、师资共育、科研攻关及AI数据标注、实习生培养等项目深入交流并达成多项合作共识。学校将以此次走访为契机，深化产教融合、对接头部产业资源，聚力培育适配数字产业发展的高素质技术技能人才。",
+        "extract": {
+          "raw": "{\"date\":\"2026年9月11日\",\"place\":\"广州视源电子科技股份有限公司\",\"organizer\":[\"教学科研处（图书馆）\",\"校企合作与就业创业处\",\"人工智能学院（砺能书院）\",\"广州视源电子科技股份有限公司\"],\"eventType\":\"合作\"}",
+          "parsed": {
+            "date": "2026年9月11日",
+            "place": "广州视源电子科技股份有限公司",
+            "organizer": [
+              "教学科研处（图书馆）",
+              "校企合作与就业创业处",
+              "人工智能学院（砺能书院）",
+              "广州视源电子科技股份有限公司"
+            ],
+            "eventType": "合作"
+          }
+        },
+        "classify": {
+          "raw": "[\"校企合作\",\"招生就业\",\"教学科研\"]",
+          "parsed": [
+            "校企合作",
+            "招生就业",
+            "教学科研"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及。"
+      }
+    },
+    {
+      "id": "content_32118",
+      "title": "向“新”而行，逐梦岭南——我校开展2026级新生入学教育",
+      "date": "2026-09-12",
+      "charCount": 3118,
+      "outputs": {
+        "summary": "我校9月7日至11日开展2026级新生入学教育，以“习惯养成、融入大学”为核心，在“品质教育+专业教育”双模块基础上融入“5+3”双创实践、AI科技体验等特色内容。大健康、工科、文科三大阵营各二级学院立足专业特色、深耕产教融合，通过企业参访、实操体验、AI赋能与榜样分享等多元形式，助力新生扣好大学生涯“第一粒扣子”。",
+        "extract": {
+          "raw": "{\"date\":\"9月7日至11日\",\"place\":\"学校\",\"organizer\":[\"学校\",\"药学院（明德书院）\",\"护理与健康学院（思诚书院）\",\"医学应用技术学院（知行书院）\",\"智能制造学院（弘毅书院）\",\"人工智能学院（砺能书院）\",\"数字媒体与艺术学院（笃学书院）\",\"经济管理学院（崇礼书院）\",\"电子商贸学院（至善书院）\"],\"eventType\":\"教学\"}",
+          "parsed": {
+            "date": "9月7日至11日",
+            "place": "学校",
+            "organizer": [
+              "学校",
+              "药学院（明德书院）",
+              "护理与健康学院（思诚书院）",
+              "医学应用技术学院（知行书院）",
+              "智能制造学院（弘毅书院）",
+              "人工智能学院（砺能书院）",
+              "数字媒体与艺术学院（笃学书院）",
+              "经济管理学院（崇礼书院）",
+              "电子商贸学院（至善书院）"
+            ],
+            "eventType": "教学"
+          }
+        },
+        "classify": {
+          "raw": "[\"校园活动\",\"教学科研\",\"校企合作\"]",
+          "parsed": [
+            "校园活动",
+            "教学科研",
+            "校企合作"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及这篇报道发生在哪个校区。"
+      }
+    },
+    {
+      "id": "content_32039",
+      "title": "以志为炬，温暖迎新——我校召开2026年迎新志愿者动员大会",
+      "date": "2026-09-04",
+      "charCount": 684,
+      "outputs": {
+        "summary": "我校召开2026年迎新志愿者动员大会，副校长卜佳锐对超1500名师生志愿者提出温情服务、明确职责、严守底线三点要求。大会开展岗位分工、应急处置及服务礼仪等专项培训，并组织全体志愿者宣誓。志愿者将以饱满热情和志愿力量护航2026级新生开启大学旅程。",
+        "extract": {
+          "raw": "{\"date\": \"2026年9月1日\", \"place\": \"清远校区图书馆报告厅\", \"organizer\": [\"广东岭南职业技术学院\"], \"eventType\": \"志愿服务\"}",
+          "parsed": {
+            "date": "2026年9月1日",
+            "place": "清远校区图书馆报告厅",
+            "organizer": [
+              "广东岭南职业技术学院"
+            ],
+            "eventType": "志愿服务"
+          }
+        },
+        "classify": {
+          "raw": "[\"志愿服务\",\"校园活动\"]",
+          "parsed": [
+            "志愿服务",
+            "校园活动"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "这篇报道发生在清远校区。"
+      }
+    },
+    {
+      "id": "content_31144",
+      "title": "长沙文创艺术职业学院领导一行到我校参观交流",
+      "date": "2026-08-14",
+      "charCount": 1068,
+      "outputs": {
+        "summary": "2026年8月13日，长沙文创艺术职业学院理事长黄平、校长马卫平带队到我校清远校区参观交流，副校长徐萍携相关部门负责同志热情接待并举行座谈会。双方围绕民办高职特色办学、产教融合、书院制育人等议题深入交流，并实地参观药学楼、产教融合示范园区及多个实训基地。两校表示将建立常态化交流机制，在育人改革、产教融合、教学管理等领域深化协作，共同推动民办职业教育高质量发展。",
+        "extract": {
+          "raw": "{\"date\":\"2026年8月13日\",\"place\":\"我校清远校区\",\"organizer\":[\"长沙文创艺术职业学院\",\"我校\"],\"eventType\":\"合作\"}",
+          "parsed": {
+            "date": "2026年8月13日",
+            "place": "我校清远校区",
+            "organizer": [
+              "长沙文创艺术职业学院",
+              "我校"
+            ],
+            "eventType": "合作"
+          }
+        },
+        "classify": {
+          "raw": "[\"教学科研\",\"校企合作\",\"校园活动\"]",
+          "parsed": [
+            "教学科研",
+            "校企合作",
+            "校园活动"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "这篇报道发生在清远校区。"
+      }
+    },
+    {
+      "id": "content_30930",
+      "title": "历史性突破！我校棒球队首获2026中国大学生棒垒球联赛总决赛乙组全国冠军",
+      "date": "2026-08-08",
+      "charCount": 1047,
+      "outputs": {
+        "summary": "2026年7月29日至8月4日，我校棒球队在大连举行的中国大学生棒垒球联赛总决赛中勇夺乙组全国冠军，实现学校国家级体育赛事历史性突破。球队同时获得“体育道德风尚奖”，教练叶帅及多名队员分获优秀教练员、优秀运动员等荣誉。此次夺冠是学校深耕体教融合、推进校园体育高质量发展的实践成果。",
+        "extract": {
+          "raw": "{\"date\":\"2026年7月29日至8月4日\",\"place\":\"大连\",\"organizer\":[\"中国学生体育联合会\",\"中国棒球协会\",\"中国垒球协会\"],\"eventType\":\"荣誉\"}",
+          "parsed": {
+            "date": "2026年7月29日至8月4日",
+            "place": "大连",
+            "organizer": [
+              "中国学生体育联合会",
+              "中国棒球协会",
+              "中国垒球协会"
+            ],
+            "eventType": "荣誉"
+          }
+        },
+        "classify": {
+          "raw": "[\"荣誉成果\",\"校园活动\"]",
+          "parsed": [
+            "荣誉成果",
+            "校园活动"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及这篇报道发生在哪个校区。"
+      }
+    },
+    {
+      "id": "content_30929",
+      "title": "聚力“百千万工程”：校社地三方联动开展志愿服务",
+      "date": "2026-08-08",
+      "charCount": 1434,
+      "outputs": {
+        "summary": "广东岭南职业技术学院智能制造学院（弘毅书院）联合广东省岭南教育慈善基金会与清远市金湖社区，构建“高校出力、慈善兜底、社区落地”的校社地三方协同服务模式，组建“智启未来”突击队服务基层。团队围绕科创启智、心理润心、平安护航、法美融育四个维度开展公益课堂与安全教育，护航青少年健康成长。三方将持续深化长效共建机制，推动优质资源常态化下沉，为基层治理与清远高质量发展注入青春动能。",
+        "extract": {
+          "raw": "{\"date\":\"暑假期间\",\"place\":\"清远市金湖社区\",\"organizer\":[\"广东岭南职业技术学院智能制造学院（弘毅书院）\",\"广东省岭南教育慈善基金会\",\"清远市金湖社区\"],\"eventType\":\"志愿服务\"}",
+          "parsed": {
+            "date": "暑假期间",
+            "place": "清远市金湖社区",
+            "organizer": [
+              "广东岭南职业技术学院智能制造学院（弘毅书院）",
+              "广东省岭南教育慈善基金会",
+              "清远市金湖社区"
+            ],
+            "eventType": "志愿服务"
+          }
+        },
+        "classify": {
+          "raw": "[\"志愿服务\",\"党建思政\",\"校园活动\"]",
+          "parsed": [
+            "志愿服务",
+            "党建思政",
+            "校园活动"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及具体校区。仅提到广东岭南职业技术学院智能制造学院（弘毅书院）联动清远市金湖社区开展活动。"
+      }
+    },
+    {
+      "id": "content_30873",
+      "title": "到田间地头去！到群众中去！——广东岭南职业技术学院暑期社会实践赋能乡村振兴",
+      "date": "2026-07-31",
+      "charCount": 1150,
+      "outputs": {
+        "summary": "2026年暑期，广东岭南职业技术学院组织2000余名师生组建136支实践队伍奔赴南粤基层，开展“百千万工程”突击队等社会实践。实践聚焦岭南特色产业、乡村文化保育、基层公共服务和绿美广东生态建设，依托专业开展健康义诊、农产品技术指导、政策宣讲等服务。活动以专业赋能基层、青春助力乡村振兴，推动实践育人与地方发展深度融合。",
+        "extract": {
+          "raw": "{\"date\":\"2026年暑期\",\"place\":\"南粤各地基层一线；清远东城街道、连州保安镇；广东各地市基层一线\",\"organizer\":[\"广东岭南职业技术学院\"],\"eventType\":\"志愿服务\"}",
+          "parsed": {
+            "date": "2026年暑期",
+            "place": "南粤各地基层一线；清远东城街道、连州保安镇；广东各地市基层一线",
+            "organizer": [
+              "广东岭南职业技术学院"
+            ],
+            "eventType": "志愿服务"
+          }
+        },
+        "classify": {
+          "raw": "[\"志愿服务\",\"党建思政\",\"校园活动\"]",
+          "parsed": [
+            "志愿服务",
+            "党建思政",
+            "校园活动"
+          ]
+        },
+        "actions": {
+          "raw": "{\"hasAction\": false, \"items\": []}",
+          "parsed": {
+            "hasAction": false,
+            "items": []
+          }
+        },
+        "targeted": "资料未提及这篇报道具体发生在哪个校区。"
+      }
+    }
+  ],
+  "rag": [
+    {
+      "question": "我校棒球队取得了什么成绩？",
+      "expect": "2026中国大学生棒垒球联赛总决赛乙组全国冠军",
+      "answer": "依据第6篇，我校棒球队在2026年中国大学生棒垒球联赛总决赛中勇夺棒球乙组全国冠军，实现学校体育项目国家级赛事历史性突破。该赛事还获得“体育道德风尚奖”，教练叶帅获评“优秀教练员”“体育风尚教练员”。",
+      "ms": 221
+    },
+    {
+      "question": "2026级新生入学教育是什么时候开展的？",
+      "expect": "2026-09-12",
+      "answer": "根据第【3】篇，2026级新生入学教育于2026年9月7日至11日开展。",
+      "ms": 158
+    },
+    {
+      "question": "学校图书馆的开放时间是几点？",
+      "expect": "（资料未提及——正确答案是承认不知道）",
+      "answer": "资料未提及学校图书馆的开放时间。第【2】篇仅出现\"教学科研处（图书馆）\"这一部门名称，未涉及开放时间。",
+      "ms": 267
+    }
+  ],
+  "summary": {
+    "finishedAt": "2026-09-18T10:05:16.595Z",
+    "callCount": 43,
+    "promptTokens": 52770,
+    "completionTokens": 20288,
+    "totalTokens": 73058,
+    "totalMs": 7041,
+    "avgMs": 164
+  }
+}
