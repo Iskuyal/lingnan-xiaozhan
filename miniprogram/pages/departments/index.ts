@@ -1,90 +1,105 @@
-import { buildDepartmentList } from '../../services/departments';
+import { buildDepartmentList, findDepartmentById } from '../../services/departments';
 import { callAi, chatEvent, transportMessage, userMessage } from '../../services/ai';
 import {
   ChatTurn,
+  QA_OFFLINE_NOTE,
   QA_SOURCE_NOTE,
   QaOption,
+  WELCOME_TEXT,
+  appendTurn,
   buildSystemPrompt,
-  buildWelcome,
-  chatMessages,
-  contactWarningFor,
-  sourceNoteFor,
+  conversationOf,
+  guardTurn,
+  historyMessages,
+  markQaDismissed,
+  qaDismissed,
+  qaPanelPatch,
+  resetConversation,
   safetyNoteFor,
+  sourceNoteFor,
 } from './qa';
-
-/**
- * 「用户已经主动关掉过对话框」的持久标记。
- *
- * Ticket 07 要求进入部门模块就出现对话框并主动问「你想了解什么部门」，
- * 因此页面首次显示时自动展开一次；但用户明确关掉之后不该反复弹——
- * 标记写在本地存储里，之后（含下次进入）由用户主动点开。
- */
-export const QA_DISMISS_KEY = 'departments-qa-dismissed';
-
-function qaDismissed(): boolean {
-  try {
-    if (typeof wx === 'undefined' || typeof wx.getStorageSync !== 'function') return false;
-    return wx.getStorageSync(QA_DISMISS_KEY) === true;
-  } catch {
-    // 存储读失败按「没关过」处理：自动展开一次比永久不再提示更符合票面要求。
-    return false;
-  }
-}
-
-function markQaDismissed(): void {
-  try {
-    if (typeof wx === 'undefined' || typeof wx.setStorageSync !== 'function') return;
-    wx.setStorageSync(QA_DISMISS_KEY, true);
-  } catch {
-    // 写失败只影响「下次不再自动展开」这一便利，不影响本次关闭。
-  }
-}
 
 interface InputEvent {
   detail: { value?: unknown };
 }
 
+interface DatasetEvent {
+  currentTarget: { dataset: { id?: string } };
+}
+
+/**
+ * 学生部门（Ticket 07：进入模块即有对话框）。
+ *
+ * AI 提示「你想了解什么部门」并给出可点的组织选项，点进去是部门详情页；
+ * 详情页里可以继续追问，返回这里对话仍在（两份页面共用 `./qa` 的会话），
+ * 也可以直接在列表页接着问。
+ *
+ * 对话框的规则全在 `./qa`（纯逻辑，node:test 直接验证），页面只做编排。
+ */
 Page({
   data: {
     view: buildDepartmentList(),
     qaOpen: false,
+    /** 当前对话属于哪个部门；空串表示还没选定部门（列表页的自由提问）。 */
+    qaDepartmentId: '',
+    qaPrompt: WELCOME_TEXT,
     qaMessages: [] as ChatTurn[],
     qaOptions: [] as QaOption[],
+    qaSuggestionList: [] as string[],
     qaInput: '',
     qaSending: false,
     qaError: '',
     qaCapWarning: '',
     qaSourceNote: QA_SOURCE_NOTE,
     qaSafetyNote: '',
+    qaOfflineNote: QA_OFFLINE_NOTE,
   },
   /** 进入（含从详情页返回）时按票面主动展示对话框；用户关过就不再自动弹。 */
   onShow() {
-    if (this.data.qaOpen || qaDismissed()) return;
-    this.openQa();
+    if (!this.data.qaOpen) {
+      if (qaDismissed()) return;
+      this.openQa();
+      return;
+    }
+    // 从详情页返回：那份对话在详情页里可能又长了，重新读一遍共享会话。
+    this.refreshQa();
   },
-  openDetail(event: WechatMiniprogram.TouchEvent) {
-    const id = event.currentTarget.dataset.id;
-    if (typeof id !== 'string' || id.length === 0) return;
-    wx.navigateTo({ url: `/pages/departments/detail/index?id=${id}` });
+  /** 面板数据全部从共享会话读，页面只负责 setData（字段名与共用模板一一对应）。 */
+  refreshQa() {
+    this.setData(qaPanelPatch({ departmentId: this.data.qaDepartmentId, withOptions: true }));
   },
-  /** 打开对话框：欢迎语 + 可点选项；从详情页返回后对话状态原样保留。 */
+  /**
+   * 打开对话框：回到这个部门的开场白与可点选项。
+   * 与 main 既有行为一致——收起再打开不保留上一轮；要保留就别收起。
+   */
   openQa() {
     if (this.data.qaOpen) return;
-    const welcome = buildWelcome();
+    resetConversation(this.data.qaDepartmentId);
     this.setData({
       qaOpen: true,
-      qaMessages: [{ role: 'assistant', text: welcome.text }],
-      qaOptions: welcome.options,
       qaError: '',
       qaCapWarning: '',
       qaSourceNote: QA_SOURCE_NOTE,
       qaSafetyNote: '',
     });
+    this.refreshQa();
   },
   /** 关闭后记住：本次会话与下次进入都不再自动展开，由用户主动打开。 */
   closeQa() {
     markQaDismissed();
     this.setData({ qaOpen: false });
+  },
+  /** 清空当前部门的对话回到开场白（与「关闭后不再弹」的持久标记互不影响）。 */
+  restartConversation() {
+    resetConversation(this.data.qaDepartmentId);
+    this.refreshQa();
+  },
+  /** 名录条目与对话框选项共用这个入口：先让对话跟着人去那个部门，再进详情页。 */
+  openDetail(event: DatasetEvent) {
+    const id = event.currentTarget.dataset.id;
+    if (typeof id !== 'string' || id.length === 0) return;
+    if (findDepartmentById(id) !== null) this.setData({ qaDepartmentId: id });
+    wx.navigateTo({ url: `/pages/departments/detail/index?id=${id}` });
   },
   onQaInput(event: InputEvent) {
     const raw = event.detail === undefined ? '' : event.detail.value;
@@ -93,25 +108,26 @@ Page({
   /**
    * 追问：发送中锁定，空输入不调用；失败不产生假回答，三类失败文案各自独立。
    *
-   * 成功的回答要过两道客户端后置检查（都只做标记，不当成事实保证）：
-   * 内容安全没真正执行时在对话里明说；回答里出现语料之外的联系方式时标注这条回答。
+   * 成功的回答过一遍客户端的防幻觉守卫（命中就整条替换成如实回答，并在这条回答上说明），
+   * 但**送进模型的历史用模型原话**——守卫只改学生看到的回答，不改模型的上下文。
+   * 内容安全没真正执行时在对话里明说（`qaSafetyNote` / `qaSourceNote`）。
    */
   sendQuestion() {
     const text = this.data.qaInput.trim();
     if (text === '' || this.data.qaSending) return;
-    const history: ChatTurn[] = this.data.qaMessages.concat([{ role: 'user', text }]);
+    const departmentId = this.data.qaDepartmentId;
+    appendTurn(departmentId, { role: 'user', text });
+    const history = conversationOf(departmentId);
     this.setData({ qaMessages: history, qaInput: '', qaSending: true, qaError: '' });
-    return callAi(chatEvent('department-qa', buildSystemPrompt(), chatMessages(history)))
+    return callAi(chatEvent('department-qa', buildSystemPrompt(), historyMessages(history)))
       .then((result) => {
         if (!result.ok) {
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
           return;
         }
-        const answer: ChatTurn = { role: 'assistant', text: result.text };
-        const warning = contactWarningFor(result.text);
-        if (warning !== '') answer.warning = warning;
+        appendTurn(departmentId, guardTurn(result.text, departmentId));
         this.setData({
-          qaMessages: history.concat([answer]),
+          qaMessages: conversationOf(departmentId),
           qaSending: false,
           qaError: '',
           qaCapWarning: result.capWarning,
