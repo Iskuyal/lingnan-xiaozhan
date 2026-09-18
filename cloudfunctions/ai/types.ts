@@ -1,0 +1,187 @@
+/**
+ * AI 服务端基础设施（Ticket 01）的类型契约。
+ *
+ * 这一层是 05（课表截图识别）、06（课表助手）、07（部门问答）的共同前置：
+ * 所有 AI 功能只通过本函数的 `main` 入口调模型，密钥只来自云函数环境变量。
+ * 事件与返回值的形状一旦被那三票依赖，就不要再随手改；改这里等于改三处调用方。
+ */
+
+/**
+ * 失败分类。
+ *
+ * 前三类是开发规格「AI 功能」一节要求**可区分、文案各自独立**的用户可见失败：
+ * 模型不可用或超时、内容被安全策略拒绝、额度或配额用尽。
+ * 后两类是调用方参数错误与云函数内部错误，同样有独立文案——
+ * 把参数错误或内部错误说成「模型不可用」会让排查方向跑偏。
+ */
+export type FailureClass =
+  | 'model_unavailable'
+  | 'content_rejected'
+  | 'quota_exhausted'
+  | 'invalid_request'
+  | 'internal';
+
+/** 云函数支持的入口动作；05/06/07 只会用到 chat / vision / moderateText / moderateImage。 */
+export type ActionName = 'chat' | 'vision' | 'moderateText' | 'moderateImage' | 'usage' | 'probe';
+
+/** 模型接口格式：OpenAI 兼容（项目使用的中转）与 Anthropic 格式。 */
+export type ProviderFormat = 'openai' | 'anthropic';
+
+/** 内容安全适配器：微信官方云调用优先，第三方按 OpenAI / Anthropic 两种接口格式接入，也可整体关闭。 */
+export type SafetyProviderName = 'wechat' | 'openai' | 'anthropic' | 'off';
+
+/** 内容安全检测「不可用」时的处置：closed = 拒绝调用（默认，宁可挡住也不放未检内容出去）。 */
+export type SafetyFailMode = 'closed' | 'open';
+
+/** 微信 `suggest=review`（需人工复审）的处置，默认按拒绝处理（fail closed）。 */
+export type SafetyReviewPolicy = 'reject' | 'pass';
+
+/** OpenAI 格式第三方审核的两种调用方式：chat（任何兼容中转可用）与 moderations（OpenAI 官方审核接口）。 */
+export type SafetyOpenAiMode = 'chat' | 'moderations';
+
+export type MessageRole = 'system' | 'user' | 'assistant';
+
+/**
+ * 规范化后的图片输入：base64 与 MIME 类型。
+ * 客户端可以传云存储 fileID（由云函数下载）或直接传 base64，两者都在 index.ts 收敛成这个形状。
+ */
+export interface NormalizedImage {
+  base64: string;
+  mimeType: string;
+}
+
+/** 一条对话消息；图片只允许挂在 user 消息上（两种接口格式都这么约定）。 */
+export interface ConversationMessage {
+  role: MessageRole;
+  text: string;
+  image?: NormalizedImage;
+}
+
+/** 服务端返回的 token 用量；`estimated` 为真表示服务端没给 usage，按字符数估算。 */
+export interface TokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  estimated: boolean;
+}
+
+/** 一次调用（模型或第三方审核）的用量与金额，是记账与成本上限判断的最小单位。 */
+export interface CallUsage extends TokenUsage {
+  costYuan: number;
+  priceInputPerMillion: number;
+  priceOutputPerMillion: number;
+}
+
+/** 单次子调用（模型调用、第三方审核调用）的落库记录。 */
+export interface SubCallRecord {
+  /** 同一次云函数调用内的子调用共用，便于把「一次用户请求」在库里串起来。 */
+  requestId: string;
+  /** 业务落点：department-qa / timetable-screenshot / timetable-assistant / probe / 未知。 */
+  feature: string;
+  action: ActionName | '';
+  /** model = 模型调用；moderation = 第三方内容安全检测。 */
+  kind: 'model' | 'moderation';
+  provider: string;
+  model: string;
+  ok: boolean;
+  failureClass: FailureClass | '';
+  durationMs: number;
+  usage: CallUsage;
+}
+
+/** 月度累计用量：成本上限判断与维护者查询都读它。 */
+export interface UsageSummary {
+  /** 东八区的月份，形如 2026-09。 */
+  month: string;
+  calls: number;
+  failures: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  costYuan: number;
+  capYuan: number;
+  warnRatio: number;
+  warnThresholdYuan: number;
+  /** 已达告警线但未超上限。 */
+  warn: boolean;
+  /** 已超上限：后续调用会被拒绝，失败分类为 quota_exhausted。 */
+  exceeded: boolean;
+  priceInputPerMillion: number;
+  priceOutputPerMillion: number;
+  updatedAt: string;
+}
+
+/** 内容安全检测结果的摘要（回传给调用方，便于页面记录与排查）。 */
+export interface SafetyReport {
+  provider: string;
+  api: string;
+  passed: boolean;
+  detail: string;
+}
+
+/** 探测动作里的单个接口检查（微信 errcode 原样记录）。 */
+export interface ProbeCheck {
+  api: string;
+  /** 接口形态：v1（无 openid）/ v2（带 openid）。 */
+  form: string;
+  errCode: number;
+  errMsg: string;
+  /** pass / reject / review / error。 */
+  verdict: string;
+  note: string;
+  elapsedMs: number;
+}
+
+/** 微信内容安全接口探测记录：维护者把它粘贴进 docs/cloud-development.md。 */
+export interface ProbeRecord {
+  probedAt: string;
+  timeZone: string;
+  env: string;
+  /** 控制台手动探测时通常没有 openid；有 openid 才会走 msgSecCheck v2。 */
+  openidPresent: boolean;
+  declaredOpenApi: string[];
+  checks: ProbeCheck[];
+  conclusion: string;
+  recommendedProvider: string;
+}
+
+/** 探测动作的完整结果（供维护者阅读与粘贴）。 */
+export interface ProbeResult {
+  ok: boolean;
+  record: ProbeRecord;
+  conclusion: string;
+  recommendedProvider: string;
+  /** 便于粘贴进文档的一行 JSON。 */
+  pasteLine: string;
+  elapsedMs: number;
+}
+
+/** 统一返回结构。任何动作都返回它，调用方只看 `ok` / `failureClass` / `message`。 */
+export interface AiResponse {
+  ok: boolean;
+  action: ActionName | '';
+  failureClass: FailureClass | '';
+  /** 用户可见文案；成功时为空字符串。 */
+  message: string;
+  /** 维护者排查用细节（已剔除密钥）；成功时通常为空。 */
+  detail: string;
+  feature: string;
+  /** 模型接口格式（openai / anthropic）或内容安全适配器名；未成功建立调用时为空。 */
+  provider: string;
+  model: string;
+  /** 模型输出文本；仅 chat / vision 成功时有值。 */
+  text: string;
+  /** 内容安全检测结论；仅 moderate* 动作有值。 */
+  safety: SafetyReport | null;
+  /** 本次主调用的用量与金额；没有调用模型时为空。 */
+  usage: CallUsage | null;
+  /** 当月累计用量；读取失败时为空。 */
+  usageSummary: UsageSummary | null;
+  /** 接近月度上限时的告警文案；否则为空字符串。 */
+  capWarning: string;
+  /** 非致命问题（如用量记账失败）：调用本身成功，但维护者需要知道。 */
+  warnings: string[];
+  /** probe 动作的完整记录；其它动作恒为空。 */
+  probe: ProbeRecord | null;
+  elapsedMs: number;
+}
