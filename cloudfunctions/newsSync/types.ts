@@ -22,3 +22,24 @@ export interface NewsArticle extends NewsListItem {
   /** 清理后的正文段落；无正文时为空数组。 */
   paragraphs: string[];
 }
+
+/**
+ * 栏目模板标识：决定用哪一套列表/正文解析规则。
+ * - `xyxw`：校园动态，`ul.list.list-intro` + `a.tit` / `h1.title` + `div.article-content`。
+ * - `newsList`：团委通知公告，`ul.newsList` + 直挂 `span.date` 与 `<a title>` / `h2.title` + `div.property` + `div.printArea`。
+ * 两套模板实测不同构，依据见 docs/news-sources.md 的「模板与校园动态不同构」。
+ */
+export type NewsTemplate = 'xyxw' | 'newsList';
+
+/** 一个同步栏目：列表入口、模板与已实测的历史页数。 */
+export interface NewsColumn {
+  /** 栏目标识，同时是 `sync_state` 文档的 `_id`，如 xyxw-xydt。 */
+  id: string;
+  /** 来源栏目名，写入每条记录并由页面展示。 */
+  label: string;
+  /** 列表第 1 页 URL；第 N 页为 `${listUrl}_${N}`。 */
+  listUrl: string;
+  template: NewsTemplate;
+  /** 历史总页数（实测页脚「共 N 条信息 / 共 M 页」），决定全量导入的页范围。 */
+  totalPages: number;
+}

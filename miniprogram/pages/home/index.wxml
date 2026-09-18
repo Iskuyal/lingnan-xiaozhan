@@ -46,7 +46,7 @@
         <view class="news-recent-title">{{item.title}}</view>
         <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
       </view>
-      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 同步于 {{newsSyncedAtText}}</block></view>
+      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
     </block>
   </view>
 
