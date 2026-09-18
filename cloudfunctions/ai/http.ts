@@ -20,6 +20,36 @@ export class HttpTimeoutError extends Error {
   }
 }
 
+/**
+ * 通用硬超时：给**不经过 HTTP 层**的异步调用（微信云调用、云存储下载）也用同一条边界。
+ * 这些调用同样可能一直不返回，而票面要求「单次调用有明确超时边界」覆盖全部外部调用。
+ */
+export class TimeoutError extends Error {
+  constructor(readonly timeoutMs: number, readonly target: string) {
+    super(`调用超时（${timeoutMs}ms）：${target}`);
+    this.name = 'TimeoutError';
+  }
+}
+
+/** 给一个 promise 套上硬超时；超时后立刻以 `TimeoutError` 结束，不等原调用返回。 */
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number, target: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new TimeoutError(timeoutMs, target)), timeoutMs);
+    // 定时器不应阻止进程退出（本地测试里尤其明显）。
+    if (typeof timer.unref === 'function') timer.unref();
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error: unknown) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 export interface HttpResponse {
   status: number;
   body: string;
@@ -35,8 +65,15 @@ export interface PostJsonOptions {
 /** 响应体上限：正常返回远小于它；超过说明中转返回了异常内容，及时掐断避免撑爆内存。 */
 const MAX_RESPONSE_BYTES = 1024 * 1024;
 
+/**
+ * 是否由超时引起。
+ * 除了本文件的两种超时错误，还认 `AiFailure` 上的 `timedOut` 标记（鸭子类型判断，
+ * 避免 http → errors 的依赖方向反过来）：模型层把超时收敛成分类失败后，
+ * 内容安全层仍然要能识别「这是超时」，而不是当成一般调用失败。
+ */
 export function isTimeoutError(error: unknown): boolean {
-  return error instanceof HttpTimeoutError;
+  if (error instanceof HttpTimeoutError || error instanceof TimeoutError) return true;
+  return typeof error === 'object' && error !== null && (error as { timedOut?: unknown }).timedOut === true;
 }
 
 /** 发一次 JSON POST；只做传输，不做状态码分类（分类在 providers.ts）。 */

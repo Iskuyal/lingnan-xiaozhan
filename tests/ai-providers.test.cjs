@@ -101,7 +101,10 @@ test('OpenAI 响应映射：字符串内容、分块内容与 usage', () => {
     usage: { prompt_tokens: 7, completion_tokens: 3, total_tokens: 10 },
   });
   assert.equal(fromString.text, '答案');
-  assert.deepEqual(plain(fromString.usage), { promptTokens: 7, completionTokens: 3, totalTokens: 10, estimated: false });
+  assert.deepEqual(
+    plain(fromString.usage),
+    { promptTokens: 7, completionTokens: 3, totalTokens: 10, estimated: false, usageUnknown: false },
+  );
   assert.equal(fromString.finishReason, 'stop');
 
   const fromBlocks = providers.parseModelResponse(target('openai'), {
@@ -119,7 +122,10 @@ test('Anthropic 响应映射：content 文本块与 input/output_tokens', () => 
     usage: { input_tokens: 40, output_tokens: 12 },
   });
   assert.equal(parsed.text, '结构化结果');
-  assert.deepEqual(plain(parsed.usage), { promptTokens: 40, completionTokens: 12, totalTokens: 52, estimated: false });
+  assert.deepEqual(
+    plain(parsed.usage),
+    { promptTokens: 40, completionTokens: 12, totalTokens: 52, estimated: false, usageUnknown: false },
+  );
   assert.equal(parsed.finishReason, 'end_turn');
 });
 
@@ -135,12 +141,33 @@ test('返回空内容按「模型不可用」处理，不让调用方以为成�
   assert.equal(failure.failureClass, 'model_unavailable');
 });
 
-test('状态码分类：402/429 归额度类，401/403/5xx 归模型不可用', () => {
+test('状态码分类：402 归「额度用尽」，429 属瞬时限流归「模型不可用」，401/403/5xx 同理', () => {
   const providers = createHarness().load('providers.js');
-  assert.equal(providers.classifyHttpStatus(target('openai'), 429, 'rate limited').failureClass, 'quota_exhausted');
-  assert.equal(providers.classifyHttpStatus(target('openai'), 402, 'insufficient balance').failureClass, 'quota_exhausted');
+  const limited = providers.classifyHttpStatus(target('openai'), 429, 'rate limited');
+  assert.equal(limited.failureClass, 'model_unavailable', '429 是瞬时限流，重试即可，不能说要等下个月');
+  assert.ok(limited.detail.includes('稍后重试'), `429 的细节要写明可重试：${limited.detail}`);
+  const balance = providers.classifyHttpStatus(target('openai'), 402, 'insufficient balance');
+  assert.equal(balance.failureClass, 'quota_exhausted', '402 才是真正的额度/余额用尽');
   assert.equal(providers.classifyHttpStatus(target('openai'), 401, 'unauthorized').failureClass, 'model_unavailable');
   assert.equal(providers.classifyHttpStatus(target('openai'), 500, 'boom').failureClass, 'model_unavailable');
+});
+
+test('429 的实际链路：返回「模型不可用或超时」文案，不是「额度用尽，请下月再试」', async () => {
+  const harness = createHarness({
+    security: {
+      msgSecCheck: () => Promise.resolve({ errCode: 0 }),
+      imgSecCheck: () => Promise.resolve({ errCode: 0 }),
+    },
+    respond: () => ({ status: 429, body: '{"error":"rate limited"}' }),
+  });
+  const result = await harness.main({
+    action: 'chat',
+    messages: [{ role: 'user', text: '第三节有课吗' }],
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'model_unavailable');
+  assert.ok(!result.message.includes('下月'), `瞬时限流不得说成「请下月再试」：${result.message}`);
+  assert.ok(result.detail.includes('429'));
 });
 
 test('错误细节里不出现密钥（中转回显也不会泄露）', async () => {

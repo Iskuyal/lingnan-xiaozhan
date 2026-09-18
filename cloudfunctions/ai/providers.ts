@@ -159,7 +159,13 @@ function parseOpenAiUsage(raw: unknown): TokenUsage | null {
   const completionTokens = numberField(source, 'completion_tokens');
   const totalTokens = numberField(source, 'total_tokens');
   if (promptTokens === 0 && completionTokens === 0 && totalTokens === 0) return null;
-  return { promptTokens, completionTokens, totalTokens: totalTokens || promptTokens + completionTokens, estimated: false };
+  return {
+    promptTokens,
+    completionTokens,
+    totalTokens: totalTokens || promptTokens + completionTokens,
+    estimated: false,
+    usageUnknown: false,
+  };
 }
 
 function parseAnthropicUsage(raw: unknown): TokenUsage | null {
@@ -168,7 +174,7 @@ function parseAnthropicUsage(raw: unknown): TokenUsage | null {
   const promptTokens = numberField(source, 'input_tokens');
   const completionTokens = numberField(source, 'output_tokens');
   if (promptTokens === 0 && completionTokens === 0) return null;
-  return { promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: false };
+  return { promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: false, usageUnknown: false };
 }
 
 /**
@@ -214,11 +220,20 @@ export function parseModelResponse(target: ModelTarget, payload: unknown): { tex
   };
 }
 
-/** 状态码分类：额度类（402/429）与「模型不可用」分开，让页面文案能对上号。 */
+/**
+ * 状态码分类：额度类与「模型不可用」分开，让页面文案能对上号。
+ *
+ * 402 是**真正的额度/余额用尽**（服务商侧配额），归 `quota_exhausted`；
+ * 429 只是**瞬时限流**（重试即可），归 `model_unavailable`——
+ * 把 429 也说成「本月额度已用尽，请下月再试」会让用户白等一个月。
+ */
 export function classifyHttpStatus(target: ModelTarget, status: number, body: string): AiFailure {
   const snippet = redactSecrets(body.replace(/\s+/g, ' ').slice(0, 300), [target.apiKey]);
-  if (status === 402 || status === 429) {
-    return new AiFailure('quota_exhausted', `HTTP ${status}（服务端额度或频率上限）：${snippet}`);
+  if (status === 402) {
+    return new AiFailure('quota_exhausted', `HTTP ${status}（服务商额度或余额不足）：${snippet}`);
+  }
+  if (status === 429) {
+    return new AiFailure('model_unavailable', `HTTP ${status}（请求过于频繁，属瞬时限流，稍后重试即可）：${snippet}`);
   }
   if (status === 401 || status === 403) {
     return new AiFailure('model_unavailable', `HTTP ${status}（鉴权失败，检查 AI_API_KEY 与账号权限）：${snippet}`);
@@ -234,7 +249,46 @@ export function estimateUsage(invocation: ModelInvocation, text: string): TokenU
     if (message.image !== undefined) prompt += IMAGE_TOKEN_ESTIMATE;
   }
   const completionTokens = estimateTokens(text);
-  return { promptTokens: prompt, completionTokens, totalTokens: prompt + completionTokens, estimated: true };
+  return { promptTokens: prompt, completionTokens, totalTokens: prompt + completionTokens, estimated: true, usageUnknown: false };
+}
+
+/**
+ * 发一次带分类的 JSON 请求：传输、状态码分类与非 JSON 都收敛成可识别失败。
+ *
+ * 抽出来是为了让 chat 调用与 OpenAI `/moderations` 走**同一条**传输/状态码/解析路径，
+ * 不再各写一遍（两处实现分叉时，超时与限流分类会悄悄不一致）。
+ */
+export async function requestJson(
+  target: ModelTarget,
+  request: BuiltRequest,
+  options: { timeoutMs: number; label: string },
+): Promise<{ payload: unknown; elapsedMs: number; status: number }> {
+  const startedAt = Date.now();
+  let response: HttpResponse;
+  try {
+    response = await postJson({
+      url: request.url,
+      headers: request.headers,
+      body: request.body,
+      timeoutMs: options.timeoutMs,
+    });
+  } catch (error) {
+    const detail = redactSecrets(describeError(error), [target.apiKey]);
+    if (isTimeoutError(error)) {
+      // 超时单独标记：调用方要能看出「这次是超时，可以重试」而不是笼统的请求失败。
+      throw new AiFailure('model_unavailable', `${options.label}超时：${detail}`, { timedOut: true });
+    }
+    throw new AiFailure('model_unavailable', `${options.label}请求失败：${detail}`);
+  }
+  const elapsedMs = Date.now() - startedAt;
+  if (response.status < 200 || response.status >= 300) {
+    throw classifyHttpStatus(target, response.status, response.body);
+  }
+  try {
+    return { payload: JSON.parse(response.body) as unknown, elapsedMs, status: response.status };
+  } catch {
+    throw new AiFailure('model_unavailable', `${options.label}返回不是合法 JSON：${redactSecrets(response.body.slice(0, 200), [target.apiKey])}`);
+  }
 }
 
 /**
@@ -243,32 +297,8 @@ export function estimateUsage(invocation: ModelInvocation, text: string): TokenU
  */
 export async function callModel(target: ModelTarget, invocation: ModelInvocation): Promise<ModelCallResult> {
   const request = buildModelRequest(target, invocation);
-  const startedAt = Date.now();
-  let response: HttpResponse;
-  try {
-    response = await postJson({
-      url: request.url,
-      headers: request.headers,
-      body: request.body,
-      timeoutMs: invocation.timeoutMs === undefined ? target.timeoutMs : invocation.timeoutMs,
-    });
-  } catch (error) {
-    const detail = redactSecrets(describeError(error), [target.apiKey]);
-    if (isTimeoutError(error)) {
-      throw new AiFailure('model_unavailable', `模型调用超时：${detail}`);
-    }
-    throw new AiFailure('model_unavailable', `模型接口请求失败：${detail}`);
-  }
-  const elapsedMs = Date.now() - startedAt;
-  if (response.status < 200 || response.status >= 300) {
-    throw classifyHttpStatus(target, response.status, response.body);
-  }
-  let payload: unknown;
-  try {
-    payload = JSON.parse(response.body) as unknown;
-  } catch {
-    throw new AiFailure('model_unavailable', `模型返回不是合法 JSON：${redactSecrets(response.body.slice(0, 200), [target.apiKey])}`);
-  }
+  const timeoutMs = invocation.timeoutMs === undefined ? target.timeoutMs : invocation.timeoutMs;
+  const { payload, elapsedMs, status } = await requestJson(target, request, { timeoutMs, label: '模型调用' });
   let parsed;
   try {
     parsed = parseModelResponse(target, payload);
@@ -280,6 +310,6 @@ export async function callModel(target: ModelTarget, invocation: ModelInvocation
     usage: parsed.usage === null ? estimateUsage(invocation, parsed.text) : parsed.usage,
     finishReason: parsed.finishReason,
     elapsedMs,
-    httpStatus: response.status,
+    httpStatus: status,
   };
 }

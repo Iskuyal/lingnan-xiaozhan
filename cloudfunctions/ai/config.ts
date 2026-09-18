@@ -4,8 +4,9 @@
  * 为什么每项都有默认值（除密钥与模型名）：Ticket 01 要求密钥只在云函数环境变量、
  * 月度上限与单价「来自环境变量而非写死」，默认值只是让函数少配几项也能跑；
  * 数值默认值都注明出处（AI 资讯实测报告 / 开发规格），不是拍脑袋。
- * 密钥与模型名故意**没有**默认值：中转服务的模型名与本项目实测的官方 API 不同（见
- * docs/reference/ai-news-poc.md），猜一个默认值只会让错误延后暴露。
+ * 密钥与模型名故意**没有**默认值：本项目实测过的是 DeepSeek 官方 API（见
+ * docs/reference/ai-news-poc.md），**中转地址、模型名与实际单价均未实测**，
+ * 猜一个默认值只会让错误延后暴露。
  */
 import { fail } from './errors';
 import {
@@ -30,6 +31,8 @@ export interface Config {
   timeoutMs: number;
   /** 一次云函数调用的总截止（毫秒）：内容安全 + 模型 + 输出检测都算在里面。 */
   totalDeadlineMs: number;
+  /** 云存储下载（vision 的 fileID 路径）单次超时：下载同样可能一直不返回。 */
+  downloadTimeoutMs: number;
   maxTokens: number;
   temperature: number;
   /** 追加进模型请求体的 JSON，用于关闭思考模式等厂商特有参数。 */
@@ -58,6 +61,8 @@ export interface SafetyConfig {
    */
   openaiMode: SafetyOpenAiMode;
   timeoutMs: number;
+  /** 每次审核调用的固定价（元）：接口不返回 token 用量时按它记账，默认 0。 */
+  fixedPriceYuan: number;
   /** 微信 msgSecCheck v2 的 scene：1 资料、2 评论、3 论坛、4 社交日志。 */
   scene: number;
   /** 第三方审核单次调用的最大输出 token（只要求返回一个短 JSON）。 */
@@ -142,12 +147,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     anthropicVersion,
     timeoutMs,
     totalDeadlineMs,
+    // 下载超时同样受总截止约束：不能比一次云函数调用能用的时间还长。
+    downloadTimeoutMs: Math.floor(clamp(envNumber(env, 'AI_DOWNLOAD_TIMEOUT_MS', 5000), 1000, totalDeadlineMs)),
     maxTokens: Math.floor(clamp(envNumber(env, 'AI_MAX_TOKENS', 1024), 1, 8192)),
     temperature: clamp(envNumber(env, 'AI_TEMPERATURE', 0.2), 0, 2),
     extraBody: envJson(env, 'AI_EXTRA_BODY_JSON'),
-    // 单价默认值来自 AI 资讯实测（DeepSeek V4.1 Flash 空闲时段 输入 1 元 / 输出 4 元每百万 token，
-    // docs/reference/ai-news-poc.md 第三节）。高峰时段翻倍、中转服务加成都不在内，
-    // 负责人应把**实际单价**配进环境变量，否则成本上限判断会偏低。
+    // 单价默认值来自 AI 资讯实测（DeepSeek **官方** API：V4.1 Flash 空闲时段 输入 1 元 / 输出 4 元每百万 token，
+    // docs/reference/ai-news-poc.md 第三节）。中转的实际单价**未实测**（见该文档与 cloud-development.md
+    // 「已知限制」），负责人必须把**实际单价**配进环境变量，否则成本上限判断会偏低。
     priceInputPerMillion: Math.max(0, envNumber(env, 'AI_PRICE_INPUT_PER_MILLION', 1)),
     priceOutputPerMillion: Math.max(0, envNumber(env, 'AI_PRICE_OUTPUT_PER_MILLION', 4)),
     monthlyCapYuan: Math.max(0, envNumber(env, 'AI_MONTHLY_CAP_YUAN', 50)),
@@ -166,7 +173,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       model: envString(env, 'AI_SAFETY_MODEL', model),
       anthropicVersion: envString(env, 'AI_SAFETY_ANTHROPIC_VERSION', anthropicVersion),
       openaiMode: envString(env, 'AI_SAFETY_OPENAI_MODE', 'chat') === 'moderations' ? 'moderations' : 'chat',
-      timeoutMs: clamp(envNumber(env, 'AI_SAFETY_TIMEOUT_MS', Math.min(timeoutMs, 6000)), 1000, totalDeadlineMs),
+      // 微信云调用与云存储下载都用这条超时；下限 1 秒，避免配出必然超时的值。
+      timeoutMs: Math.floor(clamp(envNumber(env, 'AI_SAFETY_TIMEOUT_MS', Math.min(timeoutMs, 6000)), 1000, totalDeadlineMs)),
+      // 接口不返回 token 用量时（如 OpenAI /moderations）的每次固定价；0 表示不计入金额，但会标记 usageUnknown。
+      fixedPriceYuan: Math.max(0, envNumber(env, 'AI_SAFETY_CALL_PRICE_YUAN', 0)),
       scene: Math.floor(clamp(envNumber(env, 'AI_SAFETY_SCENE', 1), 1, 4)),
       maxTokens: Math.floor(clamp(envNumber(env, 'AI_SAFETY_MAX_TOKENS', 256), 16, 2048)),
     },

@@ -81,7 +81,16 @@ function createHttpStub(handler) {
   return { transport, requests };
 }
 
-/** 原子自增的替身：`{ __inc: n }` 在 update 时累加。 */
+/**
+ * 原子自增的替身：`{ __inc: n }` 在 update 时累加。
+ *
+ * 月度集合模拟云数据库的三种形态，供「首次插入」「update 失败不覆盖累计」「并发」三组测试使用：
+ * - `doc.update` 对缺失文档默认抛「document does not exist」（也可用 monthlyUpdateMissing='zero'
+ *   模拟 SDK resolve 成 `{stats:{updated:0}}`）；
+ * - `doc.update` 成功时返回 `{stats:{updated:1}}`（monthlyUpdateShape='none' 时返回 undefined，
+ *   用于验证「SDK 没给计数」时的兜底路径）；
+ * - `collection.add` 带 `_id` 重复时抛错，模拟并发下只有一个能建文档。
+ */
 function createDbStub(options = {}) {
   const records = [];
   const monthly = options.monthly ? { ...options.monthly } : {};
@@ -114,6 +123,16 @@ function createDbStub(options = {}) {
       }
       if (name === 'ai_usage_monthly') {
         return {
+          async add({ data }) {
+            if (options.monthlyAddError !== undefined) throw options.monthlyAddError;
+            const id = typeof data._id === 'string' ? data._id : `auto-${Object.keys(monthly).length}`;
+            if (monthly[id] !== undefined) {
+              const error = new Error(`document.add:fail _id already exists: ${id}`);
+              error.errCode = -501001;
+              throw error;
+            }
+            monthly[id] = { ...data };
+          },
           doc(id) {
             return {
               async get() {
@@ -122,12 +141,19 @@ function createDbStub(options = {}) {
                 if (monthly[id] === undefined) throw new DocumentNotFound(id);
                 return { data: monthly[id] };
               },
+              // 保留 set 只是镜像 SDK 的能力：被测代码刻意不用覆盖式写入（会冲掉当月累计）。
               async set({ data }) {
                 monthly[id] = { _id: id, ...data };
               },
               async update({ data }) {
-                if (monthly[id] === undefined) throw new DocumentNotFound(id);
+                // monthlyUpdateError 模拟写失败（网络 / 权限 / 集合不存在），不是「文档不存在」。
+                if (options.monthlyUpdateError !== undefined) throw options.monthlyUpdateError;
+                if (monthly[id] === undefined) {
+                  if (options.monthlyUpdateMissing === 'zero') return { stats: { updated: 0 } };
+                  throw new DocumentNotFound(id);
+                }
                 applyUpdate(monthly[id], data);
+                return options.monthlyUpdateShape === 'none' ? undefined : { stats: { updated: 1 } };
               },
             };
           },
@@ -235,13 +261,14 @@ function createModuleLoader(context) {
 /**
  * 组装一次测试：返回入口与可观察的桩。
  * options.env 覆盖环境变量；options.respond 定制模型/审核接口响应；
- * options.security 定制微信云调用；options.monthly 预置月度用量文档。
+ * options.security 定制微信云调用；options.monthly 预置月度用量文档；
+ * 月度写失败与形态见 createDbStub 的注释。
  */
 function createHarness(options = {}) {
   const env = { ...defaultEnv(), ...(options.env || {}) };
   const processStub = { env };
   const { transport, requests } = createHttpStub(options.respond || (() => ({ status: 200, body: '{}' })));
-  const { db, records, monthly } = createDbStub({ monthly: options.monthly, monthlyReadError: options.monthlyReadError });
+  const { db, records, monthly } = createDbStub(options);
   const cloudBox = createCloudStub({ db, security: options.security, openid: options.openid, downloadFile: options.downloadFile });
   const load = createModuleLoader({ process: processStub, cloud: cloudBox.stub, http: transport });
   const entry = load('index.js');
@@ -249,6 +276,7 @@ function createHarness(options = {}) {
     main: entry.main,
     load,
     env,
+    db,
     http: requests,
     records,
     monthly,

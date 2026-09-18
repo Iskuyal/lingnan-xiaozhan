@@ -257,7 +257,8 @@ test('月度上限默认 50 元，查询接口给出上限、告警线与当前�
   assert.equal(result.usageSummary.warnThresholdYuan, 40, '告警线 = 上限 × 0.8');
   assert.equal(result.usageSummary.warn, true);
   assert.equal(result.usageSummary.exceeded, false);
-  assert.ok(result.message.includes('41.5'), `查询返回应带告警文案：${result.message}`);
+  assert.equal(result.message, '', 'message 的契约是「成功时为空串」，成功查用量不塞文案');
+  assert.ok(result.capWarning.includes('41.5'), `告警走 capWarning 字段：${result.capWarning}`);
 });
 
 test('用量查询不可降级为零：数据库读失败时拒绝调用（fail closed）', async () => {
@@ -278,6 +279,172 @@ test('用量查询不可降级为零：数据库读失败时拒绝调用（fail 
   const usageModule = harness.load('usage.js');
   assert.equal(usageModule.isMissingDocumentError(new Error('document.get:fail document does not exist')), true);
   assert.equal(usageModule.isMissingDocumentError(new Error('network timeout')), false);
+});
+
+// ---------- 月度累加的写入安全（Ticket 01 复核修复） ----------
+
+/** 直接调 usage.recordSubCall 用的记录夹具（与云函数内部构造的形状一致）。 */
+function subCallRecord(overrides = {}) {
+  return {
+    requestId: 'request-1',
+    feature: 'timetable-assistant',
+    action: 'chat',
+    kind: 'model',
+    provider: 'openai',
+    model: 'test-model',
+    ok: true,
+    failureClass: '',
+    durationMs: 12,
+    usage: {
+      promptTokens: 100,
+      completionTokens: 50,
+      totalTokens: 150,
+      estimated: false,
+      usageUnknown: false,
+      costYuan: 0.001,
+      priceInputPerMillion: 1,
+      priceOutputPerMillion: 4,
+    },
+    ...overrides,
+  };
+}
+
+async function recordDirect(harness, record) {
+  const usage = harness.load('usage.js');
+  const config = harness.load('config.js').loadConfig(harness.env);
+  await usage.recordSubCall(harness.db, record, config, new Date());
+  return usage;
+}
+
+test('月度累加：update 失败不覆盖累计，只记为「可处理的记账失败」', async () => {
+  const month = currentMonth();
+  const seeded = { month, calls: 7, failures: 1, promptTokens: 900, completionTokens: 100, totalTokens: 1000, costYuan: 12.5, updatedAt: '2026-09-01T00:00:00.000Z' };
+  // 写失败不是「文档不存在」：以前会被 catch 吞掉再 set，把 12.5 元覆盖成单次调用的数字。
+  const harness = createHarness({
+    security: wechatOk(),
+    monthly: { [month]: { ...seeded } },
+    monthlyUpdateError: new Error('collection.update:fail network timeout'),
+    respond: () => openAiTextResponse('正常回答'),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, '记账失败不推翻已经完成的模型调用');
+  const doc = harness.monthly[month];
+  assert.equal(doc.calls, 7, `累计调用次数必须原样保留：${doc.calls}`);
+  assert.equal(doc.costYuan, 12.5, `累计金额必须原样保留：${doc.costYuan}`);
+  assert.equal(doc.totalTokens, 1000, '累计 token 必须原样保留');
+  assert.ok(
+    result.warnings.some((warning) => warning.includes('用量记账失败')),
+    `记账失败要在返回值里告警：${result.warnings.join('｜')}`,
+  );
+  assert.ok(result.warnings.some((warning) => warning.includes('network timeout')), '告警要带上原因');
+  assert.ok(result.usage !== null, '本次主调用的用量仍然如实返回');
+});
+
+test('月度累加：确认文档不存在时才首次插入，用固定 _id 建文档', async () => {
+  const month = currentMonth();
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('好') });
+  const usage = await recordDirect(harness, subCallRecord());
+  const doc = harness.monthly[month];
+  assert.ok(doc !== undefined, '首次调用要建出当月文档');
+  assert.equal(doc._id, month, '用月份作 _id：并发时靠唯一键保证只建一次');
+  assert.equal(doc.calls, 1);
+  assert.equal(doc.costYuan, 0.001);
+  assert.deepEqual(
+    Object.keys(doc).filter((key) => key !== '_id').sort(),
+    JSON.parse(JSON.stringify(usage.USAGE_MONTH_FIELDS)).sort(),
+    '首次插入的字段要与契约一致',
+  );
+
+  // 第二次调用走原子自增，累加而不是覆盖。
+  await recordDirect(harness, subCallRecord({ requestId: 'request-2' }));
+  assert.equal(harness.monthly[month].calls, 2);
+  assert.equal(harness.monthly[month].costYuan, 0.002);
+});
+
+test('月度累加：并发两次调用不丢计数（各自 set 一份的竞态已消除）', async () => {
+  const month = currentMonth();
+  const harness = createHarness({ security: wechatOk() });
+  await Promise.all([
+    recordDirect(harness, subCallRecord({ requestId: 'concurrent-1' })),
+    recordDirect(harness, subCallRecord({ requestId: 'concurrent-2' })),
+  ]);
+  assert.equal(harness.monthly[month].calls, 2, '两次并发调用都要计入');
+  assert.equal(Math.round(harness.monthly[month].costYuan * 1e6), 2000, '两次金额都要计入');
+  assert.equal(harness.records.length, 2, '两次子调用各留一条记录');
+});
+
+test('月度累加：SDK 不回 updated 计数时读一次确认，不拿「读不到计数」当理由覆盖', async () => {
+  const month = currentMonth();
+  const seeded = { month, calls: 4, failures: 0, promptTokens: 0, completionTokens: 0, totalTokens: 0, costYuan: 3, updatedAt: '2026-09-01T00:00:00.000Z' };
+  const harness = createHarness({ security: wechatOk(), monthly: { [month]: { ...seeded } }, monthlyUpdateShape: 'none' });
+  await recordDirect(harness, subCallRecord());
+  assert.equal(harness.monthly[month].calls, 5, '文档存在时按自增累加');
+  assert.equal(Math.round(harness.monthly[month].costYuan * 1e6), 3001000, '金额累加而不是覆盖');
+});
+
+test('月度累加：SDK 把缺失文档解析成 updated: 0 时，仍然会初始化当月文档', async () => {
+  const month = currentMonth();
+  const harness = createHarness({ security: wechatOk(), monthlyUpdateMissing: 'zero' });
+  await recordDirect(harness, subCallRecord());
+  assert.equal(harness.monthly[month].calls, 1, '缺计数不等于「不累加」：确认缺失后要初始化');
+  assert.equal(harness.monthly[month].costYuan, 0.001);
+});
+
+// ---------- 外部调用的硬超时 ----------
+
+test('微信内容安全调用不响应时在超时边界内返回可识别失败，不无限挂起', async () => {
+  const harness = createHarness({
+    env: { AI_SAFETY_TIMEOUT_MS: '1000' },
+    security: wechatOk({ msgSecCheck: () => new Promise(() => {}) }), // 永不返回
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const startedAt = Date.now();
+  const result = await harness.main(chatEvent());
+  const elapsed = Date.now() - startedAt;
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'model_unavailable', '检测超时与模型超时同一分类（可重试）');
+  assert.ok(result.detail.includes('超时'), `细节要写明超时：${result.detail}`);
+  assert.ok(elapsed < 4000, `应在超时边界内结束，实际 ${elapsed}ms`);
+  assert.equal(harness.http.length, 0, '检测没做完不得送模型');
+});
+
+test('云存储下载不响应时同样有硬超时：vision 不会无限挂起', async () => {
+  const harness = createHarness({
+    env: { AI_DOWNLOAD_TIMEOUT_MS: '1000' },
+    security: wechatOk(),
+    downloadFile: () => new Promise(() => {}), // 永不返回
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const startedAt = Date.now();
+  const result = await harness.main({
+    action: 'vision',
+    feature: 'timetable-screenshot',
+    messages: [{ role: 'user', text: '识别一下' }],
+    image: SCREENSHOT,
+  });
+  const elapsed = Date.now() - startedAt;
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'model_unavailable');
+  assert.ok(result.detail.includes('超时'), `细节要写明超时：${result.detail}`);
+  assert.ok(result.detail.includes('AI_DOWNLOAD_TIMEOUT_MS'), '细节要指出可配置项');
+  assert.ok(elapsed < 4000, `应在超时边界内结束，实际 ${elapsed}ms`);
+  assert.equal(harness.http.length, 0);
+});
+
+test('探测动作也不会挂起：接口不响应时按「调用超时」记录结论', async () => {
+  const harness = createHarness({
+    security: wechatOk({ msgSecCheck: () => new Promise(() => {}) }),
+  });
+  const probe = harness.load('probe.js');
+  const startedAt = Date.now();
+  const result = await probe.runProbe({ wechat: { msgSecCheck: () => new Promise(() => {}), imgSecCheck: () => new Promise(() => {}) }, timeoutMs: 100 });
+  const elapsed = Date.now() - startedAt;
+  assert.equal(result.ok, false);
+  assert.ok(elapsed < 2000, `探测应在超时边界内结束，实际 ${elapsed}ms`);
+  const text = result.record.checks.find((check) => check.api === 'security.msgSecCheck');
+  assert.equal(text.verdict, 'error');
+  assert.ok(text.errMsg.includes('超时'), `记录要写明超时：${text.errMsg}`);
+  assert.ok(text.note.includes('超时'), `备注要写明超时：${text.note}`);
 });
 
 // ---------- 图片与多模态 ----------
@@ -393,6 +560,172 @@ test('微信检测不可用且 fail closed：拒绝调用并说明原因，不�
   assert.equal(harness.http.length, 0);
 });
 
+// ---------- 「有没有真的检测」：checked 标志 ----------
+
+test('成功链路的检测报告带 checked=true：确实检过才叫通过', async () => {
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('正常回答') });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true);
+  assert.equal(result.safety.passed, true);
+  assert.equal(result.safety.checked, true, '真的检测过：checked 为真');
+  assert.equal(result.warnings.length, 0, '正常链路不该有「未完整检测」告警');
+});
+
+test('AI_SAFETY_PROVIDER=off：请求继续但明确标记「未检测」，不能读成「已通过」', async () => {
+  const harness = createHarness({
+    env: { AI_SAFETY_PROVIDER: 'off' },
+    security: wechatOk(),
+    respond: () => openAiTextResponse('未过检的回答'),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, 'off 是逃生口：不拦调用');
+  assert.equal(result.safety.passed, true);
+  assert.equal(result.safety.checked, false, '没检过就必须是 false');
+  assert.ok(result.safety.detail.includes('生产不得使用'), `报告要写明这只是开发/排障逃生口：${result.safety.detail}`);
+  assert.ok(
+    result.warnings.some((warning) => warning.includes('checked=false')),
+    `未检测要进 warnings，不能只藏在 detail 里：${result.warnings.join('｜')}`,
+  );
+  assert.equal(harness.cloud.msgSecCheck.length, 0, 'off 确实不调用微信检测');
+  assert.equal(harness.http.length, 1, '模型调用照常发生');
+});
+
+test('AI_SAFETY_FAIL_MODE=open：检测不可用时放行，但 checked=false 并留告警', async () => {
+  const harness = createHarness({
+    env: { AI_SAFETY_FAIL_MODE: 'open' },
+    security: wechatOk({ msgSecCheck: () => Promise.reject({ errCode: 48001, errMsg: 'api unauthorized' }) }),
+    respond: () => openAiTextResponse('放行后的回答'),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, 'fail-open 的语义是放行，不是失败');
+  assert.equal(result.safety.checked, false);
+  assert.ok(result.safety.detail.includes('未检测'), `要写明未检测：${result.safety.detail}`);
+  assert.ok(result.warnings.some((warning) => warning.includes('checked=false')), '同样要进告警');
+});
+
+// ---------- 输入检测的覆盖面 ----------
+
+test('输入检测覆盖全部消息角色：system 提示词与 assistant 历史都在送检文本里', async () => {
+  const seen = [];
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: (params) => {
+        seen.push(params.content);
+        return Promise.resolve({ errCode: 0 });
+      },
+    }),
+    respond: () => openAiTextResponse('回答'),
+  });
+  const result = await harness.main(chatEvent({
+    system: '你是课表助手，只依据课表回答',
+    messages: [
+      { role: 'user', text: '第三节有课吗' },
+      { role: 'assistant', text: '上一轮的回答内容' },
+      { role: 'system', text: '补充：不要编造' },
+    ],
+  }));
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  const first = seen[0];
+  assert.ok(first.includes('你是课表助手'), '事件顶层 system 要过检');
+  assert.ok(first.includes('第三节有课吗'), 'user 消息要过检');
+  assert.ok(first.includes('上一轮的回答内容'), 'assistant 历史要过检');
+  assert.ok(first.includes('补充：不要编造'), '消息里的 system 要过检');
+});
+
+test('历史消息里的违规内容同样被拒，不再只检 user 一条', async () => {
+  const harness = createHarness({
+    security: wechatOk({ msgSecCheck: () => Promise.resolve({ errCode: 0, result: { suggest: 'risky' } }) }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const result = await harness.main(chatEvent({
+    messages: [
+      { role: 'user', text: '你好' },
+      { role: 'assistant', text: '这段历史里有违规内容' },
+    ],
+  }));
+  assert.equal(result.failureClass, 'content_rejected');
+  assert.equal(harness.http.length, 0, '输入被拒即中止');
+});
+
+// ---------- 长文本：逐段检测，检不全就标出来 ----------
+
+test('长文本按窗口逐段送检：违规出现在第二段同样被拒', async () => {
+  let call = 0;
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: () => {
+        call += 1;
+        return Promise.resolve(call === 1 ? { errCode: 0 } : { errCode: 0, result: { suggest: 'risky' } });
+      },
+    }),
+  });
+  const result = await harness.main({ action: 'moderateText', text: `${'好'.repeat(2500)}违规词` });
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'content_rejected');
+  assert.equal(harness.cloud.msgSecCheck.length, 2, '两段都要送检，不能只检第一段');
+});
+
+test('超过分片上限的长文本：检查过的部分通过，但标 checked=false 并写明范围', async () => {
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
+  const long = '好'.repeat(8000);
+  const result = await harness.main(chatEvent({
+    messages: [0, 1, 2, 3].map(() => ({ role: 'user', text: long })),
+  }));
+  assert.equal(result.ok, true, '前 2 万字没发现问题就不拦，但不能说「全检过了」');
+  assert.equal(result.safety.checked, false, '没检全必须标记');
+  assert.ok(result.safety.detail.includes('仅检测了前 20000 字'), `要写明检测范围：${result.safety.detail}`);
+  assert.ok(result.safety.detail.includes('未检测'), '要写明未检测的部分');
+  assert.ok(result.warnings.some((warning) => warning.includes('checked=false')), '要进 warnings');
+  assert.equal(harness.cloud.msgSecCheck.length, 11, '10 段输入 + 1 段输出');
+});
+
+// ---------- 用量未知的审核调用 ----------
+
+test('/moderations 不返回用量：标记 usageUnknown，不静默记 0 元', async () => {
+  const harness = createHarness({
+    env: { AI_SAFETY_PROVIDER: 'openai', AI_SAFETY_OPENAI_MODE: 'moderations' },
+    respond: (request) => (request.url.endsWith('/moderations')
+      ? { status: 200, body: JSON.stringify({ results: [{ flagged: false }] }) }
+      : openAiTextResponse('回答')),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  const moderation = harness.records.find((row) => row.kind === 'moderation');
+  assert.equal(moderation.usageUnknown, true, '用量未知要带标记');
+  assert.equal(moderation.totalTokens, 0);
+  assert.equal(moderation.costYuan, 0, '默认不编一个金额');
+  assert.ok(
+    result.warnings.some((warning) => warning.includes('usageUnknown')),
+    `必须留告警说明这次没有用量：${result.warnings.join('｜')}`,
+  );
+});
+
+test('/moderations 可按「每次审核固定价」计入成本，告警里写明计价方式', async () => {
+  const harness = createHarness({
+    env: {
+      AI_SAFETY_PROVIDER: 'openai',
+      AI_SAFETY_OPENAI_MODE: 'moderations',
+      AI_SAFETY_CALL_PRICE_YUAN: '0.002',
+    },
+    respond: (request) => (request.url.endsWith('/moderations')
+      ? { status: 200, body: JSON.stringify({ results: [{ flagged: false }] }) }
+      : openAiTextResponse('回答')),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  const moderation = harness.records.find((row) => row.kind === 'moderation');
+  assert.equal(moderation.costYuan, 0.002, '按固定价计入，而不是 0');
+  assert.equal(moderation.usageUnknown, true);
+  assert.ok(
+    result.warnings.some((warning) => warning.includes('固定价 0.002 元/次')),
+    `告警要写明计价方式：${result.warnings.join('｜')}`,
+  );
+  // 一次 chat 有两次审核调用（输入文字 + 输出文字），每次 0.002 元，加模型调用 0.00006 元。
+  const moderationCalls = harness.records.filter((row) => row.kind === 'moderation').length;
+  assert.equal(moderationCalls, 2);
+  assert.equal(harness.monthly[currentMonth()].costYuan, 0.00006 + 0.002 * moderationCalls, '固定价进月度累计');
+});
+
 // ---------- 探测动作 ----------
 
 test('探测动作：两个接口都可用时结论为可用，并给出可粘贴的记录', async () => {
@@ -456,6 +789,49 @@ test('未知动作与空事件都返回参数错误，不抛异常', async () =>
     messages: Array.from({ length: 30 }, () => ({ role: 'user', text: '你好' })),
   });
   assert.equal(tooMany.failureClass, 'invalid_request');
+});
+
+test('图片格式判断不出来就报参数错误：不再默认按 PNG 放过', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    downloadFile: () => ({ fileContent: Buffer.from('not-an-image') }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const unknownExtension = await harness.main({
+    action: 'vision',
+    messages: [{ role: 'user', text: '识别' }],
+    image: { fileID: 'cloud://example/upload-without-extension' },
+  });
+  assert.equal(unknownExtension.failureClass, 'invalid_request');
+  assert.ok(unknownExtension.detail.includes('mimeType'), `细节要告诉调用方怎么补：${unknownExtension.detail}`);
+
+  const unsupported = await harness.main({
+    action: 'vision',
+    messages: [{ role: 'user', text: '识别' }],
+    image: { fileID: 'cloud://example/shot.gif' },
+  });
+  assert.equal(unsupported.failureClass, 'invalid_request', '认不出的扩展名同样拒绝，不猜成 PNG');
+
+  const noMime = await harness.main({
+    action: 'vision',
+    messages: [{ role: 'user', text: '识别' }],
+    image: { base64: 'aGVsbG8=' },
+  });
+  assert.equal(noMime.failureClass, 'invalid_request');
+  assert.ok(noMime.detail.includes('mimeType'), `base64 缺 mimeType 也要说清楚：${noMime.detail}`);
+  assert.equal(harness.cloud.imgSecCheck.length, 0, '参数不合法不得进入检测');
+});
+
+test('messages 的 role 缺失或写错都按参数错误处理，不默认成 user', async () => {
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('不该被调用') });
+  const missing = await harness.main({ action: 'chat', messages: [{ text: '你好' }] });
+  assert.equal(missing.failureClass, 'invalid_request');
+  assert.ok(missing.detail.includes('role'), `细节要指出 role：${missing.detail}`);
+
+  const unknown = await harness.main({ action: 'chat', messages: [{ role: 'robot', text: '你好' }] });
+  assert.equal(unknown.failureClass, 'invalid_request');
+  assert.ok(unknown.detail.includes('robot'), '读得懂的错误里要带上传来的值');
+  assert.equal(harness.http.length, 0);
 });
 
 test('仅做内容安全检测的动作：文字与图片分开，被拒时用同一类失败但走各自接口', async () => {

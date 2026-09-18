@@ -52,18 +52,29 @@ export function messageEnvKey(failureClass: FailureClass): string {
 export class AiFailure extends Error {
   readonly failureClass: FailureClass;
   readonly detail: string;
+  /**
+   * 是否由超时引起。让超时在整条链路上都是**可识别**的：
+   * 调用方据此给出可重试措辞，内容安全层据此把「检测超时」与「检测配置错误」分开。
+   */
+  readonly timedOut: boolean;
 
-  constructor(failureClass: FailureClass, detail = '', message?: string) {
-    super(message === undefined ? messageFor(failureClass) : message);
+  constructor(failureClass: FailureClass, detail = '', options: { message?: string; timedOut?: boolean } = {}) {
+    super(options.message === undefined ? messageFor(failureClass) : options.message);
     this.name = 'AiFailure';
     this.failureClass = failureClass;
     this.detail = detail;
+    this.timedOut = options.timedOut === true;
   }
 }
 
 /** 抛出一个分类失败。`detail` 面向维护者，可以包含服务端错误文本（密钥在外层统一剔除）。 */
 export function fail(failureClass: FailureClass, detail = ''): never {
   throw new AiFailure(failureClass, detail);
+}
+
+/** 抛出一个由超时引起的分类失败（同一个类，但带上可重试标记）。 */
+export function failTimeout(failureClass: FailureClass, detail = ''): never {
+  throw new AiFailure(failureClass, detail, { timedOut: true });
 }
 
 /** 把任意异常收敛成分类失败：非 AiFailure 一律按内部错误处理，调用方拿到的是可处理的错误。 */

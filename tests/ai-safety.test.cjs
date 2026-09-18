@@ -154,22 +154,61 @@ test('微信接口不可用（48001 未认证）：默认拒绝调用，AI_SAFET
   };
   const failure = await catchAsyncFailure(() => safety.checkText(loadConfigFor(harness, {}).config, { text: TEXT, wechat }));
   assert.ok(failure !== null, '默认 fail closed：检测不可用时必须拒绝调用');
-  assert.equal(failure.failureClass, 'internal', '检测不可用属于内部错误，不是「内容被拒」');
+  assert.equal(failure.failureClass, 'internal', '配置/权限类的检测不可用属于内部错误，不是「内容被拒」');
   assert.ok(failure.detail.includes('48001'), `细节保留 errcode：${failure.detail}`);
 
   const passed = await safety.checkText(loadConfigFor(harness, { AI_SAFETY_FAIL_MODE: 'open' }).config, { text: TEXT, wechat });
   assert.equal(passed.report.passed, true);
+  assert.equal(passed.report.checked, false, '放行的是「没检过的内容」，必须标出来');
   assert.ok(passed.report.detail.includes('未检测'), `放行时必须写明未检测：${passed.report.detail}`);
 });
 
-test('AI_SAFETY_PROVIDER=off：跳过检测，但报告里说明已关闭', async () => {
+test('检测调用超时：归入「模型不可用或超时」（可重试），不是笼统的内部错误', async () => {
+  const harness = createHarness();
+  const safety = harness.load('safety.js');
+  const config = loadConfigFor(harness, { AI_SAFETY_TIMEOUT_MS: '1000' }).config;
+  const failure = await catchAsyncFailure(() => safety.checkText(config, {
+    text: TEXT,
+    wechat: {
+      msgSecCheck: () => new Promise(() => {}), // 永不返回
+      imgSecCheck: () => Promise.resolve({ errCode: 0 }),
+    },
+  }));
+  assert.ok(failure !== null, '超时必须结束，不能挂住');
+  assert.equal(failure.failureClass, 'model_unavailable');
+  assert.equal(failure.timedOut, true, '要能被识别成超时');
+  assert.ok(failure.detail.includes('超时'), `细节要写明超时：${failure.detail}`);
+});
+
+test('第三方审核超时同样归入「模型不可用或超时」，并且不会挂起', async () => {
+  const harness = createHarness({
+    env: { AI_SAFETY_PROVIDER: 'openai', AI_SAFETY_TIMEOUT_MS: '1000' },
+    respond: () => undefined, // 永不响应
+  });
+  const safety = harness.load('safety.js');
+  const config = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'openai', AI_SAFETY_TIMEOUT_MS: '1000' }).config;
+  const startedAt = Date.now();
+  const failure = await catchAsyncFailure(() => safety.checkText(config, { text: TEXT }));
+  const elapsed = Date.now() - startedAt;
+  assert.ok(failure !== null);
+  assert.equal(failure.failureClass, 'model_unavailable');
+  assert.ok(failure.detail.includes('超时'), `细节要写明超时：${failure.detail}`);
+  assert.ok(elapsed < 4000, `应在超时边界内结束，实际 ${elapsed}ms`);
+});
+
+test('AI_SAFETY_PROVIDER=off：跳过检测，但 checked=false 且写明这是仅开发/排障的逃生口', async () => {
   const harness = createHarness();
   const safety = harness.load('safety.js');
   const { config } = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'off' });
   const outcome = await safety.checkText(config, { text: TEXT });
-  assert.equal(outcome.report.passed, true);
+  assert.equal(outcome.report.passed, true, 'off 的语义是放行');
+  assert.equal(outcome.report.checked, false, '没有被检测过，就不能只是 passed=true');
   assert.equal(outcome.report.provider, 'off');
   assert.ok(outcome.report.detail.includes('已关闭'));
+  assert.ok(outcome.report.detail.includes('生产不得使用'), `要写明这是逃生口：${outcome.report.detail}`);
+
+  const image = await safety.checkImage(config, { image: IMAGE });
+  assert.equal(image.report.checked, false);
 });
 
 // ---------- 第三方审核适配器 ----------
@@ -232,7 +271,19 @@ test('第三方（OpenAI /moderations 模式）：带图检测走 moderations �
   });
   const outcome = await safety.checkImage(config, { image: IMAGE });
   assert.equal(outcome.rejected, true);
+  assert.equal(outcome.report.checked, true, '真的调用了审核接口：checked 为真');
   assert.ok(outcome.report.detail.includes('violence'), '命中的分类要写进报告');
+});
+
+test('第三方（OpenAI /moderations 模式）：接口不返回 token 用量时标记 usageUnknown', async () => {
+  const harness = createHarness({
+    respond: () => ({ status: 200, body: JSON.stringify({ results: [{ flagged: false }] }) }),
+  });
+  const safety = harness.load('safety.js');
+  const { config } = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'openai', AI_SAFETY_OPENAI_MODE: 'moderations' });
+  const outcome = await safety.checkText(config, { text: TEXT });
+  assert.equal(outcome.usage, null, '接口没给用量就是没有，不猜一个数');
+  assert.equal(outcome.usageUnknown, true, '要显式标记「用量未知」，记账时不得静默记 0 元');
 });
 
 test('第三方（Anthropic 格式）：审核走 /v1/messages，文本判定映射一致', async () => {
@@ -244,9 +295,9 @@ test('第三方（Anthropic 格式）：审核走 /v1/messages，文本判定映
     },
   });
   const safety = harness.load('safety.js');
-  const { config } = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'anthropic', AI_SAFETY_FORMAT: 'anthropic' });
+  const { config } = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'anthropic' });
   const outcome = await safety.checkText(config, { text: TEXT });
-  assert.equal(outcome.report.provider, 'anthropic');
+  assert.equal(outcome.report.provider, 'anthropic', '接口格式由适配器选择决定，没有单独的 AI_SAFETY_FORMAT 开关');
   assert.equal(outcome.rejected, true);
   assert.equal(outcome.usage.completionTokens, 4, '第三方审核的用量按接口格式各自的字段映射');
 });

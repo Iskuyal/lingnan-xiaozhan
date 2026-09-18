@@ -57,12 +57,20 @@ export interface ConversationMessage {
   image?: NormalizedImage;
 }
 
-/** 服务端返回的 token 用量；`estimated` 为真表示服务端没给 usage，按字符数估算。 */
+/**
+ * 服务端返回的 token 用量。
+ *
+ * - `estimated` 为真：服务端没给 usage，按字符数估算；
+ * - `usageUnknown` 为真：连估算都不成立（接口根本不返回用量，如 OpenAI `/moderations`），
+ *   金额按「每次审核固定价」或 0 记，但**必须带这个标记**，
+ *   否则记录里的 0 元会被读成「这次是免费的」，成本上限随之失真。
+ */
 export interface TokenUsage {
   promptTokens: number;
   completionTokens: number;
   totalTokens: number;
   estimated: boolean;
+  usageUnknown: boolean;
 }
 
 /** 一次调用（模型或第三方审核）的用量与金额，是记账与成本上限判断的最小单位。 */
@@ -111,11 +119,21 @@ export interface UsageSummary {
   updatedAt: string;
 }
 
-/** 内容安全检测结果的摘要（回传给调用方，便于页面记录与排查）。 */
+/**
+ * 内容安全检测结果的摘要（回传给调用方，便于页面记录与排查）。
+ *
+ * `checked` 与 `passed` 是两件事，必须分开看：
+ * - `passed: true` 只表示「在检测过的范围内没发现问题」；
+ * - `checked: false` 表示这次**根本没有真正检测**（`AI_SAFETY_PROVIDER=off` 关闭、
+ *   `AI_SAFETY_FAIL_MODE=open` 放行未检内容，或长文本只检测了前一段）。
+ * 只设 `passed` 会让调用方与日志把「跳过」读成「干净」，因此这个标志是硬要求。
+ */
 export interface SafetyReport {
   provider: string;
   api: string;
   passed: boolean;
+  /** 是否真的执行了检测（含部分检测时为 false，具体范围写在 `detail`）。 */
+  checked: boolean;
   detail: string;
 }
 

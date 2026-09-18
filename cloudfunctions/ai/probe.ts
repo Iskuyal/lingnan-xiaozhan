@@ -13,9 +13,9 @@
  * 用真实违规内容去试既不必要也不合适。
  */
 import {
-  WechatCall,
   WechatOutcome,
   WechatSecurityApi,
+  invokeWechat,
   judgeImgSecCheck,
   judgeMsgSecCheck,
   wechatErrcodeNote,
@@ -37,14 +37,20 @@ export const PROBE_IMAGE_MIME = 'image/png';
 /** 与云函数目录 `config.json` 的 `permissions.openapi` 保持一致（构图测试会核对）。 */
 export const DECLARED_OPENAPI: string[] = ['security.msgSecCheck', 'security.imgSecCheck'];
 
-function noteFor(errCode: number): string {
-  if (errCode === 0) return wechatErrcodeNote(0);
-  const base = wechatErrcodeNote(errCode);
-  if (errCode === 48001 || errCode === 48002) {
-    return `${base}；未认证小程序出现该码属预期，此时应切第三方审核适配器（AI_SAFETY_PROVIDER=openai/anthropic）`;
+/** 探测用超时（毫秒）：探测也不能无限挂起，控制台里要能在一次云函数超时内拿到结论。 */
+export const PROBE_TIMEOUT_MS = 5000;
+
+function noteFor(outcome: WechatOutcome): string {
+  if (outcome.errCode === 0) return wechatErrcodeNote(0);
+  const base = wechatErrcodeNote(outcome.errCode);
+  if (outcome.timedOut) {
+    return `${base}；**本次为调用超时**（未在边界内返回）：接口可能不可用，稍后重试或改配置`;
   }
-  if (errCode === 61010) {
-    return `${base}；改用近期访问过小程序的账号发起调用（或从云函数内部带上 openid）后重试`;
+  if (outcome.errCode === 48001 || outcome.errCode === 48002) {
+    return `${base}；若确认是未认证小程序导致（**需以本次探测结论为准**），应切第三方审核适配器（AI_SAFETY_PROVIDER=openai/anthropic）`;
+  }
+  if (outcome.errCode === 61010) {
+    return `${base}；可改用近期访问过小程序的账号发起调用（或从云函数内部带上 openid）后重试`;
   }
   return base;
 }
@@ -53,23 +59,18 @@ async function runCheck(
   name: string,
   form: string,
   call: () => Promise<unknown>,
-  judge: (value: WechatCall) => WechatOutcome,
+  judge: (value: Parameters<typeof judgeMsgSecCheck>[0]) => WechatOutcome,
+  timeoutMs: number,
 ): Promise<ProbeCheck> {
   const startedAt = Date.now();
-  let callResult: WechatCall;
-  try {
-    callResult = { ok: true, response: await call() };
-  } catch (error) {
-    callResult = { ok: false, error };
-  }
-  const outcome = judge(callResult);
+  const outcome = judge(await invokeWechat(call, timeoutMs, name));
   return {
     api: name,
     form,
     errCode: outcome.errCode,
     errMsg: outcome.errMsg,
     verdict: outcome.verdict,
-    note: noteFor(outcome.errCode),
+    note: noteFor(outcome),
     elapsedMs: Date.now() - startedAt,
   };
 }
@@ -79,6 +80,8 @@ export interface ProbeOptions {
   openid?: string;
   /** 环境标识（非密钥）：控制台里读到的当前环境，便于核对探测发生在哪个环境。 */
   env?: string;
+  /** 单次接口调用的超时；默认 {@link PROBE_TIMEOUT_MS}。 */
+  timeoutMs?: number;
   now?: Date;
 }
 
@@ -90,6 +93,9 @@ export async function runProbe(options: ProbeOptions = {}): Promise<ProbeResult>
   const startedAt = Date.now();
   const now = options.now ?? new Date();
   const openid = typeof options.openid === 'string' ? options.openid : '';
+  const timeoutMs = typeof options.timeoutMs === 'number' && Number.isFinite(options.timeoutMs) && options.timeoutMs > 0
+    ? Math.floor(options.timeoutMs)
+    : PROBE_TIMEOUT_MS;
   const form = openid === '' ? 'v1（无 openid）' : 'v2（带 openid）';
   const checks: ProbeCheck[] = [];
 
@@ -107,10 +113,10 @@ export async function runProbe(options: ProbeOptions = {}): Promise<ProbeResult>
     const wechat = options.wechat;
     checks.push(await runCheck('security.msgSecCheck', form, () => wechat.msgSecCheck(
       openid === '' ? { content: PROBE_TEXT } : { content: PROBE_TEXT, version: 2, scene: 1, openid },
-    ), judgeMsgSecCheck));
+    ), judgeMsgSecCheck, timeoutMs));
     checks.push(await runCheck('security.imgSecCheck', form, () => wechat.imgSecCheck({
       media: { contentType: PROBE_IMAGE_MIME, value: Buffer.from(PROBE_IMAGE_BASE64, 'base64') },
-    }), judgeImgSecCheck));
+    }), judgeImgSecCheck, timeoutMs));
   }
 
   const textOk = checks.some((check) => check.api === 'security.msgSecCheck' && check.verdict === 'pass');

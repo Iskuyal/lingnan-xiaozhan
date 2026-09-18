@@ -19,8 +19,9 @@
 import * as cloud from 'wx-server-sdk';
 import { Config, ModelTarget, loadConfig, resolveModelTarget, secretsOf } from './config';
 import { AiFailure, describeError, fail, messageFor, redactSecrets, toFailure } from './errors';
+import { isTimeoutError, withTimeout } from './http';
 import { ModelCallResult, ModelInvocation, callModel } from './providers';
-import { SafetyOutcome, WechatSecurityApi, checkImage, checkText } from './safety';
+import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
 import { runProbe } from './probe';
 import {
   ActionName,
@@ -28,6 +29,7 @@ import {
   CallUsage,
   ConversationMessage,
   FailureClass,
+  MessageRole,
   NormalizedImage,
   SafetyReport,
   SubCallRecord,
@@ -43,6 +45,7 @@ import {
   readUsageSummary,
   recordSubCall,
   toCallUsage,
+  unknownUsage,
 } from './usage';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
@@ -52,17 +55,22 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 const db = cloud.database() as unknown as UsageDb;
 
 const ALLOWED_ACTIONS: ActionName[] = ['chat', 'vision', 'moderateText', 'moderateImage', 'usage', 'probe'];
-/** 一次请求最多带多少条消息：防止调用方把整段历史塞进来把成本放大。 */
+/** 一次请求最多带多少消息：防止调用方把整段历史塞进来把成本放大。 */
 const MAX_MESSAGES = 20;
 /** 单条消息最大长度（字符）：超出按参数错误处理，让调用方自己截断比默默截断可控。 */
 const MAX_MESSAGE_CHARS = 8000;
 /** 微信 msgSecCheck 的 content 上限是 2500 字；分片检测每次不超过 2000 字。 */
 const MODERATION_CHUNK_CHARS = 2000;
-/** 一次调用最多检测几段：超过的部分不检测，并在报告里写明，绝不假装检过。 */
-const MAX_MODERATION_CHUNKS = 3;
+/**
+ * 一次检测最多分几片：2000 字 × 10 = 2 万字。
+ * 超过的部分**不检测**，报告里写明范围并置 `checked: false`——不静默放过，也不假装检过。
+ */
+const MAX_MODERATION_CHUNKS = 10;
 /** 留给内容安全与记账的时间（毫秒）：模型调用不能把总截止用满。 */
 const TIMEOUT_RESERVE_MS = 500;
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg'];
+/** 消息角色只认这三种；调用方写别的值按参数错误处理，不做猜测。 */
+const MESSAGE_ROLES: MessageRole[] = ['system', 'user', 'assistant'];
 
 /** 云函数事件（都是 unknown，逐个收敛；调用方传错只影响本次调用）。 */
 export interface AiEvent {
@@ -92,7 +100,13 @@ interface RunLog {
   warnings: string[];
 }
 
-const ZERO_USAGE: TokenUsage = { promptTokens: 0, completionTokens: 0, totalTokens: 0, estimated: false };
+const ZERO_USAGE: TokenUsage = {
+  promptTokens: 0,
+  completionTokens: 0,
+  totalTokens: 0,
+  estimated: false,
+  usageUnknown: false,
+};
 
 function safeString(value: unknown): string {
   return typeof value === 'string' ? value : '';
@@ -138,11 +152,16 @@ function currentEnv(): string {
   return typeof env === 'string' ? env : '';
 }
 
-/** 从 fileID 猜 MIME；猜不到按 PNG（截图场景最常见），调用方可用 mimeType 显式覆盖。 */
-function mimeFromFileID(fileID: string): string {
+/**
+ * 从 fileID 的扩展名判断 MIME；**判断不出来就返回 null**。
+ * 不能默认按 PNG：那会让 `.gif` / `.webp` / 无扩展名的非图片文件悄悄通过格式门，
+ * 到了微信 imgSecCheck 才被拒，错误位置离原因很远。
+ */
+function mimeFromFileID(fileID: string): string | null {
   const lower = fileID.toLowerCase();
+  if (lower.endsWith('.png')) return 'image/png';
   if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
-  return 'image/png';
+  return null;
 }
 
 /** 去掉可能带的 data URL 前缀，返回纯 base64；前缀里的 MIME 作为兜底。 */
@@ -157,6 +176,7 @@ function stripDataUrl(raw: string): { base64: string; mimeType: string } {
  *
  * 支持两种来源：云存储 fileID（05 的上传路径）与直接 base64。
  * 大小与格式在这里拦住：微信 imgSecCheck 明确限制 1MB / PNG-JPG，早失败比送上去被拒清楚。
+ * 格式判断不出来时**报参数错误**，不猜一个默认值——猜错会让非图片通过格式门。
  */
 async function resolveImage(raw: unknown, config: Config): Promise<NormalizedImage> {
   if (raw === null || raw === undefined || typeof raw !== 'object') {
@@ -168,15 +188,34 @@ async function resolveImage(raw: unknown, config: Config): Promise<NormalizedIma
   if (typeof source.fileID === 'string' && source.fileID !== '') {
     let content: Buffer;
     try {
-      const downloaded = (await cloud.downloadFile({ fileID: source.fileID })) as unknown as { fileContent?: unknown };
-      const value = downloaded === null || downloaded === undefined ? undefined : downloaded.fileContent;
+      // 下载走硬超时：云存储同样可能一直不返回，不能让一次 vision 调用无限挂起。
+      const downloaded = await withTimeout(
+        cloud.downloadFile({ fileID: source.fileID }) as Promise<unknown>,
+        config.downloadTimeoutMs,
+        `云存储下载 ${source.fileID}`,
+      );
+      const value = downloaded === null || downloaded === undefined
+        ? undefined
+        : (downloaded as { fileContent?: unknown }).fileContent;
       if (!Buffer.isBuffer(value)) fail('invalid_request', `云存储文件下载结果异常：${source.fileID}`);
       content = value as Buffer;
     } catch (error) {
       if (error instanceof AiFailure) throw error;
+      if (isTimeoutError(error)) {
+        fail('model_unavailable', `云存储文件下载超时（${config.downloadTimeoutMs}ms，AI_DOWNLOAD_TIMEOUT_MS）：${source.fileID}`);
+      }
       fail('invalid_request', `云存储文件下载失败：${describeError(error)}`);
     }
-    if (mimeType === '') mimeType = mimeFromFileID(source.fileID);
+    if (mimeType === '') {
+      const guessed = mimeFromFileID(source.fileID);
+      if (guessed === null) {
+        fail(
+          'invalid_request',
+          `无法从 fileID 判断图片格式：${source.fileID}；请在 image.mimeType 里显式给出（${ALLOWED_IMAGE_MIME.join(' / ')}）`,
+        );
+      }
+      mimeType = guessed;
+    }
     base64 = content.toString('base64');
   } else if (typeof source.base64 === 'string' && source.base64.trim() !== '') {
     const parsed = stripDataUrl(source.base64);
@@ -185,7 +224,13 @@ async function resolveImage(raw: unknown, config: Config): Promise<NormalizedIma
   } else {
     fail('invalid_request', '图片参数需要 fileID 或 base64');
   }
-  if (mimeType === '') mimeType = 'image/png';
+  if (mimeType === '') {
+    fail(
+      'invalid_request',
+      `base64 图片必须显式给出 mimeType（${ALLOWED_IMAGE_MIME.join(' / ')}），或用 data:image/png;base64,… 形式；`
+      + '默认按 PNG 处理会让非图片悄悄通过格式门，因此不再猜。',
+    );
+  }
   if (!ALLOWED_IMAGE_MIME.includes(mimeType)) {
     fail('invalid_request', `图片格式 ${mimeType} 不支持，只接受 ${ALLOWED_IMAGE_MIME.join(' / ')}`);
   }
@@ -202,7 +247,11 @@ async function resolveImage(raw: unknown, config: Config): Promise<NormalizedIma
   return { base64, mimeType };
 }
 
-/** 解析对话消息：调用方可以写 `text` 或 `content`（两种命名都常见）。 */
+/**
+ * 解析对话消息：调用方可以写 `text` 或 `content`（两种命名都常见）。
+ * `role` 必须是 user / assistant / system 之一：写别的值（或干脆不写）按参数错误处理——
+ * 默默当成 `user` 会改变消息语义（谁说的、要不要过检），属于猜测而不是容错。
+ */
 function parseMessages(raw: unknown): ConversationMessage[] {
   if (!Array.isArray(raw) || raw.length === 0) {
     fail('invalid_request', 'messages 必须是非空数组，元素形如 {"role":"user","text":"..."}');
@@ -214,7 +263,11 @@ function parseMessages(raw: unknown): ConversationMessage[] {
   for (const entry of raw) {
     if (entry === null || typeof entry !== 'object') fail('invalid_request', 'messages 的每个元素都必须是对象');
     const source = entry as { role?: unknown; text?: unknown; content?: unknown; image?: unknown };
-    const role = safeString(source.role) === 'assistant' ? 'assistant' : safeString(source.role) === 'system' ? 'system' : 'user';
+    const rawRole = safeString(source.role);
+    if (!(MESSAGE_ROLES as string[]).includes(rawRole)) {
+      fail('invalid_request', `messages 的 role 只接受 ${MESSAGE_ROLES.join(' / ')}，收到「${rawRole === '' ? '（缺省）' : rawRole}」`);
+    }
+    const role = rawRole as MessageRole;
     const text = typeof source.text === 'string' ? source.text : typeof source.content === 'string' ? source.content : '';
     if (text === '' && source.image === undefined) fail('invalid_request', 'messages 的每条消息都需要 text（或 content）');
     if (text.length > MAX_MESSAGE_CHARS) {
@@ -238,8 +291,19 @@ function attachImage(messages: ConversationMessage[], image: NormalizedImage): v
   fail('invalid_request', 'vision 动作需要至少一条 user 消息来承载图片');
 }
 
-function userText(messages: ConversationMessage[]): string {
-  return messages.filter((message) => message.role === 'user').map((message) => message.text).join('\n');
+/**
+ * 本次调用要过检的全部文字：**所有消息**（system / user / assistant）与事件顶层的 system。
+ *
+ * 只检 user 是漏检：system 与 assistant 历史同样是调用方送进来的、同样会进入第三方模型的文本，
+ * 违规内容从这里进去一样是问题（规格把「AI 文字都要过内容安全」列为硬约束）。
+ */
+function inputText(messages: ConversationMessage[], system: string): string {
+  const parts: string[] = [];
+  if (system.trim() !== '') parts.push(system);
+  for (const message of messages) {
+    if (message.text !== '') parts.push(message.text);
+  }
+  return parts.join('\n');
 }
 
 /** 按剩余总时限算模型调用的超时；没有余量就不发请求（可识别失败，不挂起）。 */
@@ -253,13 +317,27 @@ function modelTimeoutMs(log: RunLog, startedAt: number, requested: unknown): num
   return Math.floor(budget);
 }
 
+/**
+ * 内容安全检测的超时：同样受总截止约束（内容安全 + 模型 + 输出检测都在一个云函数调用里），
+ * 至少留 1 秒，避免算出来是 0 而直接失败。
+ */
+function moderationTimeoutMs(log: RunLog, startedAt: number): number {
+  const remaining = log.config.totalDeadlineMs - (Date.now() - startedAt) - TIMEOUT_RESERVE_MS;
+  return Math.max(1000, Math.min(log.config.safety.timeoutMs, Math.floor(remaining)));
+}
+
+/** 去重地追加一条非致命告警（同一原因在一次调用里只出现一次）。 */
+function pushWarning(log: RunLog, warning: string): void {
+  if (!log.warnings.includes(warning)) log.warnings.push(warning);
+}
+
 /** 写一条调用记录并累加月度汇总；记账失败不推翻已经完成的模型调用，但要在返回值里告警。 */
 async function record(log: RunLog, entry: SubCallRecord): Promise<void> {
   try {
     await recordSubCall(db, entry, log.config, new Date());
     log.summary = applyRecord(log.summary, entry);
   } catch (error) {
-    log.warnings.push(`用量记账失败，本次成本未计入月度累计：${describeError(error)}`);
+    pushWarning(log, `用量记账失败，本次成本未计入月度累计：${describeError(error)}`);
   }
 }
 
@@ -306,31 +384,51 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
 
 /**
  * 文字内容安全检测（长文本分片）。
- * 分片是为了兼容微信 msgSecCheck 的 2500 字上限；超过 `MAX_MODERATION_CHUNKS` 段的部分
- * **不检测**，只在报告里写明——不做「假装检过」的事。
+ *
+ * 分片是为了兼容微信 msgSecCheck 的 2500 字上限；**每一段都要检**，
+ * 直到 `MAX_MODERATION_CHUNKS` 段（2 万字）为止。仍然超出时：
+ * 不检测的部分明确写进报告，并把 `checked` 置为 false——
+ * 既不静默放过，也不让调用方以为整段都检过了。
  */
-async function moderateText(log: RunLog, text: string, wechat: WechatSecurityApi | undefined, openid: string): Promise<SafetyOutcome> {
+async function moderateText(
+  log: RunLog,
+  text: string,
+  wechat: WechatSecurityApi | undefined,
+  openid: string,
+  startedAt: number,
+): Promise<SafetyOutcome> {
   const chunks: string[] = [];
   for (let index = 0; index < text.length && chunks.length < MAX_MODERATION_CHUNKS; index += MODERATION_CHUNK_CHARS) {
     chunks.push(text.slice(index, index + MODERATION_CHUNK_CHARS));
   }
   if (chunks.length === 0) chunks.push('');
-  const truncated = text.length > MODERATION_CHUNK_CHARS * MAX_MODERATION_CHUNKS;
+  const coveredChars = Math.min(text.length, MODERATION_CHUNK_CHARS * MAX_MODERATION_CHUNKS);
+  const truncated = text.length > coveredChars;
   let last: SafetyOutcome | null = null;
   for (const chunk of chunks) {
-    const outcome = await checkSafely(log, () => checkText(log.config, { text: chunk, wechat, openid }), 'text-moderation');
+    const outcome = await checkSafely(
+      log,
+      () => checkText(log.config, { text: chunk, wechat, openid, timeoutMs: moderationTimeoutMs(log, startedAt) }),
+      'text-moderation',
+    );
     last = outcome;
     if (outcome.rejected) return outcome;
   }
   if (last === null) fail('internal', '内容安全检测没有产生任何结果');
   if (truncated) {
-    return {
+    // 检测只覆盖了前一段：把范围写进报告并置 checked=false，同时让它成为本次调用的结论
+    // （`checked` 只降不升，后面的输出检测不会把它冲回 true）。
+    const partial: SafetyOutcome = {
       ...last,
       report: {
         ...last.report,
-        detail: `${last.report.detail}｜文本超过 ${MODERATION_CHUNK_CHARS * MAX_MODERATION_CHUNKS} 字，仅检测了前 ${MAX_MODERATION_CHUNKS} 段`,
+        checked: false,
+        detail: `${last.report.detail}｜文本共 ${text.length} 字，仅检测了前 ${coveredChars} 字（超过 ${MODERATION_CHUNK_CHARS}×${MAX_MODERATION_CHUNKS} 字上限的部分未检测）`,
       },
     };
+    recordSafety(log, partial.report);
+    noteUnchecked(log, partial);
+    return partial;
   }
   return last;
 }
@@ -341,8 +439,33 @@ async function moderateImage(
   image: NormalizedImage,
   wechat: WechatSecurityApi | undefined,
   openid: string,
+  startedAt: number,
 ): Promise<SafetyOutcome> {
-  return checkSafely(log, () => checkImage(log.config, { image, wechat, openid }), 'image-moderation');
+  return checkSafely(
+    log,
+    () => checkImage(log.config, { image, wechat, openid, timeoutMs: moderationTimeoutMs(log, startedAt) }),
+    'image-moderation',
+  );
+}
+
+/**
+ * 记录本次调用的内容安全结论。
+ * 一次 chat 会做多次检测（输入图片、输入文字、输出文字），而返回值只有一个 `safety` 字段：
+ * 正常情况下用最后一步（输出检测）的报告；但只要**任何一步没检全**，就保留那一条——
+ * 不能让后面一步的 `checked: true` 把「有内容没检过」冲掉。
+ */
+function recordSafety(log: RunLog, report: SafetyReport): void {
+  if (log.safety !== null && log.safety.checked === false) return;
+  log.safety = report;
+}
+
+/**
+ * 检测被跳过或只做了一部分时，在返回值里留一条告警。
+ * 只看 `report.detail` 不够：调用方很可能只读 `passed`，把「跳过」读成「干净」。
+ */
+function noteUnchecked(log: RunLog, outcome: SafetyOutcome): void {
+  if (outcome.report.checked) return;
+  pushWarning(log, `内容安全检测未完整执行（checked=false）：${rejectionDetail(outcome)}`);
 }
 
 /** 内容安全检测的记账包装：检测本身的失败也要留记录，然后按原分类抛出。 */
@@ -350,7 +473,8 @@ async function checkSafely(log: RunLog, run: () => Promise<SafetyOutcome>, api: 
   const startedAt = Date.now();
   try {
     const outcome = await run();
-    log.safety = outcome.report;
+    recordSafety(log, outcome.report);
+    noteUnchecked(log, outcome);
     await record(log, {
       requestId: log.requestId,
       feature: log.feature,
@@ -362,7 +486,7 @@ async function checkSafely(log: RunLog, run: () => Promise<SafetyOutcome>, api: 
       ok: true,
       failureClass: '',
       durationMs: outcome.durationMs,
-      usage: outcome.usage === null ? toCallUsage(ZERO_USAGE, log.config) : toCallUsage(outcome.usage, log.config),
+      usage: moderationUsage(log, outcome),
     });
     return outcome;
   } catch (error) {
@@ -383,9 +507,30 @@ async function checkSafely(log: RunLog, run: () => Promise<SafetyOutcome>, api: 
   }
 }
 
+/**
+ * 一次检测的用量与金额。
+ * - 有 token 用量（第三方 chat 判定）→ 按单价算；
+ * - 用量未知（OpenAI `/moderations` 不返回 usage）→ 按可配置的「每次审核固定价」计，
+ *   并标记 `usageUnknown`；**不静默记成 0 元**，同时留一条告警说明这一次是怎么记的；
+ * - 微信云调用不返回用量且免费 → 0 元、不计入，也不报警。
+ */
+function moderationUsage(log: RunLog, outcome: SafetyOutcome): CallUsage {
+  if (outcome.usage !== null) return toCallUsage(outcome.usage, log.config);
+  if (!outcome.usageUnknown) return toCallUsage(ZERO_USAGE, log.config);
+  const fixedPriceYuan = log.config.safety.fixedPriceYuan;
+  pushWarning(
+    log,
+    fixedPriceYuan > 0
+      ? `审核接口未返回 token 用量，本次按固定价 ${fixedPriceYuan} 元/次计入（AI_SAFETY_CALL_PRICE_YUAN）。`
+      : '审核接口未返回 token 用量，金额记为 0 元但已标记 usageUnknown（次数照记）；'
+        + '如需计入成本请配置 AI_SAFETY_CALL_PRICE_YUAN 为每次审核的固定价。',
+  );
+  return unknownUsage(fixedPriceYuan, log.config);
+}
+
 /** 内容被判违规：统一抛 `content_rejected`，细节留给维护者。 */
 function rejectContent(outcome: SafetyOutcome): never {
-  fail('content_rejected', `${outcome.report.provider}｜${outcome.report.api}｜${outcome.report.detail}`);
+  fail('content_rejected', rejectionDetail(outcome));
 }
 
 /**
@@ -424,14 +569,14 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): P
     attachImage(messages, image);
   }
 
-  // 1) 输入内容安全：用户提问与上传的图片都要先过检测。
+  // 1) 输入内容安全：**所有消息文字**（system / user / assistant）与上传的图片都要先过检测。
   if (image !== undefined) {
-    const imageOutcome = await moderateImage(log, image, wechat, openid);
+    const imageOutcome = await moderateImage(log, image, wechat, openid, startedAt);
     if (imageOutcome.rejected) rejectContent(imageOutcome);
   }
-  const inputText = userText(messages);
-  if (inputText !== '') {
-    const textOutcome = await moderateText(log, inputText, wechat, openid);
+  const text = inputText(messages, system);
+  if (text !== '') {
+    const textOutcome = await moderateText(log, text, wechat, openid, startedAt);
     if (textOutcome.rejected) rejectContent(textOutcome);
   }
 
@@ -450,7 +595,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): P
 
   // 3) 输出内容安全：AI 生成的文字上屏前再检一次。
   if (log.config.moderateOutput && result.text !== '') {
-    const outputOutcome = await moderateText(log, result.text, wechat, openid);
+    const outputOutcome = await moderateText(log, result.text, wechat, openid, startedAt);
     if (outputOutcome.rejected) rejectContent(outputOutcome);
   }
   return result.text;
@@ -571,7 +716,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。
     if (action === 'usage') {
       const response = successResponse(log, action, startedAt);
-      response.message = capWarningFor(summary);
+      // `message` 的契约是「成功时为空串」；上限告警走专门的 capWarning 字段（baseResponse 已填）。
       response.detail = `当月累计 ${summary.calls} 次调用、${summary.totalTokens} token、${summary.costYuan} 元`
         + `（上限 ${summary.capYuan} 元，告警线 ${summary.warnThresholdYuan} 元）`;
       return response;
@@ -581,16 +726,18 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     assertWithinCap(summary);
 
     if (action === 'moderateText') {
-      const text = safeString(event.text);
-      if (text === '') fail('invalid_request', 'moderateText 需要 text');
-      const outcome = await moderateText(log, text, wechatSecurity(), currentOpenid());
+      const raw = safeString(event.text);
+      if (raw === '') fail('invalid_request', 'moderateText 需要 text');
+      // 长文本按窗口逐段检测（与 chat 的输入检测同一套分片逻辑）：前 2 万字全检，
+      // 超出部分在报告里写明范围并置 checked=false，不静默放过。
+      const outcome = await moderateText(log, raw, wechatSecurity(), currentOpenid(), startedAt);
       const response = successResponse(log, action, startedAt);
       response.safety = outcome.report;
       if (outcome.rejected) {
         response.ok = false;
         response.failureClass = 'content_rejected';
         response.message = messageFor('content_rejected');
-        response.detail = `${outcome.report.provider}｜${outcome.report.api}｜${outcome.report.detail}`;
+        response.detail = rejectionDetail(outcome);
       }
       return response;
     }
@@ -598,14 +745,14 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     if (action === 'moderateImage') {
       if (event.image === undefined || event.image === null) fail('invalid_request', 'moderateImage 需要 image（fileID 或 base64）');
       const image = await resolveImage(event.image, log.config);
-      const outcome = await moderateImage(log, image, wechatSecurity(), currentOpenid());
+      const outcome = await moderateImage(log, image, wechatSecurity(), currentOpenid(), startedAt);
       const response = successResponse(log, action, startedAt);
       response.safety = outcome.report;
       if (outcome.rejected) {
         response.ok = false;
         response.failureClass = 'content_rejected';
         response.message = messageFor('content_rejected');
-        response.detail = `${outcome.report.provider}｜${outcome.report.api}｜${outcome.report.detail}`;
+        response.detail = rejectionDetail(outcome);
       }
       return response;
     }

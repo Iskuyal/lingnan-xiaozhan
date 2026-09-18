@@ -7,8 +7,8 @@
  * - `ai_usage_monthly`：每月一条文档（`_id` 为东八区月份，如 `2026-09`），用原子自增累加，
  *   是累计用量查询与成本上限判断的唯一来源。
  *
- * 单价与上限都来自环境变量：默认值是 AI 资讯实测的官方单价与规格定下的 50 元上限，
- * 换中转、换模型、调整上限都只改配置，不动代码。
+ * 单价与上限都来自环境变量：默认值是 AI 资讯实测的 **DeepSeek 官方**单价（中转实际单价未实测）
+ * 与规格定下的 50 元上限，换中转、换模型、调整上限都只改配置，不动代码。
  */
 import { Config } from './config';
 import { fail } from './errors';
@@ -20,8 +20,8 @@ export const USAGE_MONTH_COLLECTION = 'ai_usage_monthly';
 /** 单次调用记录的字段契约（测试据此锁定形状，避免字段悄悄改名）。 */
 export const USAGE_RECORD_FIELDS: string[] = [
   'requestId', 'feature', 'action', 'kind', 'provider', 'model', 'ok', 'failureClass',
-  'durationMs', 'promptTokens', 'completionTokens', 'totalTokens', 'estimated', 'costYuan',
-  'month', 'createdAt',
+  'durationMs', 'promptTokens', 'completionTokens', 'totalTokens', 'estimated', 'usageUnknown',
+  'costYuan', 'month', 'createdAt',
 ];
 
 /** 月度汇总文档的字段契约。 */
@@ -29,14 +29,18 @@ export const USAGE_MONTH_FIELDS: string[] = [
   'month', 'calls', 'failures', 'promptTokens', 'completionTokens', 'totalTokens', 'costYuan', 'updatedAt',
 ];
 
-/** 记账所需的最小数据库接口（只用到 add / doc.get / doc.set / doc.update 与原子自增）。 */
+/**
+ * 记账所需的最小数据库接口（只用到 add / doc.get / doc.update 与原子自增）。
+ *
+ * 刻意**不声明 `doc.set`**：月度汇总只允许「原子自增」与「首次插入」两种写法，
+ * 整体覆盖式写入会把当月累计冲掉（见 `recordSubCall` 的注释）。
+ */
 export interface UsageDb {
   command: { inc(value: number): unknown };
   collection(name: string): {
     add(options: { data: Record<string, unknown> }): Promise<unknown>;
     doc(id: string): {
       get(): Promise<{ data?: unknown }>;
-      set(options: { data: Record<string, unknown> }): Promise<unknown>;
       update(options: { data: Record<string, unknown> }): Promise<unknown>;
     };
   };
@@ -79,6 +83,26 @@ export function toCallUsage(usage: TokenUsage, config: Config): CallUsage {
   return {
     ...usage,
     costYuan: costOf(usage, config.priceInputPerMillion, config.priceOutputPerMillion),
+    priceInputPerMillion: config.priceInputPerMillion,
+    priceOutputPerMillion: config.priceOutputPerMillion,
+  };
+}
+
+/**
+ * 用量未知时的记账：接口不返回 token 用量（如 OpenAI `/moderations`），既拿不到精确值也无法估算。
+ *
+ * 两个都不能做：不能记 0 元（会被读成「这次免费」，上限随之失真），也不能编一个 token 数。
+ * 做法是「按每次审核的**固定价**计金额 + 标记 `usageUnknown`」，固定价由
+ * `AI_SAFETY_CALL_PRICE_YUAN` 配置（默认 0，此时金额为 0 但有标记，调用次数照记）。
+ */
+export function unknownUsage(fixedPriceYuan: number, config: Config): CallUsage {
+  return {
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    estimated: true,
+    usageUnknown: true,
+    costYuan: round6(Math.max(0, fixedPriceYuan)),
     priceInputPerMillion: config.priceInputPerMillion,
     priceOutputPerMillion: config.priceOutputPerMillion,
   };
@@ -134,17 +158,33 @@ function toSummary(month: string, raw: Record<string, unknown> | null, config: C
   return summary;
 }
 
+/** 从各种异常形状里取错误文本（云数据库的错误信息在 errMsg / message 上）。 */
+function errorMessageOf(error: unknown): string {
+  if (error === null || error === undefined) return '';
+  if (typeof error !== 'object') return String(error);
+  const source = error as { errMsg?: unknown; message?: unknown };
+  const message = source.errMsg ?? source.message;
+  return typeof message === 'string' ? message : '';
+}
+
 /**
  * 判断异常是否是「文档不存在」。云数据库对缺失文档抛的错误里带这类字样；
  * 其余读取失败（网络、权限、集合不存在）一律视为数据库故障。
  */
 export function isMissingDocumentError(error: unknown): boolean {
-  const message = error === null || error === undefined
-    ? ''
-    : typeof error === 'object'
-      ? String((error as { errMsg?: unknown; message?: unknown }).errMsg ?? (error as { message?: unknown }).message ?? '')
-      : String(error);
-  return /not exist|does not exist|doesn't exist|DOCUMENT_NOT_EXIST|non-exists/iu.test(message);
+  return /not exist|does not exist|doesn't exist|DOCUMENT_NOT_EXIST|non-exists/iu.test(errorMessageOf(error));
+}
+
+/** 取 SDK 返回的 `updated` 计数；返回 null 表示这次返回里没有可识别的计数。 */
+export function updatedCount(result: unknown): number | null {
+  if (result === null || result === undefined || typeof result !== 'object') return null;
+  const stats = (result as { stats?: unknown }).stats;
+  if (stats !== null && stats !== undefined && typeof stats === 'object') {
+    const value = (stats as { updated?: unknown }).updated;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+  }
+  const direct = (result as { updated?: unknown }).updated;
+  return typeof direct === 'number' && Number.isFinite(direct) ? direct : null;
 }
 
 /**
@@ -185,12 +225,29 @@ export function applyRecord(summary: UsageSummary, record: SubCallRecord): Usage
   return next;
 }
 
+/** 月度汇总的原子自增增量。 */
+function monthDelta(db: UsageDb, record: SubCallRecord, createdAt: string): Record<string, unknown> {
+  return {
+    calls: db.command.inc(1),
+    failures: db.command.inc(record.ok ? 0 : 1),
+    promptTokens: db.command.inc(record.usage.promptTokens),
+    completionTokens: db.command.inc(record.usage.completionTokens),
+    totalTokens: db.command.inc(record.usage.totalTokens),
+    costYuan: db.command.inc(record.usage.costYuan),
+    updatedAt: createdAt,
+  };
+}
+
 /**
  * 写一条调用记录并累加月度汇总。
  *
  * 汇总用原子自增（`command.inc`）：两次调用并发时也不会互相覆盖。
- * 当月文档还不存在时先 `set` 出初值；`set` 与并发调用之间仍可能各写一份（丢一次计数），
- * 概率极低且方向不受控，故在此注明为已知限制而不是假装没有。
+ *
+ * **当月文档的初始化只在确认「文档不存在」时发生**，且插入带固定 `_id`：
+ * - `update` 抛「文档不存在」，或 SDK 明确回 `updated: 0` → 才走首次插入；
+ * - 其它 update 失败（网络、权限、集合不存在）**原样抛出**，由入口记为「可处理的记账失败」——
+ *   绝不能因为一次失败的 update 就去 `set`，那会把当月累计覆盖成单次调用的数字，
+ *   累计用量与上限判定随之失真（成本上限失效）。
  */
 export async function recordSubCall(db: UsageDb, record: SubCallRecord, config: Config, now: Date): Promise<void> {
   const month = shanghaiMonth(now);
@@ -209,40 +266,77 @@ export async function recordSubCall(db: UsageDb, record: SubCallRecord, config: 
     completionTokens: record.usage.completionTokens,
     totalTokens: record.usage.totalTokens,
     estimated: record.usage.estimated,
+    usageUnknown: record.usage.usageUnknown,
     costYuan: record.usage.costYuan,
     month,
     createdAt,
   };
   await db.collection(USAGE_RECORD_COLLECTION).add({ data });
 
-  const delta: Record<string, unknown> = {
-    calls: db.command.inc(1),
-    failures: db.command.inc(record.ok ? 0 : 1),
-    promptTokens: db.command.inc(record.usage.promptTokens),
-    completionTokens: db.command.inc(record.usage.completionTokens),
-    totalTokens: db.command.inc(record.usage.totalTokens),
-    costYuan: db.command.inc(record.usage.costYuan),
+  const delta = monthDelta(db, record, createdAt);
+  const monthly = db.collection(USAGE_MONTH_COLLECTION);
+  const doc = monthly.doc(month);
+  let updated: number | null;
+  try {
+    updated = updatedCount(await doc.update({ data: delta }));
+  } catch (error) {
+    if (!isMissingDocumentError(error)) throw error;
+    updated = 0;
+  }
+  if (updated !== null && updated > 0) return;
+  if (updated === null) {
+    // SDK 没回计数：读一次确认文档在不在，不在才初始化——绝不拿「读不到计数」当理由去覆盖。
+    try {
+      await doc.get();
+      return;
+    } catch (error) {
+      if (!isMissingDocumentError(error)) throw error;
+    }
+  }
+  await initializeMonth(monthly.add.bind(monthly), doc, month, record, createdAt, delta);
+}
+
+/**
+ * 当月文档首次写入：用固定 `_id` 插入初值。
+ * 并发下另一个调用可能刚好插入成功（`_id` 唯一），此时回到原子自增，避免各写一份丢计数。
+ */
+async function initializeMonth(
+  add: (options: { data: Record<string, unknown> }) => Promise<unknown>,
+  doc: {
+    get(): Promise<{ data?: unknown }>;
+    update(options: { data: Record<string, unknown> }): Promise<unknown>;
+  },
+  month: string,
+  record: SubCallRecord,
+  createdAt: string,
+  delta: Record<string, unknown>,
+): Promise<void> {
+  const initial: Record<string, unknown> = {
+    _id: month,
+    month,
+    calls: 1,
+    failures: record.ok ? 0 : 1,
+    promptTokens: record.usage.promptTokens,
+    completionTokens: record.usage.completionTokens,
+    totalTokens: record.usage.totalTokens,
+    costYuan: record.usage.costYuan,
     updatedAt: createdAt,
   };
-  const monthly = db.collection(USAGE_MONTH_COLLECTION);
   try {
-    await monthly.doc(month).update({ data: delta });
+    await add({ data: initial });
     return;
-  } catch {
-    // 文档不存在：写入初值。若并发调用刚好也建了文档，以先写入者为准（见函数注释）。
+  } catch (error) {
+    // 只在「文档确实已存在」时退回自增；其它错误如实抛出（记账失败会被记进调用返回值）。
+    let exists = false;
+    try {
+      await doc.get();
+      exists = true;
+    } catch {
+      exists = false;
+    }
+    if (!exists) throw error;
   }
-  await monthly.doc(month).set({
-    data: {
-      month,
-      calls: 1,
-      failures: record.ok ? 0 : 1,
-      promptTokens: record.usage.promptTokens,
-      completionTokens: record.usage.completionTokens,
-      totalTokens: record.usage.totalTokens,
-      costYuan: record.usage.costYuan,
-      updatedAt: createdAt,
-    },
-  });
+  await doc.update({ data: delta });
 }
 
 /**
