@@ -36,5 +36,28 @@
     <view class="departments-source-note">{{view.source.note}}</view>
   </view>
 
+  <view id="dept-qa" class="qa">
+    <button wx:if="{{!qaOpen}}" id="qa-open" class="home-button qa-open" hover-class="pressed" bindtap="openQa">问问 AI：部门答疑</button>
+    <view wx:else class="qa-panel">
+      <view class="qa-head">
+        <view class="qa-title">部门答疑</view>
+        <button class="qa-close" hover-class="pressed" bindtap="closeQa">收起</button>
+      </view>
+      <view class="qa-messages">
+        <view wx:for="{{qaMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
+      </view>
+      <view class="qa-options" wx:if="{{qaOptions.length > 0}}">
+        <button wx:for="{{qaOptions}}" wx:key="id" class="qa-chip" hover-class="pressed" data-id="{{item.id}}" bindtap="pickDepartment">{{item.name}}</button>
+      </view>
+      <view class="qa-error" wx:if="{{qaError !== ''}}">{{qaError}}</view>
+      <view class="qa-cap" wx:if="{{qaCapWarning !== ''}}">{{qaCapWarning}}</view>
+      <view class="qa-input-row">
+        <input id="qa-input" class="qa-input" value="{{qaInput}}" bindinput="onQaInput" placeholder="例如：校学生会下设哪些部门？" confirm-type="send" bindconfirm="sendQuestion" />
+        <button id="qa-send" class="qa-send" hover-class="pressed" disabled="{{qaSending}}" bindtap="sendQuestion">发送</button>
+      </view>
+      <view class="qa-note">{{qaSourceNote}}</view>
+    </view>
+  </view>
+
   <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
 </view>
