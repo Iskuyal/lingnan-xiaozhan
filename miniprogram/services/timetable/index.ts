@@ -48,14 +48,31 @@ async function callTimetable<T>(data: Record<string, unknown>): Promise<T> {
   return result as T;
 }
 
-/** 取错误的可读文案；云调用失败时抛出的常是带 errMsg 的普通对象而非 Error 实例。 */
+/**
+ * 取错误的可读文案；云调用失败时抛出的常是带 errMsg 的普通对象而非 Error 实例。
+ * 云端返回的技术性错误（函数未部署、权限、超时）映射成学生能看懂的一句话，
+ * 原始错误仍打到控制台，便于排查。
+ */
 export function messageOf(error: unknown): string {
+  let raw = '';
   if (error !== null && error !== undefined && typeof error === 'object') {
     const candidate = error as { message?: unknown; errMsg?: unknown };
-    if (typeof candidate.message === 'string' && candidate.message !== '') return candidate.message;
-    if (typeof candidate.errMsg === 'string' && candidate.errMsg !== '') return candidate.errMsg;
+    if (typeof candidate.message === 'string' && candidate.message !== '') raw = candidate.message;
+    else if (typeof candidate.errMsg === 'string' && candidate.errMsg !== '') raw = candidate.errMsg;
+  } else {
+    raw = error === null || error === undefined ? '未知错误' : String(error);
   }
-  return error === null || error === undefined ? '未知错误' : String(error);
+  if (/FUNCTION_NOT_FOUND|FunctionName parameter could not be found/u.test(raw)) {
+    return '课表服务暂时不可用（云函数尚未部署或正在部署），请稍后重试';
+  }
+  if (/permission denied|-501023/u.test(raw)) {
+    return '没有权限使用课表服务，请确认已用微信登录后重试';
+  }
+  if (/timeout|-504003/u.test(raw)) {
+    return '课表服务响应超时，请稍后重试';
+  }
+  if (raw !== '未知错误') console.error('课表操作失败：', raw);
+  return raw;
 }
 
 /** 扩展名（小写，含点）。 */

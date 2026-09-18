@@ -170,3 +170,20 @@ test('小程序侧与云函数侧的周次识别对真实样本的写法结果�
     assert.deepEqual(client.weeks, server.weeks, token);
   }
 });
+
+test('云调用的技术性错误映射成可理解的文案', () => {
+  const service = require('../dist/services/timetable/index.js');
+  assert.match(service.messageOf({ errMsg: 'cloud.callFunction:fail errCode: -501000  FunctionName parameter could not be found' }), /课表服务暂时不可用/u);
+  assert.match(service.messageOf({ errMsg: 'errCode: -501023 permission denied' }), /没有权限/u);
+  assert.match(service.messageOf({ errMsg: 'errCode: -504003 Invoking task timed out' }), /超时/u);
+  assert.equal(service.messageOf(new Error('未识别出课表矩阵')), '未识别出课表矩阵');
+  assert.equal(service.messageOf(undefined), '未知错误');
+});
+
+test('上传前的本地校验：格式与大小', () => {
+  const service = require('../dist/services/timetable/index.js');
+  assert.equal(service.checkChosenFile({ name: '2026-2027学年第一学期班级课表.xls', size: 2048 }), '');
+  assert.equal(service.checkChosenFile({ name: '课表.XLSX', size: 2048 }), '');
+  assert.match(service.checkChosenFile({ name: '课表.pdf', size: 2048 }), /只支持/u);
+  assert.match(service.checkChosenFile({ name: '课表.xls', size: 20 * 1024 * 1024 }), /超过/u);
+});

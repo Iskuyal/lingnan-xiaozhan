@@ -145,6 +145,80 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [ ] 云函数定时触发器的配置字段与 cron 格式
 - [ ] 云开发环境的地域、计费与额度实际值
 
+## 课表云端实施（Ticket 03，待人工部署）
+
+课表导出的解析跑在云函数 `timetable` 侧：客户端把选中的文件上传到**本人 openid 专属的云存储路径**，云函数下载 → 用 `xlsx` 解析成草稿 → **删除临时文件**；确认页确认后才写库。函数同时承担个人课表的读取与手工增删改，全部按调用上下文的 openid 过滤，客户端不直连数据库。
+
+代码位置与测试：
+
+| 文件 | 职责 |
+| --- | --- |
+| `cloudfunctions/timetable/index.ts` | 云函数入口：`prepareUpload` / `importDraft` / `discardUpload` / `list` / `saveDraft` / `createCourse` / `updateCourse` / `deleteCourse` |
+| `cloudfunctions/timetable/parse.ts` | 网格矩阵解析（依赖 npm `xlsx`，不进小程序包） |
+| `cloudfunctions/timetable/record.ts` | 记录规范化和整批校验（不合规整批不写） |
+| `tests/timetable-parse.test.cjs` | 4 份真实教务导出 + 异常版式 |
+| `tests/timetable-flow.test.cjs` | 云存储与数据库桩上运行真实入口：导入不写库、临时文件删除、跨学生隔离、整批校验、手工三条路径 |
+| `tests/timetable-pages.test.cjs`、`tests/timetable-view.test.cjs` | 页面编排、周次切换与按节次展示、产物不含 Excel 库 |
+
+数据模型（集合 `timetable_courses`，一条课程一个文档）：
+
+| 字段 | 说明 |
+| --- | --- |
+| `owner` | 调用上下文的 openid，**只由云函数写入**，所有查询与更新都带这个条件 |
+| `id` | 客户端传入的服务端标识（`tc_` 前缀），页面间传参用它 |
+| `name` / `credits` / `teacher` | 课程名、学分（原样保留，如 `0.25`）、教师 |
+| `weekday` | 1-7 对应星期一至星期日 |
+| `sectionRanges` | 节次区间数组，如 `[{start:1,end:2},{start:3,end:4}]` |
+| `startSection` / `endSection` | 原文解析出的起止节；倒置或越界时保留原值，`sectionRanges` 为空并带 warning |
+| `weeks` / `weeksRecognized` / `weekText` | 展开后的教学周、是否识别、周次原文 |
+| `location` / `campus` / `siteNumber` / `note` | 地点、校区、场地编号、备注（教学班或方向） |
+| `warnings` | 待核对提示，页面据此显示「待核对」与原文 |
+| `source` / `semester` / `rawText` | 来源（excel/manual）、学期标注、导入时的单元格原文 |
+| `createdAt` / `updatedAt` / `batch` | 时间戳与写入批次；`batch` 用于「先写新批次、成功后再删旧批次」的整份替换 |
+
+**为什么没有给 `owner` 建索引**：数据量是个人的几十条，按 `owner` 全量读取即可；将来若按 `owner + semester` 或按周查询再补索引。
+
+### 人工步骤（动作 / 对象 / 判据）
+
+以下都是控制台操作，代码侧无法完成。**未完成前，小程序里的课表页会显示「课表服务暂时不可用」**，其它模块不受影响。
+
+1. **创建集合**
+   - 动作：在云开发控制台「数据库」新建集合 `timetable_courses`。
+   - 对象：环境 `cloudbase-d2gjtbbwu3575cd7b` 的数据库。
+   - 判据：集合列表里能看到它；权限为**最严格预设「所有用户不可读写」**（或自定义 `{"read": false, "write": false}`）。在开发者工具里用 `wx.cloud.database().collection('timetable_courses').get()` 应返回 `DATABASE_PERMISSION_DENIED`——客户端直连被拒是这一票的隔离要求之一。
+
+2. **部署云函数**
+   - 动作：在开发者工具里右键 `dist/cloudfunctions/timetable`（或 CLI `cloud functions deploy --name timetable --remote-npm-install`）部署，**必须勾选/使用云端安装依赖**：该函数依赖 `wx-server-sdk@4.0.2` 与 `xlsx@0.18.5`。
+   - 对象：云函数 `timetable`。
+   - 判据：控制台「云函数 → timetable → 测试」运行 `{"action":"list"}` 返回 `ok: true, count: 0`（首次、无数据时）；运行 `{"action":"prepareUpload","fileName":"a.txt"}` 返回 `ok: false` 且提示只支持 `.xls/.xlsx`。
+
+3. **函数调用权限**
+   - 动作：仍在「云函数 → 权限控制」的环境级 JSON 里**只新增** `timetable` 一条，值与环境里 `*` 的表达式一致（例如 `"auth != null && auth.loginType != 'ANONYMOUS'"`）；**不要**把它设成 `false`——`timetable` 必须允许小程序端调用，隔离靠函数内的 openid 过滤，而不是靠禁止调用。
+   - 对象：环境级函数安全规则 JSON（与 `newsSync: {"invoke": false}` 并列）。
+   - 判据：小程序端 `wx.cloud.callFunction({name:'timetable', data:{action:'list'}})` 返回 `ok: true`；同时 `newsSync` 仍然返回 `-501023 permission denied`（不能改动既有规则）。
+
+4. **云存储权限**
+   - 动作：控制台「存储 → 权限设置」把默认权限改为**「仅创建者可读写」**（如需自定义规则则用 `resource.openid == auth.openid` 限定）。本次导入只写入 `timetable-imports/<openid 哈希>/` 下的临时文件。
+   - 对象：环境云存储的整体权限（云存储规则不能按目录分别配置）。
+   - 判据：小程序端用 `wx.cloud.getTempFileURL` 读取**别人**上传的文件应被拒；云函数（管理端）仍能 `downloadFile` 与 `deleteFile`。
+
+5. **函数超时（建议 20 秒）**
+   - 动作：控制台「云函数 → timetable → 配置」把超时从默认 3 秒调到 20 秒。
+   - 对象：云函数 `timetable` 的超时配置。
+   - 判据：用小程序上传一份真实样本（约 20KB）能解析成功；本机实测解析 4 份样本各 1–13 毫秒，耗时主要在下载与冷启动，20 秒足够。
+
+### 部署后可验证的判据（人工）
+
+| 验收项 | 判据 |
+| --- | --- |
+| 导入走通 | 在开发者工具里把 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 发给文件传输助手 → 导入页选择它 → 确认页显示 15 门课程、0 条待核对 → 保存后周课表出现课程 |
+| 解析不写库 | 在确认页点「放弃导入」，`timetable_courses` 集合仍为空（或保持原样） |
+| 临时文件删除 | 解析完成后「存储」里 `timetable-imports/` 下没有残留文件 |
+| 周次切换 | 周课表切到第 8 周能看到 8-17 周的课，切到第 7 周看不到（样本里 `[2-6,8-17]周`） |
+| 退出重进 | 杀掉小程序重进课表页，课程仍在 |
+| 手工三条路径 | 新增一门课并出现在周课表；修改后展示更新；删除后消失 |
+| 用户隔离 | 换另一个微信号进入课表页，看不到前一个账号的课程 |
+
 ## P3 云端验收清单
 
 对应 [开发规格](development-spec.md) 与 [开发阶段](development-phases.md) 的 P3-1 / P3-2。实测时间与命令见 [P2 / P3 验证记录](evidence/p2-p3/README.md)。

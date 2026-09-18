@@ -24,7 +24,7 @@
 | --- | --- | --- | --- |
 | 01 | [AI 服务端基础设施](01-ai-foundation.md) | **ready-for-agent** | — |
 | 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | **done（2026-09-18）** | — |
-| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | **ready-for-agent** | — |
+| 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | **in-progress（代码与测试完成，待云函数部署后做端到端验收）** | — |
 | 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **ready-for-agent** | — |
 | 05 | [课表截图识别导入与校对](05-timetable-screenshot-import.md) | ready-for-agent | 01、03 |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | ready-for-agent | 01、03 |
@@ -36,7 +36,7 @@
 
 **2026-09-18 决策关口已清空**：P5-A 收尾（Ticket 01）、P4-B 范围（Ticket 03）、P3-2 五项范围（Ticket 04）全部由负责人确定，结论分别写入 [开发规格](../../development-spec.md)、[P3-2 文档](../p3-2-news-updates.md) 与 [CONTEXT](../../../CONTEXT.md)。
 
-**01、03、04 三票可立即开工**（互不依赖，可并行）：01 是 AI 三票的共同前置，03 是课表骨干，04 依赖的栏目与参数已定。05、06 等 01 与 03 完成；07 等 01；08 等发布条件；09 待 04–07 落地并按实际范围细拆。
+**04 可立即开工**；**03 代码完成但未收口**：集合与云函数部署、云存储权限、超时调整是控制台人工步骤（见 [云开发文档](../../cloud-development.md) 的「课表云端实施」），在这些步骤完成并补测「导入到展示到周次切换」之前，03 不转 `done`，05/06 也还不能算依赖已满足。01 是 AI 三票的共同前置（仍可开工）；05、06 等 01 与 03 收口；07 等 01；08 等发布条件；09 待 04–07 落地并按实际范围细拆。
 
 **02 已完成**（2026-09-18，证据见 [Ticket 02 验证记录](../evidence/p3-2/README.md)）：首页最近资讯入口与列表逐页加载已在开发者工具通过 12 项检查；真实多页场景待 Ticket 04 扩大数据量后补验。
 
