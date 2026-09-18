@@ -12,10 +12,14 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 - [框架选择](docs/adr/0001-native-wechat-typescript.md)
 - [云开发环境与 P3 云端实施](docs/cloud-development.md)
 - [赛事要求、评分与待核实事项](docs/competition.md)
+- [赛事信息核实：已核实事实与待问清单](docs/tasks/competition-verification.md)
+- [候选场景对比与选题建议](docs/tasks/scenario-comparison.md)
 - [比赛工作流与阶段验收](docs/workflow.md)
 - [作品说明模板与提交清单](docs/submission.md)
 - [架构决策记录](docs/adr/README.md)
 - [原始赛题文档](docs/reference/AI微信小程序开发挑战赛.md)
+- [公众号文章作为资讯数据源的可行性核查](docs/reference/wechat-mp-access-research.md)
+- [小程序使用他人公众号内容的规则边界](docs/reference/miniprogram-mp-content-rules.md)
 
 ## 协作
 
