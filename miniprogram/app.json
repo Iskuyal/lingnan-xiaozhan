@@ -4,6 +4,8 @@
     "pages/departments/index",
     "pages/departments/detail/index",
     "pages/timetable/index",
+    "pages/timetable/import/index",
+    "pages/timetable/edit/index",
     "pages/news/index",
     "pages/news/detail/index"
   ],

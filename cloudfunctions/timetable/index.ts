@@ -179,8 +179,18 @@ async function handleImportDraft(event: CloudEvent, openid: string) {
   };
 }
 
-async function handleList(openid: string) {
-  const rows = await readOwnCourses(openid);
+/** 清理未能进入解析阶段的临时文件（例如上传成功但解析调用没到达云端）。 */
+async function handleDiscardUpload(event: CloudEvent, openid: string) {
+  const cloudPath = typeof event.cloudPath === 'string' ? event.cloudPath : '';
+  const prefix = ownerPrefix(openid);
+  if (cloudPath === '' || !cloudPath.startsWith(prefix) || cloudPath.includes('..')) {
+    return { ok: false, error: '文件路径不属于当前微信身份，已拒绝删除' };
+  }
+  const deleted = await deleteStoredFile(cloudPath);
+  return { ok: true, deleted };
+}
+
+async function handleList(openid: string) {  const rows = await readOwnCourses(openid);
   const courses = sortedCourses(rows);
   const updatedAt = rows.reduce((latest, row) => (row.updatedAt > latest ? row.updatedAt : latest), '');
   return {
@@ -274,6 +284,8 @@ export async function main(event: CloudEvent = {}) {
         return await handlePrepareUpload(event, openid);
       case 'importDraft':
         return await handleImportDraft(event, openid);
+      case 'discardUpload':
+        return await handleDiscardUpload(event, openid);
       case 'list':
         return await handleList(openid);
       case 'saveDraft':

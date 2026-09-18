@@ -1,0 +1,68 @@
+<view class="page">
+  <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
+  <view class="section-title">导入课表文件</view>
+
+  <view wx:if="{{step === 'guide'}}" class="imp-block">
+    <view id="file-guide" class="imp-guide">{{fileGuide}}</view>
+    <view class="imp-guide imp-guide-note">{{offlineNote}}</view>
+    <view class="imp-steps">
+      <view class="imp-step">1. 在教务系统下载课表（.xls 或 .xlsx）</view>
+      <view class="imp-step">2. 把文件发到微信，例如发给「文件传输助手」</view>
+      <view class="imp-step">3. 回到这里点下面的按钮，从聊天记录里选它</view>
+    </view>
+    <button id="choose-file" class="home-button" hover-class="pressed" bindtap="chooseFile">从微信聊天记录选择课表文件</button>
+    <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+  </view>
+
+  <view wx:elif="{{step === 'parsing'}}" class="imp-block">
+    <view class="section-title">正在解析</view>
+    <view class="imp-copy">{{parsingText}}</view>
+    <view class="imp-file">已选文件：{{fileName}}</view>
+    <view class="imp-progress" wx:if="{{progress > 0}}">上传进度 {{progress}}%</view>
+  </view>
+
+  <view wx:elif="{{step === 'error'}}" class="imp-block">
+    <view class="section-title">导入没有完成</view>
+    <view id="import-error" class="imp-error">{{errorMessage}}</view>
+    <view class="imp-copy">没有写入任何课表数据；如果问题出在文件本身，可以重新导出后再试。</view>
+    <button id="retry-import" class="home-button" hover-class="pressed" bindtap="retryChoose">重新选择文件</button>
+    <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+  </view>
+
+  <block wx:else>
+    <view class="imp-summary">
+      <view class="imp-summary-title">{{metaTitle === '' ? '课表草稿' : metaTitle}}</view>
+      <view class="imp-summary-line">学期：{{semesterText}}</view>
+      <view class="imp-summary-line" wx:for="{{metaLines}}" wx:key="*this">{{item}}</view>
+      <view class="imp-summary-line">解析结果：{{courseCount}} 门课程<block wx:if="{{warningCount > 0}}"> · {{warningCount}} 门待核对</block><block wx:if="{{blockedCount > 0}}"> · {{blockedCount}} 门需要补全</block></view>
+      <view class="imp-summary-line">{{statsText}}</view>
+      <view class="imp-summary-line imp-problem" wx:if="{{problemsText !== ''}}">{{problemsText}}</view>
+    </view>
+
+    <view class="imp-notice">确认保存会替换当前已保存的课表（包括手工添加的课程）；下面这些内容还没有写入任何数据，可以随时放弃。</view>
+
+    <view id="draft-list" class="imp-list">
+      <view class="imp-item {{item.blocking !== '' ? 'imp-item-blocked' : ''}}" wx:for="{{items}}" wx:key="index">
+        <view class="imp-item-head">
+          <text class="imp-item-index">{{item.index + 1}}</text>
+          <text class="imp-item-name">{{item.name}}</text>
+          <text wx:if="{{item.needsReview}}" class="imp-tag">待核对</text>
+        </view>
+        <view class="imp-item-line">{{item.weekdayText}} · {{item.sectionText}} · {{item.weekText}}</view>
+        <view class="imp-item-line">教师：{{item.teacherText}}</view>
+        <view class="imp-item-line">地点：{{item.locationText}}<block wx:if="{{item.noteText !== ''}}">（{{item.noteText}}）</block></view>
+        <view class="imp-item-warning" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
+        <view class="imp-item-blocked-hint" wx:if="{{item.blocking !== ''}}">{{item.blocking}}</view>
+        <view class="imp-item-raw" wx:if="{{item.needsReview}}">原文：{{item.rawText}}</view>
+        <view class="imp-item-ops">
+          <button class="imp-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
+          <button class="imp-op imp-op-delete" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <button id="confirm-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认并保存 {{courseCount}} 门课程</button>
+    <button id="abandon-import" class="home-button imp-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
+    <view class="imp-privacy">保存后才写入数据库，且只写入你自己的课表；临时文件在解析后已从云存储删除。</view>
+  </block>
+</view>

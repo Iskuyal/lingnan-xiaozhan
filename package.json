@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "build": "node scripts/build.mjs",
-    "test": "npm run build && node --test tests/*.test.cjs",
+    "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs"
   },
   "engines": {

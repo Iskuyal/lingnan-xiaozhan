@@ -26,8 +26,13 @@ const BIG_SECTION_START: Record<string, number> = {
   一: 1, 二: 3, 三: 5, 四: 7, 五: 9, 六: 11,
   '1': 1, '2': 3, '3': 5, '4': 7, '5': 9, '6': 11,
 };
-/** 周次写法：`[2-6,8-17]周`、`[4]周`，方括号可有可无，内部是逗号分隔的数字或区间。 */
-const WEEK_TOKEN = /^[\[［]?\s*(\d+(?:\s*-\s*\d+)?(?:\s*,\s*\d+(?:\s*-\s*\d+)?)*)\s*[\]］]?\s*周$/u;
+/**
+ * 周次写法：`[2-6,8-17]周`、`[4]周`，方括号可有可无，内部是逗号（半角、全角或顿号）分隔的数字或区间。
+ * 顿号也要接受：手工表单里的周次按 `4-5、7-8` 展示，编辑后需要能原样再解析。
+ */
+const WEEK_TOKEN = /^[\[［]?\s*(\d+(?:\s*-\s*\d+)?(?:\s*[,，、]\s*\d+(?:\s*-\s*\d+)?)*)\s*[\]］]?\s*周$/u;
+/** 周次列表的分隔符。 */
+const WEEK_SEPARATOR = /[,，、]/u;
 /** 可能是周次、但写法不在已核实语法里的 token（如「单周」）；必须以「周」结尾才算候选。 */
 const WEEK_LIKE_TOKEN = /^[\[［]?\s*(?:\d|单周|双周)/u;
 const SECTION_RANGE = /第?\s*(\d{1,2})\s*[-—–~至]\s*(\d{1,2})\s*节/u;
@@ -64,7 +69,7 @@ export function parseWeekNotation(token: string): { weeks: number[]; recognized:
   const match = WEEK_TOKEN.exec(normalizeText(token));
   if (match === null) return { weeks: [], recognized: false };
   const weeks: number[] = [];
-  for (const part of match[1].split(',')) {
+  for (const part of match[1].split(WEEK_SEPARATOR)) {
     const bounds = part.split('-');
     const start = Number(bounds[0]);
     const end = bounds.length > 1 ? Number(bounds[1]) : start;
