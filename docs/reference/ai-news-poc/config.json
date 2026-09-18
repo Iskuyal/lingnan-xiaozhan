@@ -1,0 +1,6 @@
+{
+    "delayMs":  800,
+    "baseUrl":  "https://api.deepseek.com",
+    "maxArticles":  8,
+    "model":  "deepseek-flash"
+}
