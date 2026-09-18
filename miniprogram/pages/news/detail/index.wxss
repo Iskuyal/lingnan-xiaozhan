@@ -1,0 +1,11 @@
+/* 详情页私有样式；通用类（.page、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。 */
+.detail-heading { padding: 8rpx 0 28rpx; }
+.detail-title { font-size: 40rpx; font-weight: 650; line-height: 1.5; }
+.detail-meta { color: #547367; font-size: 24rpx; margin-top: 14rpx; }
+.detail-body { background: #fff; border-radius: 24rpx; padding: 32rpx 28rpx; }
+.detail-paragraph { font-size: 29rpx; line-height: 1.9; color: #26382f; margin-bottom: 20rpx; }
+.detail-paragraph:last-child { margin-bottom: 0; }
+.detail-source { margin-top: 28rpx; padding: 26rpx 24rpx; background: #f0f5f2; border-radius: 20rpx; }
+.detail-source-label { color: #63786d; font-size: 23rpx; }
+.detail-url { color: #23664e; font-size: 24rpx; margin-top: 10rpx; word-break: break-all; }
+.detail-note { color: #6c7c73; font-size: 23rpx; line-height: 1.8; margin-top: 32rpx; }

@@ -31,5 +31,28 @@ function copyAssets(source, destination) {
   }
 }
 copyAssets(resolve(root, 'miniprogram'), output);
+
+// 云函数：单独一份 tsconfig（运行时是 Node，不是小程序），编译进 dist/cloudfunctions，
+// 再复制各函数的非 TS 文件。开发者工具与 CLI 部署都以 project.config.json 的
+// cloudfunctionRoot 在 dist 内查找云函数。
+const functionsRoot = resolve(root, 'cloudfunctions');
+if (existsSync(functionsRoot)) {
+  const compiled = spawnSync(process.execPath, [
+    resolve(root, 'node_modules/typescript/bin/tsc'), '-p', join(functionsRoot, 'tsconfig.json'),
+  ], { cwd: root, stdio: 'inherit' });
+  if (compiled.error) throw compiled.error;
+  if (compiled.status !== 0) process.exit(compiled.status ?? 1);
+  for (const entry of readdirSync(functionsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const source = join(functionsRoot, entry.name);
+    const target = join(output, 'cloudfunctions', entry.name);
+    mkdirSync(target, { recursive: true });
+    for (const file of readdirSync(source, { withFileTypes: true })) {
+      if (!file.isFile() || file.name.endsWith('.ts') || file.name === 'tsconfig.json') continue;
+      copyFileSync(join(source, file.name), join(target, file.name));
+    }
+  }
+}
+
 cpSync(resolve(root, 'project.config.json'), join(output, 'project.config.json'));
 console.log('微信小程序已构建至 dist/');

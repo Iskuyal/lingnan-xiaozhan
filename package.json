@@ -4,7 +4,7 @@
   "private": true,
   "description": "校园工具微信小程序",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs"
@@ -13,9 +13,11 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@types/node": "22.20.3",
     "miniprogram-api-typings": "5.2.3",
     "miniprogram-automator": "0.12.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "wx-server-sdk": "4.0.2"
   },
   "overrides": {
     "miniprogram-automator": {

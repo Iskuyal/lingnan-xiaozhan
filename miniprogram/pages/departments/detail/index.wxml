@@ -1,0 +1,59 @@
+<view class="page">
+  <block wx:if="{{detail}}">
+    <view id="department-detail" class="department-detail">
+      <view class="eyebrow">{{detail.campusLabel}}</view>
+      <view class="department-name">{{detail.name}}</view>
+      <view class="department-campus-line">
+        <text class="department-campus-label">所属校区</text>
+        <text class="department-campus">{{detail.campusLabel}}</text>
+      </view>
+      <view wx:if="{{detail.campusNote}}" class="department-campus-note">{{detail.campusNote}}</view>
+
+      <view class="detail-block">
+        <view class="section-title">组织介绍</view>
+        <view class="detail-copy">{{detail.introduction}}</view>
+      </view>
+
+      <view class="detail-block">
+        <view class="section-title">下设部门</view>
+        <view class="detail-copy detail-unit-note">{{detail.unitNote}}</view>
+        <view class="detail-units">
+          <text wx:for="{{detail.units}}" wx:key="*this" class="detail-unit">{{item}}</text>
+        </view>
+      </view>
+
+      <view class="detail-block">
+        <view class="section-title">联系方式</view>
+        <view wx:if="{{detail.contactMissing}}" id="department-contact" class="detail-missing">{{detail.contactMissingText}}</view>
+        <view wx:else id="department-contact" class="detail-contacts">
+          <view wx:for="{{detail.contactItems}}" wx:key="label" class="detail-contact">{{item.label}}：{{item.value}}</view>
+        </view>
+      </view>
+
+      <view class="detail-block">
+        <view class="section-title">组织动态</view>
+        <view wx:if="{{detail.activityMissing}}" id="department-activities" class="detail-missing">{{detail.activityMissingText}}</view>
+        <view wx:else id="department-activities" class="detail-activities">
+          <view wx:for="{{detail.activities}}" wx:key="sourceUrl" class="detail-activity">
+            <view class="detail-activity-title">{{item.title}}</view>
+            <view class="detail-activity-date">{{item.publishedAt}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-source">
+        <view class="detail-source-label">资料来源：{{detail.sourceLabel}}</view>
+        <view class="detail-verified-date">核查于 {{detail.verifiedAt}}</view>
+        <button id="copy-detail-source" class="source-button" hover-class="pressed" bindtap="copySource">复制来源链接</button>
+      </view>
+
+      <button id="back-to-list" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+    </view>
+  </block>
+
+  <view wx:else id="department-not-found" class="status-page">
+    <view class="status-title">{{notFoundTitle}}</view>
+    <view class="status-copy">{{notFoundCopy}}</view>
+    <button id="not-found-back" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+  </view>
+</view>

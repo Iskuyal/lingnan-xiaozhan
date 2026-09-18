@@ -1,0 +1,20 @@
+/* 列表页私有样式；通用类（.page、.eyebrow、.section-title、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。 */
+.news-heading { padding: 8rpx 0 32rpx; }
+.news-title { font-size: 42rpx; font-weight: 650; line-height: 1.4; margin-top: 14rpx; }
+.news-meta { color: #547367; font-size: 24rpx; margin-top: 8rpx; }
+.news-notice {
+  background: #e7edf4;
+  color: #46596b;
+  font-size: 24rpx;
+  line-height: 1.8;
+  padding: 22rpx 24rpx;
+  border-radius: 18rpx;
+}
+.news-list { margin-top: 28rpx; }
+.news-item { background: #fff; border-radius: 20rpx; padding: 26rpx 24rpx; margin-bottom: 18rpx; }
+.news-item-title { font-size: 30rpx; font-weight: 600; line-height: 1.6; }
+.news-item-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16rpx; }
+.news-item-date { color: #6c7c73; font-size: 24rpx; }
+.news-item-arrow { color: #7d8f86; font-size: 34rpx; line-height: 1; }
+.news-empty { padding-top: 40rpx; }
+.news-empty-copy { color: #576c63; font-size: 27rpx; line-height: 1.8; margin-top: 16rpx; }

@@ -1,0 +1,4 @@
+{
+  "*": { "invoke": "auth != null" },
+  "newsSync": { "invoke": false }
+}
