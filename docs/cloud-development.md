@@ -189,7 +189,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本） |
 | `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
 | `text` | string | `moderateText` 用；按 2000 字窗口逐段检测（最多 2 万字），超出部分在报告里写明并置 `checked: false` |
-| `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request` |
+| `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request`。客户端走 fileID：`wx.cloud.uploadFile` 返回的 `cloud://…` 才叫 fileID，`prepareUpload` 给的裸 cloudPath 不是（传裸路径会被 `downloadFile` 拒绝） |
 | `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束 |
 
 返回形状所有动作统一，调用方只需要看前三个字段：
@@ -255,7 +255,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `AI_SAFETY_TIMEOUT_MS` | `6000` | **访问微信云调用与第三方审核的单次超时**（毫秒）；第三方审核另有一层同值 +1 秒的兜底定时器。超时归入「模型不可用或超时」（可重试） |
 | `AI_SAFETY_CALL_PRICE_YUAN` | `0` | 每次审核调用的固定价（元）：接口不返回 token 用量时（`/moderations`）按它记账；`0` 表示不计入金额，但记录会带 `usageUnknown: true` 且返回值有告警 |
 | `AI_SAFETY_MAX_TOKENS` / `AI_SAFETY_SCENE` | `256` / `1` | 审核最大输出 token、微信 `msgSecCheck` 的 scene（1 资料 / 2 评论 / 3 论坛 / 4 社交日志） |
-| `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码** |
+| `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码**；`AI_MSG_CONTENT_REJECTED_IMAGE` 只覆盖「用户上传的图片被拒」这一种输入（05 截图路径），缺省时不回落到图片专属文案而是用 `AI_MSG_CONTENT_REJECTED` |
 
 ### 失败分类与默认文案
 
@@ -264,7 +264,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `failureClass` | 默认文案（可被上表环境变量覆盖） | 触发条件 |
 | --- | --- | --- |
 | `model_unavailable` | AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。 | 连接失败、超时（模型 / 内容安全 / 云存储下载都算）、5xx、鉴权失败、返回非 JSON 或空内容、**429 瞬时限流** |
-| `content_rejected` | 内容未通过安全检测，请修改后重试。 | 输入或输出被内容安全适配器判为违规（`risky` / `87014` / `flagged` / `allowed=false`） |
+| `content_rejected` | 文字：内容未通过安全检测，请修改后重试。／图片（`vision` / `moderateImage` 的输入图被拒）：这张图片没有通过内容安全检测，请换一张再试。 | 输入或输出被内容安全适配器判为违规（`risky` / `87014` / `flagged` / `allowed=false`）。**文案按输入类型区分**：文字有「改一改再试」的余地，图片只能换一张；两句话各自独立，可分别用 `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` 覆盖 |
 | `quota_exhausted` | 本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。 | 当月累计成本 ≥ `AI_MONTHLY_CAP_YUAN`，或模型服务返回 **402**（服务商额度/余额不足） |
 | `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断） |
 | `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等 |
@@ -372,18 +372,21 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 
 ## 课表云端实施（Ticket 03，待人工部署）
 
-课表导出的解析跑在云函数 `timetable` 侧：客户端把选中的文件上传到**本人 openid 专属的云存储路径**，云函数下载 → 用 `xlsx` 解析成草稿 → **删除临时文件**；确认页确认后才写库。函数同时承担个人课表的读取与手工增删改，全部按调用上下文的 openid 过滤，客户端不直连数据库。
+课表导出的解析跑在云函数 `timetable` 侧：客户端把选中的文件上传到**本人 openid 专属的云存储路径**，云函数下载 → 用 `xlsx` 解析成草稿 → **删除临时文件**；确认页确认后才写库。函数同时承担个人课表的读取与手工增删改，全部按调用上下文的 openid 过滤，客户端不直连数据库。截图识别（Ticket 05）复用同一条上传路径，识别由 `ai` 云函数的 `vision` 动作完成。
+
+**文件标识统一用 fileID**：客户端 `wx.cloud.uploadFile` 返回的 `cloud://…` 才是 fileID；`prepareUpload` / `preparePhotoUpload` 返回的 `cloudPath` 只是相对路径，只能交给 `uploadFile` 当上传目标。`importDraft` / `discardUpload` 接收的是 `fileID`，云函数**从 fileID 里解析出云存储路径**再校验「属于调用者 openid 前缀」（fileID 里的环境信息不参与比较），解析不出路径或不在本人前缀下都明确拒绝。把裸 cloudPath 当 fileID 传会在 `cloud.downloadFile` 处失败——那是 Ticket 03 的老写法，已修正并补了回归测试。
 
 代码位置与测试：
 
 | 文件 | 职责 |
 | --- | --- |
-| `cloudfunctions/timetable/index.ts` | 云函数入口：`prepareUpload` / `importDraft` / `discardUpload` / `list` / `saveDraft` / `createCourse` / `updateCourse` / `deleteCourse` |
+| `cloudfunctions/timetable/index.ts` | 云函数入口：`prepareUpload` / `preparePhotoUpload` / `importDraft` / `discardUpload` / `list` / `saveDraft` / `createCourse` / `updateCourse` / `deleteCourse` |
 | `cloudfunctions/timetable/parse.ts` | 网格矩阵解析（依赖 npm `xlsx`，不进小程序包） |
 | `cloudfunctions/timetable/record.ts` | 记录规范化和整批校验（不合规整批不写） |
 | `tests/timetable-parse.test.cjs` | 4 份真实教务导出 + 异常版式 |
-| `tests/timetable-flow.test.cjs` | 云存储与数据库桩上运行真实入口：导入不写库、临时文件删除、跨学生隔离、整批校验、手工三条路径 |
+| `tests/timetable-flow.test.cjs` | 云存储与数据库桩上运行真实入口：导入不写库、临时文件删除、fileID 归属校验（含裸路径与别人的 fileID 被拒）、跨学生隔离、整批校验、手工三条路径 |
 | `tests/timetable-pages.test.cjs`、`tests/timetable-view.test.cjs` | 页面编排、周次切换与按节次展示、产物不含 Excel 库 |
+| `tests/timetable-photo.test.cjs` | 截图识别：文件头判格式、压缩阶梯、识别 JSON 解析（周次留空不当每周）、确认页出口、来源贯通 |
 
 数据模型（集合 `timetable_courses`，一条课程一个文档）：
 
@@ -398,7 +401,7 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 | `weeks` / `weeksRecognized` / `weekText` | 展开后的教学周、是否识别、周次原文 |
 | `location` / `campus` / `siteNumber` / `note` | 地点、校区、场地编号、备注（教学班或方向） |
 | `warnings` | 待核对提示，页面据此显示「待核对」与原文 |
-| `source` / `semester` / `rawText` | 来源（excel/manual）、学期标注、导入时的单元格原文 |
+| `source` / `semester` / `rawText` | 来源（`excel` / `manual` / `photo`）、学期标注、导入时的单元格原文；**截图识别来源为 `photo`，此时 `rawText` 为空**——截图识别后已删除、字段是模型重新表述的，没有可核对的「原文」，不拿合成文本冒充 |
 | `createdAt` / `updatedAt` / `batch` | 时间戳与写入批次；`batch` 用于「先写新批次、成功后再删旧批次」的整份替换 |
 
 **为什么没有给 `owner` 建索引**：数据量是个人的几十条，按 `owner` 全量读取即可；将来若按 `owner + semester` 或按周查询再补索引。
@@ -415,7 +418,8 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 2. **部署云函数**
    - 动作：在开发者工具里右键 `dist/cloudfunctions/timetable`（或 CLI `cloud functions deploy --name timetable --remote-npm-install`）部署，**必须勾选/使用云端安装依赖**：该函数依赖 `wx-server-sdk@4.0.2` 与 `xlsx@0.18.5`。
    - 对象：云函数 `timetable`。
-   - 判据：控制台「云函数 → timetable → 测试」运行 `{"action":"list"}` 返回 `ok: true, count: 0`（首次、无数据时）；运行 `{"action":"prepareUpload","fileName":"a.txt"}` 返回 `ok: false` 且提示只支持 `.xls/.xlsx`。
+   - 判据：控制台「云函数 → timetable → 测试」运行 `{"action":"list"}` 返回 `ok: true, count: 0`（首次、无数据时）；运行 `{"action":"prepareUpload","fileName":"a.txt"}` 返回 `ok: false` 且提示只支持 `.xls/.xlsx`；运行 `{"action":"preparePhotoUpload","fileName":"a.gif"}` 返回 `ok: false` 且提示只支持 `.png/.jpg`。
+   - **升级注意（Ticket 05 两轴复核）**：`importDraft` / `discardUpload` 的参数已从裸 `cloudPath` 改为 `fileID`（`cloud://…`），**客户端与云函数必须一起部署**。只更新一边会让导入直接失败：新客户端 + 老函数会被「参数不合法」拒（老函数把 `fileID` 当 `cloudPath` 校验，前缀不匹配），老客户端 + 新函数会被「请传入 fileID」拒。
 
 3. **函数调用权限**
    - 动作：仍在「云函数 → 权限控制」的环境级 JSON 里**只新增** `timetable` 一条，值与环境里 `*` 的表达式一致（例如 `"auth != null && auth.loginType != 'ANONYMOUS'"`）；**不要**把它设成 `false`——`timetable` 必须允许小程序端调用，隔离靠函数内的 openid 过滤，而不是靠禁止调用。
@@ -513,6 +517,8 @@ Ticket 04 改的是代码与配置，验证要在云上做。以下步骤本轮*
 - 2026-09-18（Ticket 04，**仅本地**）：新增团委通知公告栏目的列表/正文解析规则与真实片段 fixture；同步改为按栏目分批续跑（间隔 1.3 秒、单批 ≤10 次页面请求、每步落盘、限速 403 停止并冷却 30 分钟、外链条目不抓正文）；`config.json` 写入每日 06:00 的定时触发器；页面时间文案改为「最近写入 / 最近一次成功写入」。**未部署、未在云端验证**，人工步骤见上。
 - 2026-09-18（Ticket 04 两轴审查修复，**仅本地**）：冷却改为**站点级**（`sync_state` 新增 `site` 文档），任一栏目撞 403 立即结束本轮、后续栏目不再请求；截止点判定移到「等够 1.3 秒之后、发请求之前」，同站跳转同样计数与节流，`WORK_DEADLINE_MS` 按 20 − 6 − 1 − 0.5 = 12.5 秒重算；`backfillDone` 改为**整轮零失败才置真**，有失败时新增 `missing` 清单并在 `resumeHint` 写明「还差 N 条、用 reset 补齐」；文章页解析不到「发布时间」时保留旧日期，不再每天重抓同一篇。新增 9 项测试（引擎 8 项：两栏目先后撞限速、站点冷却期内另一栏目零请求、冷却跨调用、等待越界不发请求、跳转节流、全量零失败才算完成、有失败不算完成、日期保留；解析 1 项：`title` 属性的标题与发表时间各自独立）。其中 8 项引擎测试**在修复前的代码上全部失败**（已把 HEAD 版本的 `index.ts` 装回本地跑过一遍确认），修复后 `npm test` 90 项全过。
 - 2026-09-18（Ticket 01，**仅本地**）：新增云函数 `cloudfunctions/ai/`——统一模型调用入口（OpenAI 兼容 / Anthropic 两种接口格式、文本与多模态）、可切换的内容安全适配层（微信云调用为主，第三方支持 OpenAI / Anthropic 格式，文字与图片分开）、每次调用的耗时与 token/金额记账、月度成本上限（默认 50 元，接近阈值告警、达到上限拒绝）、三类失败分类与独立文案、未认证状态下微信内容安全接口的探测动作。两轴复核后修掉 4 处真缺陷（月度用量覆盖、云调用与下载无超时、402/429 混类、跳过检测被读成「检过且干净」），并补 23 项测试；`npm test` 136 项全过。**未部署、未配密钥、未探测、未做真实端到端调用**，人工步骤见「Ticket 01 人工步骤」。
+- 2026-09-18（Ticket 05 课表截图识别导入与校对，**仅本地**）：导入页新增「拍照或从相册选择课表截图」入口（选图 → 压缩 → `preparePhotoUpload` → 上传 → `ai` 的 `vision` → 识别 JSON 解析为草稿 → 复用 03 的确认页与 `saveDraft`）；`source` 新增 `photo`（两端契约同步）；截图识别后删除云存储临时文件；三类独立失败文案。**未部署、未真机验证**，人工步骤见上「课表云端实施」。
+- 2026-09-18（Ticket 05 两轴复核修复，**仅本地**）：截图格式改为**按文件头判定**（读不到字节才退回路径扩展名，两者都拿不到就明确拒绝并给可读提示）——相机与 `wx.compressImage` 的产物常是 JPEG，原先恒传 `课表截图.png` 会让 `imgSecCheck` 与模型的 `media_type` 与实际内容不符；上传/下载/识别统一用 `wx.cloud.uploadFile` 返回的 **fileID**，`importDraft` / `discardUpload` 的参数从裸 `cloudPath` 改为 `fileID`，云函数从 fileID 解析出云存储路径再校验 openid 前缀（**Ticket 03 的 Excel 路径是同一处老写法，一并修正；客户端与云函数必须一起部署**）；周次留空不再静默当成「每周」，只有模型显式 `everyWeek` 才算（页面按待核对展示）；图片被拒的文案与文字语义的「换个说法」分开（服务端新增 `AI_MSG_CONTENT_REJECTED_IMAGE`，客户端兜底按输入类型区分）；截图识别不再把字段拼成合成「原文」。测试见 [p5-b 记录](evidence/p5-b/README.md)。
 
 ### 3 秒超时：默认同步量已经贴到上限（已解决，保留记录）
 

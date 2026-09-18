@@ -110,10 +110,19 @@ function ownerPrefix(openid) {
   return `timetable-imports/${digest}/`;
 }
 
+/** 云存储 fileID 的真实形状：cloud://环境.桶/<云存储路径>。 */
+const FILE_ID_BASE = 'cloud://test-env.test-bucket';
+
+function fileIDFor(cloudPath) {
+  return `${FILE_ID_BASE}/${cloudPath}`;
+}
+
+/** 放一份 fixture 到云存储桩里，返回它的裸路径与 fileID（云函数只接受后者）。 */
 function uploadFixture(h, openid, fileName = STANDARD_FIXTURE) {
   const cloudPath = `${ownerPrefix(openid)}test${path.extname(fileName)}`;
-  h.storage.set(cloudPath, fs.readFileSync(path.join(FIXTURES, fileName)));
-  return cloudPath;
+  const fileID = fileIDFor(cloudPath);
+  h.storage.set(fileID, fs.readFileSync(path.join(FIXTURES, fileName)));
+  return { cloudPath, fileID };
 }
 
 const STUDENT_A = 'openid-student-a';
@@ -121,43 +130,78 @@ const STUDENT_B = 'openid-student-b';
 
 test('导入只解析不写库：草稿返回真实样本的课程，临时文件被删除', async () => {
   const h = harness();
-  const cloudPath = uploadFixture(h, STUDENT_A);
+  const { fileID } = uploadFixture(h, STUDENT_A);
   const prepared = await h.run(STUDENT_A, { action: 'prepareUpload', fileName: STANDARD_FIXTURE });
   assert.equal(prepared.ok, true);
   assert.ok(prepared.cloudPath.startsWith(ownerPrefix(STUDENT_A)), '上传路径必须落在本人 openid 前缀下');
   assert.match(prepared.cloudPath, /\.xls$/u);
 
-  const result = await h.run(STUDENT_A, { action: 'importDraft', cloudPath, fileName: STANDARD_FIXTURE });
+  const result = await h.run(STUDENT_A, { action: 'importDraft', fileID, fileName: STANDARD_FIXTURE });
   assert.equal(result.ok, true);
   assert.equal(result.draft.courses.length, 15, '真实样本解析出的课程数');
   assert.equal(result.draft.meta.semester, '2026-2027学年第一学期');
   assert.equal(result.tempFileDeleted, true);
-  assert.deepEqual(h.calls.deletes, [cloudPath], '解析后临时文件必须删除');
+  assert.deepEqual(h.calls.deletes, [fileID], '解析后临时文件必须删除');
   assert.equal(h.docs.length, 0, '解析阶段不得写入任何课表记录');
   assert.match(result.note, /未写入/u);
 });
 
-test('拒绝解析不属于当前微信身份的云存储路径', async () => {
+test('fileID 形态下归属校验仍生效：裸 cloudPath 与别人的 fileID 都被拒', async () => {
   const h = harness();
-  const otherPath = uploadFixture(h, STUDENT_B);
-  const result = await h.run(STUDENT_A, { action: 'importDraft', cloudPath: otherPath, fileName: STANDARD_FIXTURE });
-  assert.equal(result.ok, false);
-  assert.match(result.error, /不属于当前微信身份/u);
-  assert.deepEqual(h.calls.downloads, [], '不应下载别人的文件');
-  assert.equal(h.storage.has(otherPath), true, '也不应删除别人的文件');
+  // 自己上传的文件：downloadFile 收到的必须是 fileID（下载接口不认裸路径）。
+  const mine = uploadFixture(h, STUDENT_A);
+  const ok = await h.run(STUDENT_A, { action: 'importDraft', fileID: mine.fileID, fileName: STANDARD_FIXTURE });
+  assert.equal(ok.ok, true);
+  assert.deepEqual(h.calls.downloads, [mine.fileID], '下载必须用 fileID');
+
+  // Ticket 03 的老写法：把 prepareUpload 返回的裸 cloudPath 当 fileID 传——必须明确拒绝，
+  // 而不是拿它去 downloadFile 撞一个指错方向的失败。
+  const bare = await h.run(STUDENT_A, { action: 'importDraft', cloudPath: mine.cloudPath, fileName: STANDARD_FIXTURE });
+  assert.equal(bare.ok, false);
+  assert.match(bare.error, /fileID/u);
+
+  // 别人（另一个 openid 前缀）的 fileID。
+  const other = uploadFixture(h, STUDENT_B);
+  const cross = await h.run(STUDENT_A, { action: 'importDraft', fileID: other.fileID, fileName: STANDARD_FIXTURE });
+  assert.equal(cross.ok, false);
+  assert.match(cross.error, /不属于当前微信身份/u);
+  assert.equal(h.storage.has(other.fileID), true, '也不应删除别人的文件');
+
+  // 换了环境前缀、但路径不属于本人的 fileID：校验的是从 fileID 解析出的路径。
+  const forged = await h.run(STUDENT_A, { action: 'importDraft', fileID: fileIDFor(`${ownerPrefix(STUDENT_B)}stolen.xls`), fileName: STANDARD_FIXTURE });
+  assert.equal(forged.ok, false);
+  assert.match(forged.error, /不属于当前微信身份/u);
+
+  // 路径穿越同样被挡。
+  const traversal = await h.run(STUDENT_A, { action: 'importDraft', fileID: fileIDFor(`${ownerPrefix(STUDENT_A)}../other/x.xls`), fileName: STANDARD_FIXTURE });
+  assert.equal(traversal.ok, false);
+  assert.match(traversal.error, /不属于当前微信身份/u);
+
+  // 清理接口同样只认本人 fileID。
+  const discardOther = await h.run(STUDENT_A, { action: 'discardUpload', fileID: other.fileID });
+  assert.equal(discardOther.ok, false);
+  assert.match(discardOther.error, /不属于当前微信身份/u);
+  const discardBare = await h.run(STUDENT_A, { action: 'discardUpload', cloudPath: mine.cloudPath });
+  assert.equal(discardBare.ok, false);
+  assert.match(discardBare.error, /fileID/u);
+  const leftovers = uploadFixture(h, STUDENT_A);
+  const discardMine = await h.run(STUDENT_A, { action: 'discardUpload', fileID: leftovers.fileID });
+  assert.equal(discardMine.ok, true);
+  assert.equal(discardMine.deleted, true);
+  assert.equal(h.storage.has(leftovers.fileID), false);
 });
 
 test('解析失败给出可理解的提示，不写入半成品，临时文件照样删除', async () => {
   const h = harness();
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([['成绩表'], ['学号', '成绩'], ['1001', '90']]), 'Sheet1');
-  const cloudPath = `${ownerPrefix(STUDENT_A)}grades.xlsx`;
-  h.storage.set(cloudPath, XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }));
+  const fileID = fileIDFor(`${ownerPrefix(STUDENT_A)}grades.xlsx`);
+  h.storage.set(fileID, XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }));
 
-  const result = await h.run(STUDENT_A, { action: 'importDraft', cloudPath, fileName: '成绩表.xlsx' });
+  const result = await h.run(STUDENT_A, { action: 'importDraft', fileID, fileName: '成绩表.xlsx' });
   assert.equal(result.ok, false);
   assert.match(result.error, /未识别出课表矩阵/u);
-  assert.deepEqual(h.calls.deletes, [cloudPath]);
+  assert.deepEqual(h.calls.deletes, [fileID]);
   assert.equal(h.docs.length, 0);
 });
 
@@ -172,7 +216,7 @@ test('上传前先校验扩展名，非法格式直接拒绝', async () => {
 
 test('不同学生只能看到自己的课表，写入只发生在本人的记录上', async () => {
   const h = harness();
-  const draftA = (await h.run(STUDENT_A, { action: 'importDraft', cloudPath: uploadFixture(h, STUDENT_A), fileName: STANDARD_FIXTURE })).draft;
+  const draftA = (await h.run(STUDENT_A, { action: 'importDraft', fileID: uploadFixture(h, STUDENT_A).fileID, fileName: STANDARD_FIXTURE })).draft;
   const savedA = await h.run(STUDENT_A, { action: 'saveDraft', courses: draftA.courses.slice(0, 3), semester: draftA.meta.semester });
   assert.equal(savedA.ok, true);
   assert.equal(savedA.saved, 3);
@@ -198,7 +242,7 @@ test('不同学生只能看到自己的课表，写入只发生在本人的记�
 
 test('确认保存＝整份替换：旧批次被清理，重复导入不会重复堆叠', async () => {
   const h = harness();
-  const draft = (await h.run(STUDENT_A, { action: 'importDraft', cloudPath: uploadFixture(h, STUDENT_A), fileName: STANDARD_FIXTURE })).draft;
+  const draft = (await h.run(STUDENT_A, { action: 'importDraft', fileID: uploadFixture(h, STUDENT_A).fileID, fileName: STANDARD_FIXTURE })).draft;
   await h.run(STUDENT_A, { action: 'saveDraft', courses: draft.courses, semester: draft.meta.semester });
   assert.equal((await h.run(STUDENT_A, { action: 'list' })).count, 15);
 
@@ -271,11 +315,16 @@ test('preparePhotoUpload:仅放行 png/jpg 截图，路径落在本人 openid �
   assert.equal(ok.ok, true);
   assert.ok(ok.cloudPath.startsWith(ownerPrefix(STUDENT_A)));
   assert.match(ok.cloudPath, /\.png$/u);
-  for (const fileName of ['课表.gif', '课表.xls', '课表']) {
+  // `.jpeg` 不在白名单里：客户端会把 JPEG 统一归一成 `.jpg` 再申请路径（ai 云函数也认 .jpg），
+  // 因此服务端不需要第二个 JPEG 扩展名——留一个「到不了的入口」只会让校验口径含糊。
+  for (const fileName of ['课表.gif', '课表.jpeg', '课表.xls', '课表']) {
     const bad = await h.run(STUDENT_A, { action: 'preparePhotoUpload', fileName });
     assert.equal(bad.ok, false, fileName);
     assert.match(bad.error, /png|jpg/u);
   }
+  const jpg = await h.run(STUDENT_A, { action: 'preparePhotoUpload', fileName: '课表截图.jpg' });
+  assert.equal(jpg.ok, true);
+  assert.match(jpg.cloudPath, /\.jpg$/u);
 });
 
 test('saveDraft:截图识别来源 photo 入库并被保存', async () => {

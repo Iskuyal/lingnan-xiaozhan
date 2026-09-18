@@ -486,6 +486,54 @@ test('vision：图片被拒时不调用模型，返回内容被拒', async () =>
   assert.equal(harness.http.length, 0, '图片被拒后不得调用模型');
 });
 
+test('内容被拒的文案按输入类型区分：图片说「换一张」，文字说「修改后重试」', async () => {
+  // 同一类失败（content_rejected），图片与文字的默认文案必须各自成句。
+  const imageHarness = createHarness({
+    security: wechatOk({ imgSecCheck: () => Promise.reject({ errCode: 87014, errMsg: 'img risky' }) }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const imageRejected = await imageHarness.main({
+    action: 'vision',
+    messages: [{ role: 'user', text: '识别一下' }],
+    image: IMAGE,
+  });
+  assert.equal(imageRejected.failureClass, 'content_rejected');
+  assert.match(imageRejected.message, /图片/u);
+  assert.match(imageRejected.message, /换一张/u);
+  assert.doesNotMatch(imageRejected.message, /修改后重试/u, '图片没有「修改」的余地');
+
+  const textHarness = createHarness({
+    security: wechatOk({ msgSecCheck: () => Promise.resolve({ errCode: 87014, errMsg: 'risky' }) }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const textRejected = await textHarness.main(chatEvent());
+  assert.equal(textRejected.failureClass, 'content_rejected');
+  assert.match(textRejected.message, /修改后重试/u);
+  assert.notEqual(textRejected.message, imageRejected.message, '两种输入的文案不得合并成一句');
+
+  // moderateImage 动作同样走图片文案。
+  const moderateHarness = createHarness({
+    security: wechatOk({ imgSecCheck: () => Promise.reject({ errCode: 87014, errMsg: 'img risky' }) }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const moderateRejected = await moderateHarness.main({ action: 'moderateImage', image: IMAGE });
+  assert.equal(moderateRejected.failureClass, 'content_rejected');
+  assert.match(moderateRejected.message, /换一张/u);
+
+  // 图片专属文案可被环境变量覆盖（改措辞不用改代码）。
+  const overridden = createHarness({
+    env: { AI_MSG_CONTENT_REJECTED_IMAGE: '这张图不行，请换一张（测试覆盖）' },
+    security: wechatOk({ imgSecCheck: () => Promise.reject({ errCode: 87014 }) }),
+    respond: () => openAiTextResponse('不该被调用'),
+  });
+  const overriddenResult = await overridden.main({
+    action: 'vision',
+    messages: [{ role: 'user', text: '识别一下' }],
+    image: IMAGE,
+  });
+  assert.equal(overriddenResult.message, '这张图不行，请换一张（测试覆盖）');
+});
+
 test('vision 支持云存储 fileID，并按扩展名推断图片格式', async () => {
   const harness = createHarness({
     security: wechatOk(),
