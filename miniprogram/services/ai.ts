@@ -258,6 +258,9 @@ export function chatEvent(feature: string, system: string, messages: ChatMessage
  *
  * 客户端只上传到云存储再用 fileID 调用（服务端仍支持 base64，那是给控制台探测与其它
  * 调用方留的入口；客户端侧没有这条路径，因此这里不声明 base64 分支）。
+ *
+ * `bands` 交给服务端按节次分带并行识别（见 `services/timetable/photo.ts` 的 `VISION_BANDS`）：
+ * 分带在**服务端**完成，图片只上传一次、内容安全只检一次，客户端拿到的仍是同一个 JSON 形状。
  */
 export function visionEvent(
   feature: string,
@@ -265,6 +268,7 @@ export function visionEvent(
   prompt: string,
   image: { fileID: string },
   maxTokens?: number,
+  bands?: number | 'auto',
 ): Record<string, unknown> {
   const event: Record<string, unknown> = {
     action: 'vision',
@@ -274,5 +278,6 @@ export function visionEvent(
     image,
   };
   if (maxTokens !== undefined) event.maxTokens = maxTokens;
+  if (bands !== undefined) event.bands = bands;
   return event;
 }

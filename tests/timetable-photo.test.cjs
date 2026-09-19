@@ -338,6 +338,17 @@ test('vision 事件组装:图片走顶层 image 的 fileID,携带系统提示与
     image: { fileID: 'cloud://a/b.png' },
     maxTokens: 2048,
   });
+
+  // 分带方式随事件下发（服务端 `bands` 字段）；不传时事件里不出现该字段，保持单带原路径。
+  const banded = visionEvent('timetable-screenshot', '系统提示', '请识别这张课表截图', { fileID: 'cloud://a/b.png' }, 2048, 'auto');
+  assert.equal(banded.bands, 'auto');
+  assert.equal(visionEvent('timetable-screenshot', '系统提示', '识别', { fileID: 'cloud://a/b.png' }, 2048, 3).bands, 3);
+  assert.equal(visionEvent('timetable-screenshot', '系统提示', '识别', { fileID: 'cloud://a/b.png' }).bands, undefined);
+});
+
+test('分带方式交给服务端按预算算，且只有「auto」或 1 以上的整数是合法取值', () => {
+  const { VISION_BANDS } = photo();
+  assert.equal(VISION_BANDS, 'auto', '产品路径默认让服务端按超时预算决定带数');
 });
 
 test('系统提示词:要求只输出 JSON、识别不出留空、绝不编造、每周要显式声明', () => {
@@ -377,6 +388,7 @@ test('导入页:拍照识别全链路——压缩→判格式→上传→vision�
   assert.match(aiCall.data.image.fileID, /^cloud:\/\//u, 'vision 必须传上传返回的 fileID');
   assert.equal(aiCall.data.image.fileID, 'cloud://test-env.test-bucket/timetable-imports/abc/课表截图.jpg');
   assert.equal(aiCall.data.cloudPath, undefined, '不得把裸 cloudPath 传给 ai');
+  assert.equal(aiCall.data.bands, 'auto', '截图识别走分带并行（服务端按预算算带数）');
 
   const discard = cloud.calls.filter((call) => call.data.action === 'discardUpload');
   assert.deepEqual(discard.map((call) => call.data.fileID), [aiCall.data.image.fileID], '识别后按 fileID 删除截图');

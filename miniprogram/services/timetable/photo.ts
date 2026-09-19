@@ -100,6 +100,19 @@ export const PHOTO_GUIDE = '也可以直接拍照，或从相册选一张课表�
 /** vision 单次最大输出 token：一份课表 JSON 远小于该值，留足余量。 */
 export const VISION_MAX_TOKENS = 2048;
 
+/**
+ * 交给服务端的分带方式（ai 云函数的 `bands` 字段）。
+ *
+ * 实测画像：当前中转模型**固定约 11 秒 + 约 86 token/秒 + 每门课约 300 个完成 token**，
+ * 一份 45 门课的课表一次调用要 170 秒以上，超过云函数 60 秒上限——**一次识别整张表不成立**
+ * （测量见 docs/evidence/p5-b/README.md「第三轮」）。
+ *
+ * 因此默认交 `'auto'` 让**服务端按自己的超时预算算带数**（见 cloudfunctions/ai/vision.ts 的
+ * `bandsForBudget`）：配置变、模型换，带数自动跟着变，客户端不写死一个数字。
+ * 传数字可强制指定带数，传 1 或不传即回到「一次调用识别整张表」的原路径。
+ */
+export const VISION_BANDS: number | 'auto' = 'auto';
+
 /** 识别系统提示词：只输出 JSON、识别不出留空、绝不编造。 */
 export const VISION_SYSTEM = [
   '你是课表截图识别器。识别图片中的课程表，只输出一个 JSON 对象，不要输出任何解释或多余文字。',
