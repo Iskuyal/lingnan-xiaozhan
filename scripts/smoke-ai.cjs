@@ -15,11 +15,10 @@
  *         1 = 云函数调用没跑通（未部署 / 权限 / 网络）；
  *         2 = 云函数返回失败（多半是环境变量没配全，返回里会写明缺哪几个）。
  */
-const automator = require('miniprogram-automator');
+const { connectMini } = require('./lib/mini-connect.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
-const PORT = process.env.WECHAT_AUTO_PORT || '9420';
 
 /** 冒烟文本与步骤 E 保持一致：固定、短、不含任何个人信息。 */
 const SMOKE_TEXT = '只回复四个字：链路已通';
@@ -27,7 +26,7 @@ const SMOKE_TEXT = '只回复四个字：链路已通';
 async function run() {
   const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
-  const mini = await automator.connect({ wsEndpoint: `ws://127.0.0.1:${PORT}` });
+  const mini = await connectMini();
   try {
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
     await new Promise((resolve) => setTimeout(resolve, 1500));

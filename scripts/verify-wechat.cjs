@@ -1,5 +1,5 @@
 // 先用微信开发者工具 CLI auto --project <dist绝对路径> --auto-port 9420 打开项目。
-const automator = require('miniprogram-automator');
+const { connectMini } = require('./lib/mini-connect.cjs');
 const assert = require('node:assert/strict');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
@@ -7,7 +7,7 @@ const path = require('node:path');
 async function run() {
   const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
-  const mini = await automator.connect({ wsEndpoint: 'ws://127.0.0.1:9420' });
+  const mini = await connectMini();
   async function waitForPage(route) {
     // 流程变长后开发者工具响应明显变慢（模拟器、连续截图、热重载），10 秒会误报超时。
     const deadline = Date.now() + 30000;

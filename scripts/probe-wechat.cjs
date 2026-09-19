@@ -18,11 +18,10 @@
  *         1 = 云函数调用没跑通（未部署 / 权限 / 网络），没有探测记录；
  *         2 = 探测记录无效（触发方式或上下文不对），需按提示重跑。
  */
-const automator = require('miniprogram-automator');
+const { connectMini } = require('./lib/mini-connect.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
-const PORT = process.env.WECHAT_AUTO_PORT || '9420';
 
 /** 探测的等待上限：冷启动 + 两条微信接口各一次调用，探测本身另有 5 秒硬超时。 */
 const PROBE_WAIT_MS = 60000;
@@ -30,7 +29,7 @@ const PROBE_WAIT_MS = 60000;
 async function run() {
   const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
-  const mini = await automator.connect({ wsEndpoint: `ws://127.0.0.1:${PORT}` });
+  const mini = await connectMini();
   try {
     // 先落到页面，确保 app onLaunch 里的 wx.cloud.init 已经跑过。
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
