@@ -22,7 +22,7 @@
 
 | # | Ticket | 当前状态 | Blocked by |
 | --- | --- | --- | --- |
-| 01 | [AI 服务端基础设施](01-ai-foundation.md) | **in-progress（本地代码、桩测试与文档完成；待密钥、部署、微信内容安全探测与云端端到端验证）** | — |
+| 01 | [AI 服务端基础设施](01-ai-foundation.md) | **in-progress（云端已部署、内容安全探测与端到端冒烟已跑通；余密钥外泄抽查、上限拦截实测、内存核实）** | — |
 | 02 | [首页最近资讯入口与列表逐页加载](02-home-news-entry-and-paging.md) | **done（2026-09-18）** | — |
 | 03 | [课表 Excel 导入与周课表展示](03-timetable-excel-import.md) | **in-progress（代码与测试完成，待云函数部署后做端到端验收）** | — |
 | 04 | [扩大资讯同步范围并启用每日定时](04-expand-sync-and-daily-schedule.md) | **in-progress（代码与本地测试完成；待部署与触发器实测）** | — |

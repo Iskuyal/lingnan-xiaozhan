@@ -6,7 +6,7 @@
 
 **Blocked by:** 无。P5-A 收尾项已于 2026-09-18 由负责人确定（成功指标、成本上限、内容安全接入方式、失败分类与文案），结论写入 [开发规格](../../development-spec.md) 的「AI 功能」一节。模型接入的端到端验证在本票执行。
 
-**Status:** **in-progress（2026-09-19）**——本地代码、桩测试与文档已完成并通过（`npm run typecheck`、`npm test` 296 项全过，其中本票 81 项）；两轴代码复核（Standards + Spec）提出的 11 项问题已修复（见下「复核修复记录」）。**云端侧**：部署、两个用量集合与模型环境变量已完成并由本轮复核；**微信内容安全探测已在未认证状态下跑通**（两条接口 `errcode 0`，微信官方适配器可用，不需要第三方审核密钥）；**唯一阻塞项是云函数超时仍是默认 3 秒**（实测 `chat` 被 `-504003` 打断，控制台改成 20 秒即可），端到端与上限两项等它完成后再跑。逐项状态见下与 [云开发文档](../../cloud-development.md#ticket-01-人工步骤)。
+**Status:** **in-progress（2026-09-19）**——本地代码、桩测试与文档已完成并通过（`npm run typecheck`、`npm test` 296 项全过，其中本票 81 项）；两轴代码复核（Standards + Spec）提出的 11 项问题已修复（见下「复核修复记录」）。**云端侧**：部署、两个用量集合与模型环境变量已完成；**微信内容安全探测已在未认证状态下跑通**（两条接口 `errcode 0`，官方适配器可用，不需要第三方审核密钥）；**端到端已跑通**（`npm run smoke:ai`：`ok=true`、模型返回「链路已通」、耗时 4600ms，证明 20 秒超时已生效）。**尚未完成**：数据库侧的密钥外泄抽查、月度上限拦截实测（人工步骤 F）、云函数内存核实。逐项状态见下与 [云开发文档](../../cloud-development.md#ticket-01-人工步骤)。
 
 **成果位置**：云函数 `cloudfunctions/ai/`（`index.ts` 入口与流水线、`config.ts` 环境变量、`errors.ts` 失败分类与文案、`http.ts` 带硬超时的 JSON POST 与通用超时、`providers.ts` 两种接口格式适配、`safety.ts` 内容安全适配层、`usage.ts` 用量记账与上限、`probe.ts` 微信接口探测、`config.json` 云调用权限声明、`package.json`）。测试 `tests/ai-providers.test.cjs`、`tests/ai-safety.test.cjs`、`tests/ai-flow.test.cjs`、`tests/ai-bundle.test.cjs` 与夹具 `tests/ai-harness.cjs`。文档见 [云开发文档](../../cloud-development.md) 的「AI 云函数」一节（调用契约、数据模型、环境变量表、失败文案表、探测记录表、人工步骤）。
 
@@ -19,7 +19,8 @@
 - [x] 文字内容安全检测可用；违规内容被拒绝并返回可与「调用失败」区分的结果（**本地完成**：违规 → `content_rejected`；检测服务不可用 → `internal`；两条路径都有测试）
 - [x] 图片内容安全检测可用，接口与文字检测分开（**本地完成**：`moderateImage` 与 `moderateText` 分开，图片走 `imgSecCheck` 的 `media` 字段；vision 流水线保证「图片先检后送模型」；图片格式判断不出来按参数错误拒绝，不再默认 PNG）
 - [x] 失败结果能区分三类，三类文案各自独立、不合并成一句（**本地完成**：`model_unavailable` / `content_rejected` / `quota_exhausted` + 两类辅助分类；测试断言三类文案两两不同且有独立环境变量可改措辞；**402 归额度类、429 归模型不可用**，瞬时限流不会被说成「请下月再试」）
-- [ ] 端到端验证：一句测试文本经模型返回结果，全过程无密钥外泄（检查小程序包与数据库）（**未验证，唯一阻塞项是云函数超时**：部署与环境变量已就绪，实测 `npm run smoke:ai` 被 `-504003 Invoking task timed out after 3 seconds` 打断；控制台把 `ai` 超时改成 20 秒后重跑即可，动作与判据见人工步骤 E）
+- [x] 端到端验证：一句测试文本经模型返回结果（**已验证（2026-09-19）**：`npm run smoke:ai` 从小程序端真实调用一次，返回 `ok=true`、模型输出「链路已通」、`elapsedMs=4600`；内容安全走微信官方适配器 `provider=wechat checked=true passed=true errcode=0`；用量 105 token 已记账、当月累计可查。耗时 4.6 秒同时证明**超时已改到 20 秒**、`-504003` 截断不再出现。原始输出见 [Ticket 01 端到端冒烟记录](../evidence/p5-foundation/README.md)）
+- [ ] **全过程无密钥外泄：数据库侧抽查一次**（小程序包与云函数产物侧已由 `tests/ai-bundle.test.cjs` 断言；还差在控制台打开 `ai_usage_records` / `ai_usage_monthly` 抽查，确认记录里没有密钥字段或密钥值）
 - [x] 第三方中转不可用时，调用方拿到的是可处理的错误而不是未捕获异常（**本地完成**：入口不抛异常，连接失败/超时/5xx/非 JSON/空内容都收敛成分类失败；测试覆盖 ECONNREFUSED 与永不响应两种形态）
 - [x] `npm run typecheck`、`npm test` 通过（**本地完成**：typecheck 两份配置均无错误；`npm test` 296 项全过，其中本票 81 项）
 
