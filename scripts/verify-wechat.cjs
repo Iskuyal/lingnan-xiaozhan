@@ -37,12 +37,21 @@ async function run() {
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
   }
-  /** 当前页面上失败提示的文本（`#qa-offline` 优先，其次 `.qa-error`）；没有则空串。 */
+  /**
+   * 当前页面上**失败文案**的文本（`.qa-error` 优先），没有失败则空串。
+   *
+   * 为什么不优先读 `#qa-offline`：它是与失败同时出现的**固定说明句**
+   * （「部门资料随小程序包提供，AI 不可用时仍可正常查看列表与详情。」），
+   * 读它只能证明「出过错」，读不出**是哪一类错**——2026-09-19 实测撞到这一点：
+   * 内容安全当日配额用尽让模型调用失败时，这个函数返回的仍是那句常量，
+   * 导致下面的降级断言比对的是一句和失败原因无关的话，等于没验。
+   * `#qa-offline` 单独断言（存在且写明资料仍可查看），两者各查各的。
+   */
   async function currentErrorText(page) {
-    const offline = await page.$('#qa-offline');
-    if (offline) return await offline.text();
     const error = await page.$('.qa-error');
     if (error) return await error.text();
+    const offline = await page.$('#qa-offline');
+    if (offline) return await offline.text();
     return '';
   }
   /** 课表页可能在 loading（云函数冷启动）：等到出现某个已就绪状态的元素再判定。 */
@@ -132,6 +141,9 @@ async function run() {
     // 不能白屏或假成功。两种都算通过，但降级时要额外说明部门资料仍可查看。
     assert.ok(reply !== null, '发送追问后既没有回答也没有降级提示（页面没有反应）');
     if (reply.kind === 'degraded') {
+      // 覆盖三类用户可见失败（模型不可用/超时、内容被拒、额度或配额用尽）与两类技术失败
+      // （未部署/权限、内部错误）。**故意不覆盖 `invalid_request`（「AI 请求参数不正确」）**：
+      // 它在这个流程里基本等于调用方把事件组装坏了，属于要修的缺陷，不该被当成可接受的降级。
       assert.match(
         reply.text,
         /暂时不可用|超时|内部错误|额度|未通过安全检测|尚未部署|权限/u,
