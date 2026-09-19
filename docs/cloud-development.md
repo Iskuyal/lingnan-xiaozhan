@@ -315,7 +315,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
-**2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**步骤 F（月度上限拦截实测）已由负责人确认完成**。**步骤 G（`vision` 路径真实调用）我方独立复测未通过**：三张真实课表截图 + 一张 570 字节合成小图全部在 8000ms 处超时——`failureClass=model_unavailable`、`detail=模型调用超时：请求超时（8000ms）`、`provider=openai model=qwen/qwen3.8-flash`；同一时刻文本 `chat` 正常（4.6 秒）。图片先过内容安全这一步是通的（`safety.checked=true`、`errcode=0`）。**复测入口**：`npm run smoke:ai:vision`（新增，内联合成小图，跑完自动清理云存储）。**候选修复（控制台，改一项跑一次复测）**：① `AI_EXTRA_BODY_JSON` = `{"chat_template_kwargs":{"thinking":false}}`（该模型默认开思考，AI 资讯实测记过输出 token 偏高）；② `AI_TIMEOUT_MS` = 13000（必须 ≤ `AI_TOTAL_DEADLINE_MS` 15000，函数超时 20 秒）；③ 换 `AI_VISION_MODEL` 为确认支持图片输入的模型名——**当前取值与文本模型不同，但没有任何证据表明它做视觉可用**。判据统一为 `smoke:ai:vision` 返回 `ok=true`。
+**2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**步骤 F（月度上限拦截实测）已由负责人确认完成**。**步骤 G（`vision` 路径真实调用）**分两步：① 负责人加上 `AI_EXTRA_BODY_JSON={"chat_template_kwargs":{"thinking":false}}` 与 `AI_TIMEOUT_MS=13000` 之后，**合成小图的链路冒烟通过**（`npm run smoke:ai:vision`：`ok=true`、`elapsedMs=9978`、模型返回合法 JSON、内容安全 `checked=true`）——**模型确实支持图片输入**，「模型名不支持视觉」的猜测不成立；② **但真实课表截图仍失败**，新的读数是 `detail=模型调用超时：请求超时（11417ms）`。四种输入对照（570 字节小图通过、真实截图只问一列超时、真实截图缩到 1000px 宽同样超时、真实截图两门课约 11 秒通过）说明**卡的是固定时延，与图片大小、输出长度都无关**。
+**下一步要一起调的三个数（必须满足 `AI_TIMEOUT_MS ≤ AI_TOTAL_DEADLINE_MS < 云函数超时`）**：`ai` 云函数超时 `20 → 60` 秒、`AI_TOTAL_DEADLINE_MS 15000 → 50000`、`AI_TIMEOUT_MS 13000 → 40000`。改完用真实截图跑一次（`npm run smoke:ai:vision` 只测小图；真实课表走页面链路），**读到的 `elapsedMs` 就是它的真实需要**，再决定是接受这个等待、压缩输出、分段识别还是换模型。另注意客户端 `VISION_MAX_TOKENS=2048` 对 45 门课的完整 JSON 可能偏小，第一次拿到完整结果时要检查是否被截断。
 
 **步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 

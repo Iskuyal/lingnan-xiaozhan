@@ -452,3 +452,46 @@ npm run smoke:ai:vision   # 新脚本：内联一张合成小图，只验「上�
    但没有任何证据表明它做视觉可用）。
 
 判据统一为 `npm run smoke:ai:vision` 返回 `ok=true`。
+
+### 2026-09-19 第二轮：配置调整后的小图冒烟通过，真实截图仍需更大预算
+
+负责人按建议在控制台加了三项环境变量：`AI_EXTRA_BODY_JSON={"chat_template_kwargs":{"thinking":false}}`、
+`AI_TIMEOUT_MS=13000`，`AI_VISION_MODEL` 保持 `qwen/qwen3.8-flash`。改完**不需要重新部署**，下一次调用即生效。
+
+**合成小图的链路冒烟通过了**：
+
+```text
+ok=true failureClass=(空) elapsedMs=9978
+provider=openai model=qwen/qwen3.8-flash
+模型输出：{"courses":[{"name":"高等数","teacher":"","weekday":1,"startSection":1,"endSection":2,"weekText":""}]}
+内容安全：provider=wechat checked=true passed=true｜errcode=0
+本次用量：537 token / 0.000134 元
+```
+
+这一条同时证明：**模型确实支持图片输入**（原先「模型名可能不支持视觉」的猜测不成立），内容安全仍然先于模型执行；
+也顺带确认 `AI_EXTRA_BODY_JSON` 存进去的是合法 JSON（值非法时配置解析会直接报 `internal` 拒绝调用，本轮没有报错）。
+
+**但三张真实课表截图仍然失败**，现在拿到的是新的预算读数：
+
+```text
+failureClass=model_unavailable elapsedMs≈14.6s
+detail: 模型调用超时：请求超时（11417ms）：https://api.commandcode.ai/provider/v1/chat/completions
+```
+
+即模型实际拿到的预算是 **11.4 秒**（= `AI_TIMEOUT_MS` 13000 与「总截止 15000 − 前置耗时 − 500」取小），还不够。
+继续做的三次测量都指向同一结论——**卡的是固定时延，与图片大小和输出长度都无关**：
+
+| 输入 | 输出规模 | 结果 |
+| --- | --- | --- |
+| 570 字节合成小图 | 1 门课 | ✅ 9.98s |
+| 真实截图（原图 423KB） | 只问星期一一列 | ❌ 超过 11.2s |
+| 真实截图缩到 1000px 宽（94KB） | 只问星期一一列 | ❌ 超过 11.2s |
+| 真实截图（原图） | 2 门课（模型回了空数组） | ✅ 约 11s，2621 prompt token / 214 completion token |
+
+**因此「客户端先缩图」不能解决这个问题**（已实测），要靠把预算抬上去。要测量的下一步是三个数一起调：
+`云函数超时 20 → 60 秒`、`AI_TOTAL_DEADLINE_MS 15000 → 50000`、`AI_TIMEOUT_MS 13000 → 40000`
+（三者必须满足 `AI_TIMEOUT_MS ≤ AI_TOTAL_DEADLINE_MS < 云函数超时`），改完跑一次真实截图即可读到**它到底需要多久**——
+那个 `elapsedMs` 决定了后面怎么选：直接接受这个等待（页面已有「正在识别」进度态），还是压缩输出、分段识别或换模型。
+
+**一个待观察的代码侧风险**：客户端 `VISION_MAX_TOKENS=2048`，一份 45 门课的完整 JSON 有可能超过这个上限而被截断；
+等第一次拿到完整识别结果后要看输出是否完整，必要时同步调大并补测试。
