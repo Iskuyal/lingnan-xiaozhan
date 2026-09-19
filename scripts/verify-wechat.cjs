@@ -25,18 +25,35 @@ async function run() {
    *    云函数未部署 / 未配密钥时走这条，不能因为「没有回答」就判失败（PR #29 的断言口径）。
    * 两条都没等到才返回 null（页面真的没反应）。
    */
-  async function waitForReply(page, before, timeoutMs = 25000) {
+  async function waitForReply(page, before, previousError, timeoutMs = 25000) {
     const deadline = Date.now() + timeoutMs;
     for (;;) {
       const rows = await page.$$('.qa-answer');
       if (rows.length > before) return { kind: 'answer', text: await rows[rows.length - 1].text() };
-      const offline = await page.$('#qa-offline');
-      const error = await page.$('.qa-error');
-      if (offline || error) {
-        const notice = offline === null ? error : offline;
-        return { kind: 'degraded', text: await notice.text() };
-      }
+      const notice = await currentErrorText(page);
+      // 残留的失败提示不算本次结果：只有内容变了（或本来就是干净的）才认定降级。
+      if (notice !== '' && notice !== previousError) return { kind: 'degraded', text: notice };
       if (Date.now() >= deadline) return null;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+  }
+  /** 当前页面上失败提示的文本（`#qa-offline` 优先，其次 `.qa-error`）；没有则空串。 */
+  async function currentErrorText(page) {
+    const offline = await page.$('#qa-offline');
+    if (offline) return await offline.text();
+    const error = await page.$('.qa-error');
+    if (error) return await error.text();
+    return '';
+  }
+  /** 课表页可能在 loading（云函数冷启动）：等到出现某个已就绪状态的元素再判定。 */
+  async function waitForTimetableSettled(page, timeoutMs = 20000) {
+    const deadline = Date.now() + timeoutMs;
+    for (;;) {
+      const importEntry = await page.$('#import-entry');
+      if (importEntry) return { importEntry, retryLoad: null };
+      const retryLoad = await page.$('#retry-load');
+      if (retryLoad) return { importEntry: null, retryLoad };
+      if (Date.now() >= deadline) return { importEntry: null, retryLoad: null };
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
   }
@@ -108,8 +125,9 @@ async function run() {
     assert.ok(qaInput, '详情页缺少追问输入框');
     // 气泡按数量增量判定，不按下标：这样即使有历史残留也能等到这一次的新气泡。
     const rowsBefore = (await chatDetail.$$('.qa-answer')).length;
+    const errorBefore = await currentErrorText(chatDetail);
     await suggestions[0].tap();
-    const reply = await waitForReply(chatDetail, rowsBefore);
+    const reply = await waitForReply(chatDetail, rowsBefore, errorBefore);
     // 云函数已配好密钥时应是资料里的回答；未配置或未部署时必须是可识别的降级提示，
     // 不能白屏或假成功。两种都算通过，但降级时要额外说明部门资料仍可查看。
     assert.ok(reply !== null, '发送追问后既没有回答也没有降级提示（页面没有反应）');
@@ -183,15 +201,21 @@ async function run() {
     const homeAgain = await mini.currentPage();
     await (await homeAgain.$('#timetable-entry')).tap();
     const timetable = await waitForPage('pages/timetable/index');
-    await timetable.waitFor(1200);
+    await timetable.waitFor(800);
     assert.equal(await (await timetable.$('.section-title')).text(), '我的课表');
-    const importEntry = await timetable.$('#import-entry');
-    const retryLoad = await timetable.$('#retry-load');
-    assert.ok(importEntry || retryLoad, '课表页既没有导入入口也没有重试入口');
-    if (retryLoad) {
+    // 云函数冷启动时页面会停在 loading，此时两种入口都还没渲染——等到脱离中间态再判定。
+    const settled = await waitForTimetableSettled(timetable);
+    assert.ok(
+      settled.importEntry || settled.retryLoad,
+      '课表页既没有导入入口也没有重试入口（等待 20 秒后仍在加载或状态异常）',
+    );
+    if (settled.retryLoad) {
       const errorText = await (await timetable.$('.tt-hint-copy')).text();
       assert.ok(errorText.length > 0, '读取失败时应给出说明文案');
-      console.log(`课表读取状态：${errorText}`);
+      console.log(`课表读取状态（错误态可重试）：${errorText}`);
+    } else {
+      const hint = await timetable.$('.tt-meta');
+      console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
     }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
     await (await timetable.$('#back-home')).tap();
