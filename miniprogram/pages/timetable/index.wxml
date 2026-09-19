@@ -97,7 +97,8 @@
         <button class="qa-close" hover-class="pressed" bindtap="closeAssistant">收起</button>
       </view>
       <view class="qa-messages">
-        <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}}">{{item.text}}</view>
+        <!-- 与部门问答面板同一约定：助手回答带 qa-answer 标记，开发者工具验收靠它数气泡，测试锁住这个标记。 -->
+        <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}} {{item.role === 'assistant' ? 'qa-answer' : ''}}">{{item.text}}</view>
       </view>
       <view class="qa-error" wx:if="{{assistantError !== ''}}">{{assistantError}}</view>
       <view id="assistant-safety-note" class="qa-warn" wx:if="{{assistantSafetyNote !== ''}}">{{assistantSafetyNote}}</view>
