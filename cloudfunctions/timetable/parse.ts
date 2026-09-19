@@ -118,6 +118,14 @@ export function mergeSectionRanges(ranges: SectionRange[]): SectionRange[] {
 }
 
 /**
+ * 姓名形态：2-4 个汉字，不含数字、字母与标点。
+ * 只用于「原文没有学分」时的兜底拆分；它是形态判断而非确定结论，必须留下待核对提示。
+ */
+function isTeacherLike(token: string): boolean {
+  return /^[\u4e00-\u9fff]{2,4}$/u.test(token);
+}
+
+/**
  * 解析一条课程串。识别不出的部分保留原值并写进 warnings，不替学生填。
  * 返回的 rawText 永远是单元格里的原文。
  */
@@ -151,6 +159,8 @@ export function parseCourseEntry(rawText: string, ctx: EntryContext, index: numb
   }
 
   // 2. 课程名 / 学分 / 教师：学分是第一个纯数字 token，它之前是课程名（课程名可能含空格），之后是教师。
+  //    真机实测有**不写学分**的版式（原文只有「课程名 教师 [周次]周 …」）：此时按最后一段的姓名形态
+  //    兜底拆分，并留下待核对提示——学分缺失是原文事实，不猜一个学分出来；拆错了也能在确认页修正。
   let name = '';
   let credits = '';
   let teacher = '';
@@ -163,8 +173,13 @@ export function parseCourseEntry(rawText: string, ctx: EntryContext, index: numb
     credits = before[0];
     teacher = before.slice(1).join(' ');
     warnings.push('未能识别课程名，请核对原文');
+  } else if (before.length > 1 && isTeacherLike(before[before.length - 1])) {
+    teacher = before[before.length - 1];
+    name = before.slice(0, before.length - 1).join(' ');
+    warnings.push('原文没有学分；已按「课程名 … 教师」拆分（最后一段当作教师），请核对');
   } else if (before.length > 0) {
-    warnings.push('未能按「课程名 学分 教师」拆分，请核对原文');
+    name = before.join(' ');
+    warnings.push('原文没有学分，也没有可识别的教师；课程名按整段保留，请核对');
   }
   if (credits === '' && before.length > 0) warnings.push('未解析到学分');
   if (teacher === '') warnings.push('未解析到教师');
