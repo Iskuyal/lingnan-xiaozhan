@@ -264,12 +264,41 @@ const NEGATIONS = [
 
 /** 联系方式关键词：附近没有否定表述就认为回答在给出联系方式。 */
 const CONTACT_TERMS = ['联系方式', '联系电话', '联系邮箱', '电话号码', '办公地点', '办公地址', '公众号', '微信号', 'QQ群', 'QQ号'];
-/** 人员类关键词：官网未以「负责人」形式公布任何姓名。 */
-const ROLE_TERMS = ['负责人', '指导老师', '秘书长', '站长', '队长'];
-/** 具体校区名：资料没写校区时，出现校区名就是编造（「官网未公布所属校区」不含校区名）。 */
-const CAMPUS_PATTERN = /(广州|清远|广清)[^。；！？\n]{0,6}?校区/u;
+/**
+ * 人员类关键词：官网未以「负责人」形式公布任何姓名，出现这些称谓且附近没有否定表述就是编造。
+ *
+ * 用正则而不是字符串，是为了两件事：① 把「主席」与资料原文里的「主席团」分开
+ * （`主席(?!团)`）；② 覆盖「张老师」这类带姓氏的写法。**不含**「同学」——它是语料里的
+ * 常用词（「全心全意为同学服务」），单独成词时是正常表述。
+ * 2026-09-19 两轴复核发现只认五个称谓时会放行「主席张三」「李四部长」。
+ */
+const ROLE_PATTERNS: RegExp[] = [
+  /负责人/u,
+  /指导老师/u,
+  /秘书长/u,
+  /站长/u,
+  /队长/u,
+  /主席(?!团)/u,
+  /部长/u,
+  /会长/u,
+  /主任/u,
+  /[\u4e00-\u9fa5]{2,3}老师/u,
+];
+/**
+ * 校区记号：两到六个汉字加「校区」，用来认出具体校区名（「广州校区」「增城校区」「广清两校区」）。
+ *
+ * 只认「广州 / 清远 / 广清」是不够的：模型完全可以编一个别的校区
+ * （2026-09-19 两轴复核实测 `校学生会位于增城校区` 曾直接放行）。这里放宽到任意
+ * 「X 校区」，再由 `campusNamesIn` 剔掉带否定表述的与「所属 / 哪个」这类非校区名前缀，
+ * 最后按部门资料判断这个名字有没有依据。
+ */
+const CAMPUS_TOKEN = /([\u4e00-\u9fa5]{2,6})校区/gu;
+/** 不是校区名的前缀：这些词加「校区」是表述或疑问，不是在断言某个校区。 */
+const CAMPUS_NAME_EXCLUDE = ['所属', '哪个', '哪些', '该校', '本校', '全校', '学校', '这个', '那个', '我的', '你的', '一个', '几个', '什么'];
 /** 成立年份断言。 */
 const FOUNDED_PATTERN = /(?:成立于|创办于|创建于|组建于|成立时间)[^。；！？\n]{0,8}?(\d{4})/gu;
+/** 提问里问到成立时间的说法（问题里通常没有年份，因此与上面的断言模式分开）。 */
+const FOUNDED_QUESTION = /(成立|创办|创建|组建)/u;
 /** 网址：只允许资料里已有的链接。 */
 const URL_PATTERN = /(?:https?:\/\/|www\.)[^\s，。；、）)】\]]+/giu;
 
@@ -280,7 +309,8 @@ export type GuardReason =
   | '负责人表述'
   | '校区表述'
   | '成立时间'
-  | '资料外链接';
+  | '资料外链接'
+  | '含糊作答';
 
 export interface GuardHit {
   reason: GuardReason;
@@ -306,6 +336,8 @@ export interface GuardOptions {
   corpus?: string;
   /** 追问的是哪个部门；给出时替换文案会点名该部门，校区检查按这个部门判定。 */
   department?: Department | null;
+  /** 这次的提问；给出时多查一条「问的是未公布字段却含糊作答」。 */
+  question?: string;
 }
 
 /**
@@ -314,19 +346,24 @@ export interface GuardOptions {
  * **能发现**（命中即整条替换，替换文案里点出命中的记号）：
  * - 联系方式记号：手机号 / 座机 / QQ 号 / 微信号 / 邮箱，且这串记号不在已核实语料里；
  * - 联系方式表述：「联系方式」「联系电话」「办公地点」「公众号」等关键词附近没有否定表述；
- * - 负责人表述：「负责人」「指导老师」「秘书长」「站长」「队长」等称谓附近没有否定表述；
- * - 校区表述：语料里没有的校区名；能认出回答在讲哪个部门（调用方给了部门，或回答里只提到
- *   一个组织）且该部门资料写明「未标注所属校区」时，任何校区名都算编造；
+ * - 负责人表述：「负责人」「指导老师」「秘书长」「站长」「队长」「主席（不含「主席团」）」
+ *   「部长」「会长」「主任」与「××老师」附近没有否定表述；
+ * - 校区表述：语料里没有依据的校区名——任何「××校区」写法都算数（「增城校区」「南校区」
+ *   同样拦下，2026-09-19 两遍复核前只认「广州 / 清远 / 广清」，那两个写法能绕过）；
+ *   能认出回答在讲哪个部门（调用方给了部门，或回答里只提到一个组织）时按该部门判定，
+ *   资料写明「未标注所属校区」的任何校区名都算编造，已写明校区的只放行资料里的那几个；
  * - 成立时间：「成立于 / 创办于 / 组建于 / 成立时间」后面的年份不在语料出现过的成立年份里；
- * - 资料外链接：回答里的网址不在已核实来源链接（含各组织与动态的来源链接）里。
+ * - 资料外链接：回答里的网址不在已核实来源链接（含各组织与动态的来源链接）里；
+ * - 含糊作答（2026-09-19 复核补）：提问问的是本部门未公布的字段（联系方式 / 校区 / 成立时间 /
+ *   人员），回答里却连一句否定表述都没有（「我不清楚」「建议咨询学校」）——验收要求这类信息
+ *   **明确**回答「官网未公布」，含糊不算。
  *
  * **不能发现**（不要读成「不会编造」）：
  * - 不带上述关键词的编造：直接写出的负责人姓名（「张三负责值班」）、招新时间
  *   （「9 月 1 日开始招新」）、活动细节、对资料的错误转述，一律管不了；
  * - 与资料不符但形态合法的内容：给 A 组织安上 B 组织的号码（号码本身在语料里）、
  *   把已公布字段写错，本守卫看不出来；
- * - 校区名只认语料里出现过的写法（「广州 / 清远 / 广清 + 校区」），
- *   「南校区」「校本部」这类别的写法不会被当成校区表述；
+ * - 校区名的识别按「××校区」这个写法走，「校本部」「分校区」这类不带具体地名的说法认不出；
  * - 命中只按关键词与记号判断，**分不清「引用资料」与「编造」**：
  *   像「可以联系该组织的负责人了解」这种建议式说法也可能被拦下（代价是一句措辞，
  *   收益是无依据的断言不上屏）；
@@ -347,16 +384,23 @@ export function guardAnswer(answer: string, options: GuardOptions = {}): GuardRe
   for (const term of CONTACT_TERMS) {
     if (assertsAround(text, term)) hits.push({ reason: '联系方式表述', token: term });
   }
-  for (const term of ROLE_TERMS) {
-    if (assertsAround(text, term)) hits.push({ reason: '负责人表述', token: term });
+  for (const pattern of ROLE_PATTERNS) {
+    const token = assertedMatches(text, pattern).join('、');
+    if (token !== '') hits.push({ reason: '负责人表述', token });
   }
-  for (const token of unsupportedCampuses(text, corpus, department)) {
-    hits.push({ reason: '校区表述', token });
+  for (const name of unsupportedCampuses(text, corpus, department)) {
+    hits.push({ reason: '校区表述', token: name + '校区' });
   }
   const year = unfoundedYear(text, corpus);
   if (year !== '') hits.push({ reason: '成立时间', token: year });
   for (const url of unverifiedLinks(text, corpus)) {
     hits.push({ reason: '资料外链接', token: url });
+  }
+  // 问的是未公布字段、回答里却连一句否定表述都没有（「我不清楚」「建议咨询学校」）：
+  // 验收要求这类信息**明确**回答「官网未公布」，含糊不算。
+  const question = options.question === undefined ? '' : options.question.trim();
+  if (question !== '' && asksUnpublishedField(question, department) && !NEGATIONS.some((word) => text.includes(word))) {
+    hits.push({ reason: '含糊作答', token: '未明确说明没有公布' });
   }
 
   const reasons = hits
@@ -374,18 +418,45 @@ export function guardAnswer(answer: string, options: GuardOptions = {}): GuardRe
   };
 }
 
-/** 关键词附近（前后各一段）没有否定表述，就认为回答在断言该字段的值。 */
-function assertsAround(text: string, term: string): boolean {
-  const before = 10;
-  const after = 16;
-  let from = 0;
-  for (;;) {
-    const at = text.indexOf(term, from);
-    if (at < 0) return false;
-    const window = text.slice(Math.max(0, at - before), at + term.length + after);
-    if (!NEGATIONS.some((word) => window.includes(word))) return true;
-    from = at + term.length;
+/** 资料里是否写了成立时间（只有退役军人事务服务部写了「成立于 2022 年 5 月」）。 */
+function hasFoundedTime(department: Department): boolean {
+  return foundedYearsIn(department.introduction).length > 0;
+}
+
+/**
+ * 这次提问问的是不是本部门未公布的字段。
+ *
+ * 认不出部门时一律返回 false：没有上下文就不该强制「官网未公布」，宁可少拦。
+ */
+function asksUnpublishedField(question: string, department: Department | null): boolean {
+  if (department === null) return false;
+  if (department.contacts.length === 0 && CONTACT_TERMS.some((term) => question.includes(term))) return true;
+  if (department.campus === null && question.includes('校区')) return true;
+  if (FOUNDED_QUESTION.test(question) && !hasFoundedTime(department)) return true;
+  return ROLE_PATTERNS.some((pattern) => pattern.test(question));
+}
+
+/**
+ * 关键词附近（前后各一段）没有否定表述，就认为回答在断言该字段的值。
+ * 返回命中的原文（去重），字符串关键词与正则共用这一条判定。
+ */
+function assertedMatches(text: string, matcher: RegExp, before = 10, after = 16): string[] {
+  const scanner = new RegExp(matcher.source, matcher.flags.includes('g') ? matcher.flags : matcher.flags + 'g');
+  const hits: string[] = [];
+  let match = scanner.exec(text);
+  while (match !== null) {
+    const window = text.slice(Math.max(0, match.index - before), match.index + match[0].length + after);
+    if (!NEGATIONS.some((word) => window.includes(word)) && !hits.includes(match[0])) hits.push(match[0]);
+    scanner.lastIndex = match.index + match[0].length;
+    match = scanner.exec(text);
   }
+  return hits;
+}
+
+/** 字符串关键词版本的 `assertedMatches`：只要「有没有命中」。 */
+function assertsAround(text: string, term: string): boolean {
+  const pattern = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u');
+  return assertedMatches(text, pattern).length > 0;
 }
 
 /** 语料里出现过的成立年份：只取「成立于…」这类上下文里的四位年份，不把活动日期算进来。 */
@@ -420,21 +491,74 @@ function departmentInAnswer(text: string): Department | null {
 }
 
 /**
- * 回答里语料不支持的校区名。
+ * 回答里提到、但资料没有依据的校区表述（返回**回答里的原文片段**，如「在南校区」）。
  *
  * 判定按「这个回答在讲哪个部门」来定：调用方给了部门就用它；列表页没给时，若回答里只提到
  * 一个组织就按那个组织判（编造校区正是「给 A 组织安上 B 组织的校区」这类错误）。
- * 部门资料写明校区的，允许资料里那几个；资料写「未标注所属校区」的，任何校区名都是编造。
- * 连组织都认不出来时才退回语料级：只拦语料整体都没有的校区名，弱一档。
+ * 部门资料写明校区的，资料里出现过的那几个写法都算有依据；资料写「未标注所属校区」的，
+ * 任何校区名都是编造。连组织都认不出来时不判校区——没有部门上下文就说不清哪个才算有依据。
  */
 function unsupportedCampuses(text: string, corpus: string, department: Department | null): string[] {
-  const found = text.match(new RegExp(CAMPUS_PATTERN.source, CAMPUS_PATTERN.flags));
-  if (found === null) return [];
+  const mentions = campusMentions(text);
+  if (mentions.length === 0) return [];
   const scope = department === null ? departmentInAnswer(text) : department;
-  const allowed = scope === null
-    ? compact(corpus)
-    : compact(scope.campus === null ? '' : scope.campus + scope.campusNote);
-  return found.filter((token, index) => !allowed.includes(compact(token)) && found.indexOf(token) === index);
+  if (scope === null) return [];
+  const allowed = new Set(campusNamesIn(scope.campus === null ? '' : scope.campus + scope.campusNote));
+  return mentions
+    .filter((mention) => !mention.names.some((name) => allowed.has(name)))
+    .map((mention) => mention.token);
+}
+
+/** 文本里的一处校区表述：原文片段 + 从它取出的候选校区名。 */
+interface CampusMention {
+  token: string;
+  names: string[];
+}
+
+/**
+ * 文本里的校区表述（带否定表述的不算，如「官网未公布所属校区」）。
+ *
+ * 并列写法（「A、B 两校区」）按分隔符拆开，各自算一个候选名。
+ * 候选名只保留末尾两字：`([\u4e00-\u9fa5]{2,6})校区` 的捕获会连前面的词一起吞进来
+ * （「据活动报道在广州校区」的捕获是「道在广州」），而校区名基本都是两字
+ * （广州 / 清远 / 增城），「广清」这类合写在去掉「两」之后也是两字；
+ * 三字以上的校区名（如「大学城校区」）会被截成后两字，因此它只用于**比对**，
+ * 写进替换文案的是原文片段 `token`，不是这个名字。
+ */
+function campusMentions(text: string): CampusMention[] {
+  const mentions: CampusMention[] = [];
+  // 否定窗口按句内收紧：语料里「…清远校区官网组织表格未标注校区…」这种相邻分句
+  // 曾把前一个校区名误判成「带否定」（窗口 16 字串到了下一句），因此这里用 6 / 6。
+  const before = 6;
+  const after = 6;
+  const pattern = new RegExp(CAMPUS_TOKEN.source, CAMPUS_TOKEN.flags);
+  let match = pattern.exec(text);
+  while (match !== null) {
+    const token = match[0];
+    const window = text.slice(Math.max(0, match.index - before), match.index + token.length + after);
+    if (!NEGATIONS.some((word) => window.includes(word))) {
+      const names: string[] = [];
+      for (const raw of match[1].split(/[、,，和及与]/u)) {
+        const stripped = raw.replace(/[两双各个]/gu, '').trim();
+        const name = stripped.length > 2 ? stripped.slice(-2) : stripped;
+        if (name !== '' && !CAMPUS_NAME_EXCLUDE.includes(name) && !names.includes(name)) names.push(name);
+      }
+      if (names.length > 0) mentions.push({ token, names });
+    }
+    match = pattern.exec(text);
+  }
+  return mentions;
+}
+
+/** 只会用到候选名（如判断资料里写过哪些校区），忽略原文片段。 */
+function campusNamesIn(text: string): string[] {
+  const names: string[] = [];
+  for (const mention of campusMentions(text)) {
+    for (const name of mention.names) {
+      if (!names.includes(name)) names.push(name);
+    }
+  }
+  return names;
 }
 
 /** 回答里的链接是否出自资料：语料里出现的链接与各来源链接（含动态）都算已核实。 */
@@ -481,8 +605,8 @@ function warn(message: string, detail: string): void {
  *
  * 替换只改 `text`（学生看到的回答）：模型原话留在 `modelText`，供下一轮历史使用。
  */
-export function guardTurn(answer: string, departmentId: string): ChatTurn {
-  const guard = guardAnswer(answer, { department: findDepartmentById(departmentId) });
+export function guardTurn(answer: string, departmentId: string, question = ''): ChatTurn {
+  const guard = guardAnswer(answer, { department: findDepartmentById(departmentId), question });
   const turn: ChatTurn = { role: 'assistant', text: guard.text };
   if (guard.note !== '') turn.warning = guard.note;
   if (guard.replaced) {
