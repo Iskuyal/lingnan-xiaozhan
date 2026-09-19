@@ -174,7 +174,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ## AI 云函数（Ticket 01：统一调用入口、内容安全、用量与成本上限）
 
-**状态（2026-09-19 更新）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。**云端侧（2026-09-19）**：函数已部署、两个用量集合与模型环境变量已配；微信内容安全探测在**小程序端**跑通（两条接口 `errcode 0`，记录见下「微信内容安全探测记录」）；**超时已改到 20 秒且端到端已跑通**——`npm run smoke:ai` 返回 `ok=true`、模型输出「链路已通」、`elapsedMs=4600`，用时超过 3 秒而未被截断，故 20 秒配置确实生效（原始输出见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)）。**尚未完成**：数据库侧的密钥外泄抽查、月度上限拦截实测（本节步骤 F）、云函数内存核实、图片路径（`vision`）的真实调用。
+**状态（2026-09-19 更新）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。**云端侧（2026-09-19）**：函数已部署、两个用量集合与模型环境变量已配；微信内容安全探测在**小程序端**跑通（两条接口 `errcode 0`，记录见下「微信内容安全探测记录」）；**超时已改到 20 秒且端到端已跑通**——`npm run smoke:ai` 返回 `ok=true`、模型输出「链路已通」、`elapsedMs=4600`，用时超过 3 秒而未被截断，故 20 秒配置确实生效（原始输出见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)）。**数据库侧无密钥外泄**：控制台抽查 `ai_usage_records` 真实记录只有用量字段；**云函数内存核实为 256MB**（日志 `Memory: 256MB MemUsage: 37.4MB`）。**尚未完成**：月度上限拦截实测（本节步骤 F）、图片路径（`vision`）的真实调用。
 
 这一层是 05（课表截图识别）、06（课表助手）、07（部门问答）的共同前置：三处都只调这一个函数，避免各自重复实现「调模型 + 过内容安全 + 失败降级」。**本票不实现三个 AI 功能本身。**
 
@@ -315,7 +315,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
-**2026-09-19 进展**：A（部署）与 B（集合 + 环境变量）已由负责人在云端完成并经本轮复核；**D（探测）已跑通并回填上表**——微信官方内容安全接口在未认证状态下可用；**C（超时）是当前唯一阻塞项**：`ai` 仍是默认 **3 秒**，实测一次 `chat` 被 `-504003 Invoking task timed out after 3 seconds` 打断（`newsSync` 早已调到 20 秒，照做即可）；E / F 要在 C 做完后重跑。
+**2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**只剩 F（月度上限拦截实测）**；`vision`（截图识别）路径的真实调用另计。
 
 **步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 
@@ -329,12 +329,13 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - **对象**：两个集合；`AI_BASE_URL`、`AI_API_KEY`、`AI_MODEL`、`AI_VISION_MODEL`、`AI_PRICE_*`、`AI_MONTHLY_CAP_YUAN`。
 - **判据**：运行 `{"action":"usage"}`（控制台「测试」页即可，它不碰内容安全）返回 `ok: true`，`usageSummary.capYuan` 为 50、`month` 为当前东八区月份、返回里不出现密钥。**只配密钥不够**：单价必须按中转实际价格填，否则成本上限偏低。本轮实测：`capYuan: 50`、告警线 40、`AI_PRICE_*` = 0.25 元/百万 token（不同于代码默认值 1 / 4，说明确实按中转价格配过）。
 
-**步骤 C：确认云函数超时与内存**（**待办，当前唯一阻塞项**）
+**步骤 C：确认云函数超时与内存**（**已完成，2026-09-19**）
 
 - **动作**：控制台把 `ai` 的超时时间设为 **20 秒**（`newsSync` 已这么设，照做；默认 3 秒会截断模型调用）。CLI 没有超时参数，只能在控制台做。
 - **对象**：云函数 `ai` 的函数配置。
 - **判据**：`cli cloud functions info` 读回 `ai` 的 timeout 为 20；随后 `npm run smoke:ai` 端到端成功（`ok: true` 且 `text` 非空），且 `elapsedMs` 明显小于 20000（`AI_TOTAL_DEADLINE_MS` 默认 15 秒必须小于函数超时）。
-- **实测证据（2026-09-19，3 秒时的现象）**：`npm run smoke:ai` 返回 `cloud.callFunction:fail Error: errCode: -504003 | errMsg: Invoking task timed out after 3 seconds`。
+- **内存判据（2026-09-19 已核实）**：控制台函数日志出现 `Report RequestId: … Duration: 1ms Memory: 256MB MemUsage: 37.4MB`（`timetable` 函数的日志行，同环境函数配置一致）→ 记为 **256MB**。
+- **实测证据**：3 秒时 `npm run smoke:ai` 返回 `cloud.callFunction:fail Error: errCode: -504003 | errMsg: Invoking task timed out after 3 seconds`；2026-09-19 改成 20 秒后同一条冒烟返回 `ok=true`、`elapsedMs=4600`、模型输出「链路已通」（原始输出见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)）。
 
 **步骤 D：跑微信内容安全探测并回填上表**（**已完成**，2026-09-19）
 
@@ -342,13 +343,14 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - **对象**：`probe.checks[]` 两条（`security.msgSecCheck`、`security.imgSecCheck`）与 `probe.valid` / `probe.conclusion` / `probe.recommendedProvider`。
 - **判据**：`probe.valid` 为 `true`；两条都带 `errCode` / `errMsg` / `note`；`errcode 0` 表示该接口可调用；出现 `48001` / `48002` 时才按上面的「切换方式」改 `AI_SAFETY_PROVIDER` 后重跑探测与一次 `chat`（原因是不是「未认证」要由这次探测结论确认，不要先当成事实）。**这条结论必须落到本表**，否则 05/06/07 的内容安全路径没有依据。
 
-**步骤 E：端到端验证一次，并检查密钥外泄**（**待跑**，依赖步骤 C）
+**步骤 E：端到端验证一次，并检查密钥外泄**（**已完成，2026-09-19**）
 
 - **动作**：**从小程序端**跑 `npm run smoke:ai`（它发一句「只回复四个字：链路已通」）；随后读 `ai_usage_records` / `ai_usage_monthly`，并在开发者工具里检查小程序包（`dist` 下 `cloudfunctions/` 之外的 `.js`）与数据库内容。内容安全适配器为 `wechat` 时不能用控制台「测试」页跑 `chat`（见上文「云调用必须由小程序端触发」）。
 - **对象**：一次真实模型调用；两个用量集合；小程序包；数据库。
 - **判据**：返回值 `ok: true` 且 `text` 非空；`ai_usage_records` 新增一条 `kind: "model"`、`ok: true` 的记录并带耗时与 token；`ai_usage_monthly` 的 `calls` 与 `costYuan` 增加；小程序包里搜不到密钥字符串；数据库里搜不到密钥字符串。**这是票面「端到端验证：一句测试文本经模型返回结果，全过程无密钥外泄」的唯一证据来源。**
+- **2026-09-19 实测**：`npm run smoke:ai` 返回 `ok: true`、模型输出「链路已通」；控制台抽查 `ai_usage_records` 一条真实记录，字段为 `_id / action / completionTokens / costYuan / createdAt / durationMs / estimated / failureClass / feature / kind / model / month / ok / promptTokens`，**没有密钥字段也搜不到密钥值**；小程序包一侧由 `tests/ai-bundle.test.cjs` 断言不含密钥。
 
-**步骤 F：核对月度上限真的会拦**（**待跑**，依赖步骤 C）
+**步骤 F：核对月度上限真的会拦**（**仍未执行**）
 
 - **动作**：把 `AI_MONTHLY_CAP_YUAN` 临时改成一个小于当月已花金额的值，再跑一次 `chat`（小程序端），然后把上限改回 50。
 - **对象**：上限判定路径。
@@ -377,13 +379,15 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [x] 数据库安全规则写法：已核实——`news_articles` 用自定义规则 `{"read": true, "write": false}`（预设「所有用户可读」不支持无登录态访问，故不用预设），`sync_state` 用预设「所有用户不可读写」或 `{"read": false, "write": false}`；云函数端属管理端，不受规则限制
 - [x] **云函数定时触发器的配置字段与 cron 格式**（2026-09-18 按官方文档核实，尚未部署验证）：云函数目录下的 `config.json` 声明 `triggers` 数组，**只支持一个触发器**；字段为 `name`（触发周期名，字母开头）、`type`（只支持 `timer`）、`config`（cron 表达式，七个必需字段「秒 分 时 日 月 星期 年」）；**触发器规则的时区为 UTC+8**；同一条定时消息可能被重复推送，需要去重。依据：[定时触发器](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/guide/functions/triggers.html)。本项目的 `cloudfunctions/newsSync/config.json` 即按此写成（`0 0 6 * * * *` = 每天 06:00），**是否真的按配置触发要等部署后观察，见下「Ticket 04 人工步骤」。**
 - [ ] 云开发环境的地域、计费与额度实际值（全量导入的调用量估算见「未决问题」，额度需在控制台核对）
-- [x] **AI 云函数的运行时与超时**（2026-09-19 `cli cloud functions info` 实测运行时 **Nodejs16.13**、状态 Active；**超时已由负责人在控制台改成 20 秒并实测生效**——端到端冒烟耗时 4600ms 未被 `-504003` 截断，见「Ticket 01 人工步骤」步骤 C）。**内存仍未核实**（按图片大小另行确认）
+- [x] **AI 云函数的运行时与超时**（2026-09-19 `cli cloud functions info` 实测运行时 **Nodejs16.13**、状态 Active；**超时已由负责人在控制台改成 20 秒并实测生效**——端到端冒烟耗时 4600ms 未被 `-504003` 截断，见「Ticket 01 人工步骤」步骤 C）。**内存已核实为 256MB**（2026-09-19 控制台函数日志出现 `Memory: 256MB MemUsage: 37.4MB`，为 `timetable` 函数的日志行、同环境函数配置一致，见步骤 C）
 - [ ] **中转（CommandCode）的接口地址、模型名与实际单价**（Ticket 01 只能提供配置项，无公开依据可核实；已从 `usage` 读到 `AI_PRICE_*` 配的是 0.25 元/百万 token，模型名与单价是否与中转实际一致仍待联调确认）
 - [x] **未认证状态下微信内容安全接口是否可用**（**2026-09-19 实测：可用**。小程序端 v2 形态下 `security.msgSecCheck` / `security.imgSecCheck` 均返回 `errcode 0`，记录见「微信内容安全探测记录」表。附带结论：**控制台「测试」页测不了云调用**，必须从小程序端触发）
 
-## 课表云端实施（Ticket 03，待人工部署）
+## 课表云端实施（Ticket 03；2026-09-19 已部署并完成端上验收）
 
 课表导出的解析跑在云函数 `timetable` 侧：客户端把选中的文件上传到**本人 openid 专属的云存储路径**，云函数下载 → 用 `xlsx` 解析成草稿 → **删除临时文件**；确认页确认后才写库。函数同时承担个人课表的读取与手工增删改，全部按调用上下文的 openid 过滤，客户端不直连数据库。截图识别（Ticket 05）复用同一条上传路径，识别由 `ai` 云函数的 `vision` 动作完成。
+
+**状态（2026-09-19）**：集合 `timetable_courses`、云函数 `timetable` 与环境级函数权限（`timetable` 允许已登录用户调用，`newsSync` 仍为 `false`）已由负责人在控制台完成；负责人用真实样本在开发者工具走完导入并完成端上验收，逐项结果见下「部署后可验证的判据（人工）」，原始输出见 [Ticket 03 验证记录](evidence/p4-b/README.md#2026-09-19-云端端上验收)。**云存储权限与函数超时两项控制台配置本次未复核**，仍按未验证处理。
 
 **文件标识统一用 fileID**：客户端 `wx.cloud.uploadFile` 返回的 `cloud://…` 才是 fileID；`prepareUpload` / `preparePhotoUpload` 返回的 `cloudPath` 只是相对路径，只能交给 `uploadFile` 当上传目标。`importDraft` / `discardUpload` 接收的是 `fileID`，云函数**从 fileID 里解析出云存储路径**再校验「属于调用者 openid 前缀」（fileID 里的环境信息不参与比较），解析不出路径或不在本人前缀下都明确拒绝。把裸 cloudPath 当 fileID 传会在 `cloud.downloadFile` 处失败——那是 Ticket 03 的老写法，已修正并补了回归测试。
 
@@ -421,45 +425,47 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 
 ### 人工步骤（动作 / 对象 / 判据）
 
-以下都是控制台操作，代码侧无法完成。**未完成前，小程序里的课表页会显示「课表服务暂时不可用」**，其它模块不受影响。
+以下都是控制台操作，代码侧无法完成。**第 1–3 项（集合、云函数部署、函数权限）已于 2026-09-19 由负责人完成**，课表页已能正常读到数据；**第 4、5 项（云存储权限、超时）本次未复核**。
 
-1. **创建集合**
+1. **创建集合**（**已完成，2026-09-19 复核**）
    - 动作：在云开发控制台「数据库」新建集合 `timetable_courses`。
    - 对象：环境 `cloudbase-d2gjtbbwu3575cd7b` 的数据库。
    - 判据：集合列表里能看到它；权限为**最严格预设「所有用户不可读写」**（或自定义 `{"read": false, "write": false}`）。在开发者工具里用 `wx.cloud.database().collection('timetable_courses').get()` 应返回 `DATABASE_PERMISSION_DENIED`——客户端直连被拒是这一票的隔离要求之一。
 
-2. **部署云函数**
+2. **部署云函数**（**已完成，2026-09-19 复核**）
    - 动作：在开发者工具里右键 `dist/cloudfunctions/timetable`（或 CLI `cloud functions deploy --name timetable --remote-npm-install`）部署，**必须勾选/使用云端安装依赖**：该函数依赖 `wx-server-sdk@4.0.2` 与 `xlsx@0.18.5`。
    - 对象：云函数 `timetable`。
    - 判据：控制台「云函数 → timetable → 测试」运行 `{"action":"list"}` 返回 `ok: true, count: 0`（首次、无数据时）；运行 `{"action":"prepareUpload","fileName":"a.txt"}` 返回 `ok: false` 且提示只支持 `.xls/.xlsx`；运行 `{"action":"preparePhotoUpload","fileName":"a.gif"}` 返回 `ok: false` 且提示只支持 `.png/.jpg`。
    - **升级注意（Ticket 05 两轴复核）**：`importDraft` / `discardUpload` 的参数已从裸 `cloudPath` 改为 `fileID`（`cloud://…`），**客户端与云函数必须一起部署**。只更新一边会让导入直接失败：新客户端 + 老函数会被「参数不合法」拒（老函数把 `fileID` 当 `cloudPath` 校验，前缀不匹配），老客户端 + 新函数会被「请传入 fileID」拒。
 
-3. **函数调用权限**
+3. **函数调用权限**（**已完成，2026-09-19 复核**）
    - 动作：仍在「云函数 → 权限控制」的环境级 JSON 里**只新增** `timetable` 一条，值与环境里 `*` 的表达式一致（例如 `"auth != null && auth.loginType != 'ANONYMOUS'"`）；**不要**把它设成 `false`——`timetable` 必须允许小程序端调用，隔离靠函数内的 openid 过滤，而不是靠禁止调用。
    - 对象：环境级函数安全规则 JSON（与 `newsSync: {"invoke": false}` 并列）。
    - 判据：小程序端 `wx.cloud.callFunction({name:'timetable', data:{action:'list'}})` 返回 `ok: true`；同时 `newsSync` 仍然返回 `-501023 permission denied`（不能改动既有规则）。
 
-4. **云存储权限**
+4. **云存储权限**（**本次未复核**）
    - 动作：控制台「存储 → 权限设置」把默认权限改为**「仅创建者可读写」**（如需自定义规则则用 `resource.openid == auth.openid` 限定）。本次导入只写入 `timetable-imports/<openid 哈希>/` 下的临时文件。
    - 对象：环境云存储的整体权限（云存储规则不能按目录分别配置）。
    - 判据：小程序端用 `wx.cloud.getTempFileURL` 读取**别人**上传的文件应被拒；云函数（管理端）仍能 `downloadFile` 与 `deleteFile`。
 
-5. **函数超时（建议 20 秒）**
+5. **函数超时（建议 20 秒）**（**本次未复核**）
    - 动作：控制台「云函数 → timetable → 配置」把超时从默认 3 秒调到 20 秒。
    - 对象：云函数 `timetable` 的超时配置。
    - 判据：用小程序上传一份真实样本（约 20KB）能解析成功；解析本身的耗时量级很小（实现时在本机对 4 份样本各测一次为 1–13 毫秒，**该测量未纳入自动化验证记录**），耗时主要在下载与冷启动，20 秒足够。
 
 ### 部署后可验证的判据（人工）
 
-| 验收项 | 判据 |
-| --- | --- |
-| 导入走通 | 在开发者工具里把 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 发给文件传输助手 → 导入页选择它 → 确认页显示 15 门课程、0 条待核对 → 保存后周课表出现课程 |
-| 解析不写库 | 在确认页点「放弃导入」，`timetable_courses` 集合仍为空（或保持原样） |
-| 临时文件删除 | 解析完成后「存储」里 `timetable-imports/` 下没有残留文件 |
-| 周次切换 | 周课表切到第 8 周能看到 8-17 周的课，切到第 7 周看不到（样本里 `[2-6,8-17]周`） |
-| 退出重进 | 杀掉小程序重进课表页，课程仍在 |
-| 手工三条路径 | 新增一门课并出现在周课表；修改后展示更新；删除后消失 |
-| 用户隔离 | 换另一个微信号进入课表页，看不到前一个账号的课程 |
+状态列按 2026-09-19 的云端端上验收填写；原始输出见 [Ticket 03 验证记录](evidence/p4-b/README.md#2026-09-19-云端端上验收)。
+
+| 验收项 | 判据 | 状态（2026-09-19） |
+| --- | --- | --- |
+| 导入走通 | 在开发者工具里把 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 发给文件传输助手 → 导入页选择它 → 确认页显示 15 门课程、0 条待核对 → 保存后周课表出现课程 | **通过**：负责人用该样本走完导入（选文件仍为人工）；云端 15 门课程，课表页元信息「2026-2027学年第一学期 · 共 15 门课程」，`{"action":"list"}` 返回 `ok=true, count=15` |
+| 解析不写库 | 在确认页点「放弃导入」，`timetable_courses` 集合仍为空（或保持原样） | **未验证**：放弃路径未在真实云端点过 |
+| 临时文件删除 | 解析完成后「存储」里 `timetable-imports/` 下没有残留文件 | **未验证**：云存储是否残留未核对 |
+| 周次切换 | 周课表切到第 8 周能看到 8-17 周的课，切到第 7 周看不到（样本里 `[2-6,8-17]周`） | **通过**：负责人截图——第 8 周出现 `[8-17]周` 的《使用JSP开发Web应用系统》《软件工程（基于面向对象的软件设计）》等，第 7 周没有（只有 `[2-15]周` 的《军事理论》等） |
+| 退出重进 | 杀掉小程序重进课表页，课程仍在 | **通过**：每次 `reLaunch` 课表页都从云端读到 15 门（`ok=true`） |
+| 手工三条路径 | 新增一门课并出现在周课表；修改后展示更新；删除后消失 | **通过**：维护者脚本从模拟器调用，每次用临时课程——新增后 `count 15→16`；只提交 `teacher` 与 `location` 的部分更新未清空学分/备注/校区/场地编号/周次/星期；删除后 `count` 回到 15，结束后计数已还原、临时数据已清理 |
+| 用户隔离 | 换另一个微信号进入课表页，看不到前一个账号的课程 | **未验证**：需要一个第二微信号 |
 
 ## P3 云端验收清单
 
@@ -533,7 +539,8 @@ Ticket 04 改的是代码与配置，验证要在云上做。以下步骤本轮*
 - 2026-09-18（Ticket 05 课表截图识别导入与校对，**仅本地**）：导入页新增「拍照或从相册选择课表截图」入口（选图 → 压缩 → `preparePhotoUpload` → 上传 → `ai` 的 `vision` → 识别 JSON 解析为草稿 → 复用 03 的确认页与 `saveDraft`）；`source` 新增 `photo`（两端契约同步）；截图识别后删除云存储临时文件；三类独立失败文案。**未部署、未真机验证**，人工步骤见上「课表云端实施」。
 - 2026-09-18（Ticket 05 两轴复核修复，**仅本地**）：截图格式改为**按文件头判定**（读不到字节才退回路径扩展名，两者都拿不到就明确拒绝并给可读提示）——相机与 `wx.compressImage` 的产物常是 JPEG，原先恒传 `课表截图.png` 会让 `imgSecCheck` 与模型的 `media_type` 与实际内容不符；上传/下载/识别统一用 `wx.cloud.uploadFile` 返回的 **fileID**，`importDraft` / `discardUpload` 的参数从裸 `cloudPath` 改为 `fileID`，云函数从 fileID 解析出云存储路径再校验 openid 前缀（**Ticket 03 的 Excel 路径是同一处老写法，一并修正；客户端与云函数必须一起部署**）；周次留空不再静默当成「每周」，只有模型显式 `everyWeek` 才算（页面按待核对展示）；图片被拒的文案与文字语义的「换个说法」分开（服务端新增 `AI_MSG_CONTENT_REJECTED_IMAGE`，客户端兜底按输入类型区分）；截图识别不再把字段拼成合成「原文」。测试见 [p5-b 记录](evidence/p5-b/README.md)。
 - 2026-09-19（Ticket 01 云端收尾 + 探测路径修复）：`ai` 云函数已部署（Active / Nodejs16.13，11 个文件 / 42.4 KB），两个用量集合与模型环境变量已就绪（`usage` 返回 capYuan 50、告警线 40、单价 0.25 元/百万 token）。**微信内容安全探测改从控制台移到小程序端后跑通**：v2 形态下 `security.msgSecCheck` / `security.imgSecCheck` 均返回 `errcode 0`——未认证小程序可用官方云调用，`AI_SAFETY_PROVIDER` 保持默认 `wechat`，不需要第三方审核密钥。为此修掉一处会误导决策的缺陷：平台错误码 `-501001` / `-501007`（云调用未从小程序端触发）此前会被读成「微信接口不可用」并建议切第三方，现在探测记录带 `valid` / `invalidReason`，**无效测量不切换适配器**，错误码表补上这两个平台码并写明触发限制，新增 2 项测试（`npm test` 296 项全过）。新增两个小程序端入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（端到端）。
-- 2026-09-19（Ticket 01 端到端跑通）：负责人在控制台把 `ai` 超时从默认 3 秒改成 **20 秒**，随后 `npm run smoke:ai` 从小程序端真实调用一次**成功**：`ok=true`、模型输出「链路已通」、`elapsedMs=4600`（超过 3 秒且未被截断，证明新超时生效）、内容安全 `provider=wechat checked=true passed=true errcode=0`、用量 105 token 已记账且当月累计可查。原始输出与「这次证明了什么、仍缺什么」见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)。**仍未完成**：数据库侧密钥外泄抽查、上限拦截实测（步骤 F）、内存核实、图片路径真实调用。
+- 2026-09-19（Ticket 01 端到端跑通）：负责人在控制台把 `ai` 超时从默认 3 秒改成 **20 秒**，随后 `npm run smoke:ai` 从小程序端真实调用一次**成功**：`ok=true`、模型输出「链路已通」、`elapsedMs=4600`（超过 3 秒且未被截断，证明新超时生效）、内容安全 `provider=wechat checked=true passed=true errcode=0`、用量 105 token 已记账且当月累计可查。原始输出与「这次证明了什么、仍缺什么」见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)。**数据库侧抽查确认 `ai_usage_records` 无密钥字段与密钥值；云函数内存核实为 256MB**（日志 `Memory: 256MB MemUsage: 37.4MB`）。**仍未完成**：上限拦截实测（步骤 F）、图片路径（`vision`）真实调用。
+- 2026-09-19（Ticket 03 云端端上验收）：负责人在控制台完成集合 `timetable_courses`、云函数 `timetable` 部署与环境级函数权限（`timetable` 允许已登录用户调用，`newsSync` 仍为 `false`）；用真实样本 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 走完导入（选文件仍为人工），云端 **15 门课程**。端上验收覆盖：周次切换（第 8 周出现 `[8-17]周` 的课、第 7 周没有）、退出重进（每次 `reLaunch` 都从云端读到 15 门）、手工新增/修改/删除三条路径（临时课程，结束后计数还原并清理）；`npm run verify:wechat` **18 项全过**（课表页显示「已就绪」，部门问答两项为真实回答），`npm test` **297 项全过**。**仍未验证**：两个微信号的用户隔离、放弃导入不写库、临时文件解析后删除、云存储权限与函数超时配置复核。证据见 [Ticket 03 验证记录](evidence/p4-b/README.md#2026-09-19-云端端上验收)。
 
 ### 3 秒超时：默认同步量已经贴到上限（已解决，保留记录）
 
