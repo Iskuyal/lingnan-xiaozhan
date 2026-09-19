@@ -27,6 +27,11 @@ import { callModel, requestJson } from './providers';
  * 官方文档口径是「云调用需要在函数目录的 `config.json` 里声明 `permissions.openapi`」，
  * 缺声明时**可能**返回 48001——本项目尚未实测（探测动作 `{"action":"probe"}` 的结论回填前，
  * 48001/48002/61010 与具体原因的对应关系都只是待验证的假设，不是既成事实）。
+ *
+ * **云调用还有一个前置条件（2026-09-18 已实测到它的反例）**：云调用必须由**小程序端**触发。
+ * 云开发控制台的「测试」页、CLI、HTTP 触发、云函数互调都不会带上小程序侧的云调用票据，
+ * 因此这些方式下调用必然返回 `-501001`；这条结果**不是**「微信接口不可用」的证据。
+ * 官方依据见 {@link WECHAT_ERRCODE_NOTES} 里 -501001 的说明。
  */
 export interface WechatSecurityApi {
   msgSecCheck(params: Record<string, unknown>): Promise<unknown>;
@@ -52,6 +57,16 @@ export const WECHAT_ERRCODE_NOTES: Record<string, string> = {
   48001: 'api 未授权：该接口未获得调用权限（官方文档提到未声明 openapi 权限会返回它；未认证小程序是否必然返回 48001 **未实测**，以探测结论为准）',
   48002: 'api 禁止调用：接口被禁（账号类型或审核状态限制，**未实测**）',
   61010: '用户访问记录超时：v2 接口要求 openid 对应的用户近期访问过小程序（**未实测**，以探测结论为准）',
+  // 以 -5 开头的码来自**云开发平台（CloudBase）**，不是微信开放接口的错误码；语义与排查方向都不同，
+  // 因此单独成组：它们说的是「这次调用怎么发起的」，不是「接口能不能用」。
+  '-501001': '云调用鉴权失败（CloudBase `INVALID_WX_ACCESS_TOKEN`）：本次调用没有小程序侧的云调用票据。'
+    + '官方原文为「云调用鉴权失败，未从小程序端触发使用云调用的云函数」——'
+    + '**控制台「测试」页、CLI、HTTP 触发、云函数互调都不会带上票据，必然返回此码**；'
+    + '云调用必须由小程序端触发（开发者工具模拟器或真机）。'
+    + '2026-09-18 本次实测与该口径一致（控制台触发，两条接口同为 -501001）；'
+    + '**若从小程序端触发仍返回此码**，才轮到核查环境与小程序的绑定、函数 `config.json` 的 openapi 声明。',
+  '-501007': '参数无效（CloudBase `INVALID_PARAMETERS`）：若 detail 写着 `missing wxCloudApiToken`，'
+    + '含义与 -501001 相同——本次调用没有云调用票据，不是从小程序端触发的（官方 FAQ「遇到 missing wxCloudApiToken 报错是怎么回事」）',
 };
 
 export function wechatErrcodeNote(errCode: number): string {

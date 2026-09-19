@@ -8,6 +8,12 @@
  * `security.msgSecCheck` / `security.imgSecCheck`，把 errcode / errmsg 原样记录下来。
  * 结论由维护者粘贴进 docs/cloud-development.md 的探测记录表。
  *
+ * **触发方式决定结果是否有效**：云调用要求调用方带上小程序侧的票据，
+ * 控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，必然返回 -501001——
+ * 那条结果说明「触发方式不对」，**不是**「接口不可用」。这类结果记 `valid: false`
+ * （见 {@link CONTEXT_MISSING_ERRCODES}），不得据此切换适配器。
+ * 小程序端的执行入口是 `npm run probe:wechat`（scripts/probe-wechat.cjs）。
+ *
  * 刻意不做的事：**不发违规文本**。刻意不验的事：违规内容会不会被拦——
  * 那属于接口语义，靠官方错误码表（见 safety.ts 的 WECHAT_ERRCODE_NOTES）+ 桩测试覆盖，
  * 用真实违规内容去试既不必要也不合适。
@@ -40,9 +46,26 @@ export const DECLARED_OPENAPI: string[] = ['security.msgSecCheck', 'security.img
 /** 探测用超时（毫秒）：探测也不能无限挂起，控制台里要能在一次云函数超时内拿到结论。 */
 export const PROBE_TIMEOUT_MS = 5000;
 
+/**
+ * 「本次调用没有小程序侧云调用票据」的平台错误码。
+ *
+ * 以 `-5` 开头的是**云开发平台（CloudBase）**的码，不是微信开放接口的码：它们描述的是
+ * 「这次调用怎么发起的」，而不是「接口能不能用」。出现它们时探测结论**无效**——
+ * 控制台「测试」页、CLI、HTTP 触发、云函数互调都不会带上票据，必然踩中；
+ * 只有从小程序端触发才可能拿到真实 errcode。依据见 safety.ts 的 WECHAT_ERRCODE_NOTES。
+ */
+export const CONTEXT_MISSING_ERRCODES: number[] = [-501001, -501007];
+
+export function isContextMissing(errCode: number): boolean {
+  return CONTEXT_MISSING_ERRCODES.includes(errCode);
+}
+
 function noteFor(outcome: WechatOutcome): string {
   if (outcome.errCode === 0) return wechatErrcodeNote(0);
   const base = wechatErrcodeNote(outcome.errCode);
+  if (isContextMissing(outcome.errCode)) {
+    return `${base}；**本次探测无效**：云调用必须由小程序端触发，请用 \`npm run probe:wechat\`（开发者工具模拟器）或真机重跑后再回填结论`;
+  }
   if (outcome.timedOut) {
     return `${base}；**本次为调用超时**（未在边界内返回）：接口可能不可用，稍后重试或改配置`;
   }
@@ -119,16 +142,27 @@ export async function runProbe(options: ProbeOptions = {}): Promise<ProbeResult>
     }), judgeImgSecCheck, timeoutMs));
   }
 
+  // 没有小程序侧票据时，两条检查的报错都只是「触发方式不对」，不构成接口可用性的证据。
+  const contextMissing = checks.some((check) => isContextMissing(check.errCode));
+  const valid = !contextMissing;
   const textOk = checks.some((check) => check.api === 'security.msgSecCheck' && check.verdict === 'pass');
   const imageOk = checks.some((check) => check.api === 'security.imgSecCheck' && check.verdict === 'pass');
-  const recommendedProvider = textOk && imageOk ? 'wechat' : 'openai';
-  const conclusion = textOk && imageOk
-    ? '微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。'
-    : textOk || imageOk
-      ? `微信官方内容安全接口部分可用（文本${textOk ? '可用' : '不可用'}、图片${imageOk ? '可用' : '不可用'}）：`
-        + '本轮适配器一次只选一个，建议切第三方（AI_SAFETY_PROVIDER=openai 或 anthropic）覆盖文字与图片两条路径。'
-      : '微信官方内容安全接口不可用：切第三方审核适配器（AI_SAFETY_PROVIDER=openai 或 anthropic），'
-        + '并确认 AI_SAFETY_BASE_URL / AI_SAFETY_API_KEY / AI_SAFETY_MODEL 已配置。';
+  // 无效测量不切换适配器：默认值 wechat 是负责人的定案，改它要有真实测量作依据。
+  const recommendedProvider = valid && !(textOk && imageOk) ? 'openai' : 'wechat';
+  const invalidReason = contextMissing
+    ? '本次调用没有小程序侧的云调用票据：控制台「测试」页、CLI、HTTP 触发、云函数互调都不会带上它，'
+      + `微信接口的可用性没有被测到（错误码 ${checks.map((check) => check.errCode).join(' / ')}）。`
+      + '请从小程序端重跑（npm run probe:wechat），再据此回填结论。'
+    : '';
+  const conclusion = !valid
+    ? `本次探测无效：${invalidReason}`
+    : textOk && imageOk
+      ? '微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。'
+      : textOk || imageOk
+        ? `微信官方内容安全接口部分可用（文本${textOk ? '可用' : '不可用'}、图片${imageOk ? '可用' : '不可用'}）：`
+          + '本轮适配器一次只选一个，建议切第三方（AI_SAFETY_PROVIDER=openai 或 anthropic）覆盖文字与图片两条路径。'
+        : '微信官方内容安全接口不可用：切第三方审核适配器（AI_SAFETY_PROVIDER=openai 或 anthropic），'
+          + '并确认 AI_SAFETY_BASE_URL / AI_SAFETY_API_KEY / AI_SAFETY_MODEL 已配置。';
 
   const record: ProbeRecord = {
     probedAt: now.toISOString(),
@@ -137,11 +171,14 @@ export async function runProbe(options: ProbeOptions = {}): Promise<ProbeResult>
     openidPresent: openid !== '',
     declaredOpenApi: DECLARED_OPENAPI.slice(),
     checks,
+    valid,
+    invalidReason,
     conclusion,
     recommendedProvider,
   };
   return {
     ok: textOk && imageOk,
+    valid,
     record,
     conclusion,
     recommendedProvider,

@@ -5,7 +5,8 @@
 - 参加 AI 微信小程序开发挑战赛，以“微信小程序能力 + AI 能力 + 真实业务场景”为产品目标。
 - 仓库为 `Iskuyal/wx-match`，初始化为私有；仓库代号不代表正式作品名称。
 - 使用 GitHub Issues 管理阶段任务；当前 9 张执行票按负责人要求保存在 [本地 Ticket](docs/tasks/tickets/README.md)，规则见 [任务管理约定](docs/agents/issue-tracker.md)。单一领域上下文配合 ADR 记录决策。
-- 当前 P1 首页入口、P2 部门列表与详情、P3-1 云端资讯链路已实现，真实 AppID 已配置；开发者工具验证见 `docs/evidence/p1/README.md` 与 `docs/evidence/p2-p3/README.md`。课表导入、AI、真机预览与上线仍未完成；教务账号接入已取消。
+- 当前 P1 首页入口、P2 部门列表与详情、P3-1 云端资讯链路已实现，真实 AppID 已配置；开发者工具验证见 `docs/evidence/p1/README.md` 与 `docs/evidence/p2-p3/README.md`。课表导入、真机预览与上线仍未完成；教务账号接入已取消。
+- **P5 AI 云函数（Ticket 01）已部署并有云端证据（2026-09-19）**：微信官方内容安全接口在未认证小程序下实测可用（小程序端 v2 形态两条接口 `errcode 0`，见 [云开发文档](docs/cloud-development.md#微信内容安全探测记录)），默认 `AI_SAFETY_PROVIDER=wechat` 不需要第三方审核密钥；**只剩一步人工**——控制台把 `ai` 云函数超时从默认 3 秒改成 20 秒，改完 `npm run smoke:ai` 即可跑通端到端。**AI 三处落点的代码（部门问答 07、课表截图识别 05、课表助手 06）均已合入 main**，但真机与人工验收、各自的评估清单都还没跑，见 [P5-B 验证记录](docs/evidence/p5-b/README.md)。
 - 主题为“AI 赋能校园生活”，目标用户覆盖普通学生与学生组织，产品为整合校园信息流的微信小程序。
 - 交付平台明确为微信小程序：采用原生框架 + TypeScript/WXML/WXSS，P3 起引入微信云开发；理由与约束见 `docs/adr/0001-native-wechat-typescript.md`。
 - 云开发环境已开通（环境 ID `cloudbase-d2gjtbbwu3575cd7b`，与项目 AppID 关联）；云函数与数据库已完成，接入方式、数据模型、权限和审查修复的部署状态见 `docs/cloud-development.md`。

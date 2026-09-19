@@ -780,6 +780,8 @@ test('探测动作：两个接口都可用时结论为可用，并给出可粘�
   const harness = createHarness({ security: wechatOk(), env: { AI_BASE_URL: '', AI_API_KEY: '', AI_MODEL: '' } });
   const result = await harness.main({ action: 'probe' });
   assert.equal(result.ok, true, '未配置模型密钥也应能探测');
+  assert.equal(result.probe.valid, true, '从小程序端触发才算有效测量');
+  assert.equal(result.probe.invalidReason, '');
   assert.equal(result.probe.checks.length, 2);
   for (const check of result.probe.checks) {
     assert.equal(check.errCode, 0);
@@ -789,7 +791,49 @@ test('探测动作：两个接口都可用时结论为可用，并给出可粘�
   assert.ok(result.probe.conclusion.includes('可调用'));
   const pasted = JSON.parse(result.detail);
   assert.equal(pasted.checks.length, 2, '粘贴行应是完整记录的 JSON');
+  assert.equal(pasted.valid, true, '粘贴行要带上有效性');
   assert.deepEqual(pasted.declaredOpenApi.slice().sort(), ['security.imgSecCheck', 'security.msgSecCheck']);
+});
+
+test('探测动作：控制台触发拿到 -501001 时标为无效测量，不得据此切第三方', async () => {
+  // CloudBase 口径：-501001 = 云调用鉴权失败，未从小程序端触发使用云调用的云函数。
+  // 这种结果只说明触发方式不对，不是「微信接口不可用」——2026-09-18 真机上就是这么误报的。
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: () => Promise.reject({ errCode: -501001, errMsg: 'invalid wx openapi access_token' }),
+      imgSecCheck: () => Promise.reject({ errCode: -501001, errMsg: 'invalid wx openapi access_token' }),
+    }),
+    env: { AI_BASE_URL: '', AI_API_KEY: '', AI_MODEL: '' },
+  });
+  const result = await harness.main({ action: 'probe' });
+  assert.equal(result.ok, false, '没测出可用就是没测出');
+  assert.equal(result.probe.valid, false, '必须标成无效测量');
+  assert.equal(result.failureClass, '', '探测本身不是失败');
+  assert.equal(result.probe.valid, false);
+  assert.ok(result.probe.invalidReason.includes('小程序端'), `要写明正确触发方式：${result.probe.invalidReason}`);
+  assert.equal(result.probe.recommendedProvider, 'wechat', '无效测量不得改变默认适配器');
+  assert.ok(result.probe.conclusion.startsWith('本次探测无效'), `结论先讲无效：${result.probe.conclusion}`);
+  assert.ok(!result.probe.conclusion.includes('切第三方'), '不得据无效测量建议切第三方');
+  assert.equal(result.message, result.probe.conclusion, '控制台看到的 message 要带上无效说明');
+  const text = result.probe.checks.find((check) => check.api === 'security.msgSecCheck');
+  assert.equal(text.errCode, -501001);
+  assert.ok(text.note.includes('本次探测无效'), `错误码说明要点出无效：${text.note}`);
+  assert.ok(text.note.includes('npm run probe:wechat'), '说明里要给出小程序端的跑法');
+  assert.equal(JSON.parse(result.detail).valid, false, '粘贴行要带上有效性，回填文档时不会漏');
+});
+
+test('探测动作：missing wxCloudApiToken（-501007）同样按无效测量处理', async () => {
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: () => Promise.reject({ errCode: -501007, errMsg: 'missing wxCloudApiToken' }),
+      imgSecCheck: () => Promise.reject({ errCode: -501007, errMsg: 'missing wxCloudApiToken' }),
+    }),
+    env: { AI_BASE_URL: '', AI_API_KEY: '', AI_MODEL: '' },
+  });
+  const result = await harness.main({ action: 'probe' });
+  assert.equal(result.probe.valid, false);
+  assert.equal(result.probe.recommendedProvider, 'wechat');
+  assert.ok(result.probe.conclusion.startsWith('本次探测无效'));
 });
 
 test('探测动作：未认证导致 48001 时记录错误码并建议切第三方', async () => {
@@ -801,6 +845,7 @@ test('探测动作：未认证导致 48001 时记录错误码并建议切第三�
   });
   const result = await harness.main({ action: 'probe' });
   assert.equal(result.ok, false, '接口不可用时探测结论为不可用');
+  assert.equal(result.probe.valid, true, '48001 是微信接口的真实答复，属于有效测量');
   assert.equal(result.failureClass, '', '探测本身不是失败');
   assert.equal(result.probe.recommendedProvider, 'openai');
   assert.ok(result.probe.conclusion.includes('第三方'), `结论应给出切换建议：${result.probe.conclusion}`);
