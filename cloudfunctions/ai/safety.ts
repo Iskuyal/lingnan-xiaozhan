@@ -17,7 +17,7 @@
  * `checked: false` 并写明模式，调用方与日志不得把「跳过」读成「通过」。
  */
 import { Config, ModelTarget, resolveSafetyTarget } from './config';
-import { AiFailure, describeError, fail, failTimeout, redactSecrets } from './errors';
+import { AiFailure, describeError, fail, failTimeout, redactSecrets, safetyQuotaMessage } from './errors';
 import { isTimeoutError, withTimeout } from './http';
 import { ConversationMessage, NormalizedImage, SafetyReport, TokenUsage } from './types';
 import { callModel, requestJson } from './providers';
@@ -40,6 +40,19 @@ export interface WechatSecurityApi {
 
 /** 微信云调用可能 resolve 也可能 reject（违规内容常以错误码返回），两种都收在这里。 */
 export type WechatCall = { ok: true; response: unknown } | { ok: false; error: unknown };
+
+/**
+ * 内容安全侧的**配额类**错误码：目前只有实测过的 45009（当日调用配额用尽）。
+ *
+ * 只放实测过的码。新增必须先在云上撞到并记录，不按猜测扩充——
+ * 归错类的代价不是少一条日志，而是给用户一条错的下一步（见 `unavailable` 的 quota 分支）。
+ */
+export const WECHAT_QUOTA_ERRCODES: number[] = [45009];
+
+/** 这个错误码是不是「检测配额用尽」。 */
+export function isQuotaErrcode(errCode: number): boolean {
+  return WECHAT_QUOTA_ERRCODES.includes(errCode);
+}
 
 /**
  * 微信错误码说明。只列与内容安全相关的常见码，供探测结论与排查使用；
@@ -216,8 +229,13 @@ function outcome(options: {
  * 「内容安全检测不可用」的处置：默认挡住（closed）。可配置为放行，
  * 但报告里会写明「未检测」且 `checked: false`，不会让调用方以为已经检过。
  *
- * 超时单独处理：它不是配置错，而是**可重试**的临时故障，因此 closed 下归入
- * 「模型不可用或超时」（`model_unavailable`）而不是 `internal`。
+ * 两种成因单独分类，因为它们的**下一步不同**：
+ * - 超时：临时故障、可重试 → 归「模型不可用或超时」（`model_unavailable`）；
+ * - 配额用尽（微信 45009 / 第三方 402）：再试也不会好，但会恢复 → 归「额度或配额用尽」
+ *   （`quota_exhausted`），文案与月度上限分开（见 `safetyQuotaMessage`）。
+ *   归成 `internal` 会让页面说「AI 服务开小差了，请稍后重试」——用户按这条建议立刻重试，
+ *   只会一直失败，真正的选择是等次日或换审核方式（2026-09-19 实测踩到过这个分类缺口）。
+ * 其余（配置、权限、票据）才是 `internal`。
  */
 function unavailable(
   config: Config,
@@ -225,7 +243,7 @@ function unavailable(
   api: string,
   detail: string,
   durationMs: number,
-  options: { timedOut?: boolean } = {},
+  options: { timedOut?: boolean; quotaExhausted?: boolean } = {},
 ): SafetyOutcome {
   const timedOut = options.timedOut === true;
   const note = `内容安全检测不可用：${detail}`;
@@ -234,6 +252,11 @@ function unavailable(
       provider, api, passed: true, checked: false,
       detail: `${note}（AI_SAFETY_FAIL_MODE=open，已放行未检测内容；检查项 checked=false）`,
       rejected: false, model: api, usage: null, durationMs,
+    });
+  }
+  if (options.quotaExhausted === true) {
+    throw new AiFailure('quota_exhausted', `${note}（AI_SAFETY_FAIL_MODE=closed，拒绝调用）`, {
+      message: safetyQuotaMessage(),
     });
   }
   if (timedOut) {
@@ -251,6 +274,15 @@ function reviewPolicy(config: Config): { rejected: boolean; detail: string } {
 function safetyTimeoutMs(config: Config, asked: number | undefined): number {
   const base = typeof asked === 'number' && Number.isFinite(asked) && asked > 0 ? asked : config.safety.timeoutMs;
   return Math.max(1000, Math.floor(Math.min(base, config.safety.timeoutMs)));
+}
+
+/**
+ * 捕获到的异常是不是「检测服务额度/配额用尽」。
+ * 第三方适配器把 402 归到 `quota_exhausted`（见 providers 的 `classifyHttpStatus`），
+ * 这里保住这个分类往上传，不要被「检测不可用」的兜底冲成 `internal`。
+ */
+function isQuotaFailure(error: unknown): boolean {
+  return error instanceof AiFailure && error.failureClass === 'quota_exhausted';
 }
 
 /**
@@ -284,7 +316,10 @@ async function wechatText(config: Config, input: TextCheckInput): Promise<Safety
   const durationMs = Date.now() - startedAt;
   const form = openid === '' ? 'v1（无 openid）' : `v2（scene=${config.safety.scene}）`;
   if (judged.verdict === 'error') {
-    return unavailable(config, 'wechat', 'security.msgSecCheck', `${form}｜${judged.detail}`, durationMs, { timedOut: judged.timedOut });
+    return unavailable(config, 'wechat', 'security.msgSecCheck', `${form}｜${judged.detail}`, durationMs, {
+      timedOut: judged.timedOut,
+      quotaExhausted: isQuotaErrcode(judged.errCode),
+    });
   }
   if (judged.verdict === 'reject') {
     return outcome({
@@ -319,7 +354,10 @@ async function wechatImage(config: Config, input: ImageCheckInput): Promise<Safe
   const judged = judgeImgSecCheck(call);
   const durationMs = Date.now() - startedAt;
   if (judged.verdict === 'error') {
-    return unavailable(config, 'wechat', 'security.imgSecCheck', judged.detail, durationMs, { timedOut: judged.timedOut });
+    return unavailable(config, 'wechat', 'security.imgSecCheck', judged.detail, durationMs, {
+      timedOut: judged.timedOut,
+      quotaExhausted: isQuotaErrcode(judged.errCode),
+    });
   }
   return outcome({
     provider: 'wechat',
@@ -390,6 +428,7 @@ async function thirdPartyCheck(
     const detail = error instanceof AiFailure ? error.detail : describeError(error);
     return unavailable(config, target.format, api, redactSecrets(detail, [target.apiKey]), Date.now() - startedAt, {
       timedOut: isTimeoutError(error),
+      quotaExhausted: isQuotaFailure(error),
     });
   }
   const parsed = parseModerationJson(result.text);
@@ -437,6 +476,7 @@ async function openAiModerations(
     const detail = error instanceof AiFailure ? error.detail : describeError(error);
     return unavailable(config, target.format, api, redactSecrets(detail, [target.apiKey]), Date.now() - startedAt, {
       timedOut: isTimeoutError(error),
+      quotaExhausted: isQuotaFailure(error),
     });
   }
   const results = payload !== null && typeof payload === 'object' ? (payload as { results?: unknown }).results : undefined;
