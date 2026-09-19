@@ -239,7 +239,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `AI_BASE_URL` | 无（必填） | OpenAI 兼容接口根地址，**中转的实际地址以服务商为准** |
 | `AI_API_KEY` | 无（必填） | 模型密钥；不写进代码、数据库、小程序包与文档 |
 | `AI_MODEL` | 无（必填） | 文本模型名；**中转的模型名未实测**（AI 资讯实测用的是官方 `deepseek-flash`），按服务商实际值填 |
-| `AI_VISION_MODEL` | 取 `AI_MODEL` | 多模态模型名 |
+| `AI_VISION_MODEL` | 取 `AI_MODEL` | 多模态模型名。**当前部署值待与负责人核对：2026-09-20 实测冒烟返回的 `model` 是 `deepseek/deepseek-v4.1-flash`**（不再是画像测量时的 `qwen/qwen3.8-flash`），因此 `cloudfunctions/ai/vision.ts` 的画像常数描述的是旧模型，`bands: 'auto'` 会偏保守多切带 |
 | `AI_ANTHROPIC_BASE_URL` / `AI_ANTHROPIC_API_KEY` / `AI_ANTHROPIC_VERSION` | `https://api.anthropic.com` / 无 / `2023-06-01` | 走 Anthropic 格式时需要 |
 | `AI_TIMEOUT_MS` | `8000` | 单次模型调用超时（毫秒），必须 ≤ `AI_TOTAL_DEADLINE_MS` |
 | `AI_TOTAL_DEADLINE_MS` | `15000` | 一次云函数调用的总截止；模型、内容安全、云存储下载都受它约束，**必须小于云函数超时时间**（部署时按 20 秒设置） |
@@ -303,6 +303,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-09-19 01:26 | `cloudbase-d2gjtbbwu3575cd7b` | 否（控制台「测试」页触发） | `-501001` invalid wx openapi access_token | `-501001` invalid wx openapi access_token | **无效测量**：云调用未从小程序端触发，接口可用性没被测到（`probe.valid: false`） | 不切换（无效测量不改默认） |
 | 2026-09-19 01:35 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（544ms） | `errcode 0`（458ms） | **可调用**：文本与图片两条路径都通 | `wechat`（保持默认） |
+| 2026-09-20 00:17 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `45009` reach max api daily quota limit | `errcode 0` | **部分可用**：文本配额用尽、图片正常；**北京时间已过午夜仍未重置**，说明它不是按自然日 0 点恢复 | 不切换（等恢复） |
+| 2026-09-20 01:2x | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（420ms） | `errcode 0`（487ms） | **可调用**：两条接口都恢复 | `wechat`（保持默认） |
 
 第二行（有效测量）粘贴进文档的原始记录：
 
@@ -755,3 +757,10 @@ CLI 的 `cloud functions deploy` 没有超时参数（已用 `--help` 核实）�
 - **类目需要谨慎选**。备案要求「至少一个审核通过的类目」，而本作品聚合校园新闻资讯——按此前核查，`资讯-信息资讯` 只覆盖单一行业，跨两类以上资讯需 `文娱-资讯广场`（要《互联网新闻信息服务许可证》），时政类还需 `时政信息`（同证）。**学生团队拿不到该证**。选类目时若被判定为新闻资讯类，可能触发前置审批而卡住。这是需要在提交备案前想清楚的一点，不是提交后能补救的。
 - 2026-09-19（Ticket 04 **新版部署上线**）：`npm run build` 后用 CLI 部署 `newsSync` 成功——**7 个文件 / 25.6 KB**（比旧版多 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示最后更新 **2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%，配置页显示 Node.js 16.13 / 内存 256 MB / 执行超时 20 秒。部署后从小程序端复测**客户端调用仍被拒绝**（`-501023 permission denied`），安全规则未随部署失效。**仍未完成**：云端测试那一次 `{"column":"tw-tqsd","maxRequests":2}` 的返回判据（内嵌云开发控制台 v2 的「云端测试」JSON 编辑器不接受自动化输入，需人工点）、`newsSyncDaily` 触发器确认与首次全量导入（约 155 批）。另记一条环境事实：**开发者工具的 CLI 现在要求访问令牌**（设置 → 安全设置里「CLI 访问令牌」已开启），CLI 命令需带 `--token` 或用 `WECHAT_DEVTOOLS_CLI_TOKEN` 环境变量，令牌值只在本机使用、不写进仓库或文档。
 - 2026-09-19（Ticket 05 用真实截图跑端上链路）：三张真实课表截图（教务系统班级课表页面，截图不入库）经模拟器文件系统 + `mockWxMethod('chooseMedia')` 走完「压缩判定（三张都 ≤1MB 故不压缩）→ 文件头判格式（PNG 魔数已读到）→ `preparePhotoUpload` → `uploadFile` → `ai` 的 `vision`（图片先过内容安全，`checked=true` / `errcode=0`）」；**模型这一环在当前配置下不通**：三条样本 + 一张 570 字节合成小图全部在 8000ms 处超时（`failureClass=model_unavailable`、`detail=模型调用超时：请求超时（8000ms）`、`model=qwen/qwen3.8-flash`），因此**字段准确率评估无法执行**。同时实测了失败态的三个出口（重试识别 / 重新选择文件 / 手工录入，后者实际跳到 `pages/timetable/edit/index`）。云存储侧核对：页面流程上传的临时文件**没有残留**（`timetable-imports/<openid>/` 为空）；排查中出现的 5 个文件是诊断脚本上传后未清理的，已删除，并给新增的 `scripts/smoke-ai-vision.cjs` 补上 `discardUpload`。**本轮没有执行 `saveDraft`**：它是整份替换本人课表，当前账号里是负责人真实导入的课表，不做写入（保存链路在 Ticket 03 已实测）。证据见 [P5-B 验证记录](evidence/p5-b/README.md)。
+
+- 2026-09-20（**重新部署 + 云端复测**）：`npm run build` 后用 CLI 重新部署两条函数——`ai` **12 文件 / 52.4 KB**（分带并行 + 配额分类修复 + 空带提示合并），`timetable` **5 文件 / 19.5 KB**（不写学分的解析修复）；`cli cloud functions info` 读回两条都 `Active`（`ai` timeout 60、`timetable` timeout 20，运行时 Nodejs16.13）。复测结果：
+  - **配额分类**：配额仍处用尽状态时跑 `verify:wechat`，部门问答面板显示的是新的配额文案「内容安全检测的额度已用尽…」而不是修复前的「AI 服务内部错误，请稍后重试。」——分类修复端到端成立；
+  - **`vision` 分带并行**：单带（5966ms / 620 token）与 `bands: 'auto'`（6 带并行，模型阶段 3571ms / 2805 token）**两条都 `ok=true`，6 个并发模型请求全部成功**——中转接受并发，这是分带方案此前最大的未知数；
+  - **`timetable` 不写学分版式**：合成同版式课表走真实云端导入，3 门课的课程名与教师全部拆对、0 条需要补全、3 条待核对提示；
+  - **内容安全配额**：本轮开始时 `msgSecCheck` 仍报 `45009`（**北京时间已过午夜，说明它不是按自然日 0 点重置**），稍后恢复为 `errcode 0`；`imgSecCheck` 全程正常。
+  - 逐项原文见 [P5-B 验证记录第六轮](evidence/p5-b/README.md#2026-09-20-第六轮云端实测通过分带并行在真实链路上成立) 与 [P5-A 第四轮](evidence/p5-foundation/README.md#第四轮2026-09-20配额分类修复与分带并行都在云端验证通过)。

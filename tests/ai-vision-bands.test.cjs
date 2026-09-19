@@ -227,7 +227,10 @@ test('合并：problems 去重、学校学期取第一个非空、空带与坏�
     ['截图右下角有遮挡'],
     '模型自己报的问题去重后只留一条',
   );
-  assert.ok(parsed.problems.some((item) => /第 4-6 节这一段没有识别出课程/u.test(item)), '空数组要说明这一段确实没课');
+  assert.ok(
+    parsed.problems.some((item) => /第 4-6 节没有识别出课程/u.test(item)),
+    `空数组要说明这一段确实没课（同一原因的多带合成一条）：${JSON.stringify(parsed.problems)}`,
+  );
   assert.ok(parsed.problems.some((item) => /第 7-9 节/u.test(item)), '调用失败的带要写明');
   assert.ok(parsed.problems.some((item) => /第 10-12 节/u.test(item)), '返回非 JSON 的带也要写明');
   assert.equal(merged.succeeded, 2, '空数组算成功，失败与坏 JSON 不算');
@@ -396,4 +399,20 @@ test('分带也要走成本上限：超上限时不发任何模型请求', async
   assert.equal(result.ok, false);
   assert.equal(result.failureClass, 'quota_exhausted');
   assert.equal(harness.http.length, 0, '超上限时一次模型请求都不该发');
+});
+
+test('合并：多带都没课时只写一条提示，不按带刷屏', () => {
+  const { mergeBands } = createHarness().load('vision.js');
+
+  const merged = mergeBands([
+    { band: { from: 1, to: 2 }, ok: true, text: JSON.stringify({ courses: [{ name: '本带课1', startSection: 1 }] }) },
+    { band: { from: 3, to: 4 }, ok: true, text: JSON.stringify({ courses: [] }) },
+    { band: { from: 5, to: 6 }, ok: true, text: JSON.stringify({ courses: [] }) },
+    { band: { from: 7, to: 8 }, ok: true, text: JSON.stringify({ courses: [] }) },
+  ]);
+
+  const parsed = JSON.parse(merged.text);
+  const empty = parsed.problems.filter((item) => /没有识别出课程/u.test(item));
+  assert.equal(empty.length, 1, `同一原因的多带要合成一条：${JSON.stringify(parsed.problems)}`);
+  assert.match(empty[0], /第 3-4 节、第 5-6 节、第 7-8 节/u, `要列出是哪几节：${empty[0]}`);
 });

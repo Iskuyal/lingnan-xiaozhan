@@ -212,6 +212,7 @@ export function mergeBands(results: BandCallResult[]): MergedBands {
   // 否则节次读不出的课会被前面的失败连带丢掉（复核发现的行为与承诺不一致）。
   let keepUnsectioned = true;
   let unreadable = 0;
+  const emptyBands: Band[] = [];
   const addProblem = (value: string): void => {
     const text = value.trim().slice(0, 200);
     if (text !== '' && !problems.includes(text) && problems.length < 20) problems.push(text);
@@ -250,8 +251,15 @@ export function mergeBands(results: BandCallResult[]): MergedBands {
       kept += 1;
     }
     if (kept === 0) {
-      addProblem(`${bandLabel(result.band)}这一段没有识别出课程，请核对这几节是否确实没有课。`);
+      emptyBands.push(result.band);
     }
+  }
+  // 「这一段没有识别出课程」合并成一条：一节没课是常态（低年级课少、11-12 节常空），
+  // 每带各写一条会让确认页冒出好几行同样的提示，真正要看的问题反而被淹掉。
+  if (emptyBands.length > 0) {
+    addProblem(
+      `${emptyBands.map(bandLabel).join('、')}没有识别出课程，请核对这几节是否确实没有课。`,
+    );
   }
   // 真的会丢数据的那一类单独报：节次读不出的课轮不到保留的那一带时，学生既看不到课也看不到提示。
   if (unreadable > 0) {
