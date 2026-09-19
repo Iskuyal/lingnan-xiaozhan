@@ -135,6 +135,20 @@ function readAttribute(tag: string, name: string): string {
   return match[2] === undefined ? match[3] ?? '' : match[2];
 }
 
+/**
+ * 属性值 → 文本。
+ *
+ * 与元素文本不同，官网 CMS 会把 `title` 属性里的实体**再转义一层**：列表里写成 `&amp;nbsp;`
+ * （实测见 tests/fixtures/news/jwc-jxyh-list-page-1.html 的「教材选用委员会成员的公示」一条），
+ * 而正文标题 `h2.title` 里是单层的 `&nbsp;`。浏览器在属性上只解一次、会原样显示 `&nbsp;`，
+ * 结果是同一篇文章「列表显示 教务部&nbsp;〔2025〕8号、详情显示 教务部 〔2025〕8号」。
+ * 这里对属性解两次让两侧一致；**只作用于属性**，元素文本仍解一次，
+ * 免得把正文里真正的“&nbsp;”字样也吃掉。
+ */
+function textFromAttribute(value: string): string {
+  return decodeEntities(toSingleLine(value));
+}
+
 /** 定位列表容器（<ul class="list list-intro">）内部片段；找不到返回空字符串。 */
 function findListContainer(html: string): string {
   const open = /<ul[^>]*class="[^"]*list-intro[^"]*"[^>]*>/i.exec(html);
@@ -161,7 +175,7 @@ function parseListItem(block: string, baseUrl: string): NewsListItem | null {
   const rest = block.slice(anchor.index + anchor[0].length);
   const closing = rest.indexOf('</a>');
   const innerHtml = closing === -1 ? rest : rest.slice(0, closing);
-  const attributeTitle = toSingleLine(readAttribute(anchor[0], 'title'));
+  const attributeTitle = textFromAttribute(readAttribute(anchor[0], 'title'));
   const title = attributeTitle === '' ? toSingleLine(innerHtml) : attributeTitle;
   const dateMatch = /<span[^>]*class="[^"]*date[^"]*"[^>]*>([\s\S]*?)<\/span>/i.exec(block);
   return {
@@ -197,7 +211,7 @@ export function parseNewsList(html: string, baseUrl: string): NewsListItem[] {
  * 整串匹配会把标题里的数字当成日期。
  */
 export function parseAnnouncementAttribute(rawTitle: string): { title: string; date: string } {
-  const text = toSingleLine(rawTitle);
+  const text = textFromAttribute(rawTitle);
   if (text === '') return { title: '', date: '' };
   const match = /^标题\s*[:：]\s*([\s\S]*?)\s*(?:点击数\s*[:：]|发表时间\s*[:：]|$)/.exec(text);
   const title = match === null ? text : match[1].trim();
