@@ -3,6 +3,8 @@ const { connectMini } = require('./lib/mini-connect.cjs');
 const assert = require('node:assert/strict');
 const { mkdirSync, writeFileSync, readdirSync, readFileSync } = require('node:fs');
 const path = require('node:path');
+// 只用于合成「不写学分」版式的 xlsx 夹具（原始文件含另一款课表工具的名字，不入库）。
+const XLSX = require('xlsx');
 
 async function run() {
   const output = path.resolve('artifacts/verify');
@@ -337,6 +339,50 @@ async function run() {
     assert.equal(after.count, before.count, `放弃导入写了库：放弃前 ${before.count} 门、放弃后 ${after.count} 门`);
     console.log(`放弃导入：课表条数保持 ${before.count} 门，草稿已清空并回到引导态`);
 
+    // ③ **不写学分**的版式（真实世界里出过 47/47 全部「课程名未识别」的故障，见 Ticket 03 第 8 节）：
+    //    合成一份同版式的 xlsx 走真实云端解析，确认课程名/教师都拆得出来、没有条目被拦住。
+    //    矩阵与 tests/timetable-parse.test.cjs 的同名用例逐字一致——原始文件含另一款课表工具的名字，不入库。
+    const head = ['', '', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+    const matrix = [
+      ['某某职业技术学院2026-2027学年第一学期班级课表（无学分版式）'],
+      head,
+      ['', '一', '劳动教育（一） 夏舜丽 [4]周 1-4节 40号楼-B310-服装工艺室（2） 清远校区 44'],
+      ['', '二', '大学美育 程晓明 [4-5、7-16]周 5-6节 崇礼楼-306-计算机十九室 清远校区 44'],
+      ['', '三', '5+3 真创项目 陈实 [1-16]周 7-8节 博雅D102 清远校区 41'],
+    ];
+    const book = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(matrix), '数据表');
+    const noCredits = XLSX.write(book, { type: 'buffer', bookType: 'xlsx' });
+    await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
+    await waitForPage('pages/timetable/import/index');
+    const noCreditsPath = await placeInUserData('无学分课表.xlsx', noCredits.toString('base64'));
+    await pickFile(noCreditsPath, '无学分课表.xlsx', noCredits.byteLength);
+    const noCreditsOutcome = await waitForImportOutcome();
+    assert.equal(noCreditsOutcome.kind, 'review', `无学分版式没有进入确认页（${noCreditsOutcome.kind}）：${noCreditsOutcome.text}`);
+    const noCreditsView = JSON.parse(await mini.evaluate(() => {
+      const pages = getCurrentPages();
+      const data = pages[pages.length - 1].data;
+      return JSON.stringify({
+        courseCount: data.courseCount,
+        blockedCount: data.blockedCount,
+        warningCount: data.warningCount,
+        rows: (data.items || []).map((item) => ({ name: item.name, teacher: item.teacherText, blocking: item.blocking })),
+      });
+    }));
+    assert.equal(noCreditsView.courseCount, 3, `无学分版式应解析出 3 门课，实际 ${noCreditsView.courseCount}`);
+    assert.equal(noCreditsView.blockedCount, 0, `无学分版式不该有需要补全的条目：${JSON.stringify(noCreditsView.rows)}`);
+    assert.equal(noCreditsView.warningCount, 3, '缺学分必须留下待核对提示，不能被当成「识别得很干净」');
+    assert.deepEqual(
+      noCreditsView.rows.map((row) => `${row.name}｜${row.teacher}`),
+      ['劳动教育（一）｜夏舜丽', '大学美育｜程晓明', '5+3 真创项目｜陈实'],
+      '课程名与教师都要拆对（含带括号的课程名与含空格的课程名）',
+    );
+    console.log(`无学分版式：${noCreditsView.rows.map((row) => `${row.name}｜${row.teacher}`).join('、')}（待核对 ${noCreditsView.warningCount} 条）`);
+    await mini.screenshot({ path: path.join(output, 'timetable-import-nocredits.png') });
+    await mini.mockWxMethod('showModal', { confirm: true, cancel: false });
+    await (await noCreditsOutcome.page.$('#abandon-import')).tap();
+    await (await waitForPage('pages/timetable/import/index')).waitFor(600);
+
     // 手工新增入口：表单字段与保存按钮渲染正常（保存需要已部署的云函数，这里只验证页面）
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/edit/index?scope=new' });
     const editPage = await waitForPage('pages/timetable/edit/index');
@@ -427,6 +473,7 @@ async function run() {
         '导入页显示「只能从聊天记录选择、先发给文件传输助手」引导与选择文件入口',
         '不可解析的文件给出可读提示（真实上传 → 云端解析失败 → 页面文案不含平台错误）',
         '真实样本导入到确认页后「放弃导入」不写库、草稿清空并回到引导态',
+        '不写学分的版式在真实云端仍能拆出课程名与教师（3 门、0 条需要补全、3 条待核对）',
         '课程表单显示课程名、星期、起止节、周次与保存入口',
         '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
