@@ -15,7 +15,8 @@
  *    （配额用尽即 fail-closed，当天三处 AI 全不可用，见 docs/cloud-development.md 的 45009 记录）；
  * 2. **每带只保留 startSection 落在本带的课程**：模型若没遵守「只输出本带」的指令，
  *    这条过滤保证总输出不会退化成带数倍；
- * 3. **任一带失败都不静默丢数据**：成功带的课程照常返回，失败带写进 `problems` 与告警。
+ * 3. **会丢数据的地方都要写进 `problems`**：任一带失败时成功带的课程照常返回、失败带写进告警；
+ *    「节次读不出、又轮不到保留的那一带」的课程单独计数上报——它是唯一一类真的会丢、且不看提示就发现不了的。
  */
 /**
  * 节次范围：与客户端 `services/timetable/photo.ts` 的 `VISION_SYSTEM` 里
@@ -71,15 +72,35 @@ export function splitSections(count: number): Band[] {
 
 /**
  * 按一次模型调用的可用预算决定分几带：预算里装得下多少门课，就按最坏情况（45 门）切几带。
- * 预算连一门课都装不下时按上限切——这是「认了」而不是「放弃」：分带后每带仍有自己的
- * 超时边界，超时照样会变成可识别的失败，不会挂起。
+ *
+ * **预算连一次调用的固定开销都装不下时退回单带**（不是切到上限）：实测画像的 11 秒固定开销
+ * 是**每次调用**都要付的，装不下的预算切 6 带仍然是 6 次全超时，只是多花 6 倍的调用与并发
+ * （默认 `AI_TIMEOUT_MS` 8 秒正好落在这一档，客户端又固定下发 `bands: 'auto'`，
+ * 忘了配环境变量的部署会精确命中）。这里退成单带不是「放弃」，而是同样的失败用 1/6 的代价换。
  */
 export function bandsForBudget(budgetMs: number): Band[] {
   const usableSeconds = budgetMs / 1000 - VISION_PROFILE.fixedSeconds;
-  if (!(usableSeconds > 0)) return splitSections(MAX_BANDS);
+  if (!(usableSeconds > 0)) return [{ from: SECTION_MIN, to: SECTION_MAX }];
   const perBand = Math.floor((usableSeconds * VISION_PROFILE.tokensPerSecond) / VISION_PROFILE.tokensPerCourse);
-  if (perBand < 1) return splitSections(MAX_BANDS);
+  if (perBand < 1) return [{ from: SECTION_MIN, to: SECTION_MAX }];
   return splitSections(Math.ceil(VISION_PROFILE.worstCaseCourses / perBand));
+}
+
+/**
+ * 每一带要准备多大的输出上限。
+ *
+ * `vision` 一次调用的输出上限由调用方给（客户端是 `VISION_MAX_TOKENS = 2048`，为**整张表**设的），
+ * 但分带后每一带仍要按「本带课程数 × 每门课完成 token」出结果：8 门课的中位成本约 2400 token，
+ * **超过 2048 会被截断**，截断的 JSON 解析不出来，该带就变成「没有可用结果」——看起来像模型失败，
+ * 实际是上限不够。所以分带时按本带课程数把上限抬上去（留 1.5 倍余量与 256 token 的结构开销），
+ * 同时不超过接口上限 8192；调用方要的上限更高时以调用方为准；单带时原样返回调用方的上限
+ * （不分带就不该改动调用方的意图）。
+ */
+export function bandMaxTokens(bandCount: number, askedMaxTokens: number): number {
+  if (bandCount <= 1) return askedMaxTokens;
+  const perBand = Math.ceil(VISION_PROFILE.worstCaseCourses / bandCount);
+  const wanted = Math.ceil(perBand * VISION_PROFILE.tokensPerCourse * 1.5) + 256;
+  return Math.min(8192, Math.max(askedMaxTokens, wanted));
 }
 
 /**
@@ -140,18 +161,25 @@ export interface BandCallResult {
   text: string;
 }
 
+/** 一门课的收录判定。 */
+type CourseVerdict = 'keep' | 'out-of-band' | 'unreadable';
+
 /**
- * 本带要保留的课程：`startSection` 落在本带内。
+ * 本带要不要收录这门课。
  *
- * 节次没识别出来（缺字段、0、或超出 1..12）的课程**只在第一带保留**：它落不进任何一带，
- * 每带都丢会让草稿静默少课，每带都留又会让条数随带数翻倍。留一份，交给客户端按
- * 「节次未识别」标成待核对——与「识别不出的只标记不猜」同一条纪律。
+ * - `keep`：`startSection` 落在本带内；**节次没识别出来的课程只在「第一个成功的带」保留**
+ *   （`keepUnsectioned`）——它落不进任何一带，每带都丢会让草稿静默少课，每带都留又会让条数随带数翻倍。
+ *   留一份交给客户端按「节次未识别」标成待核对，与「识别不出的只标记不猜」同一条纪律。
+ * - `out-of-band`：节次读得出、但不属于本带。丢掉是**设计**（模型没遵守范围指令时靠它防止总输出翻倍），
+ *   这门课会出现在它自己那一带的结果里；它那一带失败时，失败范围已经写进 problems，不重复报。
+ * - `unreadable`：节次读不出、又轮不到保留的那一带——**这是真的会丢数据**，调用方要计数上报。
  */
-function keepCourse(row: Record<string, unknown>, band: Band, isFirst: boolean): boolean {
+function classifyCourse(row: Record<string, unknown>, band: Band, keepUnsectioned: boolean): CourseVerdict {
   const raw = row.startSection;
   const section = typeof raw === 'number' && Number.isInteger(raw) ? raw : 0;
-  if (section >= band.from && section <= band.to) return true;
-  return isFirst && (section < SECTION_MIN || section > SECTION_MAX);
+  const readable = section >= SECTION_MIN && section <= SECTION_MAX;
+  if (!readable) return keepUnsectioned ? 'keep' : 'unreadable';
+  return section >= band.from && section <= band.to ? 'keep' : 'out-of-band';
 }
 
 export interface MergedBands {
@@ -180,13 +208,16 @@ export function mergeBands(results: BandCallResult[]): MergedBands {
   let succeeded = 0;
   let semester = '';
   let school = '';
+  // 第一个**成功**的带才保留「节次未识别」的课程：第一带失败时那个位置不该空着，
+  // 否则节次读不出的课会被前面的失败连带丢掉（复核发现的行为与承诺不一致）。
+  let keepUnsectioned = true;
+  let unreadable = 0;
   const addProblem = (value: string): void => {
     const text = value.trim().slice(0, 200);
     if (text !== '' && !problems.includes(text) && problems.length < 20) problems.push(text);
   };
 
-  for (let index = 0; index < results.length; index += 1) {
-    const result = results[index];
+  for (const result of results) {
     const parsed = result.ok ? extractJsonObject(result.text) : null;
     const rawCourses = parsed === null ? null : parsed.courses;
     // 缺 `courses` 字段按失败处理（它可能只是没返回完整 JSON），空数组是合法结果（这一段确实没课），
@@ -197,6 +228,8 @@ export function mergeBands(results: BandCallResult[]): MergedBands {
       continue;
     }
     succeeded += 1;
+    const firstSuccess = keepUnsectioned;
+    keepUnsectioned = false;
     if (school === '' && typeof parsed.school === 'string') school = parsed.school;
     if (semester === '' && typeof parsed.semester === 'string') semester = parsed.semester;
     if (Array.isArray(parsed.problems)) {
@@ -207,13 +240,22 @@ export function mergeBands(results: BandCallResult[]): MergedBands {
     let kept = 0;
     for (const course of rawCourses) {
       if (!isRecord(course)) continue;
-      if (!keepCourse(course, result.band, index === 0)) continue;
+      const verdict = classifyCourse(course, result.band, firstSuccess);
+      if (verdict === 'unreadable') {
+        unreadable += 1;
+        continue;
+      }
+      if (verdict === 'out-of-band') continue;
       courses.push(course);
       kept += 1;
     }
     if (kept === 0) {
       addProblem(`${bandLabel(result.band)}这一段没有识别出课程，请核对这几节是否确实没有课。`);
     }
+  }
+  // 真的会丢数据的那一类单独报：节次读不出的课轮不到保留的那一带时，学生既看不到课也看不到提示。
+  if (unreadable > 0) {
+    addProblem(`有 ${unreadable} 门课的节次没有识别出来、也不是保留的那一段，未能收录；请对照截图手工补录。`);
   }
 
   return {

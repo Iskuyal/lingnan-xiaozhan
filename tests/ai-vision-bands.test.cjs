@@ -100,9 +100,26 @@ test('预算：按实测画像（固定 11 秒 + 86 token/秒 + 每门课 300 to
   assert.equal(bandsForBudget(40000).length, 6);
   // 60 秒预算：能装 floor(49×86/300)=14 门 → ceil(45/14)=4 带。
   assert.equal(bandsForBudget(60000).length, 4);
-  // 预算连一门课都装不下：按上限切（认了，而不是放弃）。
-  assert.equal(bandsForBudget(1000).length, 6, '预算过小也要切到上限');
-  assert.equal(bandsForBudget(0).length, 6);
+  // 预算连一次调用的固定开销（11 秒）都装不下：退回单带。
+  // 装不下的预算切 6 带仍然是 6 次全超时，只是多花 6 倍调用与并发——
+  // 默认 AI_TIMEOUT_MS=8000 正好落这一档，而客户端固定下发 'auto'。
+  assert.equal(bandsForBudget(1000).length, 1, '预算过小时退回单带，不切到上限');
+  assert.equal(bandsForBudget(0).length, 1);
+  assert.equal(bandsForBudget(11000).length, 1, '刚好等于固定开销也不够（余量为 0）');
+  assert.equal(bandsForBudget(12000).length, 1, '刚过固定开销：perBand=floor(1×86/300)=0，仍退回单带');
+});
+
+test('每带输出上限按本带课程数抬高，避免大带被截断', () => {
+  const { bandMaxTokens } = createHarness().load('vision.js');
+
+  // 整张表的上限（客户端给的 2048）装不下 8 门课的中位输出（8×300=2400）：
+  // 直接沿用会被截断，截断的 JSON 解析不出来，那一带就变成「没有可用结果」。
+  assert.ok(bandMaxTokens(6, 2048) > 2048, `6 带（每带 8 门）要抬高上限，实际 ${bandMaxTokens(6, 2048)}`);
+  assert.ok(bandMaxTokens(6, 2048) >= 8 * 300, '至少要装得下本带课程的中位输出');
+  assert.equal(bandMaxTokens(1, 2048), 2048, '单带不改动调用方给的上限');
+  assert.equal(bandMaxTokens(6, 9000), 8192, '超过接口上限时被截到 8192');
+  assert.ok(bandMaxTokens(2, 100) > 100, '调用方给的很小也按课程数抬到够用');
+  assert.ok(bandMaxTokens(6, 8192) <= 8192, '不超过接口上限');
 });
 
 test('bands 字段：auto 按预算算，数字按数量算，缺省与非法值保持单带', () => {
@@ -112,6 +129,9 @@ test('bands 字段：auto 按预算算，数字按数量算，缺省与非法值
   assert.deepEqual(plain(planBands(1, 40000)), [{ from: 1, to: 12 }], '显式 1 = 原路径');
   assert.deepEqual(plain(planBands('banana', 40000)), [{ from: 1, to: 12 }], '非法值不报错，退回单带');
   assert.deepEqual(plain(planBands(0, 40000)), [{ from: 1, to: 12 }]);
+  assert.deepEqual(plain(planBands(-3, 40000)), [{ from: 1, to: 12 }], '负数退回单带');
+  assert.deepEqual(plain(planBands('4', 40000)), [{ from: 1, to: 12 }], '数字字符串不接受（不猜），退回单带');
+  assert.deepEqual(plain(planBands(null, 40000)), [{ from: 1, to: 12 }]);
   assert.equal(planBands(3, 40000).length, 3);
   assert.equal(planBands(3.7, 40000).length, 3, '小数按整数部分');
   assert.equal(planBands('auto', 40000).length, 6);
@@ -144,8 +164,53 @@ test('合并：按带过滤越界课程，节次未识别的只在第一带保�
   assert.deepEqual(plain(merged.failed), []);
 });
 
-test('合并：problems 去重、学校学期取第一个非空、空带与坏带分别记问题', () => {
+test('合并：第一带失败时，节次未识别的课程改由第一个**成功**的带保留', () => {
   const { mergeBands } = createHarness().load('vision.js');
+
+  // 第一带调用失败（ok: false）——「只在第一带保留」不能按结果下标判，
+  // 否则节次读不出的课会被第一带的失败连带丢掉，而且没有任何提示。
+  const merged = mergeBands([
+    { band: { from: 1, to: 4 }, ok: false, text: '' },
+    { band: { from: 5, to: 8 }, ok: true, text: JSON.stringify({ courses: [{ name: '无节次课', startSection: 0 }, { name: '本带课5', startSection: 5 }] }) },
+  ]);
+
+  const parsed = JSON.parse(merged.text);
+  const names = parsed.courses.map((course) => course.name);
+  assert.ok(names.includes('无节次课'), `无节次的课不该被第一带的失败带走：${JSON.stringify(names)}`);
+  assert.ok(names.includes('本带课5'));
+  assert.equal(parsed.courses.length, 2, '每门课只留一份');
+});
+
+test('合并：轮不到保留的「节次未识别」课程必须计数上报，不静默丢', () => {
+  const { mergeBands } = createHarness().load('vision.js');
+
+  const merged = mergeBands([
+    { band: { from: 1, to: 4 }, ok: true, text: JSON.stringify({ courses: [{ name: '第一带的无节次课', startSection: 0 }, { name: '本带课1', startSection: 1 }] }) },
+    { band: { from: 5, to: 8 }, ok: true, text: JSON.stringify({ courses: [{ name: '第二带的无节次课', startSection: 0 }, { name: '本带课5', startSection: 5 }] }) },
+  ]);
+
+  const parsed = JSON.parse(merged.text);
+  const names = parsed.courses.map((course) => course.name);
+  assert.ok(!names.includes('第二带的无节次课'), '只有第一带保留，避免随带数翻倍');
+  assert.ok(
+    parsed.problems.some((item) => /有 1 门课的节次没有识别出来/u.test(item)),
+    `丢掉的那门必须写进 problems：${JSON.stringify(parsed.problems)}`,
+  );
+
+  // 越界丢弃是设计（那门课属于它自己那一带），不该按「丢失」上报。
+  const byDesign = mergeBands([
+    { band: { from: 1, to: 4 }, ok: true, text: JSON.stringify({ courses: [{ name: '本带课1', startSection: 1 }, { name: '别人的课', startSection: 6 }] }) },
+    { band: { from: 5, to: 8 }, ok: true, text: JSON.stringify({ courses: [{ name: '别人的课', startSection: 6 }] }) },
+  ]);
+  const byDesignNames = JSON.parse(byDesign.text).courses.map((course) => course.name);
+  assert.deepEqual(byDesignNames, ['本带课1', '别人的课'], '越界的那门由它自己的带收录，恰好一次');
+  assert.ok(
+    !JSON.parse(byDesign.text).problems.some((item) => /没有识别出来/u.test(item)),
+    '越界不是丢失，不该报「未能收录」',
+  );
+});
+
+test('合并：problems 去重、学校学期取第一个非空、空带与坏带分别记问题', () => {  const { mergeBands } = createHarness().load('vision.js');
 
   const merged = mergeBands([
     { band: { from: 1, to: 3 }, ok: true, text: JSON.stringify({ semester: '2026-2027-1', school: '广东岭南职业技术学院', problems: ['截图右下角有遮挡'], courses: [{ name: 'A', startSection: 1 }] }) },
@@ -200,6 +265,12 @@ test('分带识别：4 带并行调用，图片只上传/只过内容安全一�
   assert.deepEqual(seen.map((band) => `${band.from}-${band.to}`), ['1-3', '4-6', '7-9', '10-12']);
   for (const band of seen) {
     assert.match(JSON.stringify(band.body.messages), /data:image\/png;base64,aGVsbG8=/u, '每一带都要带上图片');
+    // 客户端按整张表给的 2048 装不下「本带课程数 × 每门课完成 token」，沿用会被截断，
+    // 而截断的 JSON 看起来像模型失败——所以分带时服务端要把上限抬起来。
+    assert.ok(
+      typeof band.body.max_tokens === 'number' && band.body.max_tokens > 2048,
+      `分带的每带输出上限要按课程数抬高，实际 ${JSON.stringify(band.body.max_tokens)}`,
+    );
   }
 
   // 内容安全的配额是硬约束：分带不能让图片检测次数按带数翻倍。
@@ -241,27 +312,32 @@ test('不分带时行为与 Ticket 01 验收时一致：一次模型调用', asy
   assert.equal(harness.cloud.imgSecCheck.length, 1);
 });
 
-test("bands: 'auto' 按云函数自身的超时预算算带数", async () => {
-  const run = async (env) => {
-    const harness = createHarness({
-      env,
-      security: wechatOk(),
-      respond: (request) => {
-        const band = bandOf(request);
-        return bandResponse(band.from, band.to);
-      },
-    });
-    const result = await harness.main(visionEvent({ bands: 'auto' }));
-    assert.equal(result.ok, true, `应成功：${result.message}`);
-    return harness;
-  };
-
-  // 默认（总截止 15 秒、单次 8 秒）：装不下多少课，切到上限 6 带。
-  const small = await run({});
-  assert.equal(small.http.length, 6, '小预算切到上限');
+test("bands: 'auto' 按云函数自身的超时预算算带数；预算过小退回单带", async () => {
+  // 默认（总截止 15 秒、单次 8 秒）：预算连一次调用的固定开销（11 秒）都装不下 →
+  // 退回单带。切 6 带也是 6 次全超时，只是多花 6 倍调用。
+  const small = createHarness({
+    security: wechatOk(),
+    respond: (request) => {
+      const body = JSON.parse(request.body);
+      assert.doesNotMatch(String(body.messages[0].content), /startSection 在/u, '小预算不该出现分带指令');
+      return bandResponse(1, 12);
+    },
+  });
+  const smallResult = await small.main(visionEvent({ bands: 'auto' }));
+  assert.equal(smallResult.ok, true, `应成功：${smallResult.message}`);
+  assert.equal(small.http.length, 1, '预算装不下固定开销时只发一次调用');
 
   // 总截止 60 秒、单次 60 秒：每带装 13 门 → ceil(45/13) = 4 带。
-  const large = await run({ AI_TOTAL_DEADLINE_MS: '60000', AI_TIMEOUT_MS: '60000' });
+  const large = createHarness({
+    env: { AI_TOTAL_DEADLINE_MS: '60000', AI_TIMEOUT_MS: '60000' },
+    security: wechatOk(),
+    respond: (request) => {
+      const band = bandOf(request);
+      return bandResponse(band.from, band.to);
+    },
+  });
+  const largeResult = await large.main(visionEvent({ bands: 'auto' }));
+  assert.equal(largeResult.ok, true, `应成功：${largeResult.message}`);
   assert.equal(large.http.length, 4, '大预算少切几带');
 });
 

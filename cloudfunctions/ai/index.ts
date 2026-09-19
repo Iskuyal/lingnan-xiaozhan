@@ -48,7 +48,7 @@ import {
   toCallUsage,
   unknownUsage,
 } from './usage';
-import { BandCallResult, VISION_PROFILE, bandedSystem, mergeBands, planBands } from './vision';
+import { BandCallResult, VISION_PROFILE, bandMaxTokens, bandedSystem, mergeBands, planBands, predictSeconds } from './vision';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法（与 newsSync 一致）。
@@ -574,13 +574,16 @@ async function runVision(
   target: ModelTarget,
   context: { system: string; messages: ConversationMessage[] },
 ): Promise<string> {
+  const bands = planBands(event.bands, target.timeoutMs);
+  // 分带时每一带仍要出「本带课程数」那么多内容：调用方给的上限是按整张表设的，
+  // 直接沿用会把较大的带截断（截断的 JSON 解析不出来，看起来像模型失败）。
+  const perCallMaxTokens = bands.length <= 1 ? target.maxTokens : bandMaxTokens(bands.length, target.maxTokens);
   const call = (system: string): Promise<ModelCallResult> => invokeModel(log, target, {
     system,
     messages: context.messages,
-    maxTokens: target.maxTokens,
+    maxTokens: perCallMaxTokens,
     timeoutMs: target.timeoutMs,
   });
-  const bands = planBands(event.bands, target.timeoutMs);
   if (bands.length <= 1) return (await call(context.system)).text;
 
   const startedAt = Date.now();
@@ -588,6 +591,11 @@ async function runVision(
   const settled = await Promise.all(bands.map(async (band): Promise<{ band: BandCallResult; usage: CallUsage | null; failure: AiFailure | null }> => {
     try {
       const result = await call(bandedSystem(context.system, band));
+      // 输出被上限截断要能被识别：否则截断的 JSON 会被读成「这一带没有可用结果」，
+      // 排查时会往模型或并发方向找，而真正的原因是上限不够。
+      if (result.finishReason === 'length') {
+        pushWarning(log, `第 ${band.from}-${band.to} 节这一带的输出达到上限（finish_reason=length，上限 ${perCallMaxTokens} token），结果可能被截断。`);
+      }
       return {
         band: { band, ok: true, text: result.text },
         usage: toCallUsage(result.usage, log.config),
@@ -604,7 +612,8 @@ async function runVision(
   if (usages.length > 0) log.usage = sumCallUsage(usages, log.config);
   for (const item of settled) {
     if (item.failure === null) continue;
-    pushWarning(log, `第 ${item.band.band.from}-${item.band.band.to} 节这一段识别失败（${item.failure.message}）：${item.failure.detail}`);
+    // detail 里可能有上游响应片段：返回值会带上这条告警，因此截断后再拼，不让它无限长。
+    pushWarning(log, `第 ${item.band.band.from}-${item.band.band.to} 节这一段识别失败（${item.failure.message}）：${item.failure.detail.slice(0, 200)}`);
   }
 
   const merged = mergeBands(settled.map((item) => item.band));
@@ -613,11 +622,13 @@ async function runVision(
   if (merged.succeeded === 0 && firstFailure !== undefined && firstFailure.failure !== null) {
     throw firstFailure.failure;
   }
+  const coursesPerBand = Math.ceil(VISION_PROFILE.worstCaseCourses / bands.length);
   pushWarning(
     log,
     `分带识别：按节次分 ${bands.length} 带并行调用，成功 ${merged.succeeded} 带`
-    + `（画像：固定 ${VISION_PROFILE.fixedSeconds} 秒 + ${VISION_PROFILE.tokensPerSecond} token/秒 + 每门课 ${VISION_PROFILE.tokensPerCourse} token）`
-    + `，每带预算 ${target.timeoutMs}ms，本次耗时 ${Date.now() - startedAt}ms。`,
+    + `（画像：固定 ${VISION_PROFILE.fixedSeconds} 秒 + ${VISION_PROFILE.tokensPerSecond} token/秒 + 每门课 ${VISION_PROFILE.tokensPerCourse} token，`
+    + `按最坏 ${coursesPerBand} 门/带预计每带约 ${predictSeconds(coursesPerBand).toFixed(1)} 秒）`
+    + `，每带预算 ${target.timeoutMs}ms、输出上限 ${perCallMaxTokens} token，本次耗时 ${Date.now() - startedAt}ms。`,
   );
   if (merged.failed.length > 0) {
     pushWarning(log, `没有可用识别结果的节次：${merged.failed.map((band) => `${band.from}-${band.to}`).join('、')}；其余节次的结果已返回。`);
