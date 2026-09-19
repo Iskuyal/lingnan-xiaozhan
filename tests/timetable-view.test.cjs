@@ -180,6 +180,22 @@ test('云调用的技术性错误映射成可理解的文案', () => {
   assert.equal(service.messageOf(undefined), '未知错误');
 });
 
+test('云函数返回的技术性错误不原样展示给学生', () => {
+  const service = require('../dist/services/timetable/index.js');
+  // 集合不存在时云函数的真实返回（2026-09-19 实测）：带错误码与文档链接，学生看不懂。
+  const dbError = '课表操作失败：collection.get:fail -502005 database collection not exists. [ResourceNotFound] '
+    + 'Db or Table not exist: timetable_courses. Please check your request, but if the problem cannot be solved, '
+    + 'contact us. 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_COLLECTION_NOT_EXIST';
+  const mapped = service.readableCloudError(dbError);
+  assert.equal(mapped.technical, true, '数据库错误应被判为技术性');
+  assert.match(mapped.text, /课表服务暂时不可用/u);
+  assert.ok(!/docs\.cloudbase\.net/u.test(mapped.text), '改写后的文案里不应带文档链接');
+  // 业务性错误原样透出（学生看得懂，且指向具体该怎么改）。
+  const business = service.readableCloudError('只支持教务系统导出的 .xls 或 .xlsx 课表文件');
+  assert.equal(business.technical, false);
+  assert.equal(business.text, '只支持教务系统导出的 .xls 或 .xlsx 课表文件');
+});
+
 test('上传前的本地校验：格式与大小', () => {
   const service = require('../dist/services/timetable/index.js');
   assert.equal(service.checkChosenFile({ name: '2026-2027学年第一学期班级课表.xls', size: 2048 }), '');

@@ -37,13 +37,33 @@ export interface UploadedFile {
 }
 
 /** 调用课表云函数；云函数返回 ok:false 时抛错，页面按错误文案提示。 */
+/**
+ * 平台/数据库层的技术性错误：这类文本不该原样展示给学生。
+ *
+ * 例：集合尚未创建时云函数返回 `collection.get:fail -502005 database collection not exists
+ * … Db or Table not exist: timetable_courses …`——里面带错误码与文档链接，学生看不懂，
+ * 演示时更不该出现。这类错误映射成一句话，原文打到控制台供维护者排查；
+ * 业务性错误（例如「只支持 .xls 或 .xlsx」）不受影响，原样透出。
+ */
+const TECHNICAL_ERROR_PATTERN = /-5\d{5}|database|collection|Db or Table|permission denied|timed out|FUNCTION_NOT_FOUND|cloud\./iu;
+
+/** 把云函数返回的错误文本分成「可直接展示」与「技术性需改写」两类。 */
+export function readableCloudError(message: string): { text: string; technical: boolean } {
+  if (!TECHNICAL_ERROR_PATTERN.test(message)) return { text: message, technical: false };
+  return { text: '课表服务暂时不可用，请稍后重试；已保存的课表不受影响', technical: true };
+}
+
 async function callTimetable<T>(data: Record<string, unknown>): Promise<T> {
   requireCloud();
   const response = await wx.cloud.callFunction({ name: FUNCTION_NAME, data });
   const result = (response === null || response === undefined ? undefined : response.result) as CloudResponse | undefined;
   if (result === undefined || result.ok !== true) {
-    const message = result !== undefined && typeof result.error === 'string' && result.error !== '' ? result.error : '课表服务返回了无法识别的结果';
-    throw new Error(message);
+    const raw = result !== undefined && typeof result.error === 'string' && result.error !== ''
+      ? result.error
+      : '课表服务返回了无法识别的结果';
+    const mapped = readableCloudError(raw);
+    if (mapped.technical) console.error('课表服务返回技术性错误：', raw);
+    throw new Error(mapped.text);
   }
   return result as T;
 }
