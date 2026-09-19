@@ -631,6 +631,15 @@ test('课表页模板:未检测提示与额度告警都有展示位', () => {
   assert.match(wxml, /assistantCapWarning/u, '额度告警必须绑定到模板');
 });
 
+test('课表页模板:助手回答带 qa-answer 标记（与部门问答同一套验收约定）', () => {
+  const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
+  assert.match(
+    wxml,
+    /item\.role === 'assistant' \? 'qa-answer' : ''/u,
+    '开发者工具验收靠 .qa-answer 数助手气泡，标记不能丢',
+  );
+});
+
 test('AI 服务:未检测提示与判定对 06/07 是同一份(共用 services/ai.ts)', () => {
   const ai = aiService();
   assert.equal(ai.safetyNoteFor(CHECKED_SAFETY), '');
