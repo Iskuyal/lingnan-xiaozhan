@@ -362,3 +362,93 @@ PR #29 的守卫合并成一套）：命中即整条替换，覆盖范围是「�
 的验收清单与 Status；本分支 `npm test` 实际摘要行：`ℹ tests 299` / `ℹ suites 0` / `ℹ pass 299`
 / `ℹ fail 0` / `ℹ cancelled 0` / `ℹ skipped 0` / `ℹ todo 0`（18 个测试文件、299 项用例）。
 
+
+## Ticket 05 课表截图识别：端上真实截图验收（2026-09-19，未通过模型这一环）
+
+按要求用**三张真实课表截图**跑端上链路（教务系统「班级课表」页面截图，班级 26软件技术(专升本)1班，
+2026-2027学年第一学期）。**截图不随仓库提交**：页面页脚含学生姓名与学号，属于个人信息，
+只在本机与模拟器文件系统里使用。
+
+| 样本 | 字节 | 说明 |
+| --- | --- | --- |
+| 样本 1 | 594,769 | 页面上部（星期一～四 + 上午/下午） |
+| 样本 2 | 423,320 | 页面中部（星期五、六 + 晚上） |
+| 样本 3 | 451,739 | 页面下部（晚上、星期六） |
+
+三张都 ≤ `MAX_PHOTO_BYTES`（1MB），因此走「不压缩」分支——这是设计行为，不是跳过压缩。
+
+### 执行方式（可复现）
+
+开发者工具已由 `cli.bat auto --project <仓库>/dist --auto-port 9420 --trust-project` 打开；样本放进
+模拟器文件系统后，用自动化脚本把 `wx.chooseMedia` 用 `mockWxMethod` 指向本机文件，再调用页面的
+`choosePhoto()`，走完整链路：
+
+**文件头判格式 → 压缩判定 → `preparePhotoUpload` → `wx.cloud.uploadFile` → `ai` 云函数 `vision`
+（图片先过内容安全）→ 草稿 → 确认页。**
+
+**本轮没有执行 `saveDraft`**：`saveDraft` 是「整份替换本人课表」，而当前登录账号里存着负责人
+真实导入的 15 门课（Ticket 03 的样本）；截图这班是另一个班，写进去会覆盖掉真实数据，
+所以到确认页为止。保存链路本身（确认页 → 保存 → 周课表展示）在 Ticket 03 已实测。
+
+### 结果：三条样本全部在模型这一步失败
+
+三条都在 13–16 秒后进入错误态，用户可见文案一致：
+
+```text
+AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。
+```
+
+单独把 `ai` 的 `vision` 动作打出来（同一条上传链路，绕开页面只看云函数返回）：
+
+```text
+ok=false failureClass=model_unavailable elapsedMs=10772
+provider=openai model=qwen/qwen3.8-flash
+detail: 模型调用超时：请求超时（8000ms）：https://api.commandcode.ai/provider/v1/chat/completions
+safety: {"provider":"wechat","api":"security.msgSecCheck","passed":true,"checked":true,"detail":"v2（scene=1）｜errcode=0｜suggest=pass｜label=100"}
+```
+
+**与图片大小无关**：把样本 2 缩到 1000px 宽（94KB）与画一张 570 字节的小图，都同样卡在 8000ms。
+文本 `chat` 路径当天正常（`npm run smoke:ai` 4.6 秒返回）。`AI_VISION_MODEL` 配的是
+`qwen/qwen3.8-flash`（与文本模型 `deepseek/deepseek-v4.1-flash` 不同）。
+
+本轮已验证的项（勾选依据）：
+
+| 验收项 | 结论 | 依据 |
+| --- | --- | --- |
+| 拍照 / 相册入口存在 | ✅ | 引导态 `#choose-photo` 存在（截图 `p1-guide.png`） |
+| 图片**先过内容安全**再送模型 | ✅ | `safety.checked=true`、`errcode=0`、`passed=true`，发生在模型调用之前 |
+| 失败可理解、不静默 | ✅ | 错误态展示上面那句文案 + 「没有写入任何课表数据」说明 |
+| 模型不可用时的**三个出口** | ✅ | `#retry-photo`（重试识别）、`#retry-import`（重新选择文件）、`#to-manual`（手工录入）都在；点「手工录入课程」实际跳到 `pages/timetable/edit/index` |
+| 临时文件识别后删除（云存储无残留） | ✅ | 控制台「存储 → timetable-imports → 本人目录」为空；页面流程上传的文件没有残留（见下） |
+| **识别准确率 ≥90%** | ❌ 无法执行 | 模型没有返回任何识别结果 |
+| 保存后复用 03 的周课表展示 | ⏸ 未复验 | 本条不做（避免覆盖真实课表），依据 Ticket 03 的保存链路实测 |
+
+### 云存储残留的排查
+
+排查中发现 `timetable-imports/<openid>/` 里有 5 个文件，逐个对时间与大小后确认**都是我方的诊断脚本
+上传后没有清理的**（页面流程的删除是生效的：同一时间段页面流程上传的样本没有留下文件）。
+这 5 个文件已在控制台删除，`artifacts/` 与脚本不随仓库提交。仓库里的
+`scripts/smoke-ai-vision.cjs` 本轮补上了 `discardUpload` 调用，跑完不留文件（已复跑确认目录为空）。
+
+### 复测方式
+
+```powershell
+npm run smoke:ai:vision   # 新脚本：内联一张合成小图，只验「上传→内容安全→模型」这条链路
+```
+
+当前同样返回 `model_unavailable`（与上面同一条 `detail`）。配置调整后用它一键复测，
+判据是 `ok=true` 且模型返回 JSON。
+
+### 未完成：准确率评估（阻塞在配置，不在代码）
+
+字段准确率（≥90%，按开发规格的分层达标线）与「至少一个识别失败案例」这两项**无法执行**，
+因为模型一个字段都没返回。等 `vision` 能返回结果后再用上面三张截图评。
+候选修复方向（控制台，动作 → 判据）：
+
+1. `AI_EXTRA_BODY_JSON` 设为 `{"chat_template_kwargs":{"thinking":false}}`——该模型默认开思考
+   （AI 资讯实测记过输出 token 偏高），关闭后可能落回 8 秒预算内。
+2. `AI_TIMEOUT_MS` 提到 13000（必须 ≤ `AI_TOTAL_DEADLINE_MS` 15000，函数超时 20 秒）。
+3. 前两条都无效时换 `AI_VISION_MODEL` 为**确认支持图片输入**的模型名（当前取值与文本模型不同，
+   但没有任何证据表明它做视觉可用）。
+
+判据统一为 `npm run smoke:ai:vision` 返回 `ok=true`。

@@ -9,7 +9,8 @@
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs",
     "probe:wechat": "node scripts/probe-wechat.cjs",
-    "smoke:ai": "node scripts/smoke-ai.cjs"
+    "smoke:ai": "node scripts/smoke-ai.cjs",
+    "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs"
   },
   "engines": {
     "node": ">=22"

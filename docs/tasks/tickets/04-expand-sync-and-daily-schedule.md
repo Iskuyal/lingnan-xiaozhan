@@ -14,7 +14,7 @@
 
 **选题理由**：实测校园动态 8/8 无学生行动项（事后报道性质），团委通知公告含公示与通知（真行动项）。依据见 [AI 资讯可行性实测](../../reference/ai-news-poc.md) 5.1 节（来源 Issue #16）。
 
-**Status:** **in-progress（代码与本地测试完成；待部署与触发器实测）**（2026-09-18）。本票的代码、解析规则、测试与文档已按负责人选定的五项参数在本地完成，`npm run typecheck` / `npm run build` / `npm test`（90 项）通过；**未部署云函数、未触发云端、未跑全量导入**，因此涉及线上数据的验收项一律标为「未验证」，人工步骤见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤)。状态词义见 [Ticket 索引](README.md) 末尾。
+**Status:** **in-progress（2026-09-19：新版已部署上线；触发器与全量导入待人工执行）**。本票的代码、解析规则、测试与文档已按负责人选定的五项参数在本地完成，`npm run typecheck` / `npm run build` / `npm test`（90 项）通过。**云端进展（2026-09-19）**：`npm run build` 后用 `cli cloud functions deploy --names newsSync --remote-npm-install` 部署成功（**7 个文件 / 25.6 KB**，含 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示 `newsSync` **最后更新 2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%、配置页显示内存 256 MB 与执行超时 20 秒；**部署后复核「普通客户端仍被拒绝」——小程序端调用返回 `-501023 permission denied`**（安全规则未随部署失效）。**仍未完成**：`{"column":"tw-tqsd","maxRequests":2}` 的云端测试调用（人工步骤 A 的运行判据）、06:00 触发器的实际触发（步骤 B、C）与首次全量导入（步骤 D，约 155 批）；因此涉及线上数据的验收项一律保持「未验证」。人工步骤见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤)，状态词义见 [Ticket 索引](README.md) 末尾。
 
 **勾选口径：** `[x]` = 本地代码与测试已完成、证据在册；`[ ]` = 仍需云端或人工验证，原因写在条目里。本票不把「本地桩测试通过」当成「云端验收通过」。
 
@@ -51,10 +51,10 @@
       —— `cloudfunctions/newsSync/config.json` 声明 `newsSyncDaily`，cron `0 0 6 * * * *`；按[官方文档](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/guide/functions/triggers.html)，cron 为七位「秒 分 时 日 月 星期 年」，**触发器规则的时区为 UTC+8**（即 Asia/Shanghai），故该 cron 就是东八区每天 06:00:00。函数按东八区记录 `runAt`（如 `2026-09-18 06:20:00 +08:00`）与 `capturedAt`，并把 `lastTrigger` / `lastTriggerName` / `lastRunAtLocal` 写进状态文档（测试断言）。
       **云端未验证**：触发器是否按配置真正触发要等部署后观察（人工步骤 B、C）。
 - [ ] 定时触发至少实际成功一次，保存触发配置、日志时间与同步统计
-      —— **未验证**：本轮不部署、不触发云端，控制台日志与真实运行时间是唯一证据来源，见人工步骤 C。触发配置、时区依据与状态字段已就绪。
+      —— **未验证**：新版已于 2026-09-19 12:07 上线，但「触发配置、日志时间与真实运行时间」仍要在部署后观察一次 06:00 的运行，见人工步骤 C。触发配置、时区依据与状态字段已就绪。
 - [x] 维护者仍可手动触发；**普通客户端触发仍被拒绝**（`newsSync.invoke: false` 保持有效）
       —— 手动与定时走同一条路径，未新增任何客户端调用入口；`invoke: false` 是环境级配置，本票未改动它（也没有任何代码改动会绕过它），定时触发器属管理端、不受该客户端规则限制。
-      **云端复核未做**：部署新版函数后应重跑一次「客户端调用被拒 + 手动调用成功」（人工步骤 A/C）。
+      **部署后已复核（2026-09-19）**：从小程序端调用 `newsSync` 返回 `-501023 permission denied`，说明安全规则未随新版部署失效。「手动触发成功」这一半仍待人工执行（新版函数尚未跑过一次真实同步）。
 - [x] `npm run typecheck`、`npm test` 通过
       —— 2026-09-18 实测：`npm run typecheck` 通过（小程序与云函数两份 tsconfig）；`npm run build` 成功；`npm test` 90 项全过（本票新增 34 项：同步引擎 26 项、团委模板解析 8 项）。`npm run verify:wechat` 12 项通过（资讯页展示未受影响）。
 

@@ -174,7 +174,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ## AI 云函数（Ticket 01：统一调用入口、内容安全、用量与成本上限）
 
-**状态（2026-09-19 更新）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。**云端侧（2026-09-19）**：函数已部署、两个用量集合与模型环境变量已配；微信内容安全探测在**小程序端**跑通（两条接口 `errcode 0`，记录见下「微信内容安全探测记录」）；**超时已改到 20 秒且端到端已跑通**——`npm run smoke:ai` 返回 `ok=true`、模型输出「链路已通」、`elapsedMs=4600`，用时超过 3 秒而未被截断，故 20 秒配置确实生效（原始输出见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)）。**数据库侧无密钥外泄**：控制台抽查 `ai_usage_records` 真实记录只有用量字段；**云函数内存核实为 256MB**（日志 `Memory: 256MB MemUsage: 37.4MB`）。**尚未完成**：月度上限拦截实测（本节步骤 F）、图片路径（`vision`）的真实调用。
+**状态（2026-09-19 更新）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。**云端侧（2026-09-19）**：函数已部署、两个用量集合与模型环境变量已配；微信内容安全探测在**小程序端**跑通（两条接口 `errcode 0`，记录见下「微信内容安全探测记录」）；**超时已改到 20 秒且端到端已跑通**——`npm run smoke:ai` 返回 `ok=true`、模型输出「链路已通」、`elapsedMs=4600`，用时超过 3 秒而未被截断，故 20 秒配置确实生效（原始输出见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)）。**数据库侧无密钥外泄**：控制台抽查 `ai_usage_records` 真实记录只有用量字段；**云函数内存核实为 256MB**（日志 `Memory: 256MB MemUsage: 37.4MB`）。**2026-09-19 复测更正**：步骤 F（月度上限拦截）已由负责人确认完成；**`vision`（图片路径）真实调用经独立复测未通过**——三张真实课表截图 + 一张 570 字节合成小图全部在 8000ms 处超时（`failureClass=model_unavailable`、`AI_VISION_MODEL=qwen/qwen3.8-flash`），文本 `chat` 同时正常。复测入口 `npm run smoke:ai:vision`，候选修复与判据见本节「Ticket 01 人工步骤」。
 
 这一层是 05（课表截图识别）、06（课表助手）、07（部门问答）的共同前置：三处都只调这一个函数，避免各自重复实现「调模型 + 过内容安全 + 失败降级」。**本票不实现三个 AI 功能本身。**
 
@@ -278,7 +278,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。长文本按 2000 字窗口逐段送检（最多 10 段 = 2 万字）；仍超出时**只检前 2 万字并在报告里写明范围、置 `checked: false`**，不静默放过。
 - **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
 - **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid 退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**2026-09-19 从小程序端实测：v2 形态下两条接口都返回 `errcode 0`**（记录见探测记录表）。
-- **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（端到端）。
+- **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（文本端到端）、`npm run smoke:ai:vision`（图片路径端到端）。
 - **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001。**2026-09-19 间接实测**：小程序端探测拿到 `errcode 0`，说明随函数上传的声明已生效（否则按官方口径会返回 48001）。
 - **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
 - **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：
@@ -315,7 +315,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
-**2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**只剩 F（月度上限拦截实测）**；`vision`（截图识别）路径的真实调用另计。
+**2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**步骤 F（月度上限拦截实测）已由负责人确认完成**。**步骤 G（`vision` 路径真实调用）我方独立复测未通过**：三张真实课表截图 + 一张 570 字节合成小图全部在 8000ms 处超时——`failureClass=model_unavailable`、`detail=模型调用超时：请求超时（8000ms）`、`provider=openai model=qwen/qwen3.8-flash`；同一时刻文本 `chat` 正常（4.6 秒）。图片先过内容安全这一步是通的（`safety.checked=true`、`errcode=0`）。**复测入口**：`npm run smoke:ai:vision`（新增，内联合成小图，跑完自动清理云存储）。**候选修复（控制台，改一项跑一次复测）**：① `AI_EXTRA_BODY_JSON` = `{"chat_template_kwargs":{"thinking":false}}`（该模型默认开思考，AI 资讯实测记过输出 token 偏高）；② `AI_TIMEOUT_MS` = 13000（必须 ≤ `AI_TOTAL_DEADLINE_MS` 15000，函数超时 20 秒）；③ 换 `AI_VISION_MODEL` 为确认支持图片输入的模型名——**当前取值与文本模型不同，但没有任何证据表明它做视觉可用**。判据统一为 `smoke:ai:vision` 返回 `ok=true`。
 
 **步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 
@@ -490,15 +490,17 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 
 <a id="ticket-04-人工步骤"></a>
 
-## Ticket 04 人工步骤（动作 / 对象 / 判据；**本轮全部未执行**）
+## Ticket 04 人工步骤（动作 / 对象 / 判据；**步骤 A 的部署已完成，运行判据与 B–E 未执行**）
 
-Ticket 04 改的是代码与配置，验证要在云上做。以下步骤本轮**没有执行**（本轮不部署、不触发云端），状态一律为**未验证**；代码侧的桩测试结论见 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)。
+Ticket 04 改的是代码与配置，验证要在云上做。**2026-09-19 已完成的只有部署本身**（步骤 A 的「动作」），其余一律为**未验证**；代码侧的桩测试结论见 [Ticket 04](tasks/tickets/04-expand-sync-and-daily-schedule.md)。
 
-### 步骤 A：部署新版 `newsSync`
+### 步骤 A：部署新版 `newsSync`（**部署已完成，运行判据未取**）
 
 - **动作**：构建出 `dist/cloudfunctions/newsSync`（含 `config.json`、`columns.js`）后，在开发者工具里右键该目录 →「上传并部署：云端安装依赖」；或执行 `cli.bat cloud functions deploy --project <仓库>/dist --names newsSync --remote-npm-install`。
 - **对象**：云函数 `newsSync`（运行时 Nodejs16.13、超时 20 秒、权限 `invoke: false` 均保持不变）。
 - **判据**：控制台「云函数 → newsSync」显示新的更新时间；「测试」页传 `{"column":"tw-tqsd","maxRequests":2}` 运行，返回里 `timeZone` 为 `Asia/Shanghai（UTC+8）`、`columns[0].label` 为 `学校官网 · 团委通知公告`、`requestsUsed` 为 2、`resumeHint` 有值。
+- **2026-09-19 实测（部署部分）**：`npm run build` 后执行上面的 CLI 部署命令成功——**`newsSync` 部署 7 个文件 / 25.6 KB**（新增 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示 **最后更新 2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%，配置页显示运行环境 Node.js 16.13、**内存 256 MB**、**执行超时 20 秒**；部署后从小程序端复测「普通客户端调用仍被拒绝」——返回 `-501023 permission denied`。
+- **仍未取的判据**：「测试」页那一次 `{"column":"tw-tqsd","maxRequests":2}` 的返回未记录。**注意**：内嵌的云开发控制台 v2 里「云端测试」面板的 JSON 编辑器**不接受自动化输入**（输入与粘贴都不生效），这一步要人工在工具里点，或在能输入的环境里跑。
 - **注意**：`config.json` 会随函数目录一起上传，定时触发器以它为准；若控制台此前手工建过触发器，以控制台显示为准并核对是否与 `config.json` 冲突。
 
 ### 步骤 B：确认每日 06:00 触发器
@@ -728,3 +730,5 @@ CLI 的 `cloud functions deploy` 没有超时参数（已用 `--help` 核实）�
 - 负责人提到「还没定小程序名字」——**名称是备案的前置条件**，名字不定就无法启动备案。名称还会被平台按备案规定预筛（违反公序良俗、与主体性质不符、涉及前置审批领域的关键词都会被拦）。
 - 赛道页把「完成体验版配置或正式上线」列为**加分项**（非必需）。负责人已确认自己做过小程序、熟悉认证与备案流程，节点由其自行把握，此处只记录客观耗时供排期参考：认证 + 备案串起来最快两三周（通管局审核 1–20 个工作日）。
 - **类目需要谨慎选**。备案要求「至少一个审核通过的类目」，而本作品聚合校园新闻资讯——按此前核查，`资讯-信息资讯` 只覆盖单一行业，跨两类以上资讯需 `文娱-资讯广场`（要《互联网新闻信息服务许可证》），时政类还需 `时政信息`（同证）。**学生团队拿不到该证**。选类目时若被判定为新闻资讯类，可能触发前置审批而卡住。这是需要在提交备案前想清楚的一点，不是提交后能补救的。
+- 2026-09-19（Ticket 04 **新版部署上线**）：`npm run build` 后用 CLI 部署 `newsSync` 成功——**7 个文件 / 25.6 KB**（比旧版多 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示最后更新 **2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%，配置页显示 Node.js 16.13 / 内存 256 MB / 执行超时 20 秒。部署后从小程序端复测**客户端调用仍被拒绝**（`-501023 permission denied`），安全规则未随部署失效。**仍未完成**：云端测试那一次 `{"column":"tw-tqsd","maxRequests":2}` 的返回判据（内嵌云开发控制台 v2 的「云端测试」JSON 编辑器不接受自动化输入，需人工点）、`newsSyncDaily` 触发器确认与首次全量导入（约 155 批）。另记一条环境事实：**开发者工具的 CLI 现在要求访问令牌**（设置 → 安全设置里「CLI 访问令牌」已开启），CLI 命令需带 `--token` 或用 `WECHAT_DEVTOOLS_CLI_TOKEN` 环境变量，令牌值只在本机使用、不写进仓库或文档。
+- 2026-09-19（Ticket 05 用真实截图跑端上链路）：三张真实课表截图（教务系统班级课表页面，截图不入库）经模拟器文件系统 + `mockWxMethod('chooseMedia')` 走完「压缩判定（三张都 ≤1MB 故不压缩）→ 文件头判格式（PNG 魔数已读到）→ `preparePhotoUpload` → `uploadFile` → `ai` 的 `vision`（图片先过内容安全，`checked=true` / `errcode=0`）」；**模型这一环在当前配置下不通**：三条样本 + 一张 570 字节合成小图全部在 8000ms 处超时（`failureClass=model_unavailable`、`detail=模型调用超时：请求超时（8000ms）`、`model=qwen/qwen3.8-flash`），因此**字段准确率评估无法执行**。同时实测了失败态的三个出口（重试识别 / 重新选择文件 / 手工录入，后者实际跳到 `pages/timetable/edit/index`）。云存储侧核对：页面流程上传的临时文件**没有残留**（`timetable-imports/<openid>/` 为空）；排查中出现的 5 个文件是诊断脚本上传后未清理的，已删除，并给新增的 `scripts/smoke-ai-vision.cjs` 补上 `discardUpload`。**本轮没有执行 `saveDraft`**：它是整份替换本人课表，当前账号里是负责人真实导入的课表，不做写入（保存链路在 Ticket 03 已实测）。证据见 [P5-B 验证记录](evidence/p5-b/README.md)。
