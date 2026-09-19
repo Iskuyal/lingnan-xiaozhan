@@ -45,3 +45,39 @@ provider=openai model=deepseek/deepseek-v4.1-flash
 - **单价是否与中转实际一致**：本次 105 token 记为 0.000026 元，说明生效的是环境变量里配置的 **0.25 元/百万 token**；这个价格是否等于中转的真实计费仍需联调核对——**单价填低了，50 元上限就会形同虚设**。
 - **图片路径（`vision`）与三类失败的降级文案**：本次只跑了文字 `chat`；截图识别（Ticket 05）与部门问答（Ticket 07）的真实调用仍未执行。
 - 云函数**内存**未核实（按图片大小另行确认）。
+
+## 第二轮（2026-09-19）：负责人确认余项 + `vision` 真实调用（**未通过**）
+
+### 负责人确认
+
+负责人告知 Ticket 01 剩余项已核实（记为负责人确认，未附原始输出）。本仓库此前记录的两项是：
+月度上限拦截实测（人工步骤 F）与 `vision` 图片路径真实调用。
+
+### `vision` 图片路径：我方独立复测未通过
+
+用三张真实课表截图与一张合成小图分别调用 `ai` 的 `vision` 动作（链路：`timetable.preparePhotoUpload`
+→ `wx.cloud.uploadFile` → `ai` vision），**全部在 8000ms 处超时失败**：
+
+```text
+ok=false failureClass=model_unavailable elapsedMs≈10s
+provider=openai model=qwen/qwen3.8-flash
+detail: 模型调用超时：请求超时（8000ms）：https://api.commandcode.ai/provider/v1/chat/completions
+safety: provider=wechat checked=true passed=true（errcode=0）
+```
+
+- 与图片大小无关：594KB / 92KB / 570B 三种尺寸表现一致；
+- 文本 `chat` 路径同时可用（`npm run smoke:ai` 4.6 秒返回）；
+- 因此 **Ticket 01 的「`vision` 真实调用」一项按「已执行、未通过」记录**，不计为通过。
+
+### 新增复测入口
+
+```powershell
+npm run smoke:ai:vision   # 内联合成小图，只验「上传 → 内容安全 → 模型」链路，不评估识别质量
+```
+
+脚本会打印完整返回（`failureClass` / `detail` / `safety` / 用量）并写
+`artifacts/verify/ai-vision-smoke.json`；跑完会调 `discardUpload` 清理云存储，不留临时文件。
+退出码：0 成功 / 1 调用没跑通 / 2 云函数返回失败。
+
+候选修复方向见 [P5-B 验证记录](../p5-b/README.md) 的 Ticket 05 一节（`AI_EXTRA_BODY_JSON` 关思考、
+`AI_TIMEOUT_MS` 提到 13000、或改 `AI_VISION_MODEL`）。

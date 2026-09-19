@@ -55,14 +55,16 @@ npm run verify:wechat
 
 验证脚本通过真实页面点击检查首页、学生部门列表与详情、课表状态页、资讯列表与详情，输出截图和结果至 `artifacts/verify/`。Node 测试只验证页面行为与微信 API 边界，不替代开发者工具验证。
 
+AI 的三条云端链路同样从小程序端验证（过内容安全的动作**不能**用控制台「测试」页跑，见 [云开发文档](docs/cloud-development.md)）：`npm run probe:wechat`（微信内容安全接口探测）、`npm run smoke:ai`（文本端到端）、`npm run smoke:ai:vision`（图片路径端到端，内联合成小图、跑完自动清理云存储）。三者依赖上面同一条 `cli auto` 前置。
+
 构建会整体重建 `dist`，开发者工具的增量编译在连续重建后可能残留旧状态（引用旧内容或报「文件已存在却未定义」）。出现这种情况时执行 `& 'D:\微信web开发者工具\cli.bat' cache --clean compile --project '<dist 绝对路径>'` 并重新打开项目，强制全量编译。
 
 当前截图及环境见 [P2 / P3 验证记录](docs/evidence/p2-p3/README.md) 与 [P1 验证记录](docs/evidence/p1/README.md)。自动化 SDK 仅用于本机测试，其图像依赖通过 npm override 固定到兼容版本，不打入小程序包。
 
 ## 下一步
 
-P1、P2 与 P3-1 已交付，云函数、数据库、构建接入与线上收尾（超时 20 秒、`invoke: false`）均已完成。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。
+P1、P2、P3-1、首页资讯入口与分页（Ticket 02）以及课表导入（Ticket 03，云端端上验收已完成）均已交付；云函数、数据库、构建接入与线上收尾（超时 20 秒、`invoke: false`）均已完成，资讯扩大同步（Ticket 04）的新版 `newsSync` 也已部署上线。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。
 
-接下来：**Ticket 02 首页资讯入口与分页可先行**；扩大同步与定时（04）等待五项范围决策。**P4-B/P5-B** 按导入制课表与三个 AI 落点推进，先补齐导入范围和 P5-A 决策。当前状态与依赖见 [Ticket 索引](docs/tasks/tickets/README.md)，功能边界见 [开发规格](docs/development-spec.md)。
+接下来：资讯的 06:00 触发器实测与首次全量导入（Ticket 04 剩余人工步骤）；**AI 的图片识别路径（`vision`）当前超时不可用，它卡住 Ticket 05 的字段准确率评估**——候选修复与复测入口见 [云开发文档](docs/cloud-development.md#ticket-01-人工步骤)；其余按 P4-B/P5-B 的剩余验收推进。当前状态与依赖见 [Ticket 索引](docs/tasks/tickets/README.md)，功能边界见 [开发规格](docs/development-spec.md)。
 
 微信真机预览尚未执行（单页模式实测被备案阻塞，挂在 P6）；正式作品名仍待定。赛事日期与冲突已由官方确认结清，见 [赛事要求](docs/competition.md)。

@@ -6,13 +6,13 @@
 - 仓库为 `Iskuyal/wx-match`，初始化为私有；仓库代号不代表正式作品名称。
 - 使用 GitHub Issues 管理阶段任务；当前 9 张执行票按负责人要求保存在 [本地 Ticket](docs/tasks/tickets/README.md)，规则见 [任务管理约定](docs/agents/issue-tracker.md)。单一领域上下文配合 ADR 记录决策。
 - 当前 P1 首页入口、P2 部门列表与详情、P3-1 云端资讯链路已实现，真实 AppID 已配置；开发者工具验证见 `docs/evidence/p1/README.md` 与 `docs/evidence/p2-p3/README.md`。课表导入、真机预览与上线仍未完成；教务账号接入已取消。
-- **P5 AI 云函数（Ticket 01）已部署并有云端证据（2026-09-19）**：微信官方内容安全接口在未认证小程序下实测可用（小程序端 v2 形态两条接口 `errcode 0`，见 [云开发文档](docs/cloud-development.md#微信内容安全探测记录)），默认 `AI_SAFETY_PROVIDER=wechat` 不需要第三方审核密钥；**只剩一步人工**——控制台把 `ai` 云函数超时从默认 3 秒改成 20 秒，改完 `npm run smoke:ai` 即可跑通端到端。**AI 三处落点的代码（部门问答 07、课表截图识别 05、课表助手 06）均已合入 main**，但真机与人工验收、各自的评估清单都还没跑，见 [P5-B 验证记录](docs/evidence/p5-b/README.md)。
+- **P5 AI 云函数（Ticket 01）已部署并有云端证据（2026-09-19）**：微信官方内容安全接口在未认证小程序下实测可用（小程序端 v2 形态两条接口 `errcode 0`，见 [云开发文档](docs/cloud-development.md#微信内容安全探测记录)），默认 `AI_SAFETY_PROVIDER=wechat` 不需要第三方审核密钥；文本端到端已跑通（`npm run smoke:ai`：`ok=true`、`elapsedMs=4600`），超时已改 20 秒并生效，用量记录无密钥、内存 256MB。**图片（`vision`）路径经独立复测未通过**：三张真实课表截图与一张 570 字节合成小图全部在 8000ms 处超时（`failureClass=model_unavailable`、`AI_VISION_MODEL=qwen/qwen3.8-flash`），复测入口 `npm run smoke:ai:vision`，候选修复（`AI_EXTRA_BODY_JSON` 关思考 / `AI_TIMEOUT_MS` 提到 13000 / 换支持图片的模型名）见 [云开发文档](docs/cloud-development.md#ticket-01-人工步骤)。**这直接卡住 Ticket 05 的字段准确率评估**。**AI 三处落点的代码（部门问答 07、课表截图识别 05、课表助手 06）均已合入 main**，但真机与人工验收、各自的评估清单都还没跑，见 [P5-B 验证记录](docs/evidence/p5-b/README.md)。
 - 主题为“AI 赋能校园生活”，目标用户覆盖普通学生与学生组织，产品为整合校园信息流的微信小程序。
 - 交付平台明确为微信小程序：采用原生框架 + TypeScript/WXML/WXSS，P3 起引入微信云开发；理由与约束见 `docs/adr/0001-native-wechat-typescript.md`。
 - 云开发环境已开通（环境 ID `cloudbase-d2gjtbbwu3575cd7b`，与项目 AppID 关联）；云函数与数据库已完成，接入方式、数据模型、权限和审查修复的部署状态见 `docs/cloud-development.md`。
 - 视觉方向已确定为简洁实用的校园工具，突出功能入口、清晰信息层级与移动端可读性，学校简介保持精简。
 - 首版面向广东岭南职业技术学院（官网正式名称）；学校官网为 https://lnc.edu.cn/ ，统一门户为 https://portals.lnc.edu.cn/#/ 。具体校区范围待定。
-- 首页、部门详情与资讯已实现；**课表（Ticket 03）代码与本地测试完成、云函数尚未部署**：云函数 `timetable`、导入引导与确认页、周课表与手工增删改入口都在分支 `feat/timetable-excel-import` 上，端到端验收等控制台步骤，见 [Ticket 03 验证记录](docs/evidence/p4-b/README.md) 与 [云开发文档](docs/cloud-development.md) 的「课表云端实施」。
+- 首页、部门详情与资讯已实现；**课表（Ticket 03）已部署并完成云端端上验收（2026-09-19）**：集合 `timetable_courses`、云函数 `timetable` 与环境级函数权限已在控制台配好，真实样本导入（云端 15 门课程）、周次切换、退出重进与手工增删改三条路径已实测；**仍不转 `done`**（两个微信号的用户隔离、确认页「放弃导入」、错误文件的可理解提示未验证），见 [Ticket 03 验证记录](docs/evidence/p4-b/README.md) 与 [云开发文档](docs/cloud-development.md) 的「课表云端实施」。截图识别（Ticket 05）的端上链路 2026-09-19 已跑通前半段，卡在 `vision` 模型调用超时。
 - 官网校园动态已实现手动同步与正文提取；扩大栏目、历史范围和每日定时由 P3-2 决定，见 [资讯后续任务](docs/tasks/p3-2-news-updates.md)。
 - 首页资讯入口与资讯列表逐页加载已于 2026-09-18 完成（Ticket 02），开发者工具 12 项检查通过，证据见 [Ticket 02 验证记录](docs/evidence/p3-2/README.md)；云端现有 10 条不足一页，真实多页场景待扩大同步范围后补验。
 - 首批模块方向：校园资讯信息流、学生会部门展示、在线课程表。“校园资讯”指通知、新闻、活动等信息，不指咨询问答。
