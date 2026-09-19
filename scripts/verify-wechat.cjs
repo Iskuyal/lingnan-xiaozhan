@@ -337,10 +337,6 @@ async function run() {
     assert.equal(after.count, before.count, `放弃导入写了库：放弃前 ${before.count} 门、放弃后 ${after.count} 门`);
     console.log(`放弃导入：课表条数保持 ${before.count} 门，草稿已清空并回到引导态`);
 
-    // 收尾：把两个 mock 撤掉，别把「选文件」与「确认框」的替身留给下一次运行或后续人工操作。
-    await mini.restoreWxMethod('showModal');
-    await mini.restoreWxMethod('chooseMessageFile');
-
     // 手工新增入口：表单字段与保存按钮渲染正常（保存需要已部署的云函数，这里只验证页面）
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/edit/index?scope=new' });
     const editPage = await waitForPage('pages/timetable/edit/index');
@@ -438,6 +434,17 @@ async function run() {
       result: 'passed', realDevice: false };
     writeFileSync(path.join(output, 'verification.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
-  } finally { mini.disconnect(); }
+  } finally {
+    // 顶替过的系统弹层必须撤掉，而且要在 `finally` 里撤：中间任何断言失败都会跳过写在下方的清理，
+    // 把「自动确认的确认框」和「返回固定文件的选择器」留给下一次运行或后续人工操作。
+    for (const method of ['showModal', 'chooseMessageFile']) {
+      try {
+        await mini.restoreWxMethod(method);
+      } catch (error) {
+        console.log(`撤掉 ${method} 的替身失败（多半本来就没 mock 过）：${error && error.message ? error.message : error}`);
+      }
+    }
+    mini.disconnect();
+  }
 }
 run().catch((error) => { console.error(error); process.exitCode = 1; });

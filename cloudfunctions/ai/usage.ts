@@ -123,7 +123,8 @@ export function sumCallUsage(list: CallUsage[], config: Config): CallUsage {
  * 两个都不能做：不能记 0 元（会被读成「这次免费」，上限随之失真），也不能编一个 token 数。
  * 做法是「按每次审核的**固定价**计金额 + 标记 `usageUnknown`」，固定价由
  * `AI_SAFETY_CALL_PRICE_YUAN` 配置（默认 0，此时金额为 0 但有标记，调用次数照记）。
- */export function unknownUsage(fixedPriceYuan: number, config: Config): CallUsage {
+ */
+export function unknownUsage(fixedPriceYuan: number, config: Config): CallUsage {
   return {
     promptTokens: 0,
     completionTokens: 0,

@@ -190,7 +190,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
 | `text` | string | `moderateText` 用；按 2000 字窗口逐段检测（最多 2 万字），超出部分在报告里写明并置 `checked: false` |
 | `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request`。客户端走 fileID：`wx.cloud.uploadFile` 返回的 `cloud://…` 才叫 fileID，`prepareUpload` 给的裸 cloudPath 不是（传裸路径会被 `downloadFile` 拒绝） |
-| `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束 |
+| `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束。**分带时 `maxTokens` 会被服务端按本带课程数抬高**（见下一行的 `bands`）：按整张表设的上限装不下较大的带，沿用会把那一带截断，而截断的 JSON 看起来像模型失败 |
+| `bands` | `'auto'` 或 ≥2 的整数 | 仅 `vision` 用，可选。按**节次**把整张课表切成若干带、**并行**调用模型，解决「一次调用识别整张表要 170 秒 > 云函数 60 秒上限」：`'auto'` 让服务端按自己的超时预算与实测画像算带数（客户端固定下发它）；数字指定带数，上限 6。**缺省、1、负数与非数字一律退回单次调用的原路径**（数字字符串不接受，不猜）；预算连一次调用的固定开销都装不下时也退回单带——切多了只是同样的失败乘以带数。**带数越多，模型调用次数与成本按倍数增长**（一次 `vision` 会记 N 条模型账，见「成本」一节），**内容安全检测次数不变** |
 
 返回形状所有动作统一，调用方只需要看前三个字段：
 
@@ -224,6 +225,9 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - `usage` 动作、上限判定都读 `ai_usage_monthly`；读不到用量（数据库故障）时**拒绝调用**而不是当作零——上限判断不能因为读失败而失效。只有「文档不存在」（当月首次调用）才按零处理。
 - **月度汇总只允许两种写法**：原子自增，或当月文档不存在时用固定 `_id` 插入初值。写失败（非「文档不存在」）一律**向上抛出并记为可处理的记账失败**（返回值 `warnings` 里能看到），绝不回退成覆盖式写入——那会把当月累计冲成单次调用的数字，使成本上限失效。首次插入用月份作 `_id`：并发下只有一个能插入，另一个回到自增，因此不会各写一份丢计数。
 - 服务端不返回 usage 时按字符数估算（中文 1 token/字、英文 4 字符/token，图片按固定常数），并标记 `estimated: true`；不估算等于把成本记成 0。
+- **一次用户动作未必只有一条模型记录**：`vision` 分带并行时按带数各记一条（`requestId` 相同、`feature` 相同），
+  返回值 `usage` 是各带的合计。因此 `ai_usage_monthly.calls` 统计的是**子调用次数**，不能当成「用户操作次数」；
+  按 `feature=timetable-screenshot` 查成本时要按 `requestId` 聚合，否则会把一次识别读成多次。
 - **接口根本不返回用量时**（OpenAI `/moderations`）既不算 0 元也不编 token 数：记录里 `usageUnknown: true`、`totalTokens: 0`，金额按 `AI_SAFETY_CALL_PRICE_YUAN`（每次审核固定价，默认 0 表示不计入）计，返回值 `warnings` 写明这一次是怎么记的。
 - 两个集合需要人工在控制台创建（见人工步骤 B），索引暂无需要：按 `_id` 直读、记录集合只写不查。
 
