@@ -14,6 +14,10 @@
  *   需要时的 `AI_EXTRA_BODY_JSON`、`AI_TIMEOUT_MS`）已在控制台配好。
  *
  * 用法：`npm run smoke:ai:vision`（端口可用 WECHAT_AUTO_PORT 覆盖，默认 9420）
+ *       `npm run smoke:ai:vision -- --bands=auto`：走**分带并行识别**那条路（Ticket 05），
+ *       带数由服务端按自己的超时预算算；`--bands=4` 可指定带数。
+ *       不带这个参数时是**单次调用**，与 Ticket 01 验收时的原路径一致。
+ *       合成小图只验链路，分带会把内容安全检查按带数放大——配额紧张时先跑单次。
  *
  * 退出码：0 = vision 成功（`ok: true` 且 `text` 非空）；
  *         1 = 云函数调用没跑通（未部署 / 权限 / 网络）；
@@ -23,6 +27,17 @@ const { connectMini } = require('./lib/mini-connect.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
+/** 分带方式：`--bands=auto` / `--bands=4`，没有该参数时不下发 `bands`（服务端按单带处理）。 */
+function bandsOption() {
+  const fromArgv = process.argv.find((arg) => arg.startsWith('--bands='));
+  const raw = fromArgv === undefined ? process.env.VISION_BANDS : fromArgv.slice('--bands='.length);
+  if (raw === undefined || String(raw).trim() === '') return undefined;
+  const text = String(raw).trim();
+  if (text === 'auto') return 'auto';
+  const count = Number(text);
+  return Number.isFinite(count) && count >= 1 ? Math.floor(count) : undefined;
+}
+
 /** 内联的小图（96×32 白底，写着「周一 1-2 高等数学」）：只验证链路，不评估识别质量。 */
 const SAMPLE_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAYAAADtwH1UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF1SURBVGhD7ZIBjsMwCATz/0/fqVGJNhOwieorOYmRkMOyxrXp9tOUslFovksPoJgeQDE9gGJ6AMX0AIrpARQTDmDbtmn8d2Z38OqeRuhhbuzvSNGINhmz+tPgn2cU0R5Po3+0eoQVbprlq7jT13uEVYwelt+ENeam7cGCoYcytL4S7T+DPuYRvAvvNWLkYS/tGWn7euoi8LBZvopsX/qYR0Q+T+fDeUGoR9+HRsHgQV78BezLM72zmY9gn6inx8xjdfZTnVyVN55Z4WGZyJD1GXf9WfjbR2F+3TtalavyRjcxtL6aO33verMxY+TxaqZp7ThPfCe8TSN9Fdm+WZ+R9ev9shH5vZ7kqryZNfaafQrPGMHfNNujde5jTWEeaS/u9nnhqpFZyXieRPZxWPM05goHapqup9pFcEyKHTDzPQ0+MkP1CPq9mua6Uj/yU9Z8nR5AMT2AYnoAxfQAiukBFNMDKKYHUEwPoJgeQDE9gGJ6AMX8Alv5kNqQmezMAAAAAElFTkSuQmCC';
@@ -30,6 +45,7 @@ const SAMPLE_PNG_BASE64 =
 async function run() {
   const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
+  const bands = bandsOption();
   const mini = await connectMini();
   try {
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
@@ -40,7 +56,7 @@ async function run() {
     // 提示词与客户端 services/timetable/photo.ts 的 VISION_SYSTEM 同构（只取链路所需的字段），
     // 且必须写成字面量——evaluate 的函数体在模拟器里执行，取不到外层变量。
     await mini.evaluate(
-      (base64) =>
+      (base64, bands) =>
         new Promise((resolve) => {
           const write = (payload) => {
             try {
@@ -69,17 +85,20 @@ async function run() {
               wx.cloud
                 .uploadFile({ cloudPath, filePath })
                 .then((up) => {
+                  // 事件在模拟器里组装：`bands` 有值才下发，没有就是服务端的单带原路径。
+                  const event = {
+                    action: 'vision',
+                    feature: 'vision-smoke',
+                    system: '你是课表截图识别器。识别图片中的课程表，只输出一个 JSON 对象，不要输出任何解释或多余文字。JSON 结构：{"courses":[{"name":"课程名","teacher":"教师","weekday":1到7,"startSection":1到12,"endSection":1到12,"weekText":"周次原文"}]}。纪律：识别不出的字段一律留空或留 0，绝不编造。',
+                    messages: [{ role: 'user', text: '请识别这张课表截图，按系统提示的 JSON 结构输出。' }],
+                    image: { fileID: up.fileID },
+                    maxTokens: 512,
+                  };
+                  if (bands !== undefined) event.bands = bands;
                   wx.cloud
                     .callFunction({
                       name: 'ai',
-                      data: {
-                        action: 'vision',
-                        feature: 'vision-smoke',
-                        system: '你是课表截图识别器。识别图片中的课程表，只输出一个 JSON 对象，不要输出任何解释或多余文字。JSON 结构：{"courses":[{"name":"课程名","teacher":"教师","weekday":1到7,"startSection":1到12,"endSection":1到12,"weekText":"周次原文"}]}。纪律：识别不出的字段一律留空或留 0，绝不编造。',
-                        messages: [{ role: 'user', text: '请识别这张课表截图，按系统提示的 JSON 结构输出。' }],
-                        image: { fileID: up.fileID },
-                        maxTokens: 512,
-                      },
+                      data: event,
                     })
                     .then((res) =>
                       wx.cloud
@@ -101,6 +120,7 @@ async function run() {
             .catch((error) => write({ stage: 'prepare-call', err: (error && (error.errMsg || error.message)) || String(error) }));
         }),
       SAMPLE_PNG_BASE64,
+      bands,
     );
 
     // vision 在超时预算内本应几秒返回；等满 90 秒仍没有结果就是链路问题（不是慢）。
@@ -122,7 +142,7 @@ async function run() {
       platform: system.platform,
       SDKVersion: system.SDKVersion,
       realDevice: false,
-      request: { action: 'vision', feature: 'vision-smoke', image: '内联小图 96×32（合成）' },
+      request: { action: 'vision', feature: 'vision-smoke', image: '内联小图 96×32（合成）', bands: bands === undefined ? '（未下发，单带）' : bands },
       response: parsed === null ? { ok: false, failureClass: 'no-response', message: '轮询 90 秒仍未拿到结果' } : parsed,
     };
     writeFileSync(path.join(output, 'ai-vision-smoke.json'), JSON.stringify(report, null, 2));
@@ -145,11 +165,11 @@ async function run() {
     const result = parsed.result || {};
     console.log('');
     console.log(`ok=${result.ok} failureClass=${result.failureClass || '(空)'} elapsedMs=${result.elapsedMs}`);
-    console.log(`provider=${result.provider || '(空)'} model=${result.model || '(空)'}`);
+    console.log(`provider=${result.provider || '(空)'} model=${result.model || '(空)'} bands=${bands === undefined ? '（未下发，单带）' : bands}`);
     if (result.message) console.log(`失败文案：${result.message}`);
     if (result.detail) console.log(`细节：${String(result.detail).slice(0, 500)}`);
     if (result.safety) console.log(`内容安全：provider=${result.safety.provider} checked=${result.safety.checked} passed=${result.safety.passed}｜${result.safety.detail}`);
-    if (result.usage) console.log(`本次用量：${result.usage.totalTokens} token / ${result.usage.costYuan} 元（estimated=${result.usage.estimated}）`);
+    if (result.usage) console.log(`本次用量：${result.usage.totalTokens} token（prompt ${result.usage.promptTokens} / completion ${result.usage.completionTokens}）/ ${result.usage.costYuan} 元（estimated=${result.usage.estimated}）`);
     if (result.text) console.log(`模型输出（前 400 字）：${String(result.text).slice(0, 400)}`);
     if (Array.isArray(result.warnings) && result.warnings.length > 0) console.log(`告警：${result.warnings.join('｜')}`);
     console.log('');

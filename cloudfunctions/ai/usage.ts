@@ -89,13 +89,41 @@ export function toCallUsage(usage: TokenUsage, config: Config): CallUsage {
 }
 
 /**
+ * 合并同一次请求里的多次模型调用用量（分带识别的多个子调用，见 `vision.ts`）。
+ *
+ * 金额按各项相加而不是「先合 token 再乘单价」：各项的单价可能不同（命中不同模型或改过配置），
+ * 相加才是这次请求真实产生的成本。`estimated` 与 `usageUnknown` 取**或**——
+ * 任一项是估算或未知，合计就不能声称自己是精确值。
+ */
+export function sumCallUsage(list: CallUsage[], config: Config): CallUsage {
+  const total: CallUsage = {
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    costYuan: 0,
+    estimated: false,
+    usageUnknown: false,
+    priceInputPerMillion: config.priceInputPerMillion,
+    priceOutputPerMillion: config.priceOutputPerMillion,
+  };
+  for (const item of list) {
+    total.promptTokens += item.promptTokens;
+    total.completionTokens += item.completionTokens;
+    total.totalTokens += item.totalTokens;
+    total.costYuan = round6(total.costYuan + item.costYuan);
+    total.estimated = total.estimated || item.estimated;
+    total.usageUnknown = total.usageUnknown || item.usageUnknown;
+  }
+  return total;
+}
+
+/**
  * 用量未知时的记账：接口不返回 token 用量（如 OpenAI `/moderations`），既拿不到精确值也无法估算。
  *
  * 两个都不能做：不能记 0 元（会被读成「这次免费」，上限随之失真），也不能编一个 token 数。
  * 做法是「按每次审核的**固定价**计金额 + 标记 `usageUnknown`」，固定价由
  * `AI_SAFETY_CALL_PRICE_YUAN` 配置（默认 0，此时金额为 0 但有标记，调用次数照记）。
- */
-export function unknownUsage(fixedPriceYuan: number, config: Config): CallUsage {
+ */export function unknownUsage(fixedPriceYuan: number, config: Config): CallUsage {
   return {
     promptTokens: 0,
     completionTokens: 0,

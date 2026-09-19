@@ -317,7 +317,24 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 ### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
 **2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**步骤 F（月度上限拦截实测）已由负责人确认完成**。**步骤 G（`vision` 路径真实调用）**分两步：① 负责人加上 `AI_EXTRA_BODY_JSON={"chat_template_kwargs":{"thinking":false}}` 与 `AI_TIMEOUT_MS=13000` 之后，**合成小图的链路冒烟通过**（`npm run smoke:ai:vision`：`ok=true`、`elapsedMs=9978`、模型返回合法 JSON、内容安全 `checked=true`）——**模型确实支持图片输入**，「模型名不支持视觉」的猜测不成立；② **但真实课表截图仍失败**，新的读数是 `detail=模型调用超时：请求超时（11417ms）`。四种输入对照（570 字节小图通过、真实截图只问一列超时、真实截图缩到 1000px 宽同样超时、真实截图两门课约 11 秒通过）说明**卡的是固定时延，与图片大小、输出长度都无关**。
-**三个数已由负责人调到 60 / 50000 / 40000（`cli cloud functions info` 读回 `timeout=60`），但真实截图仍然不够**：模型拿到 40000ms 预算仍未返回（`elapsedMs=43336`、`detail=模型调用超时：请求超时（40000ms）`）。单独量的模型画像：**固定开销约 11 秒、吞吐约 86 token/秒、每门课约 300 个完成 token**，据此外推 45 门课的完整课表需要 170 秒以上（压到最紧凑格式也仍有 80–90 秒），**超过 60 秒的云函数上限 ⇒ 一次调用识别整张表在当前模型上不成立**。另外发现压缩输出格式并不降低完成 token（正文约 500 token 而完成 token 2571），符合「模型仍在输出思考内容、且计入 completionTokens」的表现，**说明先前那次「关思考」很可能没生效**（Qwen3 系的标准开关名是 `enable_thinking`，配置里写的是 `thinking`）。**下一步**：把 `AI_EXTRA_BODY_JSON` 换成 `{"chat_template_kwargs":{"enable_thinking":false}}` 后先跑小图冒烟看 token 是否下降；若无效则换更快的多模态模型，或改为「客户端切块 + 云函数并行多路识别」。注意客户端 `VISION_MAX_TOKENS=2048` 对完整课表偏小，第一次拿到完整结果时要检查是否被截断。
+**三个数已由负责人调到 60 / 50000 / 40000（`cli cloud functions info` 读回 `timeout=60`），但真实截图仍然不够**：模型拿到 40000ms 预算仍未返回（`elapsedMs=43336`、`detail=模型调用超时：请求超时（40000ms）`）。单独量的模型画像：**固定开销约 11 秒、吞吐约 86 token/秒、每门课约 300 个完成 token**，据此外推 45 门课的完整课表需要 170 秒以上（压到最紧凑格式也仍有 80–90 秒），**超过 60 秒的云函数上限 ⇒ 一次调用识别整张表在当前模型上不成立**。另外发现压缩输出格式并不降低完成 token（正文约 500 token 而完成 token 2571），符合「模型仍在输出思考内容、且计入 completionTokens」的表现，**说明先前那次「关思考」很可能没生效**（Qwen3 系的标准开关名是 `enable_thinking`，配置里写的是 `thinking`）。注意客户端 `VISION_MAX_TOKENS=2048` 对完整课表偏小，第一次拿到完整结果时要检查是否被截断。
+
+**2026-09-19 第四轮：分带并行识别（`bands: 'auto'`，分支 `feat/vision-banded-recognition`）**。既然一次调用不成立，改成**按节次切带、并行多次调用**：带数不写死，由服务端按画像与自己的超时预算算（当前配置下 6 带 / 每带 2 节 / 每带预计约 39 秒）。**这一步不需要新的环境变量**，但**重新部署 `ai` 是必须的**（代码在云函数里）：
+
+```powershell
+npm run build
+& "<开发者工具目录>\cli.bat" cloud functions deploy --env cloudbase-d2gjtbbwu3575cd7b --names ai --remote-npm-install --project <仓库>/dist
+# 或在开发者工具里右键 dist/cloudfunctions/ai →「上传并部署：云端安装依赖」
+```
+
+复测按顺序、省着用配额（判据见 [P5-B 验证记录](evidence/p5-b/README.md#2026-09-19-第四轮改为服务端分带并行识别把不可能的一次调用拆成可行的多带)）：
+
+```powershell
+npm run smoke:ai:vision                   # ① 单带小图，确认原路径没被改坏
+npm run smoke:ai:vision -- --bands=auto    # ② 分带小图，确认并发没被中转拒（告警里会出现「分带识别：按节次分 N 带并行调用」）
+```
+
+**图片与输入文字仍各只过一次内容安全**：分带只在服务端调用模型，不放大 `imgSecCheck`/`msgSecCheck` 的次数（配额是硬约束，客户端切块才会按块翻倍）。**仍然建议把 `AI_EXTRA_BODY_JSON` 换成 `{"chat_template_kwargs":{"enable_thinking":false}}`**：关掉思考后每门课的完成 token 大幅下降，`bands: 'auto'` 会自动少切几带——两者互补，不互斥。
 
 **步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 
