@@ -1,62 +1,138 @@
-/* 周课表页面样式：网格按节次与星期排布，不出现具体时刻。 */
-.tt-heading { margin-bottom: 32rpx; }
-.tt-meta { color: #547367; font-size: 25rpx; margin-top: 8rpx; }
+/**
+ * 周课表页面样式：液态玻璃——玻璃面板与玻璃网格，表头带金色薄层。
+ * 标题沿用全局 .section-title / .eyebrow，在本页作用域内改色，不改标记。
+ * 待核对与失败项一律琥珀色，刻意避开品牌红，避免与「重点」混淆。
+ * 颜色与材质引用 app.wxss 的令牌（含回退值）。
+ */
+.tt-heading {
+  margin-bottom: 32rpx; padding: 28rpx 30rpx;
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 20rpx 52rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.tt-heading .eyebrow { color: var(--text-3, #94867f); letter-spacing: 1rpx; }
+.tt-heading .section-title { color: var(--brand-deep, #8c1614); font-size: 40rpx; font-weight: 700; letter-spacing: 3rpx; margin-top: 10rpx; }
+.tt-meta { color: var(--text-3, #94867f); font-size: 25rpx; margin-top: 8rpx; }
 .tt-hint { margin-top: 60rpx; }
-.tt-hint-copy { color: #576c63; font-size: 28rpx; margin: 16rpx 0; line-height: 1.8; }
+.tt-hint-copy { color: var(--text-2, #6b5d57); font-size: 28rpx; margin: 16rpx 0; line-height: 1.8; }
 .tt-empty { margin-top: 40rpx; }
-.tt-guide { border-left: 6rpx solid #bed1c5; padding: 16rpx 24rpx; margin: 28rpx 0 0; color: #35564a; font-size: 27rpx; background: #eef5f1; }
-.tt-guide-note { border-left-color: #d7c9a6; background: #f7f4ea; }
-.tt-privacy { color: #6b7f76; font-size: 24rpx; margin-top: 24rpx; }
+.tt-guide {
+  border-radius: var(--r-control, 20rpx); padding: 20rpx 24rpx; margin: 28rpx 0 0;
+  color: var(--brand-ink, #7a1a12); font-size: 27rpx; line-height: 1.8;
+  background: linear-gradient(150deg, rgba(198,154,40,0.22), rgba(198,154,40,0.10));
+  border: 1rpx solid rgba(198,154,40,0.30);
+}
+.tt-guide-note { background: var(--warn-soft, rgba(255,244,228,0.86)); border-color: var(--warn-line, rgba(214,160,90,0.55)); color: var(--warn, #9a5b1e); }
+.tt-privacy { color: var(--text-3, #94867f); font-size: 24rpx; margin-top: 24rpx; }
 .tt-actions { display: flex; gap: 20rpx; margin-bottom: 28rpx; }
-.tt-action { flex: 1; background: #eef5f1; color: #23664e; border-radius: 16rpx; padding: 20rpx 0; font-size: 27rpx; font-weight: 600; margin: 0; }
-.week-switch { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24rpx; }
-.week-button { background: #eef5f1; color: #23664e; border-radius: 14rpx; padding: 14rpx 22rpx; font-size: 25rpx; margin: 0; }
-.week-picker { flex: 1; text-align: center; }
-.week-current { font-size: 30rpx; font-weight: 600; color: #183c31; }
+.tt-action {
+  flex: 1; padding: 20rpx 0; font-size: 27rpx; font-weight: 600; margin: 0;
+  color: var(--brand-ink, #7a1a12);
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-control, 20rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
+}
+
+.week-switch { display: flex; align-items: center; margin-bottom: 24rpx; gap: 20rpx; }
+/**
+ * 小程序 button 的默认宽度按容器撑开，两个按钮把中间的周次挤到只剩 26pt（「第 1 周」折行），
+ * 而禁止收缩又会让整行溢出（「下一周」被裁）。
+ * 用 flex-basis 定宽而不是 width：在 flex 布局里 flex-basis 优先于 width，
+ * 不会被 button 的默认宽度盖掉。两个按钮各 152rpx，剩下全给中间。
+ */
+.week-button {
+  flex: 0 0 152rpx; width: auto; text-align: center;
+  padding: 14rpx 0; font-size: 25rpx; margin: 0; color: var(--brand-deep, #8c1614);
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
+}
+.week-picker { flex: 1 1 0%; min-width: 0; text-align: center; }
+/* 「第 3 周」的数字两侧是空格，容器一窄就会在空格处折成三行，禁止换行。 */
+.week-current { font-size: 30rpx; font-weight: 700; color: var(--brand-deep, #8c1614); letter-spacing: 1rpx; white-space: nowrap; }
 .tt-empty-week { margin-top: 20rpx; }
-.grid { border: 2rpx solid #dbe7e0; border-radius: 16rpx; overflow: hidden; background: #fff; }
-.grid-row { display: flex; border-top: 2rpx solid #eef2ef; }
+
+.grid {
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-control, 20rpx); overflow: hidden;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.grid-row { display: flex; border-top: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
 .grid-row:first-child { border-top: 0; }
-.grid-head { background: #f1f6f3; }
-.grid-cell { flex: 1; min-width: 0; border-left: 2rpx solid #eef2ef; padding: 8rpx 6rpx; font-size: 20rpx; line-height: 1.4; }
+.grid-head { background: linear-gradient(150deg, rgba(198,154,40,0.24), rgba(198,154,40,0.12)); }
+.grid-cell { flex: 1; min-width: 0; border-left: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); padding: 8rpx 6rpx; font-size: 20rpx; line-height: 1.4; }
 .grid-cell:first-child { border-left: 0; }
-.grid-corner { flex: 0 0 96rpx; color: #547367; font-size: 19rpx; display: flex; align-items: center; }
-.grid-th { text-align: center; color: #35564a; font-weight: 600; }
-.grid-course { color: #1d4c3c; margin-bottom: 6rpx; word-break: break-all; }
-.grid-course-review { color: #9a5b1e; }
+.grid-corner { flex: 0 0 96rpx; color: var(--text-3, #94867f); font-size: 19rpx; display: flex; align-items: center; }
+.grid-th { text-align: center; color: var(--brand-deep, #8c1614); font-weight: 700; }
+.grid-course { color: var(--text, #2b2422); margin-bottom: 6rpx; word-break: break-all; }
+.grid-course-review { color: var(--warn, #9a5b1e); }
+
 .day-list { margin-top: 36rpx; }
-.day-head { font-size: 30rpx; font-weight: 600; margin-bottom: 12rpx; }
+.day-head { font-size: 30rpx; font-weight: 700; color: var(--brand-deep, #8c1614); letter-spacing: 1rpx; margin-bottom: 12rpx; }
 .day-block { margin-bottom: 24rpx; }
-.day-title { color: #547367; font-size: 26rpx; margin-bottom: 8rpx; }
-.course-item { background: #fff; border-radius: 16rpx; padding: 22rpx 24rpx; margin-bottom: 16rpx; display: flex; justify-content: space-between; gap: 20rpx; }
+.day-title { color: var(--text-3, #94867f); font-size: 26rpx; margin-bottom: 8rpx; }
+.course-item {
+  padding: 22rpx 24rpx; margin-bottom: 16rpx; display: flex; justify-content: space-between; gap: 20rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-card, 24rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
 .course-main { flex: 1; min-width: 0; }
 .course-name { font-size: 29rpx; font-weight: 600; }
-.course-tag { font-size: 20rpx; font-weight: 400; color: #547367; background: #eef5f1; border-radius: 8rpx; padding: 2rpx 10rpx; margin-left: 10rpx; }
-.course-tag-review { color: #9a5b1e; background: #f8efe2; }
-.course-line { color: #576c63; font-size: 25rpx; margin-top: 6rpx; }
-.course-warning { color: #9a5b1e; font-size: 23rpx; margin-top: 8rpx; }
+.course-tag { font-size: 20rpx; font-weight: 400; color: var(--text-2, #6b5d57); background: rgba(255,255,255,0.75); border-radius: var(--r-pill, 999rpx); padding: 2rpx 12rpx; margin-left: 10rpx; }
+.course-tag-review { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); }
+.course-line { color: var(--text-2, #6b5d57); font-size: 25rpx; margin-top: 6rpx; }
+.course-warning { color: var(--warn, #9a5b1e); font-size: 23rpx; margin-top: 8rpx; }
 .course-ops { display: flex; flex-direction: column; gap: 10rpx; }
-.course-op { background: #eef5f1; color: #23664e; border-radius: 12rpx; padding: 10rpx 18rpx; font-size: 23rpx; margin: 0; }
-.course-op-delete { background: #f8efe2; color: #9a5b1e; }
-.tt-secondary { background: #eef5f1; color: #23664e; }
-.tt-footer { color: #6b7f76; font-size: 23rpx; margin-top: 40rpx; }
+.course-op {
+  padding: 10rpx 20rpx; font-size: 23rpx; margin: 0; color: #fff;
+  background: rgba(196,28,35,0.90); border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.36);
+}
+.course-op-delete { background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); box-shadow: none; }
+.tt-secondary { background: var(--glass, rgba(255,255,255,0.52)); color: var(--brand-ink, #7a1a12); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
+.tt-footer { color: var(--text-3, #94867f); font-size: 23rpx; margin-top: 40rpx; }
 
+/* 课表助手（Ticket 06）：与部门问答共用一套对话语言，材质随主题。 */
 .tt-assistant-open { margin-top: 24rpx; }
 .tt-qa { margin-top: 24rpx; }
-.qa-panel { background: #fff; border-radius: 22rpx; padding: 26rpx 28rpx; }
+.qa-panel {
+  padding: 26rpx 28rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
 .qa-head { display: flex; align-items: center; justify-content: space-between; }
-.qa-title { font-size: 30rpx; font-weight: 600; }
-.qa-close { font-size: 24rpx; color: #547367; padding: 0; margin: 0; background: none; border: none; line-height: 1; }
+.qa-title { font-size: 30rpx; font-weight: 600; color: var(--brand-deep, #8c1614); }
+.qa-close { font-size: 24rpx; color: var(--text-3, #94867f); padding: 0; margin: 0; background: none; border: none; line-height: 1; }
 .qa-close::after { border: none; }
 .qa-messages { margin-top: 20rpx; }
-.qa-msg { font-size: 26rpx; line-height: 1.7; padding: 14rpx 20rpx; border-radius: 16rpx; margin-bottom: 12rpx; }
-.qa-msg-ai { background: #f2f6f3; color: #33483f; }
-.qa-msg-user { background: #e3efe9; color: #33483f; }
-.qa-error { color: #b3543a; font-size: 24rpx; margin: 8rpx 0; }
-.qa-warn { color: #b3543a; font-size: 23rpx; line-height: 1.7; margin: 8rpx 0 12rpx; }
-.qa-cap { color: #a5762b; font-size: 22rpx; margin: 4rpx 0 8rpx; }
+.qa-msg { font-size: 26rpx; line-height: 1.7; padding: 14rpx 20rpx; border-radius: var(--r-control, 20rpx); margin-bottom: 12rpx; }
+.qa-msg-ai { background: rgba(198,154,40,0.16); border: 1rpx solid rgba(198,154,40,0.28); color: var(--text, #2b2422); }
+.qa-msg-user { background: rgba(196,28,35,0.12); border: 1rpx solid rgba(196,28,35,0.22); color: var(--brand-ink, #7a1a12); }
+.qa-error { color: var(--warn, #9a5b1e); font-size: 24rpx; margin: 8rpx 0; }
+.qa-warn { color: var(--warn, #9a5b1e); font-size: 23rpx; line-height: 1.7; margin: 8rpx 0 12rpx; }
+.qa-cap { color: var(--warn, #9a5b1e); font-size: 22rpx; margin: 4rpx 0 8rpx; }
 .qa-input-row { display: flex; align-items: center; margin-top: 12rpx; }
-.qa-input { flex: 1; background: #f2f6f3; border-radius: 999rpx; padding: 14rpx 26rpx; font-size: 26rpx; }
-.qa-send { margin-left: 14rpx; background: #2e6e5b; color: #fff; font-size: 26rpx; border-radius: 999rpx; padding: 0 30rpx; line-height: 2.2; }
-.qa-send[disabled] { background: #a9c4bb; color: #fff; }
-.qa-note { margin-top: 16rpx; color: #63786d; font-size: 22rpx; line-height: 1.6; }
+.qa-input { flex: 1; background: rgba(255,255,255,0.86); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); border-radius: var(--r-pill, 999rpx); padding: 14rpx 26rpx; font-size: 26rpx; }
+.qa-send { margin-left: 14rpx; font-size: 26rpx; border-radius: var(--r-pill, 999rpx); padding: 0 30rpx; line-height: 2.2; color: #fff; background: rgba(196,28,35,0.92); border: 1rpx solid rgba(255,255,255,0.34); box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.40); }
+.qa-send[disabled] { background: rgba(196,28,35,0.35); color: #fff; box-shadow: none; }
+.qa-note { margin-top: 16rpx; color: var(--text-3, #94867f); font-size: 22rpx; line-height: 1.6; }

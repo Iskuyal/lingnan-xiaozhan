@@ -1,25 +1,46 @@
-/* 列表页私有样式；通用类（.page、.eyebrow、.section-title、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。 */
-.news-heading { padding: 8rpx 0 32rpx; }
-.news-title { font-size: 42rpx; font-weight: 650; line-height: 1.4; margin-top: 14rpx; }
-.news-meta { color: #547367; font-size: 24rpx; margin-top: 8rpx; }
+/**
+ * 列表页私有样式；通用类（.page、.eyebrow、.section-title、.status- 前缀类、.home-button、.pressed）沿用 app.wxss。
+ * 液态玻璃：头部是玻璃面板，条目用高不透明度的玻璃保证正文对比度。
+ */
+.news-heading {
+  padding: 28rpx 30rpx 32rpx;
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 20rpx 52rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.news-title { font-size: 42rpx; font-weight: 700; line-height: 1.4; margin-top: 14rpx; color: var(--brand-deep, #8c1614); letter-spacing: 3rpx; }
+.news-meta { color: var(--text-3, #94867f); font-size: 24rpx; margin-top: 8rpx; }
 .news-notice {
-  background: #e7edf4;
-  color: #46596b;
+  background: linear-gradient(150deg, rgba(198,154,40,0.20), rgba(198,154,40,0.09));
+  border: 1rpx solid rgba(198,154,40,0.30);
+  color: var(--text-2, #6b5d57);
   font-size: 24rpx;
   line-height: 1.8;
   padding: 22rpx 24rpx;
-  border-radius: 18rpx;
+  border-radius: var(--r-control, 20rpx);
+  margin-top: 28rpx;
 }
 .news-list { margin-top: 28rpx; }
-.news-item { background: #fff; border-radius: 20rpx; padding: 26rpx 24rpx; margin-bottom: 18rpx; }
+.news-item {
+  padding: 26rpx 24rpx; margin-bottom: 18rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-card, 24rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
 .news-item-title { font-size: 30rpx; font-weight: 600; line-height: 1.6; }
 .news-item-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16rpx; }
-.news-item-date { color: #6c7c73; font-size: 24rpx; }
-.news-item-arrow { color: #7d8f86; font-size: 34rpx; line-height: 1; }
+.news-item-date { color: var(--text-3, #94867f); font-size: 24rpx; }
+.news-item-arrow { color: var(--gold-deep, #a67f1c); font-size: 34rpx; line-height: 1; }
 .news-empty { padding-top: 40rpx; }
-.news-empty-copy { color: #576c63; font-size: 27rpx; line-height: 1.8; margin-top: 16rpx; }
-.news-more { text-align: center; color: #6c7c73; font-size: 25rpx; padding: 28rpx 0 8rpx; }
-.news-more-tap { color: #23664e; }
-.news-more-error { display: flex; flex-direction: column; align-items: center; gap: 18rpx; }
+.news-empty-copy { color: var(--text-2, #6b5d57); font-size: 27rpx; line-height: 1.8; margin-top: 16rpx; }
+.news-more { text-align: center; color: var(--text-3, #94867f); font-size: 25rpx; padding: 28rpx 0 8rpx; }
+.news-more-tap { color: var(--brand, #c41c23); }
+.news-more-error { display: flex; flex-direction: column; align-items: center; gap: 18rpx; color: var(--warn, #9a5b1e); }
 .news-more-copy { line-height: 1.7; }
-.news-more-button { margin: 0; padding: 12rpx 44rpx; background: #f0f5f2; color: #23664e; font-size: 25rpx; line-height: 1.5; border-radius: 12rpx; }
+.news-more-button { margin: 0; padding: 12rpx 44rpx; background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); font-size: 25rpx; line-height: 1.5; border-radius: var(--r-pill, 999rpx); }
