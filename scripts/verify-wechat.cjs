@@ -21,7 +21,7 @@ async function run() {
   /**
    * 等这一次追问的结果。两条路径都算「有反应」：
    * ① 多了一条助手气泡（`.qa-answer`，模型答出来了）；
-   * ② 页面上出现降级提示（`#qa-offline`）或失败文案（`.qa-error`）——
+   * ② 页面上出现失败原因（`.qa-error`）或降级说明（`#qa-offline`）——
    *    云函数未部署 / 未配密钥时走这条，不能因为「没有回答」就判失败（PR #29 的断言口径）。
    * 两条都没等到才返回 null（页面真的没反应）。
    */
@@ -37,12 +37,21 @@ async function run() {
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
   }
-  /** 当前页面上失败提示的文本（`#qa-offline` 优先，其次 `.qa-error`）；没有则空串。 */
+  /**
+   * 当前页面上的**失败原因**文本（`.qa-error` 优先，回退 `#qa-offline`）；没有则空串。
+   *
+   * 为什么 `.qa-error` 要放前面：模板里 `.qa-error` 是失败原因（三类失败各自独立文案，见
+   * `services/ai.ts`），`#qa-offline` 是**固定不变**的安慰语（「部门资料随小程序包提供，
+   * AI 不可用时仍可正常查看列表与详情。」）。下面按失败关键词判定降级时，若先取 `#qa-offline`，
+   * **任何降级都会因为拿到那句安慰语而判失败**——2026-09-19 开发者工具实测：
+   * `.qa-error` =「AI 服务内部错误，请稍后重试。」，`#qa-offline` = 安慰语，于是第 135 行误报。
+   * `#qa-offline` 的存在与措辞由紧随其后的独立断言（「仍可正常查看」）负责。
+   */
   async function currentErrorText(page) {
-    const offline = await page.$('#qa-offline');
-    if (offline) return await offline.text();
     const error = await page.$('.qa-error');
     if (error) return await error.text();
+    const offline = await page.$('#qa-offline');
+    if (offline) return await offline.text();
     return '';
   }
   /** 课表页可能在 loading（云函数冷启动）：等到出现某个已就绪状态的元素再判定。 */
