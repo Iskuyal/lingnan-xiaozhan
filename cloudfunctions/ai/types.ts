@@ -150,15 +150,27 @@ export interface ProbeCheck {
   elapsedMs: number;
 }
 
-/** 微信内容安全接口探测记录：维护者把它粘贴进 docs/cloud-development.md。 */
+/**
+ * 微信内容安全接口探测记录：维护者把它粘贴进 docs/cloud-development.md。
+ *
+ * `valid` 与 `ok` 是两件事：
+ * - `valid: false` 表示**这次探测不构成证据**——调用方没有小程序侧的云调用票据
+ *   （控制台「测试」页、CLI、HTTP 触发、云函数互调都会如此），微信接口的可用性根本没被测到；
+ *   此时不得据 `recommendedProvider` 切换适配器。
+ * - `valid: true` 时 `ok` 才表示「两条接口都返回 pass」。
+ */
 export interface ProbeRecord {
   probedAt: string;
   timeZone: string;
   env: string;
-  /** 控制台手动探测时通常没有 openid；有 openid 才会走 msgSecCheck v2。 */
+  /** 是否拿到小程序侧上下文：有 openid 才走 msgSecCheck v2 形态。 */
   openidPresent: boolean;
   declaredOpenApi: string[];
   checks: ProbeCheck[];
+  /** 本次探测是否有效（无效时结论只是「调用方式不对」，不是「接口不可用」）。 */
+  valid: boolean;
+  /** 无效原因；有效时为空串。 */
+  invalidReason: string;
   conclusion: string;
   recommendedProvider: string;
 }
@@ -166,6 +178,8 @@ export interface ProbeRecord {
 /** 探测动作的完整结果（供维护者阅读与粘贴）。 */
 export interface ProbeResult {
   ok: boolean;
+  /** 见 {@link ProbeRecord.valid}：探测是否有效。 */
+  valid: boolean;
   record: ProbeRecord;
   conclusion: string;
   recommendedProvider: string;

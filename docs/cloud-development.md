@@ -174,7 +174,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 ## AI 云函数（Ticket 01：统一调用入口、内容安全、用量与成本上限）
 
-**状态（2026-09-18，仅本地）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。密钥配置、部署、微信内容安全探测与真实端到端调用**全部未执行**——本轮没有模型密钥、没有云端权限，凡依赖它们的一律记 **未验证**，人工步骤见本节末尾。下面「微信内容安全探测记录」是空表，等维护者跑完探测动作回填。
+**状态（2026-09-19 更新）**：函数代码、桩测试与构建布局检查已完成并本地通过（`cloudfunctions/ai/`，逐项见 [Ticket 01](tasks/tickets/01-ai-foundation.md)）。**两轴代码复核（Standards + Spec）提出的问题已在本轮修复**：月度累加不再被写失败覆盖、「是否有过检测」用 `checked` 明确标出、内容安全与云存储下载都有硬超时、402 与 429 分开、输入检测覆盖全部消息角色且长文本逐段检。**云端侧（2026-09-19）**：函数已部署、两个用量集合与模型环境变量已配；微信内容安全探测在**小程序端**跑通（两条接口 `errcode 0`，记录见下「微信内容安全探测记录」）。**尚未完成**：云函数超时仍是默认 3 秒（实测 `chat` 被 `-504003` 打断）⇒ 真实端到端调用待控制台改完超时后补跑，人工步骤见本节末尾。
 
 这一层是 05（课表截图识别）、06（课表助手）、07（部门问答）的共同前置：三处都只调这一个函数，避免各自重复实现「调模型 + 过内容安全 + 失败降级」。**本票不实现三个 AI 功能本身。**
 
@@ -277,8 +277,9 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - **文字与图片是两个独立入口**（`checkText` / `checkImage`）：微信侧本就是 `security.msgSecCheck` 与 `security.imgSecCheck` 两个云调用，第三方侧的请求体也不同。
 - **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。长文本按 2000 字窗口逐段送检（最多 10 段 = 2 万字）；仍超出时**只检前 2 万字并在报告里写明范围、置 `checked: false`**，不静默放过。
 - **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
-- **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid（如控制台手动探测）退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**这些形态来自官方文档，本项目尚未在云上实测**（探测结论回填后才算确认）。
-- **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001（**未实测**，见探测记录表）。
+- **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid 退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**2026-09-19 从小程序端实测：v2 形态下两条接口都返回 `errcode 0`**（记录见探测记录表）。
+- **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（端到端）。
+- **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001。**2026-09-19 间接实测**：小程序端探测拿到 `errcode 0`，说明随函数上传的声明已生效（否则按官方口径会返回 48001）。
 - **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
 - **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：
   - **超时**（微信云调用、第三方审核、云存储下载）→ `model_unavailable`（可重试，与模型超时同类）；
@@ -289,57 +290,67 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 <a id="微信内容安全探测记录"></a>
 
-### 微信内容安全探测记录（**待回填**）
+### 微信内容安全探测记录（**已回填 2026-09-19**）
 
 未认证小程序能否调用官方内容安全云调用，是本票要探明的第一件事。探测动作 `{"action":"probe"}` 用**固定良性文本**与一个现场生成的 8×8 PNG 各调一次接口，把 errcode/errmsg 原样记下来；**不发违规文本**（那是刻意不做的事，违规路径由错误码表与桩测试覆盖）。
 
-| 探测时间 | 环境 ID | 是否带 openid | `security.msgSecCheck` | `security.imgSecCheck` | 结论 | 建议适配器 |
+| 探测时间（UTC+8） | 环境 ID | 是否带 openid | `security.msgSecCheck` | `security.imgSecCheck` | 结论 | 建议适配器 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 待回填 | 待回填 | 待回填 | 待回填 | 待回填 | 待回填 | 待回填 |
+| 2026-09-19 01:26 | `cloudbase-d2gjtbbwu3575cd7b` | 否（控制台「测试」页触发） | `-501001` invalid wx openapi access_token | `-501001` invalid wx openapi access_token | **无效测量**：云调用未从小程序端触发，接口可用性没被测到（`probe.valid: false`） | 不切换（无效测量不改默认） |
+| 2026-09-19 01:35 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（544ms） | `errcode 0`（458ms） | **可调用**：文本与图片两条路径都通 | `wechat`（保持默认） |
 
-常见错误码的含义（**均为官方文档口径，本项目未实测**，以探测结论为准）：`0` 成功；`87014` 内容违规；`48001` / `48002` 接口未授权或被禁（**未认证小程序是否必然返回它们尚未验证**）；`61010` v2 需要 openid 近期访问过小程序；`40001` access_token 相关问题。探测会把「是否超时」也记进 `note`（接口不响应时按调用超时记录，不会挂住）。
+第二行（有效测量）粘贴进文档的原始记录：
 
-**切换方式**：探测结论为不可用或部分可用时，在云函数环境变量里把 `AI_SAFETY_PROVIDER` 改为 `openai` 或 `anthropic`，并按需配置 `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL`；改完重跑一次探测与一次 `chat`，确认返回值里 `safety.provider` 变成第三方。默认值保持 `wechat`（微信为主是负责人的定案），**本轮未验证**。
+```json
+{"probedAt":"2026-09-18T17:35:47.421Z","timeZone":"Asia/Shanghai（UTC+8）","env":"cloudbase-d2gjtbbwu3575cd7b","openidPresent":true,"declaredOpenApi":["security.msgSecCheck","security.imgSecCheck"],"checks":[{"api":"security.msgSecCheck","form":"v2（带 openid）","errCode":0,"errMsg":"openapi.security.msgSecCheck:ok","verdict":"pass","note":"调用成功","elapsedMs":544},{"api":"security.imgSecCheck","form":"v2（带 openid）","errCode":0,"errMsg":"openapi.security.imgSecCheck:ok","verdict":"pass","note":"调用成功","elapsedMs":458}],"valid":true,"invalidReason":"","conclusion":"微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。","recommendedProvider":"wechat"}
+```
+
+**怎么读这两行**：`probe.valid` 与 `ok` 必须分开看。第一行 `ok: false` 且 `valid: false`——它**不是**「接口不可用」的证据，而是「这次调用怎么发起的」不对；只有 `valid: true` 时 `ok: false`（或部分可用）才轮到切换适配器。第一行也说明了为什么探测动作需要一个小程序端入口。
+
+常见错误码的含义：`0` 成功；`87014` 内容违规；`48001` / `48002` 接口未授权或被禁（**未认证小程序是否必然返回它们仍未验证**，本次没碰到）；`61010` v2 需要 openid 近期访问过小程序；`40001` access_token 相关问题；**`-501001` / `-501007`（以 `-5` 开头的是云开发平台码，不是微信开放接口码）表示「本次调用没有小程序侧云调用票据」**，即不是从小程序端触发的——控制台、CLI、HTTP 触发、云函数互调都会踩到，属于无效测量。探测会把「是否超时」也记进 `note`（接口不响应时按调用超时记录，不会挂住）。
+
+**切换方式**：探测结论为**有效**且显示不可用或部分可用时，在云函数环境变量里把 `AI_SAFETY_PROVIDER` 改为 `openai` 或 `anthropic`，并按需配置 `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL`；改完重跑一次探测与一次 `chat`（都在小程序端），确认返回值里 `safety.provider` 变成第三方。**本轮实测微信官方接口可用，默认值 `wechat` 保持不变，暂不需要第三方审核密钥。**
 
 <a id="ticket-01-人工步骤"></a>
 
-### Ticket 01 人工步骤（动作 / 对象 / 判据；**本轮全部未执行**）
+### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
-以下步骤本轮**没有执行**（无密钥、无云端权限，不部署、不探测），状态一律 **未验证**；本地桩测试结论见 [Ticket 01](tasks/tickets/01-ai-foundation.md)。
+**2026-09-19 进展**：A（部署）与 B（集合 + 环境变量）已由负责人在云端完成并经本轮复核；**D（探测）已跑通并回填上表**——微信官方内容安全接口在未认证状态下可用；**C（超时）是当前唯一阻塞项**：`ai` 仍是默认 **3 秒**，实测一次 `chat` 被 `-504003 Invoking task timed out after 3 seconds` 打断（`newsSync` 早已调到 20 秒，照做即可）；E / F 要在 C 做完后重跑。
 
-**步骤 A：部署 `ai` 云函数**
+**步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 
-- **动作**：`npm run build` 后在开发者工具里右键 `dist/cloudfunctions/ai` →「上传并部署：云端安装依赖」（或 `cli.bat cloud functions deploy --project <仓库>/dist --names ai --remote-npm-install`）。
+- **动作**：`npm run build` 后在开发者工具里右键 `dist/cloudfunctions/ai` →「上传并部署：云端安装依赖」（或 `cli.bat cloud functions deploy --env cloudbase-d2gjtbbwu3575cd7b --names ai --remote-npm-install --project <仓库>/dist`）。
 - **对象**：云函数 `ai`（依赖只有 `wx-server-sdk@4.0.2`）。
-- **判据**：控制台「云函数」列表出现 `ai`；函数目录含 `index.js`、`package.json`、`config.json`（`config.json` 里的 `permissions.openapi` 是微信云调用的权限声明，必须随目录上传）。
+- **判据**：`cli cloud functions info` 读回 `ai` 为 `Active` / `Nodejs16.13`；函数目录含 `index.js`、`package.json`、`config.json`（`config.json` 里的 `permissions.openapi` 是微信云调用的权限声明，必须随目录上传）。
 
-**步骤 B：建集合、配环境变量**
+**步骤 B：建集合、配环境变量**（**已完成**）
 
 - **动作**：控制台「数据库」新建 `ai_usage_records` 与 `ai_usage_monthly`，权限都选「所有用户不可读写」；再到「云函数 → ai → 配置 → 环境变量」逐项填密钥与地址（密钥只在控制台粘贴，不写进仓库或文档）。
 - **对象**：两个集合；`AI_BASE_URL`、`AI_API_KEY`、`AI_MODEL`、`AI_VISION_MODEL`、`AI_PRICE_*`、`AI_MONTHLY_CAP_YUAN`。
-- **判据**：控制台「测试」页运行 `{"action":"usage"}`，返回 `ok: true`，`usageSummary.capYuan` 为 50（或你配置的值）、`month` 为当前东八区月份；返回里不出现密钥。**只配密钥不够**：单价必须按中转实际价格填，否则成本上限偏低。
+- **判据**：运行 `{"action":"usage"}`（控制台「测试」页即可，它不碰内容安全）返回 `ok: true`，`usageSummary.capYuan` 为 50、`month` 为当前东八区月份、返回里不出现密钥。**只配密钥不够**：单价必须按中转实际价格填，否则成本上限偏低。本轮实测：`capYuan: 50`、告警线 40、`AI_PRICE_*` = 0.25 元/百万 token（不同于代码默认值 1 / 4，说明确实按中转价格配过）。
 
-**步骤 C：确认云函数超时与内存**
+**步骤 C：确认云函数超时与内存**（**待办，当前唯一阻塞项**）
 
-- **动作**：控制台把 `ai` 的超时时间设为 **20 秒**（与 `newsSync` 一致；默认 3 秒会截断模型调用）。
+- **动作**：控制台把 `ai` 的超时时间设为 **20 秒**（`newsSync` 已这么设，照做；默认 3 秒会截断模型调用）。CLI 没有超时参数，只能在控制台做。
 - **对象**：云函数 `ai` 的函数配置。
-- **判据**：读回为 20 秒，且 `AI_TOTAL_DEADLINE_MS`（默认 15 秒）小于它；一次 `chat` 调用的返回里 `elapsedMs` 明显小于 20000。
+- **判据**：`cli cloud functions info` 读回 `ai` 的 timeout 为 20；随后 `npm run smoke:ai` 端到端成功（`ok: true` 且 `text` 非空），且 `elapsedMs` 明显小于 20000（`AI_TOTAL_DEADLINE_MS` 默认 15 秒必须小于函数超时）。
+- **实测证据（2026-09-19，3 秒时的现象）**：`npm run smoke:ai` 返回 `cloud.callFunction:fail Error: errCode: -504003 | errMsg: Invoking task timed out after 3 seconds`。
 
-**步骤 D：跑微信内容安全探测并回填上表**
+**步骤 D：跑微信内容安全探测并回填上表**（**已完成**，2026-09-19）
 
-- **动作**：控制台「测试」页运行 `{"action":"probe"}`，把返回的 `probe`（或 `detail` 里那一行 JSON）粘贴到上面的记录表。
-- **对象**：`probe.checks[]` 两条（`security.msgSecCheck`、`security.imgSecCheck`）与 `probe.conclusion` / `probe.recommendedProvider`。
-- **判据**：两条都带 `errCode` / `errMsg` / `note`；`errcode 0` 表示该接口可调用；出现 `48001` / `48002` 时按上面的「切换方式」改 `AI_SAFETY_PROVIDER` 后重跑探测与一次 `chat`（原因是不是「未认证」要由这次探测结论确认，不要先当成事实）。**这条结论必须落到本表**，否则 05/06/07 的内容安全路径没有依据。
+- **动作**：**从小程序端**跑 `npm run probe:wechat`（前置：`cli auto --project <仓库>/dist --auto-port 9420 --trust-project` 已打开项目），把输出里那一行 JSON 粘贴到上表。**不要用控制台「测试」页**——云调用拿不到小程序侧票据，必然返回 `-501001`，那是无效测量。
+- **对象**：`probe.checks[]` 两条（`security.msgSecCheck`、`security.imgSecCheck`）与 `probe.valid` / `probe.conclusion` / `probe.recommendedProvider`。
+- **判据**：`probe.valid` 为 `true`；两条都带 `errCode` / `errMsg` / `note`；`errcode 0` 表示该接口可调用；出现 `48001` / `48002` 时才按上面的「切换方式」改 `AI_SAFETY_PROVIDER` 后重跑探测与一次 `chat`（原因是不是「未认证」要由这次探测结论确认，不要先当成事实）。**这条结论必须落到本表**，否则 05/06/07 的内容安全路径没有依据。
 
-**步骤 E：端到端验证一次，并检查密钥外泄**
+**步骤 E：端到端验证一次，并检查密钥外泄**（**待跑**，依赖步骤 C）
 
-- **动作**：控制台「测试」页运行 `{"action":"chat","feature":"e2e-check","messages":[{"role":"user","text":"只回复四个字：链路已通"}]}`；随后读 `ai_usage_records` / `ai_usage_monthly`，并在开发者工具里检查小程序包（`dist` 下 `cloudfunctions/` 之外的 `.js`）与数据库内容。
+- **动作**：**从小程序端**跑 `npm run smoke:ai`（它发一句「只回复四个字：链路已通」）；随后读 `ai_usage_records` / `ai_usage_monthly`，并在开发者工具里检查小程序包（`dist` 下 `cloudfunctions/` 之外的 `.js`）与数据库内容。内容安全适配器为 `wechat` 时不能用控制台「测试」页跑 `chat`（见上文「云调用必须由小程序端触发」）。
 - **对象**：一次真实模型调用；两个用量集合；小程序包；数据库。
 - **判据**：返回值 `ok: true` 且 `text` 非空；`ai_usage_records` 新增一条 `kind: "model"`、`ok: true` 的记录并带耗时与 token；`ai_usage_monthly` 的 `calls` 与 `costYuan` 增加；小程序包里搜不到密钥字符串；数据库里搜不到密钥字符串。**这是票面「端到端验证：一句测试文本经模型返回结果，全过程无密钥外泄」的唯一证据来源。**
 
-**步骤 F：核对月度上限真的会拦**
+**步骤 F：核对月度上限真的会拦**（**待跑**，依赖步骤 C）
 
-- **动作**：把 `AI_MONTHLY_CAP_YUAN` 临时改成一个小于当月已花金额的值，再跑一次 `chat`，然后把上限改回 50。
+- **动作**：把 `AI_MONTHLY_CAP_YUAN` 临时改成一个小于当月已花金额的值，再跑一次 `chat`（小程序端），然后把上限改回 50。
 - **对象**：上限判定路径。
 - **判据**：返回 `failureClass: "quota_exhausted"`，`message` 是额度类文案（与「模型不可用」「内容被拒」不同句），且这一次没有发起模型请求（`ai_usage_records` 不新增 `kind: "model"` 记录）。
 
@@ -366,9 +377,9 @@ ADR-0001 规定这些不在没有工程时编造，实施时核实并回填本�
 - [x] 数据库安全规则写法：已核实——`news_articles` 用自定义规则 `{"read": true, "write": false}`（预设「所有用户可读」不支持无登录态访问，故不用预设），`sync_state` 用预设「所有用户不可读写」或 `{"read": false, "write": false}`；云函数端属管理端，不受规则限制
 - [x] **云函数定时触发器的配置字段与 cron 格式**（2026-09-18 按官方文档核实，尚未部署验证）：云函数目录下的 `config.json` 声明 `triggers` 数组，**只支持一个触发器**；字段为 `name`（触发周期名，字母开头）、`type`（只支持 `timer`）、`config`（cron 表达式，七个必需字段「秒 分 时 日 月 星期 年」）；**触发器规则的时区为 UTC+8**；同一条定时消息可能被重复推送，需要去重。依据：[定时触发器](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/guide/functions/triggers.html)。本项目的 `cloudfunctions/newsSync/config.json` 即按此写成（`0 0 6 * * * *` = 每天 06:00），**是否真的按配置触发要等部署后观察，见下「Ticket 04 人工步骤」。**
 - [ ] 云开发环境的地域、计费与额度实际值（全量导入的调用量估算见「未决问题」，额度需在控制台核对）
-- [ ] **AI 云函数的运行时、超时与内存**（Ticket 01 未部署，未核实；建议与 `newsSync` 同为 Nodejs16.13 / 20 秒，内存按图片大小另行确认）
-- [ ] **中转（CommandCode）的接口地址、模型名与实际单价**（Ticket 01 只能提供配置项，无公开依据可核实）
-- [ ] **未认证状态下微信内容安全接口是否可用**（Ticket 01 提供探测动作，结论待维护者跑完后回填「微信内容安全探测记录」表）
+- [x] **AI 云函数的运行时与超时**（2026-09-19 `cli cloud functions info` 实测）：运行时 **Nodejs16.13**、状态 Active；**超时仍是默认 3 秒**——实测 `chat` 被 `-504003` 打断，须在控制台改成 20 秒（详见「Ticket 01 人工步骤」步骤 C）。**内存仍未核实**（按图片大小另行确认）
+- [ ] **中转（CommandCode）的接口地址、模型名与实际单价**（Ticket 01 只能提供配置项，无公开依据可核实；已从 `usage` 读到 `AI_PRICE_*` 配的是 0.25 元/百万 token，模型名与单价是否与中转实际一致仍待联调确认）
+- [x] **未认证状态下微信内容安全接口是否可用**（**2026-09-19 实测：可用**。小程序端 v2 形态下 `security.msgSecCheck` / `security.imgSecCheck` 均返回 `errcode 0`，记录见「微信内容安全探测记录」表。附带结论：**控制台「测试」页测不了云调用**，必须从小程序端触发）
 
 ## 课表云端实施（Ticket 03，待人工部署）
 
@@ -521,6 +532,7 @@ Ticket 04 改的是代码与配置，验证要在云上做。以下步骤本轮*
 - 2026-09-18（Ticket 01，**仅本地**）：新增云函数 `cloudfunctions/ai/`——统一模型调用入口（OpenAI 兼容 / Anthropic 两种接口格式、文本与多模态）、可切换的内容安全适配层（微信云调用为主，第三方支持 OpenAI / Anthropic 格式，文字与图片分开）、每次调用的耗时与 token/金额记账、月度成本上限（默认 50 元，接近阈值告警、达到上限拒绝）、三类失败分类与独立文案、未认证状态下微信内容安全接口的探测动作。两轴复核后修掉 4 处真缺陷（月度用量覆盖、云调用与下载无超时、402/429 混类、跳过检测被读成「检过且干净」），并补 23 项测试；`npm test` 136 项全过。**未部署、未配密钥、未探测、未做真实端到端调用**，人工步骤见「Ticket 01 人工步骤」。
 - 2026-09-18（Ticket 05 课表截图识别导入与校对，**仅本地**）：导入页新增「拍照或从相册选择课表截图」入口（选图 → 压缩 → `preparePhotoUpload` → 上传 → `ai` 的 `vision` → 识别 JSON 解析为草稿 → 复用 03 的确认页与 `saveDraft`）；`source` 新增 `photo`（两端契约同步）；截图识别后删除云存储临时文件；三类独立失败文案。**未部署、未真机验证**，人工步骤见上「课表云端实施」。
 - 2026-09-18（Ticket 05 两轴复核修复，**仅本地**）：截图格式改为**按文件头判定**（读不到字节才退回路径扩展名，两者都拿不到就明确拒绝并给可读提示）——相机与 `wx.compressImage` 的产物常是 JPEG，原先恒传 `课表截图.png` 会让 `imgSecCheck` 与模型的 `media_type` 与实际内容不符；上传/下载/识别统一用 `wx.cloud.uploadFile` 返回的 **fileID**，`importDraft` / `discardUpload` 的参数从裸 `cloudPath` 改为 `fileID`，云函数从 fileID 解析出云存储路径再校验 openid 前缀（**Ticket 03 的 Excel 路径是同一处老写法，一并修正；客户端与云函数必须一起部署**）；周次留空不再静默当成「每周」，只有模型显式 `everyWeek` 才算（页面按待核对展示）；图片被拒的文案与文字语义的「换个说法」分开（服务端新增 `AI_MSG_CONTENT_REJECTED_IMAGE`，客户端兜底按输入类型区分）；截图识别不再把字段拼成合成「原文」。测试见 [p5-b 记录](evidence/p5-b/README.md)。
+- 2026-09-19（Ticket 01 云端收尾 + 探测路径修复）：`ai` 云函数已部署（Active / Nodejs16.13，11 个文件 / 42.4 KB），两个用量集合与模型环境变量已就绪（`usage` 返回 capYuan 50、告警线 40、单价 0.25 元/百万 token）。**微信内容安全探测改从控制台移到小程序端后跑通**：v2 形态下 `security.msgSecCheck` / `security.imgSecCheck` 均返回 `errcode 0`——未认证小程序可用官方云调用，`AI_SAFETY_PROVIDER` 保持默认 `wechat`，不需要第三方审核密钥。为此修掉一处会误导决策的缺陷：平台错误码 `-501001` / `-501007`（云调用未从小程序端触发）此前会被读成「微信接口不可用」并建议切第三方，现在探测记录带 `valid` / `invalidReason`，**无效测量不切换适配器**，错误码表补上这两个平台码并写明触发限制，新增 2 项测试（`npm test` 296 项全过）。新增两个小程序端入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（端到端）。**唯一剩下的阻塞项**：控制台把 `ai` 超时从默认 3 秒改成 20 秒（实测 `chat` 被 `-504003 Invoking task timed out after 3 seconds` 打断），步骤 E / F 依赖它。
 
 ### 3 秒超时：默认同步量已经贴到上限（已解决，保留记录）
 

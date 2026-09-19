@@ -342,8 +342,22 @@ test('第三方审核未配置完整时按 fail closed 处理，并指明缺哪�
 
 test('微信错误码表覆盖探测与排查用到的关键码', async () => {
   const safety = createHarness().load('safety.js');
-  for (const code of [0, 87014, 48001, 48002, 61010, 40001]) {
+  for (const code of [0, 87014, 48001, 48002, 61010, 40001, -501001, -501007]) {
     assert.equal(typeof safety.WECHAT_ERRCODE_NOTES[String(code)], 'string', `错误码 ${code} 应有说明`);
   }
   assert.ok(safety.WECHAT_ERRCODE_NOTES['48001'].includes('未认证'), '48001 的说明要指出未认证这一常见原因');
+  // 平台码（-5 开头）说的是「这次调用怎么发起的」，必须写明云调用只能由小程序端触发，
+  // 否则会把「控制台触发」读成「微信接口不可用」。
+  assert.ok(
+    safety.WECHAT_ERRCODE_NOTES['-501001'].includes('小程序端'),
+    '-501001 的说明要指出必须由小程序端触发',
+  );
+  assert.ok(
+    safety.WECHAT_ERRCODE_NOTES['-501001'].includes('控制台'),
+    '-501001 的说明要点名控制台触发必然踩中',
+  );
+  assert.ok(
+    safety.WECHAT_ERRCODE_NOTES['-501007'].includes('missing wxCloudApiToken'),
+    '-501007 的说明要给出 missing wxCloudApiToken 这一同义线索',
+  );
 });

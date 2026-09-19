@@ -7,7 +7,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
-    "verify:wechat": "node scripts/verify-wechat.cjs"
+    "verify:wechat": "node scripts/verify-wechat.cjs",
+    "probe:wechat": "node scripts/probe-wechat.cjs",
+    "smoke:ai": "node scripts/smoke-ai.cjs"
   },
   "engines": {
     "node": ">=22"
