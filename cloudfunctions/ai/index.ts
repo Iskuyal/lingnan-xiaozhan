@@ -44,9 +44,11 @@ import {
   newRequestId,
   readUsageSummary,
   recordSubCall,
+  sumCallUsage,
   toCallUsage,
   unknownUsage,
 } from './usage';
+import { BandCallResult, VISION_PROFILE, bandedSystem, mergeBands, planBands } from './vision';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法（与 newsSync 一致）。
@@ -546,6 +548,83 @@ async function readSummary(config: Config, now: Date): Promise<UsageSummary> {
   }
 }
 
+/** 输出内容安全检测：AI 生成的文字上屏前再检一次。 */
+async function moderateOutput(
+  log: RunLog,
+  text: string,
+  wechat: WechatSecurityApi | undefined,
+  openid: string,
+  startedAt: number,
+): Promise<void> {
+  if (!log.config.moderateOutput || text === '') return;
+  const outputOutcome = await moderateText(log, text, wechat, openid, startedAt);
+  if (outputOutcome.rejected) rejectContent(outputOutcome);
+}
+
+/**
+ * `vision` 的模型调用：单带走原路径，多带则并行多次调用并在服务端合并成**一个** JSON。
+ *
+ * 分带只改变「发几次模型调用」，**图片与输入文字的内容安全仍然各只做一次**
+ * （在 runModelAction 里已完成）——每带各检一次会让微信内容安检的每日配额按带数消耗，
+ * 而配额用尽是 fail-closed 的（当天三处 AI 全部不可用）。
+ */
+async function runVision(
+  log: RunLog,
+  event: AiEvent,
+  target: ModelTarget,
+  context: { system: string; messages: ConversationMessage[] },
+): Promise<string> {
+  const call = (system: string): Promise<ModelCallResult> => invokeModel(log, target, {
+    system,
+    messages: context.messages,
+    maxTokens: target.maxTokens,
+    timeoutMs: target.timeoutMs,
+  });
+  const bands = planBands(event.bands, target.timeoutMs);
+  if (bands.length <= 1) return (await call(context.system)).text;
+
+  const startedAt = Date.now();
+  // 每一带失败都要留住失败对象而不是立刻抛出：一带超时不该让其余带的结果一起丢掉。
+  const settled = await Promise.all(bands.map(async (band): Promise<{ band: BandCallResult; usage: CallUsage | null; failure: AiFailure | null }> => {
+    try {
+      const result = await call(bandedSystem(context.system, band));
+      return {
+        band: { band, ok: true, text: result.text },
+        usage: toCallUsage(result.usage, log.config),
+        failure: null,
+      };
+    } catch (error) {
+      return { band: { band, ok: false, text: '' }, usage: null, failure: toFailure(error) };
+    }
+  }));
+
+  const usages = settled.flatMap((item) => (item.usage === null ? [] : [item.usage]));
+  // 全带都失败时保持 `usage: null`（与单带的失败路径一致）：没有成功的模型调用就没有用量，
+  // 记一个 0 会被读成「这次没花钱」。
+  if (usages.length > 0) log.usage = sumCallUsage(usages, log.config);
+  for (const item of settled) {
+    if (item.failure === null) continue;
+    pushWarning(log, `第 ${item.band.band.from}-${item.band.band.to} 节这一段识别失败（${item.failure.message}）：${item.failure.detail}`);
+  }
+
+  const merged = mergeBands(settled.map((item) => item.band));
+  // 一带都没成功：按第一次失败抛出，页面才能给出对应的降级文案（超时 / 限流 / 被拒）。
+  const firstFailure = settled.find((item) => item.failure !== null);
+  if (merged.succeeded === 0 && firstFailure !== undefined && firstFailure.failure !== null) {
+    throw firstFailure.failure;
+  }
+  pushWarning(
+    log,
+    `分带识别：按节次分 ${bands.length} 带并行调用，成功 ${merged.succeeded} 带`
+    + `（画像：固定 ${VISION_PROFILE.fixedSeconds} 秒 + ${VISION_PROFILE.tokensPerSecond} token/秒 + 每门课 ${VISION_PROFILE.tokensPerCourse} token）`
+    + `，每带预算 ${target.timeoutMs}ms，本次耗时 ${Date.now() - startedAt}ms。`,
+  );
+  if (merged.failed.length > 0) {
+    pushWarning(log, `没有可用识别结果的节次：${merged.failed.map((band) => `${band.from}-${band.to}`).join('、')}；其余节次的结果已返回。`);
+  }
+  return merged.text;
+}
+
 /**
  * chat / vision 的完整流水线：配额 → 输入检测 → 模型 → 输出检测。
  * 顺序是刻意的：先判上限（不该花的钱不花）、先检输入（违规内容不送第三方）、再检输出（生成内容不上屏前不放手）。
@@ -586,19 +665,18 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): P
     maxTokens: typeof event.maxTokens === 'number' ? event.maxTokens : undefined,
     timeoutMs: modelTimeoutMs(log, startedAt, event.timeoutMs),
   });
-  const result = await invokeModel(log, target, {
-    system,
-    messages,
-    maxTokens: target.maxTokens,
-    timeoutMs: target.timeoutMs,
-  });
+  const result = vision
+    ? await runVision(log, event, target, { system, messages })
+    : (await invokeModel(log, target, {
+      system,
+      messages,
+      maxTokens: target.maxTokens,
+      timeoutMs: target.timeoutMs,
+    })).text;
 
-  // 3) 输出内容安全：AI 生成的文字上屏前再检一次。
-  if (log.config.moderateOutput && result.text !== '') {
-    const outputOutcome = await moderateText(log, result.text, wechat, openid, startedAt);
-    if (outputOutcome.rejected) rejectContent(outputOutcome);
-  }
-  return result.text;
+  // 3) 输出内容安全：AI 生成的文字上屏前再检一次（分带识别在**合并后**的文本上只检一次）。
+  await moderateOutput(log, result, wechat, openid, startedAt);
+  return result;
 }
 
 function baseResponse(options: {

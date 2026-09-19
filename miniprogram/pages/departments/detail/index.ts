@@ -134,7 +134,7 @@ Page({
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
           return;
         }
-        appendTurn(departmentId, guardTurn(result.text, departmentId));
+        appendTurn(departmentId, guardTurn(result.text, departmentId, text));
         this.setData({
           qaMessages: conversationOf(departmentId),
           qaSending: false,

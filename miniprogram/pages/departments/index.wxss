@@ -1,15 +1,36 @@
 @import "./qa.wxss";
 
-.departments-heading { padding: 8rpx 0 32rpx; }
-.departments-intro { margin-top: 16rpx; color: #576c63; font-size: 26rpx; line-height: 1.8; }
-.departments-list { display: flex; flex-direction: column; }
-.department-item { display: flex; align-items: center; justify-content: space-between; padding: 30rpx 28rpx; background: #fff; border-radius: 22rpx; margin-bottom: 18rpx; }
+/**
+ * 部门列表页：液态玻璃——头部玻璃面板，条目是高不透明度的玻璃卡。
+ */
+.departments-heading {
+  padding: 28rpx 30rpx 32rpx;
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 20rpx 52rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.departments-heading .section-title { color: var(--brand-deep, #8c1614); letter-spacing: 3rpx; }
+.departments-intro { margin-top: 16rpx; color: var(--text-2, #6b5d57); font-size: 26rpx; line-height: 1.8; }
+.departments-list { display: flex; flex-direction: column; margin-top: 28rpx; }
+.department-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 30rpx 28rpx; margin-bottom: 18rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-card, 24rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
 .department-main { min-width: 0; }
 .department-name { font-size: 32rpx; font-weight: 600; }
-.department-campus { margin-top: 10rpx; color: #547367; font-size: 24rpx; }
-.department-chevron { font-size: 38rpx; line-height: 1; color: #547367; margin-left: 16rpx; }
+.department-campus { margin-top: 10rpx; color: var(--text-3, #94867f); font-size: 24rpx; }
+.department-chevron { font-size: 38rpx; line-height: 1; color: var(--gold-deep, #a67f1c); margin-left: 16rpx; }
 .departments-empty { padding: 32rpx 0 8rpx; }
-.departments-source { margin-top: 36rpx; padding-top: 26rpx; border-top: 1rpx solid #e8eeea; }
-.departments-source-label { font-size: 23rpx; color: #63786d; }
-.departments-verified-date { color: #6c7c73; font-size: 22rpx; margin-top: 4rpx; }
-.departments-source-note { margin-top: 16rpx; color: #576c63; font-size: 24rpx; line-height: 1.7; }
+.departments-source { margin-top: 36rpx; padding-top: 26rpx; border-top: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
+.departments-source-label { font-size: 23rpx; color: var(--text-3, #94867f); }
+.departments-verified-date { color: var(--text-3, #94867f); font-size: 22rpx; margin-top: 4rpx; }
+.departments-source-note { margin-top: 16rpx; color: var(--text-2, #6b5d57); font-size: 24rpx; line-height: 1.7; }

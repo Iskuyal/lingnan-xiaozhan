@@ -505,6 +505,12 @@ test('防幻觉守卫:未公布字段上的编造整条替换,并记下命中类
     ['校学生会成立于 2019 年。', '成立时间'],
     ['详见 https://example.com/student-union 的介绍。', '资料外链接'],
     ['联系方式：微信公众号「岭南学生会」', '联系方式表述'],
+    // 2026-09-19 两轴复核发现的两条绕过路径：校区名不只「广州 / 清远」，人员称谓也不只「负责人」。
+    ['校学生会的办公室在增城校区。', '校区表述'],
+    ['校学生会主席张三主持工作。', '负责人表述'],
+    ['该组织的李四部长负责对接。', '负责人表述'],
+    ['由王五会长牵头。', '负责人表述'],
+    ['李明老师负责指导。', '负责人表述'],
   ];
   for (const [answer, reason] of fabricated) {
     const result = guardAnswer(answer, { department: union });
@@ -531,6 +537,10 @@ test('防幻觉守卫:资料支持的如实回答原样放行,不误伤', () => 
     [veteran, '退役军人事务服务部成立于 2022 年 5 月，由退役大学生组成。'],
     [union, `资料来源：${union.sourceUrl}`],
     [union, '活动动态里有「对话榜样」这篇报道（2026-06-30）。'],
+    // 「主席团」是语料原文（「主席团+工作部门」），不能因为出现「主席」二字就拦。
+    [union, '组织架构为「主席团+工作部门」模式，设 5 大部门。'],
+    // 语料里有「广清两校区」的写法（校区依据说明），指同两处校区，不算编造。
+    [volunteers, '据 2026-03-10 的活动报道，广清两校区的青年志愿者联合会都有志愿服务队。'],
   ];
   for (const [department, answer] of grounded) {
     const result = guardAnswer(answer, { department });
@@ -540,8 +550,43 @@ test('防幻觉守卫:资料支持的如实回答原样放行,不误伤', () => 
   }
 });
 
-test('防幻觉守卫:联系方式只用一套规则,与 findUnverifiedContacts 同源', () => {
-  const { buildCorpusText, contactWarningFor, findUnverifiedContacts, guardAnswer } = qa();
+test('防幻觉守卫:问的是未公布字段时,含糊拒答也要换成官网未公布', () => {
+  const { guardAnswer } = qa();
+  const union = findDepartment('student-union');
+  const volunteers = findDepartment('young-volunteers');
+  const veteran = findDepartment('veteran-affairs-service');
+  // 回避式回答不算回答了「官网未公布」：验收要求这类信息明确说出来（2026-09-19 两轴复核补）。
+  const vague = ['我不清楚，建议你问问学校。', '抱歉，这个问题我无法回答。', '可以到学校官网自行查找。'];
+  for (const answer of vague) {
+    const result = guardAnswer(answer, { department: union, question: '校学生会的联系方式是什么？' });
+    assert.equal(result.replaced, true, `含糊拒答未纠正：${answer}`);
+    assert.ok(result.reasons.includes('含糊作答'), `命中原因应为含糊作答，实际 ${result.reasons}`);
+    assert.ok(result.text.includes('官网未公布'), '替换后必须明确回答官网未公布');
+  }
+  // 如实回答（含否定表述）照常放行。
+  const honest = ['官网未公布该组织的联系方式。', '资料里没有收录联系方式，无法提供。', '暂无公开的联系方式。'];
+  for (const answer of honest) {
+    const result = guardAnswer(answer, { department: union, question: '校学生会的联系方式是什么？' });
+    assert.equal(result.replaced, false, `误伤了如实回答：${answer}（${result.reasons}）`);
+  }
+  // 问的是已公布字段、或该字段在本部门已公布时不强制：不能因为没说「官网未公布」就替换。
+  assert.equal(
+    guardAnswer('设权益部、文娱部、器材部、体育部、学创部。', { department: union, question: '下设哪些部门？' }).replaced,
+    false,
+  );
+  assert.equal(
+    guardAnswer('在广州校区、清远校区都有志愿服务队。', { department: volunteers, question: '属于哪个校区？' }).replaced,
+    false,
+  );
+  assert.equal(
+    guardAnswer('成立于 2022 年 5 月。', { department: veteran, question: '什么时候成立的？' }).replaced,
+    false,
+  );
+  // 没有部门上下文时不强制（列表页的自由提问认不出是哪个部门）。
+  assert.equal(guardAnswer('我不清楚。', { question: '校学生会的联系方式是什么？' }).replaced, false);
+});
+
+test('防幻觉守卫:联系方式只用一套规则,与 findUnverifiedContacts 同源', () => {  const { buildCorpusText, contactWarningFor, findUnverifiedContacts, guardAnswer } = qa();
   const corpus = buildCorpusText();
   const answer = '可以打 13800138000，座机 020-12345678，QQ：123456789，微信：lingnan_helper，邮箱 help@example.com。';
   const tokens = Array.from(findUnverifiedContacts(answer, corpus));
@@ -635,7 +680,9 @@ test('送进模型的历史保留模型原话,守卫只替换上屏的回答', a
 
 test('详情页:进入自动展开一次、可收起且关过不再弹,追问建议与输入框可用', async () => {
   sharedQa().resetAllConversations();
-  const cloud = cloudStub({ chat: () => okAnswer('校学生会设权益部、文娱部、器材部、体育部、学创部 5 个部门。') });
+  // 回答要如实说明「官网未公布」：这条追问问的是未公布字段，含糊回答会被守卫替换
+  // （见「问的是未公布字段时,含糊拒答也要换成官网未公布」），所以这里按真实模型的正常回答来铺。
+  const cloud = cloudStub({ chat: () => okAnswer('校学生会的联系方式官网未公布；下设权益部、文娱部、器材部、体育部、学创部 5 个部门。') });
   const storage = storageStub();
   const wx = baseWx(cloud, storage);
   const page = loadPage('departments/detail', wx);

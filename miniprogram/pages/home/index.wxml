@@ -1,63 +1,68 @@
-<view class="page">
-  <view class="school-heading">
-    <view class="eyebrow">你的校园，随手可达</view>
-    <view class="school-name">{{school.name}}</view>
-    <view class="campuses"><view class="campus-dot"></view>{{school.campuses}}</view>
+<view class="home">
+  <view class="hero">
+    <view class="hero-inner">
+      <view class="hero-eyebrow">你的校园，随手可达</view>
+      <view class="school-name">{{school.name}}</view>
+      <view class="campuses"><view class="campus-dot"></view>{{school.campuses}}</view>
+    </view>
+    <view class="hero-rule"></view>
   </view>
 
-  <view class="tools-section">
-    <view class="section-title">校园服务</view>
-    <view class="tools">
-      <button id="departments-entry" class="tool tool-departments" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看学生组织名单">
-        <image class="tool-icon" src="/assets/departments.svg" mode="aspectFit" />
-        <view class="tool-title">学生部门</view>
-        <view class="tool-description">认识组织，找到联系</view>
-        <view class="tool-bottom"><text class="tool-status">已可查看</text><text class="chevron">›</text></view>
-      </button>
-      <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，可导入课表文件或手工添加">
-        <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
-        <view class="tool-title">我的课表</view>
-        <view class="tool-description">导入课表，按周查看</view>
-        <view class="tool-bottom"><text class="tool-status">可导入</text><text class="chevron">›</text></view>
-      </button>
-    </view>
-  </view>
-
-  <view class="news-section">
-    <view class="news-section-head">
-      <view class="section-title">校园资讯</view>
-      <button id="news-entry" class="news-entry-link" hover-class="pressed" bindtap="openNews" aria-label="查看全部校园资讯">查看全部 ›</button>
-    </view>
-    <view wx:if="{{newsStatus === 'loading'}}" class="news-hint">正在读取最近资讯…</view>
-    <view wx:elif="{{newsStatus === 'error'}}" class="news-hint news-hint-error">
-      <view>{{newsError}}</view>
-      <button id="news-retry" class="news-retry" hover-class="pressed" bindtap="retryNews">重试</button>
-    </view>
-    <block wx:else>
-      <view wx:if="{{recentNews.length === 0}}" class="news-hint">云端还没有已同步的资讯，稍后再来看看。</view>
-      <view
-        class="news-recent-item"
-        wx:for="{{recentNews}}"
-        wx:key="id"
-        hover-class="pressed"
-        data-id="{{item.id}}"
-        bindtap="openNewsDetail"
-      >
-        <view class="news-recent-title">{{item.title}}</view>
-        <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
+  <view class="page">
+    <view class="tools-section">
+      <view class="section-head"><view class="section-bar"></view><view class="section-title">校园服务</view></view>
+      <view class="tools">
+        <button id="departments-entry" class="tool tool-departments" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看学生组织名单">
+          <image class="tool-icon" src="/assets/departments.svg" mode="aspectFit" />
+          <view class="tool-title">学生部门</view>
+          <view class="tool-description">认识组织，找到联系</view>
+          <view class="tool-bottom"><text class="tool-status">已可查看</text><text class="chevron">›</text></view>
+        </button>
+        <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，可导入课表文件或手工添加">
+          <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
+          <view class="tool-title">我的课表</view>
+          <view class="tool-description">导入课表，按周查看</view>
+          <view class="tool-bottom"><text class="tool-status">可导入</text><text class="chevron">›</text></view>
+        </button>
       </view>
-      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
-    </block>
-  </view>
-
-  <view class="school-about">
-    <view class="section-title">认识岭南</view>
-    <view class="introduction">{{school.introduction}}</view>
-    <view class="source-area">
-      <view class="source-label">资料来源：{{school.sourceLabel}}</view>
-      <view class="verified-date">核查于 {{school.verifiedAt}}</view>
-      <button id="copy-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
     </view>
+
+    <view class="news-section">
+      <view class="news-section-head">
+        <view class="section-head"><view class="section-bar"></view><view class="section-title">校园资讯</view></view>
+        <button id="news-entry" class="news-entry-link" hover-class="pressed" bindtap="openNews" aria-label="查看全部校园资讯">查看全部 ›</button>
+      </view>
+      <view wx:if="{{newsStatus === 'loading'}}" class="news-hint">正在读取最近资讯…</view>
+      <view wx:elif="{{newsStatus === 'error'}}" class="news-hint news-hint-error">
+        <view>{{newsError}}</view>
+        <button id="news-retry" class="news-retry" hover-class="pressed" bindtap="retryNews">重试</button>
+      </view>
+      <block wx:else>
+        <view wx:if="{{recentNews.length === 0}}" class="news-hint">云端还没有已同步的资讯，稍后再来看看。</view>
+        <view
+          class="news-recent-item"
+          wx:for="{{recentNews}}"
+          wx:key="id"
+          hover-class="pressed"
+          data-id="{{item.id}}"
+          bindtap="openNewsDetail"
+        >
+          <view class="news-recent-title">{{item.title}}</view>
+          <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
+        </view>
+        <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
+      </block>
+    </view>
+
+    <view class="school-about">
+      <view class="section-head"><view class="section-bar"></view><view class="section-title">认识岭南</view></view>
+      <view class="introduction">{{school.introduction}}</view>
+      <view class="source-area">
+        <view class="source-label">资料来源：{{school.sourceLabel}}</view>
+        <view class="verified-date">核查于 {{school.verifiedAt}}</view>
+        <button id="copy-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
+      </view>
+    </view>
+    <view class="footer">从了解校园，到安排每一天</view>
   </view>
-  <view class="footer">从了解校园，到安排每一天</view>
 </view>
