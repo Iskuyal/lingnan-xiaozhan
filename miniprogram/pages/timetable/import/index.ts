@@ -21,6 +21,7 @@ import {
   uploadFile,
 } from '../../../services/timetable/index';
 import { clearDraft, getDraft, removeCourseAt, setDraft } from '../../../services/timetable/draft';
+import { rawErrorText } from '../../../services/cloud';
 import { blockingReason, sectionLabelOf, semesterLabel, weekLabelOf, weekdayLabel } from '../../../services/timetable/view';
 import { callAi, userMessage, visionEvent } from '../../../services/ai';
 import {
@@ -141,13 +142,13 @@ Page({
         return this.startImport(picked);
       },
       fail: (error) => {
-        // 用户取消不算错误，只有真正的失败才提示；从确认页发起的重选被取消时回到确认页。
-        const message = messageOf(error);
-        if (/cancel/u.test(message)) {
+        // 用户取消不算错误：先看原始文本再决定，取消时连诊断日志都不打
+        //（否则日志里出现「课表操作失败：… cancel」，看日志的人会以为真的失败了）。
+        if (/cancel/u.test(rawErrorText(error))) {
           this.restoreReviewIfDraft();
           return;
         }
-        this.setData({ step: 'error', photoError: false, errorMessage: `选择文件失败：${message}` });
+        this.setData({ step: 'error', photoError: false, errorMessage: `选择文件失败：${messageOf(error)}` });
       },
     });
   },
@@ -208,13 +209,12 @@ Page({
         return this.startPhoto(path, size);
       },
       fail: (error) => {
-        // 用户取消不算错误；从确认页发起的重试被取消时回到确认页。
-        const message = messageOf(error);
-        if (/cancel/u.test(message)) {
+        // 与选文件一致：取消不是失败，也不打诊断日志。
+        if (/cancel/u.test(rawErrorText(error))) {
           this.restoreReviewIfDraft();
           return;
         }
-        this.setData({ step: 'error', photoError: false, errorMessage: `选择图片失败：${message}` });
+        this.setData({ step: 'error', photoError: false, errorMessage: `选择图片失败：${messageOf(error)}` });
       },
     });
   },

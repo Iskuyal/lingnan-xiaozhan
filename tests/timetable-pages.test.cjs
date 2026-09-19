@@ -181,6 +181,48 @@ test('导入页：引导文案写清只能从聊天记录选文件，且解析�
   delete globalThis.wx;
 });
 
+test('取消选文件/图片不是失败：不报错、不打诊断日志，从确认页发起时回到确认页', async () => {
+  const draft = realDraft();
+  const cloud = cloudStub({
+    prepareUpload: () => ({ ok: true, cloudPath: 'timetable-imports/abc/x.xls', maxBytes: 10485760 }),
+    importDraft: () => ({ ok: true, draft, tempFileDeleted: true }),
+  });
+  const wx = baseWx(cloud, {
+    chooseMessageFile: (options) => options.fail({ errMsg: 'chooseMessageFile:fail cancel' }),
+    chooseMedia: (options) => options.fail({ errMsg: 'chooseMedia:fail cancel' }),
+  });
+  const logged = [];
+  const originalError = console.error;
+  console.error = (...args) => { logged.push(args.map(String).join(' ')); };
+  try {
+    const page = loadPage('timetable/import', wx);
+    page.onLoad();
+    assert.equal(page.data.step, 'guide');
+    page.chooseFile();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(page.data.step, 'guide', '取消选文件后应停留在引导页');
+    assert.equal(page.data.errorMessage, '', '取消不该给出错误文案');
+    page.choosePhoto();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(page.data.step, 'guide', '取消选图片后应停留在引导页');
+    assert.equal(page.data.errorMessage, '');
+    assert.deepEqual(logged, [], `取消是正常操作，不该产生诊断日志：${logged.join(' | ')}`);
+
+    // 从确认页发起的重选被取消：回到确认页，草稿不丢。
+    draftStore.setDraft(draft);
+    page.restoreReviewIfDraft();
+    assert.equal(page.data.step, 'review');
+    page.chooseFile();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(page.data.step, 'review', '从确认页发起的重选被取消，应回到确认页');
+    assert.deepEqual(logged, [], '确认页发起后被取消同样不该打日志');
+  } finally {
+    console.error = originalError;
+    draftStore.clearDraft();
+    delete globalThis.wx;
+  }
+});
+
 test('导入页：缺节次的条目在确认页标出，修正或删除前不能保存', async () => {
   const draft = realDraft();
   draft.courses[0].sectionRanges = [];
