@@ -1,0 +1,118 @@
+<!-- 真实页面片段，来源：https://lnc.edu.cn/bw/xywt/content_23050 ，抓取日期 2026-09-19。
+     取 div.printArea（含 h2.title、div.property 与正文）至正文右边界，字节未改写，行尾保持原样。 -->
+<div class="printArea" data-power-area='content'>
+                        <!-- 标题 -->
+                        <h2 class="title">
+                            教职工户口迁移办理流程
+                            <div class="subheading"></div>
+                        </h2>
+                        <div class="property">
+                            <span>来源： </span> <span>发布时间：2025-07-01 10:00:00</span> <span>浏览次数：<span data-power-hits-action="/bw/contentmanage/ajax/getandupdate" data-power-hits-count="705" data-power-hits-id="23050" data-power-hits-mold="article" data-power-hits-nodeid="4200022" data-power-hits-open="true"></span> 次</span> <span class="size">【字体：<a href="javascript:;" data-power-command="reducefont">小</a> <a href="javascript:;" data-power-command="enlargefont">大</a>】</span>
+                            
+<span class="" id="content_AdminEdit" style="display:none;"></span>
+<span class="" id="content_QuickRepost" style="display:none;"></span>
+<script>
+    $(function () {
+        if (23050> 0) {
+            var url = '/bw/contentmanage/article/ajaxcheckcontentedit/23050';
+            var currentPageUrl = window.location.href;
+
+            var params = new URLSearchParams(currentPageUrl);
+            if (params.has('ispreview') && params.get('ispreview') === 'true') {
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                crossDomain: true, // 如果是跨域请求
+                xhrFields: {
+                    withCredentials: true // 如果需要发送cookies等凭据
+                },
+                success: function (data) {
+                    if (data.Code == 0) {
+                        if (!!data.Url) {
+                            $("#content_AdminEdit").html("【<a href='" + data.Url + "' target='_blank'>进入后台编辑</a>】")
+                            $("#content_AdminEdit").show();
+                        }
+
+                        if (!!data.QuickRepostUrl) {
+                            var repostHtml = `
+                            <div class="repost-container" id="repostContainer">
+                               【<a href="#" class="repost-btn" id="repostBtn"><span>一键转载</span></a>】
+                                <div class="repost-dropdown-menu" id="dropdownMenu">
+                                    <div class="menu-item full-text" id="fullTextOption">
+                                        <div class="menu-text">
+                                                <div class="menu-title"><a href="${data.QuickRepostUrl}" target="_blank">以全文方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                    <div class="menu-item link-only" id="linkOnlyOption">
+                                        <div class="menu-text">
+                                                    <div class="menu-title"><a href="${data.QuickRepostUrl}?isLinkRepost=true" target="_blank">以链接方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                            $("#content_QuickRepost").html(repostHtml);
+                            $("#content_QuickRepost").show();
+
+                            const $repostContainer = $('#repostContainer');
+                            const $repostBtn = $('#repostBtn');
+                            const $dropdownMenu = $('#dropdownMenu');
+
+                            $repostBtn.on('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                $repostContainer.toggleClass('active');
+                            });
+
+                            $('#fullTextOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $('#linkOnlyOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $(document).on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $dropdownMenu.on('click', function (e) {
+                                e.stopPropagation();
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+                        </div>
+                        <!-- 正文 -->
+                        <div class="conTxt" data-power-defaultFontSize="14" data-power-defaultLineHeight="2" data-power-imgMaxWidth="800">
+                            <p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><strong><span style="line-height: 120%; font-size: 16px">一、户口迁移办理方式</span></strong></span></p><p style="line-height: 2em"><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">目前，户口迁移办理主要有三种方式：</span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">一站式迁移</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：鉴于全国大部分地区已实现一站式办理服务，教职工无需再办理户口迁移证，即可直接在迁入地办理落户手续。此方式简便快捷，是首选的办理方式。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">户口迁移证办理</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：若迁入地仍要求提供户口迁移证，则教职工需按照相关规定和流程，前往原户籍地办理户口迁移证，并携带至迁入地进行落户。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">3.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">市内迁移</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：对于市内迁移的教职工，需根据迁入地的具体政策和要求进行办理，可能涉及不同的办理流程和所需材料。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">二、迁移前必须完成的确认事项</span></strong></span></p><p style="line-height: 2em"><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">在正式办理户口迁移前，教职工需完成以下两项重要确认：</span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">向户口拟迁入地确认迁入意愿</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：教职工需与拟迁入地的社区或街道办联系，明确表达迁入意愿，并了解迁入地的具体要求或条件。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">向迁入地公安机关确认迁移方式</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：教职工需与迁入地的公安机关（如辖区政务中心、派出所等）联系，确认其可接受的户口迁移方式，并了解办理过程中可能涉及的注意事项。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">三、详细的办理流程</span></strong></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">资料准备阶段</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1）</span><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; line-height: 120%">教职工需前往学院保卫处，领取户口卡个人页、户主页复印件。</span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2）&nbsp;</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">同时，教职工还需准备个人身份证、毕业证（如迁入地有要求）等必要证件的原件和复印件。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">前往迁入地公安机关办理阶段</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1）</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">教职工需携带上述准备好的所有资料，前往迁入地的公安机关进行办理。</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2）&nbsp;</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">在办理过程中，教职工需按照工作人员的指引，逐步完成户口迁入手续的办理。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">3.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">落户手续办理阶段</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1）</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">若迁入地公安机关同意教职工迁入，则将为其办理落户手续。</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2）</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">教职工需按照工作人员的指导，填写相关表格，提交所需材料，并等待审核。</span></span></p><p style="text-indent: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">3）</span><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">审核通过后，教职工可领取新的户口本。</span></span></p><p style="line-height: 2em"><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"></span></p><p style="line-height: 2em; text-align: center"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><img src="/upload/bwgzb/contentmanage/article/image/2025/06/13/a3452db21cb645c186b77b5e24b61fe5.png" title="图片1" alt="图片1" eid="eid_07c3efbe3ffe" style="max-width: 100%"></span></p><p><br></p><p style="line-height: 2em; text-align: center"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><img src="/upload/bwgzb/contentmanage/article/image/2025/06/13/4439d76d839e450888a63917419fb623.png" eid="eid_7db54e82c574" style="max-width: 100%"></span></p><p style="line-height: 2em; text-align: center"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><img src="/upload/bwgzb/contentmanage/article/image/2025/06/13/ce092b4cb8a14741b9fc5f1183863d7d.png" title="图片2" alt="图片2" eid="eid_f139b8ab5865" style="max-width: 100%"></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">四、办理过程中的注意事项</span></strong></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">1.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">提前了解迁入政策</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：教职工在办理户口迁移前，应提前了解迁入城市的入户政策，以确保办理过程的顺利进行。</span></span></p><p style="line-height: 2em"><span style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;"><span style="font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">2.&nbsp;</span><strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">保持耐心与细心</span></strong><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">：在办理过程中，教职工需保持耐心和细心，认真听取工作人员的指导，并按照要求逐步完成各项手续。</span></span></p><p style="line-height: 2em"><span style="line-height: 120%; font-size: 16px; font-family: 微软雅黑, &quot;Microsoft YaHei&quot;">请广大教职工严格按照本指南进行户口迁移办理，确保整个办理过程的规范性和高效性。如有任何疑问或困难，请咨询保卫工作部潘老师 （020-22305911）。</span></p>
+                            
+
+
+
+<div class="auditRecordcss">
+            <span>终审：保卫工作部</span>
+</div>
+                        </div>
+                    </div>
+                    
+
+
+                    
+
+
+
+                    
+
+
+                   
+
+                    
+
+

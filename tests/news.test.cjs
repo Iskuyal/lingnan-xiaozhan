@@ -333,6 +333,121 @@ test('两套模板各自分派：容器与标题锚点不同，交叉套用解�
   assert.equal(parseArticle(fixture('tw-article-32355.html'), TW_ARTICLE_URL, 'newsList').date, '2026-09-18');
 });
 
+// ---------- Ticket 10：为「校园通知与办事指引问答」追加入库的 8 个栏目 ----------
+
+/**
+ * 2026-09-19 追加栏目的真实页面片段。它们全部实测为 `newsList` 模板（列表 ul.newsList、
+ * 条目 title 属性、文章 div.printArea），因此**加栏目只改 columns.ts 的清单、不改解析**——
+ * 本组测试锁定这一结论，免得日后有人以为需要新的模板分支。
+ * 抓取与实测过程见 docs/tasks/tickets/10-campus-rag-qa.md 与 docs/news-sources.md。
+ */
+const ADDED_COLUMNS = [
+  { file: 'bw-list-page-1.html', url: 'https://lnc.edu.cn/bw/tqsd', count: 10, title: '关于国庆中秋假期防御台风“麦德姆”的公告', date: '2025-10-05' },
+  { file: 'bw-guide-list-page-1.html', url: 'https://lnc.edu.cn/bw/xywt', count: 7, title: '教职工户口迁移办理流程', date: '2025-07-01' },
+  { file: 'bw-rule-list-page-1.html', url: 'https://lnc.edu.cn/bw/djxf/aqglzd', count: 1, title: '广东岭南职业技术学院（清远校区）交通与车辆管理规定（试行）', date: '2026-03-13' },
+  { file: 'zl-list-page-1.html', url: 'https://lnc.edu.cn/zl/tzgg', count: 10, title: '关于开展2025-2026学年第二学期学生期末评价工作的通知', date: '2026-07-01' },
+  { file: 'jwc-jxyh-list-page-1.html', url: 'https://lnc.edu.cn/jwc/jxyh', count: 9, title: '关于教材选用委员会成员的公示（教务部 〔2025〕8号 ）', date: '2025-03-03' },
+  { file: 'zxsy-list-page-1.html', url: 'https://lnc.edu.cn/zxsy/lnpp', count: 5, title: '锚定目标明方向，实干笃行启新程——医学应用技术学院（知行书院）2025-2026学年第二学期教职工大会顺利召开', date: '2026-03-10' },
+  { file: 'ln-list-page-1.html', url: 'https://lnc.edu.cn/ln/xssw/ggtz', count: 1, title: '关于陈志欣、魏建敏同学自动退学处理的公告', date: '2022-06-26' },
+  { file: 'cl-list-page-1.html', url: 'https://lnc.edu.cn/cl/jyjx/zzyr', count: 3, title: '家校共育|家访，一场家校双向奔赴的沟通之旅', date: '2024-02-27' },
+];
+
+/** 追加栏目的文章页片段（每个栏目各一篇，取自该栏目列表首条）。 */
+const ADDED_ARTICLES = [
+  { file: 'bw-article-25412.html', url: 'https://lnc.edu.cn/bw/tqsd/content_25412', title: '关于国庆中秋假期防御台风“麦德姆”的公告', date: '2025-10-05' },
+  { file: 'bw-guide-article-23050.html', url: 'https://lnc.edu.cn/bw/xywt/content_23050', title: '教职工户口迁移办理流程', date: '2025-07-01' },
+  { file: 'bw-rule-article-27064.html', url: 'https://lnc.edu.cn/bw/djxf/aqglzd/content_27064', title: '广东岭南职业技术学院（清远校区）交通与车辆管理规定（试行）', date: '2026-03-13' },
+  { file: 'zl-article-30318.html', url: 'https://lnc.edu.cn/zl/tzgg/content_30318', title: '关于开展2025-2026学年第二学期学生期末评价工作的通知', date: '2026-07-01' },
+  { file: 'jwc-jxyh-article-21623.html', url: 'https://lnc.edu.cn/jwc/jxyh/content_21623', title: '关于教材选用委员会成员的公示（教务部 〔2025〕8号 ）', date: '2025-03-03' },
+  { file: 'zxsy-article-27034.html', url: 'https://lnc.edu.cn/zxsy/lnpp/content_27034', title: '锚定目标明方向，实干笃行启新程——医学应用技术学院（知行书院）2025-2026学年第二学期教职工大会顺利召开', date: '2026-03-10' },
+  { file: 'ln-article-10585.html', url: 'https://lnc.edu.cn/ln/xssw/ggtz/content_10585', title: '关于陈志欣、魏建敏同学自动退学处理的公告', date: '2022-06-26' },
+  { file: 'cl-article-16590.html', url: 'https://lnc.edu.cn/cl/jyjx/zzyr/content_16590', title: '家校共育|家访，一场家校双向奔赴的沟通之旅', date: '2024-02-27' },
+];
+
+test('追加的 8 个栏目套用 newsList 模板即可解析，首条标题与日期逐条核对', () => {
+  const { parseList } = loadModule(PARSE_MODULE);
+  for (const column of ADDED_COLUMNS) {
+    const items = parseList(fixture(column.file), column.url, 'newsList');
+    assert.equal(items.length, column.count, `${column.file} 条目数`);
+    assert.equal(items[0].title, column.title, `${column.file} 首条标题`);
+    assert.equal(items[0].date, column.date, `${column.file} 首条日期`);
+    assert.match(items[0].url, /^https:\/\/lnc\.edu\.cn\//, `${column.file} 首条应指向官网`);
+    // 交叉套用校园动态模板必须解析不出条目：两套容器不同构（与 tw 的既有断言同一口径）。
+    assert.deepEqual(parseList(fixture(column.file), column.url, 'xyxw'), [], `${column.file} 不应被 xyxw 模板解析`);
+  }
+});
+
+test('追加栏目的文章页解析出标题、日期与正文段落', () => {
+  const { parseArticle } = loadModule(PARSE_MODULE);
+  for (const article of ADDED_ARTICLES) {
+    const parsed = parseArticle(fixture(article.file), article.url, 'newsList');
+    assert.equal(parsed.title, article.title, `${article.file} 标题`);
+    assert.equal(parsed.date, article.date, `${article.file} 日期`);
+    assert.ok(parsed.paragraphs.length > 0, `${article.file} 应有正文段落`);
+    assert.ok(parsed.paragraphs.join('').length > 0, `${article.file} 正文不应为空`);
+    // 正文尾部署名由既有规则剥离；只断言不残留导航/页脚文本。
+    assert.ok(!parsed.paragraphs.some((line) => /^(分享到|扫码关注|统一门户|学院章程)$/.test(line.trim())), `${article.file} 不应含导航页脚`);
+  }
+});
+
+test('列表标题属性被 CMS 二次转义时解两次，使列表与正文标题一致', () => {
+  const { parseList, parseAnnouncementAttribute } = loadModule(PARSE_MODULE);
+  // 实测原始属性值是 `&amp;nbsp;`：解一次只剩字面量，浏览器与我们的列表都会显示「&nbsp;」。
+  const attribute = parseAnnouncementAttribute('标题：教务部&amp;nbsp;〔2025〕8号 点击数：51 发表时间：2025-03-03');
+  assert.equal(attribute.title, '教务部 〔2025〕8号');
+  assert.equal(attribute.date, '2025-03-03');
+  const jwc = parseList(fixture('jwc-jxyh-list-page-1.html'), 'https://lnc.edu.cn/jwc/jxyh', 'newsList');
+  assert.equal(jwc[0].title, ADDED_COLUMNS[4].title);
+  assert.ok(!/&[a-zA-Z#][a-zA-Z0-9]*;/.test(jwc[0].title), '列表标题不应残留 HTML 实体');
+  // 已上线的两个栏目（2026-09-18 上线）标题不受影响。
+  for (const [file, url, template] of [
+    ['tw-list-page-1.html', 'https://lnc.edu.cn/tw/djxf/tqsd', 'newsList'],
+    ['list-page-1.html', 'https://lnc.edu.cn/xyxw/xydt', 'xyxw'],
+  ]) {
+    for (const item of parseList(fixture(file), url, template)) {
+      assert.ok(!/&[a-zA-Z#][a-zA-Z0-9]*;/.test(item.title), `${file} 标题不应残留 HTML 实体`);
+    }
+  }
+});
+
+test('栏目内混入的站外条目仍被解析出来，由同步侧按外链处理（教务处教学运行实测 1 条）', () => {
+  const { parseList } = loadModule(PARSE_MODULE);
+  const items = parseList(fixture('jwc-jxyh-list-page-1.html'), 'https://lnc.edu.cn/jwc/jxyh', 'newsList');
+  const offsite = items.filter((item) => !item.url.startsWith('https://lnc.edu.cn/'));
+  assert.equal(offsite.length, 1, '该栏目实测混有 1 条公众号链接');
+  assert.match(offsite[0].url, /^https:\/\/mp\.weixin\.qq\.com\//);
+  // 解析层照常返回它（标题与日期可用）；正文是否抓取由同步侧的 isOffsiteUrl 决定——
+  // 外链条目只存标题、日期与原文链接，不抓公众号正文（见 index.ts 的 saveOffsiteItem）。
+  assert.ok(offsite[0].title !== '' && offsite[0].date !== '');
+});
+
+test('COLUMNS 清单包含追加的 8 个栏目，且模板均为 newsList', () => {
+  const { COLUMNS } = loadModule('dist/cloudfunctions/newsSync/columns.js');
+  const byId = new Map(COLUMNS.map((column) => [column.id, column]));
+  const expected = [
+    ['bw-tqsd', 'https://lnc.edu.cn/bw/tqsd', 2],
+    ['bw-xywt', 'https://lnc.edu.cn/bw/xywt', 1],
+    ['bw-aqglzd', 'https://lnc.edu.cn/bw/djxf/aqglzd', 1],
+    ['zl-tzgg', 'https://lnc.edu.cn/zl/tzgg', 7],
+    ['jwc-jxyh', 'https://lnc.edu.cn/jwc/jxyh', 1],
+    ['zxsy-lnpp', 'https://lnc.edu.cn/zxsy/lnpp', 1],
+    ['ln-ggtz', 'https://lnc.edu.cn/ln/xssw/ggtz', 1],
+    ['cl-zzyr', 'https://lnc.edu.cn/cl/jyjx/zzyr', 1],
+  ];
+  for (const [id, listUrl, totalPages] of expected) {
+    const column = byId.get(id);
+    assert.ok(column !== undefined, `清单缺少栏目 ${id}`);
+    assert.equal(column.listUrl, listUrl, `${id} 的列表 URL`);
+    assert.equal(column.template, 'newsList', `${id} 应复用 newsList 模板`);
+    assert.equal(column.totalPages, totalPages, `${id} 的总页数（实测页脚口径）`);
+  }
+  // 已上线栏目仍在清单里：校园动态保留以维持每日增量（全量已暂缓）。
+  assert.equal(byId.get('tw-tqsd').totalPages, 16);
+  assert.equal(byId.get('xyxw-xydt').totalPages, 126);
+  // 栏目 id 同时是状态文档 `_id`，不得重复。
+  assert.equal(byId.size, COLUMNS.length, '栏目 id 不得重复');
+});
+
 test('每个 fixture 都记录了来源 URL 与抓取日期', () => {
   for (const name of ['list-page-1.html', 'list-no-items.html', 'article-32118.html', 'article-32039-tail.html']) {
     const text = fixture(name);
@@ -344,6 +459,14 @@ test('每个 fixture 都记录了来源 URL 与抓取日期', () => {
     const text = fixture(name);
     assert.match(text, /来源：https:\/\/lnc\.edu\.cn\/tw\/djxf\/tqsd/, name);
     assert.match(text, /抓取日期 2026-09-18/, name);
+  }
+  // Ticket 10 追加的 8 个栏目片段（2026-09-19 抓取）：来源必须是该栏目自己的 URL。
+  for (const column of ADDED_COLUMNS.concat(ADDED_ARTICLES)) {
+    const text = fixture(column.file);
+    const path = new URL(column.url).pathname;
+    const listPath = path.replace(/\/content_\d+$/, '');
+    assert.match(text, new RegExp(`来源：https://lnc\\.edu\\.cn${listPath.replace(/[/.]/g, '\\$&')}`), column.file);
+    assert.match(text, /抓取日期 2026-09-19/, column.file);
   }
 });
 
