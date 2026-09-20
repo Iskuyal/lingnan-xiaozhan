@@ -42,6 +42,29 @@ const IMAGE_MESSAGE_ENV: Partial<Record<FailureClass, string>> = {
 /** 输入类型：决定取哪一套默认文案（服务端调用方知道被拒的是图还是字）。 */
 export type MessageInputKind = 'text' | 'image';
 
+/**
+ * 内容安全检测侧的**额度/配额用尽**文案，与 `quota_exhausted` 的默认文案（月度成本上限）分开。
+ *
+ * 两者同属「额度或配额用尽」一类（规格的三类失败之一），但**下一步不同**：
+ * 月度上限要「下月再试」，当日检测配额（微信 45009，未上架小程序 100 次/天）是「次日恢复」——
+ * 把当日的检测配额说成月度上限，会让用户白等一个月。这与「429 不归 quota_exhausted」是同一条理由：
+ * 分类管的是可执行的下一步，不是错误来自谁。
+ *
+ * 实测依据：2026-09-19 在 `msgSecCheck` 上撞到 `45009 fail reach max api daily quota limit`，
+ * 当时被归成 `internal`、用户看到「AI 服务开小差了」，而实际原因是当天检测次数用尽
+ * （见 docs/cloud-development.md 的内容安全配额一节）。
+ */
+const DEFAULT_SAFETY_QUOTA_MESSAGE = '内容安全检测的额度已用尽，AI 功能暂时不可用；未上架小程序每天有检测次数上限，通常次日恢复。';
+
+/** 检测配额文案的环境变量名（与其它文案同一套覆盖规则：改措辞不改代码）。 */
+export const SAFETY_QUOTA_MESSAGE_ENV = 'AI_MSG_QUOTA_EXHAUSTED_SAFETY';
+
+/** 内容安全检测额度用尽时的用户文案：环境变量优先，缺省用代码里的默认值。 */
+export function safetyQuotaMessage(): string {
+  const override = process.env[SAFETY_QUOTA_MESSAGE_ENV];
+  return typeof override === 'string' && override.trim() !== '' ? override.trim() : DEFAULT_SAFETY_QUOTA_MESSAGE;
+}
+
 /** 三类必需失败（供测试与文档核对；改动这里等于改动验收口径）。 */
 export const REQUIRED_FAILURE_CLASSES: FailureClass[] = ['model_unavailable', 'content_rejected', 'quota_exhausted'];
 

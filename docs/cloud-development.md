@@ -190,7 +190,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
 | `text` | string | `moderateText` 用；按 2000 字窗口逐段检测（最多 2 万字），超出部分在报告里写明并置 `checked: false` |
 | `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request`。客户端走 fileID：`wx.cloud.uploadFile` 返回的 `cloud://…` 才叫 fileID，`prepareUpload` 给的裸 cloudPath 不是（传裸路径会被 `downloadFile` 拒绝） |
-| `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束 |
+| `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束。**分带时 `maxTokens` 会被服务端按本带课程数抬高**（见下一行的 `bands`）：按整张表设的上限装不下较大的带，沿用会把那一带截断，而截断的 JSON 看起来像模型失败 |
+| `bands` | `'auto'` 或 ≥2 的整数 | 仅 `vision` 用，可选。按**节次**把整张课表切成若干带、**并行**调用模型，解决「一次调用识别整张表要 170 秒 > 云函数 60 秒上限」：`'auto'` 让服务端按自己的超时预算与实测画像算带数（客户端固定下发它）；数字指定带数，上限 6。**缺省、1、负数与非数字一律退回单次调用的原路径**（数字字符串不接受，不猜）；预算连一次调用的固定开销都装不下时也退回单带——切多了只是同样的失败乘以带数。**带数越多，模型调用次数与成本按倍数增长**（一次 `vision` 会记 N 条模型账，见「成本」一节），**内容安全检测次数不变** |
 
 返回形状所有动作统一，调用方只需要看前三个字段：
 
@@ -224,6 +225,9 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - `usage` 动作、上限判定都读 `ai_usage_monthly`；读不到用量（数据库故障）时**拒绝调用**而不是当作零——上限判断不能因为读失败而失效。只有「文档不存在」（当月首次调用）才按零处理。
 - **月度汇总只允许两种写法**：原子自增，或当月文档不存在时用固定 `_id` 插入初值。写失败（非「文档不存在」）一律**向上抛出并记为可处理的记账失败**（返回值 `warnings` 里能看到），绝不回退成覆盖式写入——那会把当月累计冲成单次调用的数字，使成本上限失效。首次插入用月份作 `_id`：并发下只有一个能插入，另一个回到自增，因此不会各写一份丢计数。
 - 服务端不返回 usage 时按字符数估算（中文 1 token/字、英文 4 字符/token，图片按固定常数），并标记 `estimated: true`；不估算等于把成本记成 0。
+- **一次用户动作未必只有一条模型记录**：`vision` 分带并行时按带数各记一条（`requestId` 相同、`feature` 相同），
+  返回值 `usage` 是各带的合计。因此 `ai_usage_monthly.calls` 统计的是**子调用次数**，不能当成「用户操作次数」；
+  按 `feature=timetable-screenshot` 查成本时要按 `requestId` 聚合，否则会把一次识别读成多次。
 - **接口根本不返回用量时**（OpenAI `/moderations`）既不算 0 元也不编 token 数：记录里 `usageUnknown: true`、`totalTokens: 0`，金额按 `AI_SAFETY_CALL_PRICE_YUAN`（每次审核固定价，默认 0 表示不计入）计，返回值 `warnings` 写明这一次是怎么记的。
 - 两个集合需要人工在控制台创建（见人工步骤 B），索引暂无需要：按 `_id` 直读、记录集合只写不查。
 
@@ -235,7 +239,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `AI_BASE_URL` | 无（必填） | OpenAI 兼容接口根地址，**中转的实际地址以服务商为准** |
 | `AI_API_KEY` | 无（必填） | 模型密钥；不写进代码、数据库、小程序包与文档 |
 | `AI_MODEL` | 无（必填） | 文本模型名；**中转的模型名未实测**（AI 资讯实测用的是官方 `deepseek-flash`），按服务商实际值填 |
-| `AI_VISION_MODEL` | 取 `AI_MODEL` | 多模态模型名 |
+| `AI_VISION_MODEL` | 取 `AI_MODEL` | 多模态模型名。**当前部署值待与负责人核对：2026-09-20 实测冒烟返回的 `model` 是 `deepseek/deepseek-v4.1-flash`**（不再是画像测量时的 `qwen/qwen3.8-flash`），因此 `cloudfunctions/ai/vision.ts` 的画像常数描述的是旧模型，`bands: 'auto'` 会偏保守多切带 |
 | `AI_ANTHROPIC_BASE_URL` / `AI_ANTHROPIC_API_KEY` / `AI_ANTHROPIC_VERSION` | `https://api.anthropic.com` / 无 / `2023-06-01` | 走 Anthropic 格式时需要 |
 | `AI_TIMEOUT_MS` | `8000` | 单次模型调用超时（毫秒），必须 ≤ `AI_TOTAL_DEADLINE_MS` |
 | `AI_TOTAL_DEADLINE_MS` | `15000` | 一次云函数调用的总截止；模型、内容安全、云存储下载都受它约束，**必须小于云函数超时时间**（部署时按 20 秒设置） |
@@ -279,7 +283,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 - **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
 - **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid 退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**2026-09-19 从小程序端实测：v2 形态下两条接口都返回 `errcode 0`**（记录见探测记录表）。
 - **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（文本端到端）、`npm run smoke:ai:vision`（图片路径端到端）。
-- **内容安全接口有每日调用配额，未上架期间只有 100 次/天（2026-09-19 查官方口径并实测撞到上限）**：官方文档写「单个 appId 调用上限为 4000 次/分钟、2,000,000 次/天；**若为未上架小程序，调用上限为 100 次/天**」（[security.msgSecCheck](https://developers.weixin.qq.com/miniprogram/dev/server/API/sec-center/sec-check/api_msgseccheck.html)）。**本项目当前未认证、未备案、未发布 ⇒ 日上限是 100 次**，一次 AI 调用至少消耗 1 次文本检测，开启输出检测时还要再加（长文本按 2000 字分片、最多 10 片）；`msgSecCheck` 与 `imgSecCheck` 的配额**各自计算**（实测：文本报 45009 时图片仍 `errcode 0`）。默认 `AI_SAFETY_FAIL_MODE=closed` 下配额用尽会**直接拒绝当天所有 AI 调用**（问答 / 助手 / 识图全挂，次日恢复）——**排障时先看有没有 45009，不要往模型或密钥方向找**。三种应对：① 等次日恢复（默认）；② 官方排错指南提到 `clear_quota` 接口可清空当日次数（需 access_token，**本项目未验证**是否适用于云调用与未上架小程序，谨慎）；③ 排障期临时 `AI_SAFETY_FAIL_MODE=open`（仅开发排障、生产不得使用，测完立刻改回 `closed`）。**不要**为省配额去关 `AI_MODERATE_OUTPUT`——「AI 输出也要过内容安全」是硬约束。发布上线后配额自动放大到 4000/分钟、200 万/天，**所以这条只在上架前影响我们：演示当天要按 100 次倒排脚本**。
+- **内容安全接口有每日调用配额，未上架期间只有 100 次/天（2026-09-19 查官方口径并实测撞到上限）**：官方文档写「单个 appId 调用上限为 4000 次/分钟、2,000,000 次/天；**若为未上架小程序，调用上限为 100 次/天**」（[security.msgSecCheck](https://developers.weixin.qq.com/miniprogram/dev/server/API/sec-center/sec-check/api_msgseccheck.html)）。**本项目当前未认证、未备案、未发布 ⇒ 日上限是 100 次**，一次 AI 调用至少消耗 1 次文本检测，开启输出检测时还要再加（长文本按 2000 字分片、最多 10 片）；`msgSecCheck` 与 `imgSecCheck` 的配额**各自计算**（实测：文本报 45009 时图片仍 `errcode 0`）。默认 `AI_SAFETY_FAIL_MODE=closed` 下配额用尽会**直接拒绝当天所有 AI 调用**（问答 / 助手 / 识图全挂，次日恢复）——**排障时先看有没有 45009，不要往模型或密钥方向找**。**上线前的应对手段（按官方文档口径整理，2026-09-19 查证）**：① 等次日恢复（默认，零成本）；② **`clear_quota`（重置 API 调用次数）**——`POST https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=ACCESS_TOKEN`，body `{"appid":"<小程序 appid>"}`，官方声明**适用账号类型含小程序**，用小程序自己的 access_token 清空每日次数（[接口文档](https://developers.weixin.qq.com/miniprogram/dev/server/API/openApi-mgnt/api_clearquota.html)）；**每个账号每月共 10 次清零机会**（后台页面清零与 API 清零共用这 10 次，超限返回 48006），**本项目未实测**——前置是要能拿到小程序 access_token（AppID + AppSecret 换），未认证小程序能否换取**待验证**，验证步骤：换到 token 后先跑 `getApiQuota` 查一次剩余额度；③ `getApiQuota` 可查询任一接口当天的 `daily_limit` / `used` / `remain`（同样适用小程序），**演示前用它确认还剩多少次**；④ 排障期临时 `AI_SAFETY_FAIL_MODE=open`（仅开发排障、生产不得使用，测完立刻改回 `closed`）。**不要**为省配额去关 `AI_MODERATE_OUTPUT`——「AI 输出也要过内容安全」是硬约束。发布上线后配额自动放大到 4000/分钟、200 万/天，**所以这条只在上架前影响我们：演示当天要按 100 次倒排脚本**。
 - **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001。**2026-09-19 间接实测**：小程序端探测拿到 `errcode 0`，说明随函数上传的声明已生效（否则按官方口径会返回 48001）。
 - **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
 - **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：
@@ -299,6 +303,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-09-19 01:26 | `cloudbase-d2gjtbbwu3575cd7b` | 否（控制台「测试」页触发） | `-501001` invalid wx openapi access_token | `-501001` invalid wx openapi access_token | **无效测量**：云调用未从小程序端触发，接口可用性没被测到（`probe.valid: false`） | 不切换（无效测量不改默认） |
 | 2026-09-19 01:35 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（544ms） | `errcode 0`（458ms） | **可调用**：文本与图片两条路径都通 | `wechat`（保持默认） |
+| 2026-09-20 00:17 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `45009` reach max api daily quota limit | `errcode 0` | **部分可用**：文本配额用尽、图片正常；**北京时间已过午夜仍未重置**，说明它不是按自然日 0 点恢复 | 不切换（等恢复） |
+| 2026-09-20 01:2x | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（420ms） | `errcode 0`（487ms） | **可调用**：两条接口都恢复 | `wechat`（保持默认） |
 
 第二行（有效测量）粘贴进文档的原始记录：
 
@@ -308,7 +314,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 
 **怎么读这两行**：`probe.valid` 与 `ok` 必须分开看。第一行 `ok: false` 且 `valid: false`——它**不是**「接口不可用」的证据，而是「这次调用怎么发起的」不对；只有 `valid: true` 时 `ok: false`（或部分可用）才轮到切换适配器。第一行也说明了为什么探测动作需要一个小程序端入口。
 
-常见错误码的含义：`0` 成功；`87014` 内容违规；`48001` / `48002` 接口未授权或被禁（**未认证小程序是否必然返回它们仍未验证**，本次没碰到）；**`45009` 当日调用配额用尽（2026-09-19 实测：文本接口报它时图片接口仍正常，两个接口配额各自计算，次日恢复；默认 fail-closed 会拒绝当天所有 AI 调用）**；`61010` v2 需要 openid 近期访问过小程序；`40001` access_token 相关问题；**`-501001` / `-501007`（以 `-5` 开头的是云开发平台码，不是微信开放接口码）表示「本次调用没有小程序侧云调用票据」**，即不是从小程序端触发的——控制台、CLI、HTTP 触发、云函数互调都会踩到，属于无效测量。探测会把「是否超时」也记进 `note`（接口不响应时按调用超时记录，不会挂住）。
+常见错误码的含义：`0` 成功；`87014` 内容违规；`48001` / `48002` 接口未授权或被禁（**未认证小程序是否必然返回它们仍未验证**，本次没碰到）；**`45009` 当日调用配额用尽（2026-09-19 实测：文本接口报它时图片接口仍正常，两个接口配额各自计算，次日恢复；默认 fail-closed 会拒绝当天所有 AI 调用）**——**这条自 2026-09-19 起归 `quota_exhausted`**（文案 `AI_MSG_QUOTA_EXHAUSTED_SAFETY`，与月度成本上限的「下月再试」分开），修复前它被归成 `internal`、页面显示「AI 服务内部错误，请稍后重试」；**该修复需重新部署 `ai` 才生效**；`61010` v2 需要 openid 近期访问过小程序；`40001` access_token 相关问题；**`-501001` / `-501007`（以 `-5` 开头的是云开发平台码，不是微信开放接口码）表示「本次调用没有小程序侧云调用票据」**，即不是从小程序端触发的——控制台、CLI、HTTP 触发、云函数互调都会踩到，属于无效测量。探测会把「是否超时」也记进 `note`（接口不响应时按调用超时记录，不会挂住）。
 
 **切换方式**：探测结论为**有效**且显示不可用或部分可用时，在云函数环境变量里把 `AI_SAFETY_PROVIDER` 改为 `openai` 或 `anthropic`，并按需配置 `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL`；改完重跑一次探测与一次 `chat`（都在小程序端），确认返回值里 `safety.provider` 变成第三方。**本轮实测微信官方接口可用，默认值 `wechat` 保持不变，暂不需要第三方审核密钥。**
 
@@ -317,7 +323,24 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 ### Ticket 01 人工步骤（动作 / 对象 / 判据）
 
 **2026-09-19 进展**：A（部署）、B（集合 + 环境变量）、C（超时改成 20 秒并被 4600ms 的端到端调用证明生效）、D（探测，已回填上表）与 E（端到端 + 密钥外泄检查）均已完成；**内存已核实为 256MB**（控制台日志 `Memory: 256MB MemUsage: 37.4MB`，记录在步骤 C）。**步骤 F（月度上限拦截实测）已由负责人确认完成**。**步骤 G（`vision` 路径真实调用）**分两步：① 负责人加上 `AI_EXTRA_BODY_JSON={"chat_template_kwargs":{"thinking":false}}` 与 `AI_TIMEOUT_MS=13000` 之后，**合成小图的链路冒烟通过**（`npm run smoke:ai:vision`：`ok=true`、`elapsedMs=9978`、模型返回合法 JSON、内容安全 `checked=true`）——**模型确实支持图片输入**，「模型名不支持视觉」的猜测不成立；② **但真实课表截图仍失败**，新的读数是 `detail=模型调用超时：请求超时（11417ms）`。四种输入对照（570 字节小图通过、真实截图只问一列超时、真实截图缩到 1000px 宽同样超时、真实截图两门课约 11 秒通过）说明**卡的是固定时延，与图片大小、输出长度都无关**。
-**三个数已由负责人调到 60 / 50000 / 40000（`cli cloud functions info` 读回 `timeout=60`），但真实截图仍然不够**：模型拿到 40000ms 预算仍未返回（`elapsedMs=43336`、`detail=模型调用超时：请求超时（40000ms）`）。单独量的模型画像：**固定开销约 11 秒、吞吐约 86 token/秒、每门课约 300 个完成 token**，据此外推 45 门课的完整课表需要 170 秒以上（压到最紧凑格式也仍有 80–90 秒），**超过 60 秒的云函数上限 ⇒ 一次调用识别整张表在当前模型上不成立**。另外发现压缩输出格式并不降低完成 token（正文约 500 token 而完成 token 2571），符合「模型仍在输出思考内容、且计入 completionTokens」的表现，**说明先前那次「关思考」很可能没生效**（Qwen3 系的标准开关名是 `enable_thinking`，配置里写的是 `thinking`）。**下一步**：把 `AI_EXTRA_BODY_JSON` 换成 `{"chat_template_kwargs":{"enable_thinking":false}}` 后先跑小图冒烟看 token 是否下降；若无效则换更快的多模态模型，或改为「客户端切块 + 云函数并行多路识别」。注意客户端 `VISION_MAX_TOKENS=2048` 对完整课表偏小，第一次拿到完整结果时要检查是否被截断。
+**三个数已由负责人调到 60 / 50000 / 40000（`cli cloud functions info` 读回 `timeout=60`），但真实截图仍然不够**：模型拿到 40000ms 预算仍未返回（`elapsedMs=43336`、`detail=模型调用超时：请求超时（40000ms）`）。单独量的模型画像：**固定开销约 11 秒、吞吐约 86 token/秒、每门课约 300 个完成 token**，据此外推 45 门课的完整课表需要 170 秒以上（压到最紧凑格式也仍有 80–90 秒），**超过 60 秒的云函数上限 ⇒ 一次调用识别整张表在当前模型上不成立**。另外发现压缩输出格式并不降低完成 token（正文约 500 token 而完成 token 2571），符合「模型仍在输出思考内容、且计入 completionTokens」的表现，**说明先前那次「关思考」很可能没生效**（Qwen3 系的标准开关名是 `enable_thinking`，配置里写的是 `thinking`）。注意客户端 `VISION_MAX_TOKENS=2048` 对完整课表偏小，第一次拿到完整结果时要检查是否被截断。
+
+**2026-09-19 第四轮：分带并行识别（`bands: 'auto'`，分支 `feat/vision-banded-recognition`）**。既然一次调用不成立，改成**按节次切带、并行多次调用**：带数不写死，由服务端按画像与自己的超时预算算（当前配置下 6 带 / 每带 2 节 / 每带预计约 39 秒）。**这一步不需要新的环境变量**，但**重新部署 `ai` 是必须的**（代码在云函数里）：
+
+```powershell
+npm run build
+& "<开发者工具目录>\cli.bat" cloud functions deploy --env cloudbase-d2gjtbbwu3575cd7b --names ai --remote-npm-install --project <仓库>/dist
+# 或在开发者工具里右键 dist/cloudfunctions/ai →「上传并部署：云端安装依赖」
+```
+
+复测按顺序、省着用配额（判据见 [P5-B 验证记录](evidence/p5-b/README.md#2026-09-19-第四轮改为服务端分带并行识别把不可能的一次调用拆成可行的多带)）：
+
+```powershell
+npm run smoke:ai:vision                   # ① 单带小图，确认原路径没被改坏
+npm run smoke:ai:vision -- --bands=auto    # ② 分带小图，确认并发没被中转拒（告警里会出现「分带识别：按节次分 N 带并行调用」）
+```
+
+**图片与输入文字仍各只过一次内容安全**：分带只在服务端调用模型，不放大 `imgSecCheck`/`msgSecCheck` 的次数（配额是硬约束，客户端切块才会按块翻倍）。**仍然建议把 `AI_EXTRA_BODY_JSON` 换成 `{"chat_template_kwargs":{"enable_thinking":false}}`**：关掉思考后每门课的完成 token 大幅下降，`bands: 'auto'` 会自动少切几带——两者互补，不互斥。
 
 **步骤 A：部署 `ai` 云函数**（**已完成**：2026-09-18 首次部署，2026-09-19 本轮把修复版重新部署，11 个文件 / 42.4 KB）
 
@@ -546,7 +569,7 @@ Ticket 04 改的是代码与配置，验证要在云上做。**2026-09-19 已完
 - 2026-09-18（Ticket 05 两轴复核修复，**仅本地**）：截图格式改为**按文件头判定**（读不到字节才退回路径扩展名，两者都拿不到就明确拒绝并给可读提示）——相机与 `wx.compressImage` 的产物常是 JPEG，原先恒传 `课表截图.png` 会让 `imgSecCheck` 与模型的 `media_type` 与实际内容不符；上传/下载/识别统一用 `wx.cloud.uploadFile` 返回的 **fileID**，`importDraft` / `discardUpload` 的参数从裸 `cloudPath` 改为 `fileID`，云函数从 fileID 解析出云存储路径再校验 openid 前缀（**Ticket 03 的 Excel 路径是同一处老写法，一并修正；客户端与云函数必须一起部署**）；周次留空不再静默当成「每周」，只有模型显式 `everyWeek` 才算（页面按待核对展示）；图片被拒的文案与文字语义的「换个说法」分开（服务端新增 `AI_MSG_CONTENT_REJECTED_IMAGE`，客户端兜底按输入类型区分）；截图识别不再把字段拼成合成「原文」。测试见 [p5-b 记录](evidence/p5-b/README.md)。
 - 2026-09-19（Ticket 01 云端收尾 + 探测路径修复）：`ai` 云函数已部署（Active / Nodejs16.13，11 个文件 / 42.4 KB），两个用量集合与模型环境变量已就绪（`usage` 返回 capYuan 50、告警线 40、单价 0.25 元/百万 token）。**微信内容安全探测改从控制台移到小程序端后跑通**：v2 形态下 `security.msgSecCheck` / `security.imgSecCheck` 均返回 `errcode 0`——未认证小程序可用官方云调用，`AI_SAFETY_PROVIDER` 保持默认 `wechat`，不需要第三方审核密钥。为此修掉一处会误导决策的缺陷：平台错误码 `-501001` / `-501007`（云调用未从小程序端触发）此前会被读成「微信接口不可用」并建议切第三方，现在探测记录带 `valid` / `invalidReason`，**无效测量不切换适配器**，错误码表补上这两个平台码并写明触发限制，新增 2 项测试（`npm test` 296 项全过）。新增两个小程序端入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（端到端）。
 - 2026-09-19（Ticket 01 端到端跑通）：负责人在控制台把 `ai` 超时从默认 3 秒改成 **20 秒**，随后 `npm run smoke:ai` 从小程序端真实调用一次**成功**：`ok=true`、模型输出「链路已通」、`elapsedMs=4600`（超过 3 秒且未被截断，证明新超时生效）、内容安全 `provider=wechat checked=true passed=true errcode=0`、用量 105 token 已记账且当月累计可查。原始输出与「这次证明了什么、仍缺什么」见 [Ticket 01 端到端冒烟记录](evidence/p5-foundation/README.md)。**数据库侧抽查确认 `ai_usage_records` 无密钥字段与密钥值；云函数内存核实为 256MB**（日志 `Memory: 256MB MemUsage: 37.4MB`）。**仍未完成**：上限拦截实测（步骤 F）、图片路径（`vision`）真实调用。
-- 2026-09-19（Ticket 03 云端端上验收）：负责人在控制台完成集合 `timetable_courses`、云函数 `timetable` 部署与环境级函数权限（`timetable` 允许已登录用户调用，`newsSync` 仍为 `false`）；用真实样本 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 走完导入（选文件仍为人工），云端 **15 门课程**。端上验收覆盖：周次切换（第 8 周出现 `[8-17]周` 的课、第 7 周没有）、退出重进（每次 `reLaunch` 都从云端读到 15 门）、手工新增/修改/删除三条路径（临时课程，结束后计数还原并清理）；`npm run verify:wechat` **18 项全过**（课表页显示「已就绪」，部门问答两项为真实回答）。负责人并确认：云存储权限为**「仅创建者可读写」**、`timetable` 超时为 **20 秒**、控制台「存储」里 `timetable-imports/` **无残留**；「放弃导入不写库」实测的是**文件选择器取消**（`chooseMessageFile:fail cancel`）后集合条数不变，**确认页「放弃导入」路径仍未实测**。随后（分支 `fix/import-cancel-quiet`，提交 `f3aec80`）取消选择文件/图片不再打「课表操作失败：…cancel」诊断日志，`npm test` **298 项全过**（验收当时 297 项）。**仍未验证**：两个微信号的用户隔离、确认页「放弃导入」路径、错误文件的可理解提示（仅桩测试）。证据见 [Ticket 03 验证记录](evidence/p4-b/README.md#2026-09-19-云端端上验收)。
+- 2026-09-19（Ticket 03 云端端上验收）：负责人在控制台完成集合 `timetable_courses`、云函数 `timetable` 部署与环境级函数权限（`timetable` 允许已登录用户调用，`newsSync` 仍为 `false`）；用真实样本 `tests/fixtures/timetable/2026-2027学年第一学期班级课表.xls` 走完导入（选文件仍为人工），云端 **15 门课程**。端上验收覆盖：周次切换（第 8 周出现 `[8-17]周` 的课、第 7 周没有）、退出重进（每次 `reLaunch` 都从云端读到 15 门）、手工新增/修改/删除三条路径（临时课程，结束后计数还原并清理）；`npm run verify:wechat` **18 项全过**（课表页显示「已就绪」，部门问答两项为真实回答）。负责人并确认：云存储权限为**「仅创建者可读写」**、`timetable` 超时为 **20 秒**、控制台「存储」里 `timetable-imports/` **无残留**；「放弃导入不写库」实测的是**文件选择器取消**（`chooseMessageFile:fail cancel`）后集合条数不变。随后（分支 `fix/import-cancel-quiet`，提交 `f3aec80`）取消选择文件/图片不再打「课表操作失败：…cancel」诊断日志，`npm test` **298 项全过**（验收当时 297 项）。**同日补验（自动化，`mockWxMethod` 顶替文件选择器）**：用真实样本走完「选择 → 上传 → 云端解析」到确认页（草稿 15 门）后点**「放弃导入」**，确认框 → 回到引导态、草稿清空、云端条数不变；另用一段纯文本命名为 `.xls` 验证**不可解析文件的提示**（页面给出「未识别出课表矩阵：文件里没有找到「星期一 … 星期日」表头行…」，不含平台错误）。`verify:wechat` 因此为 **20 项全过**。**仍未验证**：两个微信号的用户隔离（需要一个第二微信号）。证据见 [Ticket 03 验证记录](evidence/p4-b/README.md#2026-09-19-两条尾巴的实测不可解析文件的提示与放弃导入)。
 
 ### 3 秒超时：默认同步量已经贴到上限（已解决，保留记录）
 
@@ -734,3 +757,10 @@ CLI 的 `cloud functions deploy` 没有超时参数（已用 `--help` 核实）�
 - **类目需要谨慎选**。备案要求「至少一个审核通过的类目」，而本作品聚合校园新闻资讯——按此前核查，`资讯-信息资讯` 只覆盖单一行业，跨两类以上资讯需 `文娱-资讯广场`（要《互联网新闻信息服务许可证》），时政类还需 `时政信息`（同证）。**学生团队拿不到该证**。选类目时若被判定为新闻资讯类，可能触发前置审批而卡住。这是需要在提交备案前想清楚的一点，不是提交后能补救的。
 - 2026-09-19（Ticket 04 **新版部署上线**）：`npm run build` 后用 CLI 部署 `newsSync` 成功——**7 个文件 / 25.6 KB**（比旧版多 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示最后更新 **2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%，配置页显示 Node.js 16.13 / 内存 256 MB / 执行超时 20 秒。部署后从小程序端复测**客户端调用仍被拒绝**（`-501023 permission denied`），安全规则未随部署失效。**仍未完成**：云端测试那一次 `{"column":"tw-tqsd","maxRequests":2}` 的返回判据（内嵌云开发控制台 v2 的「云端测试」JSON 编辑器不接受自动化输入，需人工点）、`newsSyncDaily` 触发器确认与首次全量导入（约 155 批）。另记一条环境事实：**开发者工具的 CLI 现在要求访问令牌**（设置 → 安全设置里「CLI 访问令牌」已开启），CLI 命令需带 `--token` 或用 `WECHAT_DEVTOOLS_CLI_TOKEN` 环境变量，令牌值只在本机使用、不写进仓库或文档。
 - 2026-09-19（Ticket 05 用真实截图跑端上链路）：三张真实课表截图（教务系统班级课表页面，截图不入库）经模拟器文件系统 + `mockWxMethod('chooseMedia')` 走完「压缩判定（三张都 ≤1MB 故不压缩）→ 文件头判格式（PNG 魔数已读到）→ `preparePhotoUpload` → `uploadFile` → `ai` 的 `vision`（图片先过内容安全，`checked=true` / `errcode=0`）」；**模型这一环在当前配置下不通**：三条样本 + 一张 570 字节合成小图全部在 8000ms 处超时（`failureClass=model_unavailable`、`detail=模型调用超时：请求超时（8000ms）`、`model=qwen/qwen3.8-flash`），因此**字段准确率评估无法执行**。同时实测了失败态的三个出口（重试识别 / 重新选择文件 / 手工录入，后者实际跳到 `pages/timetable/edit/index`）。云存储侧核对：页面流程上传的临时文件**没有残留**（`timetable-imports/<openid>/` 为空）；排查中出现的 5 个文件是诊断脚本上传后未清理的，已删除，并给新增的 `scripts/smoke-ai-vision.cjs` 补上 `discardUpload`。**本轮没有执行 `saveDraft`**：它是整份替换本人课表，当前账号里是负责人真实导入的课表，不做写入（保存链路在 Ticket 03 已实测）。证据见 [P5-B 验证记录](evidence/p5-b/README.md)。
+
+- 2026-09-20（**重新部署 + 云端复测**）：`npm run build` 后用 CLI 重新部署两条函数——`ai` **12 文件 / 52.4 KB**（分带并行 + 配额分类修复 + 空带提示合并），`timetable` **5 文件 / 19.5 KB**（不写学分的解析修复）；`cli cloud functions info` 读回两条都 `Active`（`ai` timeout 60、`timetable` timeout 20，运行时 Nodejs16.13）。复测结果：
+  - **配额分类**：配额仍处用尽状态时跑 `verify:wechat`，部门问答面板显示的是新的配额文案「内容安全检测的额度已用尽…」而不是修复前的「AI 服务内部错误，请稍后重试。」——分类修复端到端成立；
+  - **`vision` 分带并行**：单带（5966ms / 620 token）与 `bands: 'auto'`（6 带并行，模型阶段 3571ms / 2805 token）**两条都 `ok=true`，6 个并发模型请求全部成功**——中转接受并发，这是分带方案此前最大的未知数；
+  - **`timetable` 不写学分版式**：合成同版式课表走真实云端导入，3 门课的课程名与教师全部拆对、0 条需要补全、3 条待核对提示；
+  - **内容安全配额**：本轮开始时 `msgSecCheck` 仍报 `45009`（**北京时间已过午夜，说明它不是按自然日 0 点重置**），稍后恢复为 `errcode 0`；`imgSecCheck` 全程正常。
+  - 逐项原文见 [P5-B 验证记录第六轮](evidence/p5-b/README.md#2026-09-20-第六轮云端实测通过分带并行在真实链路上成立) 与 [P5-A 第四轮](evidence/p5-foundation/README.md#第四轮2026-09-20配额分类修复与分带并行都在云端验证通过)。

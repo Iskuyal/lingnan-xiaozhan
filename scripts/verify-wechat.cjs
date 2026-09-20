@@ -1,8 +1,10 @@
 // 先用微信开发者工具 CLI auto --project <dist绝对路径> --auto-port 9420 打开项目。
 const { connectMini } = require('./lib/mini-connect.cjs');
 const assert = require('node:assert/strict');
-const { mkdirSync, writeFileSync } = require('node:fs');
+const { mkdirSync, writeFileSync, readdirSync, readFileSync } = require('node:fs');
 const path = require('node:path');
+// 只用于合成「不写学分」版式的 xlsx 夹具（原始文件含另一款课表工具的名字，不入库）。
+const XLSX = require('xlsx');
 
 async function run() {
   const output = path.resolve('artifacts/verify');
@@ -21,7 +23,7 @@ async function run() {
   /**
    * 等这一次追问的结果。两条路径都算「有反应」：
    * ① 多了一条助手气泡（`.qa-answer`，模型答出来了）；
-   * ② 页面上出现失败原因（`.qa-error`）或降级说明（`#qa-offline`）——
+   * ② 页面上出现降级提示（`#qa-offline`）或失败文案（`.qa-error`）——
    *    云函数未部署 / 未配密钥时走这条，不能因为「没有回答」就判失败（PR #29 的断言口径）。
    * 两条都没等到才返回 null（页面真的没反应）。
    */
@@ -38,14 +40,14 @@ async function run() {
     }
   }
   /**
-   * 当前页面上的**失败原因**文本（`.qa-error` 优先，回退 `#qa-offline`）；没有则空串。
+   * 当前页面上**失败文案**的文本（`.qa-error` 优先），没有失败则空串。
    *
-   * 为什么 `.qa-error` 要放前面：模板里 `.qa-error` 是失败原因（三类失败各自独立文案，见
-   * `services/ai.ts`），`#qa-offline` 是**固定不变**的安慰语（「部门资料随小程序包提供，
-   * AI 不可用时仍可正常查看列表与详情。」）。下面按失败关键词判定降级时，若先取 `#qa-offline`，
-   * **任何降级都会因为拿到那句安慰语而判失败**——2026-09-19 开发者工具实测：
-   * `.qa-error` =「AI 服务内部错误，请稍后重试。」，`#qa-offline` = 安慰语，于是第 135 行误报。
-   * `#qa-offline` 的存在与措辞由紧随其后的独立断言（「仍可正常查看」）负责。
+   * 为什么不优先读 `#qa-offline`：它是与失败同时出现的**固定说明句**
+   * （「部门资料随小程序包提供，AI 不可用时仍可正常查看列表与详情。」），
+   * 读它只能证明「出过错」，读不出**是哪一类错**——2026-09-19 实测撞到这一点：
+   * 内容安全当日配额用尽让模型调用失败时，这个函数返回的仍是那句常量，
+   * 导致下面的降级断言比对的是一句和失败原因无关的话，等于没验。
+   * `#qa-offline` 单独断言（存在且写明资料仍可查看），两者各查各的。
    */
   async function currentErrorText(page) {
     const error = await page.$('.qa-error');
@@ -141,6 +143,9 @@ async function run() {
     // 不能白屏或假成功。两种都算通过，但降级时要额外说明部门资料仍可查看。
     assert.ok(reply !== null, '发送追问后既没有回答也没有降级提示（页面没有反应）');
     if (reply.kind === 'degraded') {
+      // 覆盖三类用户可见失败（模型不可用/超时、内容被拒、额度或配额用尽）与两类技术失败
+      // （未部署/权限、内部错误）。**故意不覆盖 `invalid_request`（「AI 请求参数不正确」）**：
+      // 它在这个流程里基本等于调用方把事件组装坏了，属于要修的缺陷，不该被当成可接受的降级。
       assert.match(
         reply.text,
         /暂时不可用|超时|内部错误|额度|未通过安全检测|尚未部署|权限/u,
@@ -241,6 +246,143 @@ async function run() {
     assert.ok(await importPage.$('#back-from-import'), '导入页缺少返回入口');
     await mini.screenshot({ path: path.join(output, 'timetable-import.png') });
 
+    // ---------- 以下两项是 Ticket 03 此前「文件选择无法自动化」而未实测的两个尾巴 ----------
+    // 实测（2026-09-19）：`mini.mockWxMethod('chooseMessageFile', <结果对象>)` 可以顶替文件选择器，
+    // 从而真实走完「上传 → 云函数解析」链路。**必须传结果对象**：传函数时开发者工具不会调用它，
+    // 页面拿到的是 `options.success is not a function`（已试过）。
+    async function placeInUserData(name, base64) {
+      return await mini.evaluate((fileName, content) => {
+        const filePath = wx.env.USER_DATA_PATH + '/' + fileName;
+        wx.getFileSystemManager().writeFileSync(filePath, content, 'base64');
+        return filePath;
+      }, name, base64);
+    }
+    async function pickFile(filePath, name, size) {
+      await mini.mockWxMethod('chooseMessageFile', { tempFiles: [{ path: filePath, name, size, type: 'file' }] });
+      const page = await waitForPage('pages/timetable/import/index');
+      const entry = await page.$('#choose-file');
+      assert.ok(entry, '导入页没有选择文件入口');
+      await entry.tap();
+      await page.waitFor(600);
+    }
+    /** 页面退出中间态：出现确认页元素算成功，出现 `#import-error` 算失败，都没有则超时。 */
+    async function waitForImportOutcome(timeoutMs = 45000) {
+      const deadline = Date.now() + timeoutMs;
+      for (;;) {
+        const page = await waitForPage('pages/timetable/import/index');
+        if (await page.$('#abandon-import')) return { page, kind: 'review', text: '' };
+        const error = await page.$('#import-error');
+        if (error) return { page, kind: 'error', text: await error.text() };
+        if (Date.now() >= deadline) return { page, kind: 'timeout', text: '' };
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+    /** 云端本人课表条数（只读 `list`，不产生任何写入）。 */
+    async function courseCount() {
+      const raw = await mini.evaluate(() =>
+        wx.cloud
+          .callFunction({ name: 'timetable', data: { action: 'list' } })
+          .then((response) => {
+            const result = response && response.result;
+            return JSON.stringify({ ok: !!(result && result.ok === true), count: result ? result.count : null });
+          })
+          .catch((error) => JSON.stringify({ ok: false, err: String(error && (error.errMsg || error.message)) })),
+      );
+      return JSON.parse(raw);
+    }
+
+    // ① 不可解析的文件：内容是纯文本、扩展名却是 .xls——真实走一遍上传与云端解析，
+    //    页面必须给出学生看得懂的文案，而不是把平台错误原样抛出来。
+    const bogusName = '这是一段文本.xls';
+    const bogusPath = await placeInUserData(bogusName, Buffer.from('这不是课表内容，只是一段普通文本。').toString('base64'));
+    await pickFile(bogusPath, bogusName, 48);
+    const bogus = await waitForImportOutcome();
+    assert.equal(bogus.kind, 'error', `不可解析的文件没有进入错误态（${bogus.kind}）`);
+    assert.ok(bogus.text.length > 0, '不可解析的文件没有给出任何提示');
+    assert.doesNotMatch(
+      bogus.text,
+      /-5\d{5}|timed out|permission denied|FUNCTION_NOT_FOUND|cloud\.|undefined/iu,
+      `提示里出现了平台/技术性文本：${bogus.text}`,
+    );
+    console.log(`不可解析文件的提示：${bogus.text}`);
+    await mini.screenshot({ path: path.join(output, 'timetable-import-error.png') });
+
+    // ② 真实教务导出样本 → 确认页 →「放弃导入」：不写库、清空草稿、回到引导态。
+    const fixturesDir = path.resolve('tests/fixtures/timetable');
+    const sample = readdirSync(fixturesDir).filter((name) => /\.xlsx?$/iu.test(name)).sort()[0];
+    assert.ok(sample, '找不到真实教务导出样本，无法验证导入链路');
+    const sampleBytes = readFileSync(path.join(fixturesDir, sample));
+    await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
+    await waitForPage('pages/timetable/import/index');
+    const before = await courseCount();
+    assert.equal(before.ok, true, `读不到本人课表条数，放弃导入的「不写库」无法判定：${JSON.stringify(before)}`);
+    const samplePath = await placeInUserData(sample, sampleBytes.toString('base64'));
+    await pickFile(samplePath, sample, sampleBytes.byteLength);
+    const imported = await waitForImportOutcome();
+    assert.equal(imported.kind, 'review', `真实样本没有进入确认页（${imported.kind}）：${imported.text}`);
+    assert.ok(await imported.page.$('#draft-list'), '确认页没有草稿列表');
+    assert.ok(await imported.page.$('#confirm-save'), '确认页没有保存入口');
+    // 草稿必须真的有课程：空草稿下「放弃导入不写库」等于什么都没验。
+    const draftCount = await imported.page.data('courseCount');
+    assert.ok(typeof draftCount === 'number' && draftCount > 0, `确认页课程数为 ${draftCount}，草稿是空的，这一步验证不了「不写库」`);
+    await mini.screenshot({ path: path.join(output, 'timetable-import-review.png') });
+    //「放弃导入」会先弹 `wx.showModal` 确认框（「放弃后不会写入任何课表数据」）——
+    // 原生确认框自动化点不到，这里把它顶替成「点了确认」，验证的是**确认之后**的行为。
+    await mini.mockWxMethod('showModal', { confirm: true, cancel: false });
+    await (await imported.page.$('#abandon-import')).tap();
+    const afterAbandon = await waitForPage('pages/timetable/import/index');
+    await afterAbandon.waitFor(800);
+    assert.ok(await afterAbandon.$('#file-guide'), '放弃导入后没有回到引导态');
+    assert.equal(await afterAbandon.$('#abandon-import'), null, '放弃导入后确认页元素仍在');
+    const after = await courseCount();
+    assert.equal(after.ok, true, '放弃导入后读不到课表条数');
+    assert.equal(after.count, before.count, `放弃导入写了库：放弃前 ${before.count} 门、放弃后 ${after.count} 门`);
+    console.log(`放弃导入：课表条数保持 ${before.count} 门，草稿已清空并回到引导态`);
+
+    // ③ **不写学分**的版式（真实世界里出过 47/47 全部「课程名未识别」的故障，见 Ticket 03 第 8 节）：
+    //    合成一份同版式的 xlsx 走真实云端解析，确认课程名/教师都拆得出来、没有条目被拦住。
+    //    矩阵与 tests/timetable-parse.test.cjs 的同名用例逐字一致——原始文件含另一款课表工具的名字，不入库。
+    const head = ['', '', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+    const matrix = [
+      ['某某职业技术学院2026-2027学年第一学期班级课表（无学分版式）'],
+      head,
+      ['', '一', '劳动教育（一） 夏舜丽 [4]周 1-4节 40号楼-B310-服装工艺室（2） 清远校区 44'],
+      ['', '二', '大学美育 程晓明 [4-5、7-16]周 5-6节 崇礼楼-306-计算机十九室 清远校区 44'],
+      ['', '三', '5+3 真创项目 陈实 [1-16]周 7-8节 博雅D102 清远校区 41'],
+    ];
+    const book = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(matrix), '数据表');
+    const noCredits = XLSX.write(book, { type: 'buffer', bookType: 'xlsx' });
+    await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
+    await waitForPage('pages/timetable/import/index');
+    const noCreditsPath = await placeInUserData('无学分课表.xlsx', noCredits.toString('base64'));
+    await pickFile(noCreditsPath, '无学分课表.xlsx', noCredits.byteLength);
+    const noCreditsOutcome = await waitForImportOutcome();
+    assert.equal(noCreditsOutcome.kind, 'review', `无学分版式没有进入确认页（${noCreditsOutcome.kind}）：${noCreditsOutcome.text}`);
+    const noCreditsView = JSON.parse(await mini.evaluate(() => {
+      const pages = getCurrentPages();
+      const data = pages[pages.length - 1].data;
+      return JSON.stringify({
+        courseCount: data.courseCount,
+        blockedCount: data.blockedCount,
+        warningCount: data.warningCount,
+        rows: (data.items || []).map((item) => ({ name: item.name, teacher: item.teacherText, blocking: item.blocking })),
+      });
+    }));
+    assert.equal(noCreditsView.courseCount, 3, `无学分版式应解析出 3 门课，实际 ${noCreditsView.courseCount}`);
+    assert.equal(noCreditsView.blockedCount, 0, `无学分版式不该有需要补全的条目：${JSON.stringify(noCreditsView.rows)}`);
+    assert.equal(noCreditsView.warningCount, 3, '缺学分必须留下待核对提示，不能被当成「识别得很干净」');
+    assert.deepEqual(
+      noCreditsView.rows.map((row) => `${row.name}｜${row.teacher}`),
+      ['劳动教育（一）｜夏舜丽', '大学美育｜程晓明', '5+3 真创项目｜陈实'],
+      '课程名与教师都要拆对（含带括号的课程名与含空格的课程名）',
+    );
+    console.log(`无学分版式：${noCreditsView.rows.map((row) => `${row.name}｜${row.teacher}`).join('、')}（待核对 ${noCreditsView.warningCount} 条）`);
+    await mini.screenshot({ path: path.join(output, 'timetable-import-nocredits.png') });
+    await mini.mockWxMethod('showModal', { confirm: true, cancel: false });
+    await (await noCreditsOutcome.page.$('#abandon-import')).tap();
+    await (await waitForPage('pages/timetable/import/index')).waitFor(600);
+
     // 手工新增入口：表单字段与保存按钮渲染正常（保存需要已部署的云函数，这里只验证页面）
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/edit/index?scope=new' });
     const editPage = await waitForPage('pages/timetable/edit/index');
@@ -329,6 +471,9 @@ async function run() {
         '返回列表后对话不丢，可直接继续追问',
         '课表入口与返回（周课表页显示标题、导入或重试入口，不白屏）',
         '导入页显示「只能从聊天记录选择、先发给文件传输助手」引导与选择文件入口',
+        '不可解析的文件给出可读提示（真实上传 → 云端解析失败 → 页面文案不含平台错误）',
+        '真实样本导入到确认页后「放弃导入」不写库、草稿清空并回到引导态',
+        '不写学分的版式在真实云端仍能拆出课程名与教师（3 门、0 条需要补全、3 条待核对）',
         '课程表单显示课程名、星期、起止节、周次与保存入口',
         '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
@@ -336,6 +481,17 @@ async function run() {
       result: 'passed', realDevice: false };
     writeFileSync(path.join(output, 'verification.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
-  } finally { mini.disconnect(); }
+  } finally {
+    // 顶替过的系统弹层必须撤掉，而且要在 `finally` 里撤：中间任何断言失败都会跳过写在下方的清理，
+    // 把「自动确认的确认框」和「返回固定文件的选择器」留给下一次运行或后续人工操作。
+    for (const method of ['showModal', 'chooseMessageFile']) {
+      try {
+        await mini.restoreWxMethod(method);
+      } catch (error) {
+        console.log(`撤掉 ${method} 的替身失败（多半本来就没 mock 过）：${error && error.message ? error.message : error}`);
+      }
+    }
+    mini.disconnect();
+  }
 }
 run().catch((error) => { console.error(error); process.exitCode = 1; });

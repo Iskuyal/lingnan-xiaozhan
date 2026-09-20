@@ -25,4 +25,5 @@
 
 - [ ] 演示脚本按 100 次倒排：固定演示几条、提前演练一遍确认次数够，不要把「现场提问」设计成不可控的开放环节
 - [ ] 材料里如实写明这条约束与「上线后自动放大到 4000 次/分钟、200 万次/天」的口径，别让评审以为是产品缺陷
-- [ ] 若演示当天需要超过 100 次，先确认是否有官方提额或 `clear_quota` 之类的应急路径（**未验证**），不要把没验证的路径写进演示流程
+- [ ] **演示前用官方 `getApiQuota` 查一次剩余额度**（`POST https://api.weixin.qq.com/cgi-bin/openapi/quota/get?access_token=…`，返回 `daily_limit` / `used` / `remain`，官方声明适用小程序），比凭感觉估次数靠谱
+- [ ] **应急路径：官方 `clear_quota` 可清空当日次数**（`POST https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=…`，body `{"appid":"…"}`，官方声明适用小程序；**每个账号每月共 10 次机会**，后台页面清零与 API 清零共用）。**未实测**：前置是要能拿到小程序 access_token（AppID + AppSecret），**未认证小程序能否换取待验证**——演示前按「换取 token → `getApiQuota` 查额度 → 需要时 `clear_quota`」实测一次，没跑通就不要写进演示流程

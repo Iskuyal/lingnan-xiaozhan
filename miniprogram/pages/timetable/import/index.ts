@@ -27,6 +27,7 @@ import { callAi, userMessage, visionEvent } from '../../../services/ai';
 import {
   MAX_PHOTO_BYTES,
   PHOTO_GUIDE,
+  VISION_BANDS,
   VISION_MAX_TOKENS,
   VISION_PROMPT,
   VISION_SYSTEM,
@@ -265,6 +266,7 @@ Page({
         VISION_PROMPT,
         { fileID: uploaded.fileID },
         VISION_MAX_TOKENS,
+        VISION_BANDS,
       ));
       const fileID = this.fileID;
       this.fileID = '';

@@ -41,6 +41,11 @@ function buildWorkbook(matrix) {
 
 const HEADER = ['', '', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 
+/** 课程名列表（真机样本里课程名可能含空格，断言用数组直接比对）。 */
+function plainNames(draft) {
+  return draft.courses.map((course) => course.name);
+}
+
 test('四份真实教务导出都能解析出课程，且带出元信息', () => {
   for (const name of ALL) {
     const draft = parseFixture(name);
@@ -263,6 +268,30 @@ test('非课表矩阵与空文件给出可理解的失败信息', () => {
   assert.throws(() => parseWorkbook(Buffer.from('PK这不是压缩包'), '假的.xls'), /无法按 Excel 格式读取/u);
   // 纯文本文件会被当成 CSV 读进来，此时按「不是课表矩阵」拒绝，同样给出可理解的提示。
   assert.throws(() => parseWorkbook(Buffer.from('这不是 Excel 文件'), '假的.xls'), /未识别出课表矩阵/u);
+});
+
+test('没有学分的课表（2026-09-19 真机实测样本）也能拆出课程名与教师', () => {
+  // 真机导入的文件里单元格不写学分：「课程名 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号」。
+  // 原文逐字转录自真机截图（47 门课全部「课程名未识别」的那份）。
+  const workbook = buildWorkbook([
+    ['某某职业技术学院2026-2027学年第一学期班级课表（无学分版式）'],
+    HEADER,
+    ['', '一', '劳动教育（一） 夏舜丽 [4]周 1-4节 40号楼-B310-服装工艺室（2） 清远校区 44'],
+    ['', '二', '大学美育 程晓明 [4-5、7-16]周 5-6节 崇礼楼-306-计算机十九室 清远校区 44'],
+    ['', '三', '5+3 真创项目 陈实 [1-16]周 7-8节 博雅D102 清远校区 41'],
+  ]);
+  const draft = parseWorkbook(workbook, '无学分课表.xlsx');
+  assert.deepEqual(plainNames(draft), ['劳动教育（一）', '大学美育', '5+3 真创项目']);
+  assert.deepEqual(draft.courses.map((course) => course.teacher), ['夏舜丽', '程晓明', '陈实']);
+  for (const course of draft.courses) {
+    assert.equal(course.credits, '', '原文没有学分就不该编一个出来');
+    assert.ok(
+      course.warnings.some((warning) => warning.includes('学分')),
+      `缺学分必须留下待核对提示：${JSON.stringify(course.warnings)}`,
+    );
+    assert.ok(course.weeksRecognized && course.weeks.length > 0, '周次仍要正确识别');
+    assert.ok(course.sectionRanges.length > 0, '节次仍要正确识别');
+  }
 });
 
 test('周次写法与节次合并的纯函数行为', () => {

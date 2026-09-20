@@ -163,6 +163,85 @@ test('微信接口不可用（48001 未认证）：默认拒绝调用，AI_SAFET
   assert.ok(passed.report.detail.includes('未检测'), `放行时必须写明未检测：${passed.report.detail}`);
 });
 
+test('检测配额用尽（微信 45009）：归入「额度或配额用尽」，文案与月度上限分开', async () => {
+  // 2026-09-19 实测：未上架小程序的 msgSecCheck 有每日配额，用尽后接口报 45009。
+  // 当时它落到 `internal`，用户看到「AI 服务开小差了，请稍后重试」——按这条建议立刻重试只会一直失败。
+  const harness = createHarness();
+  const safety = harness.load('safety.js');
+  const errors = harness.load('errors.js');
+  const wechat = {
+    msgSecCheck: () => Promise.reject({ errCode: 45009, errMsg: 'openapi.security.msgSecCheck:fail reach max api daily quota limit' }),
+    imgSecCheck: () => Promise.resolve({ errCode: 0 }),
+  };
+  const failure = await catchAsyncFailure(() => safety.checkText(loadConfigFor(harness, {}).config, { text: TEXT, wechat }));
+  assert.ok(failure !== null, '默认 fail closed：配额用尽同样拒绝调用');
+  assert.equal(failure.failureClass, 'quota_exhausted', '配额用尽属于三类失败之一，不能归成 internal');
+  assert.ok(failure.detail.includes('45009'), `细节保留 errcode：${failure.detail}`);
+
+  // 用的是「当日检测配额」的文案，不是月度成本上限那条——后者的下一步是「下月再试」，会让人白等一个月。
+  const monthly = errors.defaultMessageFor('quota_exhausted');
+  assert.notEqual(failure.message, monthly, '两类配额用尽必须各说各的');
+  assert.doesNotMatch(failure.message, /下月|下个月/u, `不能把当日配额说成月度上限：${failure.message}`);
+  assert.match(failure.message, /检测/u, `要指明是检测额度用尽：${failure.message}`);
+
+  // fail-open 是排障逃生口：仍放行未检内容，但必须标 checked=false（与其它检测不可用一致）。
+  const passed = await safety.checkText(loadConfigFor(harness, { AI_SAFETY_FAIL_MODE: 'open' }).config, { text: TEXT, wechat });
+  assert.equal(passed.report.checked, false, '放行的是「没检过的内容」，必须标出来');
+});
+
+test('图片检测配额用尽（imgSecCheck 45009）同样归入配额类', async () => {
+  const harness = createHarness();
+  const safety = harness.load('safety.js');
+  const failure = await catchAsyncFailure(() => safety.checkImage(loadConfigFor(harness, {}).config, {
+    image: IMAGE,
+    wechat: {
+      msgSecCheck: () => Promise.resolve({ errCode: 0 }),
+      imgSecCheck: () => Promise.reject({ errCode: 45009, errMsg: 'openapi.security.imgSecCheck:fail reach max api daily quota limit' }),
+    },
+  }));
+  assert.ok(failure !== null);
+  assert.equal(failure.failureClass, 'quota_exhausted');
+  assert.match(failure.message, /检测/u);
+});
+
+test('非配额的检测不可用仍是 internal：分类只收实测过的码', async () => {
+  const harness = createHarness();
+  const safety = harness.load('safety.js');
+  for (const errCode of [48001, 61010, -501001]) {
+    const failure = await catchAsyncFailure(() => safety.checkText(loadConfigFor(harness, {}).config, {
+      text: TEXT,
+      wechat: {
+        msgSecCheck: () => Promise.reject({ errCode, errMsg: `code ${errCode}` }),
+        imgSecCheck: () => Promise.resolve({ errCode: 0 }),
+      },
+    }));
+    assert.equal(failure.failureClass, 'internal', `${errCode} 不是配额类，不能被误归`);
+  }
+});
+
+test('第三方审核接口报 402（额度用尽）：保住配额分类，不被「检测不可用」冲成 internal', async () => {
+  const env = { AI_SAFETY_PROVIDER: 'openai', AI_SAFETY_BASE_URL: 'https://relay.example.com/v1', AI_SAFETY_API_KEY: 'safety-key-000000', AI_SAFETY_MODEL: 'safety-model' };
+  const harness = createHarness({ env, respond: () => ({ status: 402, body: 'insufficient balance' }) });
+  const safety = harness.load('safety.js');
+  const failure = await catchAsyncFailure(() => safety.checkText(loadConfigFor(harness, env).config, { text: TEXT }));
+  assert.ok(failure !== null);
+  assert.equal(failure.failureClass, 'quota_exhausted', '检测服务余额/额度用尽属于配额类');
+  assert.ok(failure.detail.includes('402'), `细节保留状态码：${failure.detail}`);
+});
+
+test('配额文案可由环境变量覆盖（改措辞不改代码）', async () => {
+  const harness = createHarness({ env: { AI_MSG_QUOTA_EXHAUSTED_SAFETY: '今天先不试了，明天再来。' } });
+  const safety = harness.load('safety.js');
+  const failure = await catchAsyncFailure(() => safety.checkText(loadConfigFor(harness, { AI_MSG_QUOTA_EXHAUSTED_SAFETY: '今天先不试了，明天再来。' }).config, {
+    text: TEXT,
+    wechat: {
+      msgSecCheck: () => Promise.reject({ errCode: 45009, errMsg: 'quota' }),
+      imgSecCheck: () => Promise.resolve({ errCode: 0 }),
+    },
+  }));
+  assert.equal(failure.message, '今天先不试了，明天再来。');
+});
+
 test('检测调用超时：归入「模型不可用或超时」（可重试），不是笼统的内部错误', async () => {
   const harness = createHarness();
   const safety = harness.load('safety.js');
