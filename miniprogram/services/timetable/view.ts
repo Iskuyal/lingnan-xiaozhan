@@ -6,6 +6,7 @@
  */
 import { Course, SectionRange } from './types';
 import { condenseWeeks } from './weeks';
+import { colorIndexFor, colorIndexFromKey } from './palette';
 
 export const WEEKDAY_LABELS = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 export const WEEKDAY_SHORT = ['一', '二', '三', '四', '五', '六', '日'];
@@ -203,4 +204,202 @@ export function formatUpdatedAt(iso: string): string {
   if (Number.isNaN(at.getTime())) return '';
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())} ${pad(at.getHours())}:${pad(at.getMinutes())}`;
+}
+
+/**
+ * 周网格排布（设计图 01 的尺寸依据）。规则见 docs/design/timetable/README.md 的「版式规则」1–4：
+ *
+ * 1. **列宽自适应**：有课的天均分剩余宽度，没课的天收窄（`narrow`）。7 列均分在 390px 屏上只有
+ *    41px，课名两行就折行，这是本版最关键的取舍。
+ * 2. **课块按高度分级给信息**：≥3 节给名称+地点+教师，2 节给名称+地点，1 节只给名称。
+ * 3. **同格多门折叠**：节次完全相同的课折叠成一块并带门数角标；只**部分**重叠的走泳道并排，
+ *    不折叠也不互相压住。
+ * 4. **不擅自修复**：节次越界或倒置（`sectionRanges` 为空）的课画不出来，但仍算进本周课程数。
+ *
+ * 时间相关的推导（今天是第几周、本周几号、当前节次）**不在这里**：那些要学期设置与作息时间，
+ * 由页面算好后经 `GridOptions` 传进来，因此本函数保持纯函数、可直接用 node:test 验证。
+ */
+export const SECTION_COUNT = 12;
+
+export interface GridBlock {
+  /** 同格多门课时是全部课程 id，第一项是代表课。 */
+  ids: string[];
+  primaryId: string;
+  name: string;
+  colorIndex: number;
+  start: number;
+  end: number;
+  span: number;
+  /** 信息层级：≥3 节给名称+地点+教师，2 节给名称+地点，1 节只给名称。 */
+  tier: 'full' | 'medium' | 'name';
+  meta: string;
+  teacher: string;
+  needsReview: boolean;
+  /** 同格门数，>1 时画角标。 */
+  count: number;
+  /** 部分重叠时的并排泳道；laneCount > 1 时块宽按泳道分。 */
+  lane: number;
+  laneCount: number;
+  /** 正在上（页面按作息算出当前节次后传入）。 */
+  now: boolean;
+}
+
+export interface GridColumn {
+  weekday: number;
+  label: string;
+  /** 表头日期数字（没设开学日时为空字符串）。 */
+  dateLabel: string;
+  /** 本周没课的天收窄，把宽度让给有课的天。 */
+  narrow: boolean;
+  today: boolean;
+  blocks: GridBlock[];
+}
+
+export interface GridLayout {
+  week: number;
+  weekLabel: string;
+  rows: number;
+  columns: GridColumn[];
+  /** 本周有课的天（1-7）。 */
+  hasCourseWeekdays: number[];
+  /** 本周课程数（与列表口径一致，画不出节次的也算）。 */
+  total: number;
+  /** 真正落到网格上的课程数。 */
+  placed: number;
+}
+
+export interface GridOptions {
+  /** 本周 7 天的日期文案，由学期设置算出；缺省或缺项时表头不显示日期。 */
+  dateLabels?: string[];
+  /** 今天对应的星期（1-7）；缺省时不高亮任何列。 */
+  todayWeekday?: number;
+  /** 当前节次（1-12）；只有页面确认「显示的就是本周」时才传。 */
+  nowSection?: number;
+}
+
+/** 能画进网格的节次区间：必须落在 1-12 节内且不倒置。不修原文，画不出来就是画不出来。 */
+function placeableRanges(course: Course): SectionRange[] {
+  return course.sectionRanges.filter((range) => range.start >= 1 && range.end <= SECTION_COUNT && range.start <= range.end);
+}
+
+/** 同一天、节次完全相同的课合成一个候选块；只有部分重叠的各自保留，交给泳道。 */
+interface Candidate {
+  start: number;
+  end: number;
+  members: Course[];
+}
+
+function collectCandidates(weekCourses: Course[]): Candidate[][] {
+  const byDay: Candidate[][] = WEEKDAY_LABELS.map(() => []);
+  for (const course of weekCourses) {
+    if (course.weekday < 1 || course.weekday > 7) continue;
+    for (const range of placeableRanges(course)) {
+      const day = byDay[course.weekday - 1];
+      const merged = day.find((item) => item.start === range.start && item.end === range.end);
+      if (merged === undefined) day.push({ start: range.start, end: range.end, members: [course] });
+      else merged.members.push(course);
+    }
+  }
+  return byDay;
+}
+
+/** 贪心分泳道：同一段时间互相重叠的块并排，互不重叠的各自占满整列。 */
+function assignLanes(candidates: Candidate[]): { candidate: Candidate; lane: number; laneCount: number }[] {
+  const sorted = [...candidates].sort((a, b) => a.start - b.start || a.end - b.end);
+  const placed: { candidate: Candidate; lane: number; laneCount: number }[] = [];
+  let cluster: Candidate[] = [];
+  let clusterEnd = 0;
+  const flush = () => {
+    if (cluster.length === 0) return;
+    const laneEnds: number[] = [];
+    const assigned: { candidate: Candidate; lane: number }[] = [];
+    for (const item of cluster) {
+      let lane = laneEnds.findIndex((end) => end < item.start);
+      if (lane < 0) {
+        lane = laneEnds.length;
+        laneEnds.push(item.end);
+      } else {
+        laneEnds[lane] = item.end;
+      }
+      assigned.push({ candidate: item, lane });
+    }
+    for (const item of assigned) placed.push({ ...item, laneCount: laneEnds.length });
+    cluster = [];
+    clusterEnd = 0;
+  };
+  for (const item of sorted) {
+    if (cluster.length > 0 && item.start > clusterEnd) flush();
+    cluster.push(item);
+    clusterEnd = Math.max(clusterEnd, item.end);
+  }
+  flush();
+  return placed;
+}
+
+/** 课程颜色：显式指定优先，否则按课程名。显式字段还没进类型契约，这里按可选字段读取。 */
+function colorIndexOf(course: Course): number {
+  const explicit = colorIndexFromKey((course as Course & { color?: string }).color ?? '');
+  return explicit >= 0 ? explicit : colorIndexFor(course.name);
+}
+
+function tierFor(span: number): GridBlock['tier'] {
+  if (span >= 3) return 'full';
+  if (span === 2) return 'medium';
+  return 'name';
+}
+
+export function buildGrid(courses: Course[], week: number, options: GridOptions = {}): GridLayout {
+  const inWeek = coursesForWeek(courses, week);
+  const dateLabels = options.dateLabels ?? [];
+  const byDay = collectCandidates(inWeek);
+
+  const columns: GridColumn[] = WEEKDAY_LABELS.map((label, index) => {
+    const weekday = index + 1;
+    const laid = assignLanes(byDay[index]);
+    const blocks: GridBlock[] = laid.map(({ candidate, lane, laneCount }) => {
+      const primary = candidate.members[0];
+      const start = candidate.start;
+      const end = candidate.end;
+      const span = end - start + 1;
+      const tier = tierFor(span);
+      return {
+        ids: candidate.members.map((member) => member.id),
+        primaryId: primary.id,
+        name: primary.name,
+        colorIndex: colorIndexOf(primary),
+        start,
+        end,
+        span,
+        tier,
+        meta: tier === 'name' ? '' : primary.location,
+        teacher: tier === 'full' ? primary.teacher : '',
+        needsReview: candidate.members.some((member) => member.warnings.length > 0),
+        count: candidate.members.length,
+        lane,
+        laneCount,
+        now: options.nowSection !== undefined && options.nowSection >= start && options.nowSection <= end,
+      };
+    }).sort((a, b) => a.start - b.start || a.lane - b.lane);
+    return {
+      weekday,
+      label,
+      dateLabel: dateLabels[index] ?? '',
+      narrow: blocks.length === 0,
+      today: options.todayWeekday === weekday,
+      blocks,
+    };
+  });
+
+  const placedIds = new Set<string>();
+  for (const day of byDay) for (const candidate of day) for (const member of candidate.members) placedIds.add(member.id);
+
+  return {
+    week,
+    weekLabel: `第 ${week} 周`,
+    rows: SECTION_COUNT,
+    columns,
+    hasCourseWeekdays: columns.filter((column) => column.blocks.length > 0).map((column) => column.weekday),
+    total: inWeek.length,
+    placed: placedIds.size,
+  };
 }
