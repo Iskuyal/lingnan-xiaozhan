@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课程色板与组件</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 本页是设计系统附录，把元件从「绝对定位的网格」里拎出来摆一排。
+     block 改成 relative 而不是 static：角标是 absolute，锚点必须留在课块上，
+     否则它会飘到整页的定位祖先上去（body 是 relative）。 */
+  .demo { display: flex; gap: 12.5px; align-items: flex-start; flex-wrap: wrap; }
+  .demo .block { position: relative; left: auto; right: auto; width: 124px; }
+  .demo .block--tall { height: 85.8px; }
+  .demo-label { color: var(--text-3); font-size: 11.5px; margin: 10.4px 0 5.2px; }
+  .swatch-pair { display: flex; align-items: center; gap: 12.5px; }
+  .swatch-mini { width: 22px; height: 22px; border-radius: var(--r-chip); border-left: 3.1px solid var(--c); background: var(--c-bg); }
+</style>
+</head>
+<body>
+<!--
+  10 课程色板与组件附录（设计系统）
+  这张图回答两个问题：8 色够不够分辨、元件在真实底色上长什么样。它不进小程序，只给评审与实现对照。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课程色板与组件</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="callout">
+    课程色板刻意避开品牌红与警告琥珀：红是「今天与主要动作」，琥珀是「这里有问题」，
+    课块用红或棕橙会被读成后者。8 色按课程名稳定取色，同名课程永远同色。
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass-strong" style="padding:14.6px 15.6px">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">8 色色板</span></div>
+    <div class="demo-label">实色用于左侧色条与详情页头部；浅底用于课块填充，同色描边。</div>
+    <div style="--c:var(--c1);--c-bg:var(--c1-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">靛青</div><div class="swatch-hex">#2f5f9e</div></div></div>
+    <div style="--c:var(--c2);--c-bg:var(--c2-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">天青</div><div class="swatch-hex">#1f7fa8</div></div></div>
+    <div style="--c:var(--c3);--c-bg:var(--c3-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">青碧</div><div class="swatch-hex">#147a70</div></div></div>
+    <div style="--c:var(--c4);--c-bg:var(--c4-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">松绿</div><div class="swatch-hex">#2e8b57</div></div></div>
+    <div style="--c:var(--c5);--c-bg:var(--c5-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">竹绿</div><div class="swatch-hex">#4f8a2b</div></div></div>
+    <div style="--c:var(--c6);--c-bg:var(--c6-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">橄榄</div><div class="swatch-hex">#6b7a2a</div></div></div>
+    <div style="--c:var(--c7);--c-bg:var(--c7-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">紫</div><div class="swatch-hex">#6a5aa8</div></div></div>
+    <div style="--c:var(--c8);--c-bg:var(--c8-bg)" class="swatch-card"><span class="swatch-big"></span><div><div class="swatch-name">品红</div><div class="swatch-hex">#a8478f</div></div></div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass-strong" style="padding:14.6px 15.6px">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">课块的五种样子</span></div>
+    <div class="demo-label">普通（1-2 节）</div>
+    <div class="demo">
+      <div class="block block--tall" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line)">
+        <div class="block-name">高等数学</div><div class="block-meta">崇礼楼 306</div>
+      </div>
+      <div class="block block--tall" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line)">
+        <div class="block-name">劳动教育（一）</div><div class="block-meta">40号楼-B310</div>
+      </div>
+    </div>
+    <div class="demo-label">正在上（金描边：与今日速查条指的是同一节课）</div>
+    <div class="demo">
+      <div class="block block--now block--tall" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line)">
+        <div class="block-name">高等数学</div><div class="block-meta">第 5-6 节</div>
+      </div>
+    </div>
+    <div class="demo-label">待核对（琥珀虚线：解析有疑点，只标记不猜）</div>
+    <div class="demo">
+      <div class="block block--review block--tall">
+        <div class="block-name">体育（三）</div><div class="block-meta">节次待核对</div>
+      </div>
+    </div>
+    <div class="demo-label">同格多门（右上角标数：点开是并列清单）</div>
+    <div class="demo">
+      <div class="block block--badged block--tall" style="--c:var(--c3);--c-bg:var(--c3-bg);--c-line:var(--c3-line)">
+        <div class="block-name">习近平新时代中国特色社会主义思想概论</div>
+        <span class="block-badge">2</span>
+      </div>
+    </div>
+    <div class="demo-label">临时/待定（虚线纸底：占位而无课程色，后续版本才用）</div>
+    <div class="demo">
+      <div class="block block--temp block--tall">
+        <div class="block-name">待定</div><div class="block-meta">未落库</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass-strong" style="padding:14.6px 15.6px">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">今日速查三态</span></div>
+    <div class="demo-label">正在上（红点 + 红描边时间胶囊）</div>
+    <div class="today" style="padding:0">
+      <span class="today-dot"></span>
+      <div class="today-body"><div class="today-kicker">正在上</div><div class="today-name">高等数学</div><div class="today-sub">第 5-6 节 · 崇礼楼 306</div></div>
+      <span class="today-pill">13:00–14:35</span>
+    </div>
+    <div class="demo-label">下一节（金点 + 金描边胶囊：还没开始，不是警告）</div>
+    <div class="today" style="padding:0">
+      <span class="today-dot today-dot--idle"></span>
+      <div class="today-body"><div class="today-kicker today-kicker--idle">下一节 · 还有 1 小时 20 分</div><div class="today-name">大学美育</div><div class="today-sub">第 9-10 节 · 崇礼楼 306</div></div>
+      <span class="today-pill today-pill--idle">16:50–18:25</span>
+    </div>
+    <div class="demo-label">今天没课（灰点，不假装有安排）</div>
+    <div class="today" style="padding:0">
+      <span class="today-dot today-dot--none"></span>
+      <div class="today-body"><div class="today-kicker" style="color:var(--text-2)">今天没课</div><div class="today-sub">可以切到列表看看本周其他安排</div></div>
+    </div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass-strong" style="padding:14.6px 15.6px">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">标记与按钮</span></div>
+    <div class="demo-label">标记：手工（中性）· 待核对（琥珀）· 已在别的周（金）</div>
+    <div><span class="chip chip-plain">手工</span><span class="chip chip-warn">待核对</span><span class="chip chip-gold">第 4 周</span></div>
+    <div class="demo-label">按钮：主（红，一屏最多一个）· 次（玻璃）· 危险（琥珀）· 助手（金）</div>
+    <div class="btn">确认保存</div>
+    <div class="gap-8"></div>
+    <div class="btn btn-secondary">放弃导入</div>
+    <div class="gap-8"></div>
+    <div class="btn btn-warn">删除这节课</div>
+    <div class="gap-8"></div>
+    <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+  </div>
+
+  <div class="gap-16"></div>
+  <div class="quiet">色板与令牌的取值、以及每条语义规则，见 <span style="font-variant-numeric:tabular-nums">_tokens.css</span> 与 README 的「版式规则」。</div>
+</div>
+</body>
+</html>

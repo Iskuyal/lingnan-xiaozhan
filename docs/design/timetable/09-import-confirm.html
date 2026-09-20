@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>导入确认</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+/* 09 页局部微调（共享文件不动，取色只用令牌变量）。 */
+/* 头部主标题：eyebrow 之下的一句话结论，比 section-title 再重一档。 */
+.iy-title { color: var(--brand-deep); font-size: 19px; font-weight: 700; letter-spacing: 0.5px; margin-top: 4.2px; }
+.iy-rows { margin-top: 8.3px; }
+/* 待核对草稿卡：琥珀虚线框（与课块 block--review 同一套语义），只标不猜。 */
+.card--review { border: 0.5px dashed var(--warn-line); background: var(--warn-soft); }
+.card + .card { margin-top: 8.3px; }
+/* 原文行：等宽读起来更像「原文」的转述，仍然只占一次 quiet 的视觉重量。 */
+.raw-line { margin-top: 4.2px; font-variant-numeric: tabular-nums; }
+/* 草稿落位迷你网格：一格 = 一节。mini-cell 高 15.6px + 间距 2.1px，节距 17.7px；
+   mini-th 高 17.7px，所以第 1 节的顶边在 17.7 + 2.1 = 19.8px。
+   草稿态一律虚线框，待核对的草稿换成琥珀虚线框。 */
+.draft { padding: 10.4px 10.4px 12.5px; }
+.draft .mini-col { position: relative; }
+.draft-rail { flex: 0 0 18.7px; }
+.draft-no { display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 9.4px; font-variant-numeric: tabular-nums; }
+.draft-block {
+  position: absolute; left: 0; right: 0; padding: 2.1px 2.1px; border-radius: 2.1px; overflow: hidden;
+  border: 0.5px dashed var(--c-line); border-left: 2.1px solid var(--c); background: var(--c-bg);
+}
+.draft-block-name { color: var(--text); font-size: 9.4px; font-weight: 600; line-height: 1.25; }
+.draft-block--warn { border-color: var(--warn-line); border-left-color: var(--warn); background: var(--warn-soft); }
+.draft-block--warn .draft-block-name { color: var(--warn); }
+.dg-1-4 { top: 19.8px; height: 68.7px; }
+.dg-3-4 { top: 55.2px; height: 33.3px; }
+.dg-5-6 { top: 90.6px; height: 33.3px; }
+.iy-actions { padding: 14.6px 15.6px; }
+</style>
+</head>
+<body>
+<!--
+  09 导入确认页：先看解析结果再保存。
+  这一页的功课是「让人敢按保存」：先把元信息、解析结果、没识别的那一行摊开，再给主按钮。
+  列表视图看细节（课程名 / 节次 / 周次 / 地点 / 原文 / 修正 / 删除），课表视图看落位；
+  两种视图的草稿都是内存里的草稿，保存前不写任何数据。
+  课程与原文沿用真机样本的版式（劳动教育（一） 夏舜丽 [4]周 1-4节 40号楼-B310-服装工艺室（2） 清远校区 44）。
+-->
+<div class="statusbar">
+  <span>14:05</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">导入课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="eyebrow">导入课表 · 先看解析结果再保存</div>
+    <div class="iy-title">解析完成，请核对</div>
+    <div class="iy-rows">
+      <div class="sheet-row"><span class="sheet-key">学期</span><span class="sheet-val">2026-2027学年第一学期</span></div>
+      <div class="sheet-row"><span class="sheet-key">班级</span><span class="sheet-val">26软件技术(专升本)1班</span></div>
+      <div class="sheet-row"><span class="sheet-key">来源文件</span><span class="sheet-val">26软件技术(专升本)1班.xls</span></div>
+      <div class="sheet-row"><span class="sheet-key">解析结果</span><span class="sheet-val">45 门课程（文件里 49 条课条目，按大节去重后 45 门）</span></div>
+    </div>
+    <div class="head-meta">其中 1 门待核对、0 门需要补全，可以保存</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="callout">保存会替换当前已保存的课表（含手工添加的课程）；下面这些内容还没写入任何数据，随时可以放弃</div>
+
+  <div class="gap-16"></div>
+
+  <div class="section-head">
+    <span class="section-bar"></span>
+    <span class="section-title">解析结果</span>
+    <span class="seg seg--compact" style="margin-left:auto">
+      <span class="seg-item seg-item--on">列表</span><span class="seg-item">课表</span>
+    </span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass card">
+    <div class="card-bar" style="--c:var(--c5)"></div>
+    <div class="card-main">
+      <div class="card-name">劳动教育（一）</div>
+      <div class="card-line">第 1-4 节 · 第 4 周 · 40号楼-B310</div>
+      <div class="quiet raw-line">原文：劳动教育（一） 0.25 夏舜丽 [4]周 1-4节 40号楼-B310-服装工艺室 (2) 清远校区 44</div>
+    </div>
+    <div class="card-ops">
+      <div class="op op-edit">修正</div>
+      <div class="op op-del">删除</div>
+    </div>
+  </div>
+
+  <div class="glass card">
+    <div class="card-bar" style="--c:var(--c1)"></div>
+    <div class="card-main">
+      <div class="card-name">高等数学</div>
+      <div class="card-line">第 5-6 节 · 第 4-5、7-16 周 · 崇礼楼-306-计算机十九室</div>
+      <div class="quiet raw-line">原文：高等数学 0.25 林加燕 [4-5、7-16]周 5-6节 崇礼楼-306-计算机十九室 (2) 清远校区 44</div>
+    </div>
+    <div class="card-ops">
+      <div class="op op-edit">修正</div>
+      <div class="op op-del">删除</div>
+    </div>
+  </div>
+
+  <div class="glass card card--review">
+    <div class="card-bar" style="--c:var(--warn)"></div>
+    <div class="card-main">
+      <div class="card-name">体育（三）<span class="chip chip-warn">待核对</span></div>
+      <div class="card-line">星期四 · 第 3-4 节 · 周次未识别</div>
+      <div class="card-warn">原文只有一个『4』，没识别成教学周，已按每周展示，没有替你改成别的周次</div>
+      <div class="quiet raw-line">原文：体育（三） 4</div>
+    </div>
+    <div class="card-ops">
+      <div class="op op-edit">修正</div>
+      <div class="op op-del">删除</div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="callout callout-warn">有 1 行没能识别，已留空：『待定 | 三 | 5-6 | 教师待补』——可以在这里补录，或先跳过</div>
+
+  <div class="gap-16"></div>
+
+  <div class="quiet">课表视图 · 切到课表可以看它落到哪一节，草稿态用虚线框</div>
+
+  <div class="gap-8"></div>
+
+  <div class="glass-strong draft">
+    <div class="mini-grid">
+      <div class="mini-col draft-rail">
+        <div class="mini-th"></div>
+        <div class="mini-cell draft-no">1</div>
+        <div class="mini-cell draft-no">2</div>
+        <div class="mini-cell draft-no">3</div>
+        <div class="mini-cell draft-no">4</div>
+        <div class="mini-cell draft-no">5</div>
+        <div class="mini-cell draft-no">6</div>
+        <div class="mini-cell draft-no">7</div>
+        <div class="mini-cell draft-no">8</div>
+      </div>
+      <div class="mini-col">
+        <div class="mini-th">一</div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="draft-block dg-1-4" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line)">
+          <div class="draft-block-name">劳动教育（一）</div>
+        </div>
+        <div class="draft-block dg-5-6" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line)">
+          <div class="draft-block-name">高等数学</div>
+        </div>
+      </div>
+      <div class="mini-col">
+        <div class="mini-th">二</div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+      </div>
+      <div class="mini-col">
+        <div class="mini-th">三</div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+      </div>
+      <div class="mini-col">
+        <div class="mini-th">四</div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="draft-block dg-3-4 draft-block--warn" style="--c:var(--warn)">
+          <div class="draft-block-name">体育（三）</div>
+        </div>
+      </div>
+      <div class="mini-col">
+        <div class="mini-th">五</div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass iy-actions">
+    <div class="quiet">保存前不会写入任何数据</div>
+    <div class="gap-8"></div>
+    <div class="btn-row">
+      <div class="btn">确认保存</div>
+      <div class="btn btn-secondary">放弃导入</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

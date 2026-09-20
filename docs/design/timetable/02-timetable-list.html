@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课表主页 · 列表视图</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 02 页局部微调（共享文件不动，取色只用令牌变量）。
+     分组容器用 glass-strong：day-title 在容器外做标题，卡片自带 12.5px 内边距，
+     所以容器内不加内边距；卡与卡之间补一条玻璃分隔线，免得两张卡的内容糊成一段。 */
+  .day-group { overflow: hidden; }
+  .day-group .card + .card { border-top: 0.5px solid var(--glass-divide); }
+  /* 待核对的卡：琥珀虚线框 + 琥珀浅底（与 01 的琥珀虚块、09 的草稿卡同一套语义）。
+     整框替换掉上面那条玻璃分隔线，免得虚线框与分隔线叠成两条。 */
+  .day-group .card + .card--review, .day-group .card--review {
+    border: 0.5px dashed var(--warn-line);
+    background: var(--warn-soft);
+  }
+  /* 「· 今天」用品牌红点出来：红只用于品牌与今天，这里正好是今天。 */
+  .day-today { color: var(--brand); font-weight: 600; }
+</style>
+</head>
+<body>
+<!--
+  02 课表主页 · 列表视图（与 01 同一页、同一周，只是切到「列表」段）
+  网格负责「一眼」，列表负责「读全」：地点、教师、周次都摊在卡片上，不用点开详情。
+  逐天与 01 的网格对齐：星期一 5 张、星期二 4 张、星期三 4 张、星期四 3 张，共 16 张卡。
+  一周上两次的课在列表里就该是两张卡，同名同色：
+  信息技术与人工智能应用（周一 11-12 节、周三 5-6 节）、公共外语（英语）一（周三 1-2 节、11-12 节）。
+  星期二第 5-6 节有两门课：习近平新时代中国特色社会主义思想概论（第 4-16 周）与形势与政策（第 4-8 周）
+  周次重叠所以同格——在网格里是角标「2」的堆叠卡，在本页就是相邻的两张卡。
+  待核对按「只标记不猜」：琥珀虚线卡 + 琥珀色条 + 待核对 chip + 一行说明；
+  体育（三）的教师与地点没识别到就留空，绝不编一个出来。
+  没识别到的字段一律不写（页面本来就按「有值才显示」，所以有些卡只有节次与周次两行）。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="head-top">
+      <span class="eyebrow">2026-2027学年第一学期</span>
+      <span class="head-link">课表设置</span>
+    </div>
+    <div class="head-week-row">
+      <span class="head-nav">‹</span>
+      <span class="head-week">第 4 周</span>
+      <span class="head-nav">›</span>
+      <span class="head-sub">9/21 – 9/27</span>
+    </div>
+    <div class="head-meta">本周 14 门 · 共 45 门课程 · 左右滑动翻周</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong today">
+    <span class="today-dot"></span>
+    <div class="today-body">
+      <div class="today-kicker">正在上</div>
+      <div class="today-name">高等数学</div>
+      <div class="today-sub">第 5-6 节 · 崇礼楼 306 · 林加燕</div>
+    </div>
+    <span class="today-pill">13:00–14:35</span>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="section-head">
+    <span class="section-bar"></span>
+    <span class="section-title">本周课表</span>
+    <span class="seg seg--compact" style="margin-left:auto">
+      <span class="seg-item">课表</span><span class="seg-item seg-item--on">列表</span>
+    </span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 星期一（今天） -->
+  <div class="day-title">星期一<span class="day-today"> · 今天</span></div>
+  <div class="glass-strong day-group">
+    <div class="card" style="--c:var(--c5)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">劳动教育（一）</div>
+        <div class="card-line">第 1-4 节 · 40号楼-B310</div>
+        <div class="card-line">第 4 周 · 夏舜丽</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c1)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">高等数学</div>
+        <div class="card-line">第 5-6 节 · 崇礼楼 306</div>
+        <div class="card-line">第 4-5、7-16 周 · 林加燕</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c6)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">中华传统文化精粹（一）</div>
+        <div class="card-line">第 7-8 节</div>
+        <div class="card-line">第 4-12 周 · 易定军</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c8)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">大学美育</div>
+        <div class="card-line">第 9-10 节 · 崇礼楼 306</div>
+        <div class="card-line">第 4-5、7-16 周 · 程晓明</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c2)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">信息技术与人工智能应用</div>
+        <div class="card-line">第 11-12 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 星期二 -->
+  <div class="day-title">星期二</div>
+  <div class="glass-strong day-group">
+    <div class="card" style="--c:var(--c7)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">低代码平台应用开发</div>
+        <div class="card-line">第 1-4 节 · 崇礼楼 602</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c3)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">习近平新时代中国特色社会主义思想概论</div>
+        <div class="card-line">第 5-6 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c8)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">形势与政策</div>
+        <div class="card-line">第 5-6 节</div>
+        <div class="card-line">第 4-8 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c4)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">网页设计与制作技术</div>
+        <div class="card-line">第 9-12 节 · 崇礼楼 208</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 星期三 -->
+  <div class="day-title">星期三</div>
+  <div class="glass-strong day-group">
+    <div class="card" style="--c:var(--c1)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">公共外语（英语）一</div>
+        <div class="card-line">第 1-2 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c8)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">我的大学生活我做主<span class="chip chip-plain">手工</span></div>
+        <div class="card-line">第 3-4 节</div>
+        <div class="card-line">第 1-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c2)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">信息技术与人工智能应用</div>
+        <div class="card-line">第 5-6 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c1)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">公共外语（英语）一</div>
+        <div class="card-line">第 11-12 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 星期四 -->
+  <div class="day-title">星期四</div>
+  <div class="glass-strong day-group">
+    <div class="card" style="--c:var(--c5)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">毛泽东思想和中国特色社会主义理论体系概论</div>
+        <div class="card-line">第 1-2 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card card--review" style="--c:var(--warn)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">体育（三）<span class="chip chip-warn">待核对</span></div>
+        <div class="card-line">第 3-4 节</div>
+        <div class="card-line">每周 · 待核对</div>
+        <div class="card-warn">周次原文没识别成教学周，已按每周展示，请核对后补全</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+
+    <div class="card" style="--c:var(--c6)">
+      <span class="card-bar"></span>
+      <div class="card-main">
+        <div class="card-name">思想道德与法治</div>
+        <div class="card-line">第 11-12 节</div>
+        <div class="card-line">第 4-16 周</div>
+      </div>
+      <div class="card-ops">
+        <div class="op op-edit">修改</div>
+        <div class="op op-del">删除</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-8"></div>
+  <div class="quiet">列表按星期分组，一门课一张卡，信息与课表视图一致。作息时间由你自己填写，未填写时不显示任何时刻，也不臆造上课时间。待核对的课会写明哪里没识别，改完即消。</div>
+
+  <div class="gap-16"></div>
+  <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+
+  <div class="gap-16"></div>
+  <div class="actionbar">
+    <div class="actionbar-item">导入课表</div>
+    <div class="actionbar-item">手工新增</div>
+    <div class="actionbar-item">课程管理</div>
+  </div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回首页</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课表主页 · 退化态（没设开学日、没填作息）</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 03 页局部微调（共享文件不动，取色只用令牌变量）。
+     金色说明条里要放一条次要动作，所以按钮改成自适应宽度；
+     这一页刻意不出现琥珀：没设置不是错误，是「还没填」。 */
+  .callout-lead { font-weight: 600; }
+  .callout-note { margin-top: 2.1px; }
+  .callout .callout-btn { display: inline-block; width: auto; margin-top: 10.4px; padding-left: 20.8px; padding-right: 20.8px; }
+</style>
+</head>
+<body>
+<!--
+  03 课表主页 · 退化态：没设开学日 + 没填作息（两个空都还没填，但课表照常能用）
+  这一页要一眼看懂两件事：
+  1. 没填作息 → 全链路不出现任何时刻，也不说「正在上 / 下一节」，只给一行说明与填写入口；
+  2. 没设开学日 → 不显示日期区间，只按第 1 周查看，也不把今天那一列高亮（不知道今天是第几周）。
+  所以：时间轴只有节次号、表头只有星期单字、没有今日速查条、没有红色「今天」、没有空壳占位符。
+  课程数据沿用样本（军事理论、专业技术技能项目、5+3 真创项目、中国共产党党史）：
+  第 1 周本来就只有零星几门课，多数课从第 3、4 周才开始排。课块照旧只写名称、地点、教师。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="head-top">
+      <span class="eyebrow">2026-2027学年第一学期</span>
+      <span class="head-link">课表设置</span>
+    </div>
+    <div class="head-week-row">
+      <span class="head-week">第 1 周</span>
+    </div>
+    <div class="head-meta">还没有设置开学日，先按第 1 周查看</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 今日速查条的位置：没填作息就没有速查，只说明为什么没有，并给填写入口 -->
+  <div class="callout">
+    <div class="callout-lead">没填作息时间，所以不显示「正在上 / 下一节」</div>
+    <div class="callout-note">填一次即可，只影响显示，不影响课表数据</div>
+    <div class="btn btn-secondary btn-sm callout-btn">填写作息时间</div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="section-head">
+    <span class="section-bar"></span>
+    <span class="section-title">本周课表</span>
+    <span class="seg seg--compact" style="margin-left:auto">
+      <span class="seg-item seg-item--on">课表</span><span class="seg-item">列表</span>
+    </span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong grid">
+    <div class="grid-head">
+      <div class="grid-rail"></div>
+      <div class="grid-th">一</div>
+      <div class="grid-th">二</div>
+      <div class="grid-th">三</div>
+      <div class="grid-th">四</div>
+      <div class="grid-th grid-th--narrow">五</div>
+      <div class="grid-th grid-th--narrow">六</div>
+      <div class="grid-th grid-th--narrow">日</div>
+    </div>
+
+    <div class="grid-body">
+      <div class="rail">
+        <div class="rail-cell"><span class="rail-no">1</span></div>
+        <div class="rail-cell"><span class="rail-no">2</span></div>
+        <div class="rail-cell"><span class="rail-no">3</span></div>
+        <div class="rail-cell"><span class="rail-no">4</span></div>
+        <div class="rail-cell"><span class="rail-no">5</span></div>
+        <div class="rail-cell"><span class="rail-no">6</span></div>
+        <div class="rail-cell"><span class="rail-no">7</span></div>
+        <div class="rail-cell"><span class="rail-no">8</span></div>
+        <div class="rail-cell"><span class="rail-no">9</span></div>
+        <div class="rail-cell"><span class="rail-no">10</span></div>
+        <div class="rail-cell"><span class="rail-no">11</span></div>
+        <div class="rail-cell"><span class="rail-no">12</span></div>
+      </div>
+
+      <div class="cols">
+        <!-- 星期一 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c7);--c-bg:var(--c7-bg);--c-line:var(--c7-line);top:262.2px;height:85.8px">
+            <div class="block-name">军事理论</div>
+            <div class="block-meta">崇礼楼 203</div>
+          </div>
+        </div>
+
+        <!-- 星期二 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c4);--c-bg:var(--c4-bg);--c-line:var(--c4-line);top:0;height:173.2px">
+            <div class="block-name">专业技术技能项目</div>
+            <div class="block-meta">崇礼楼 602</div>
+            <div class="block-meta">黄比悉</div>
+          </div>
+        </div>
+
+        <!-- 星期三 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c3);--c-bg:var(--c3-bg);--c-line:var(--c3-line);top:262.2px;height:85.8px">
+            <div class="block-name">5+3 真创项目</div>
+            <div class="block-meta">博雅D102</div>
+          </div>
+        </div>
+
+        <!-- 星期四 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c6);--c-bg:var(--c6-bg);--c-line:var(--c6-line);top:87.4px;height:85.8px">
+            <div class="block-name">中国共产党党史</div>
+            <div class="block-meta">崇礼楼 205</div>
+          </div>
+        </div>
+
+        <!-- 周五、六、日：本周没课，收窄 -->
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-8"></div>
+  <div class="quiet">周课表按节次展示。没填作息时间就不出现任何时刻，也不推算「正在上 / 下一节」——时刻由你自己填，填了才会显示。左右滑动翻周。</div>
+
+  <div class="gap-16"></div>
+  <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+
+  <div class="gap-16"></div>
+  <div class="actionbar">
+    <div class="actionbar-item">导入课表</div>
+    <div class="actionbar-item">手工新增</div>
+    <div class="actionbar-item">课程管理</div>
+  </div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回首页</div>
+</div>
+</body>
+</html>
