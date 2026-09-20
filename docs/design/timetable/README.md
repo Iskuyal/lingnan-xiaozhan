@@ -128,12 +128,17 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01 # 单张
 本目录是「先出设计图」这一步的产物。**实现不分票、直接开分支做**（负责人 2026-09-20 决定：
 这批改动不建 GitHub Issues），分支 `feat/timetable-ui-rework`，开工顺序按依赖：
 
-1. **纯函数层**：`services/timetable/palette.ts`（课程取色）与 `view.ts` 的 `buildGrid`
-   （自适应列宽、连堂合并、分级信息、同格折叠、泳道），测试先行
-   （`tests/timetable-grid.test.cjs`，17 项）。
-2. **主页**：按 `01` 的尺寸重做周网格、今日速查条、课程详情弹层、视图切换。
-3. **设置页**：学期（开学日 / 总周数）与作息时间，以及「日期 ↔ 教学周」纯函数。
-4. **编辑与管理、导入确认页双视图**。
+1. **纯函数层（已完成）**：
+   - `services/timetable/palette.ts` —— 8 色课程色板与按课程名稳定取色（`tests/timetable-grid.test.cjs`）；
+   - `services/timetable/view.ts` 的 `buildGrid` —— 自适应列宽、连堂合并、分级信息、同格折叠、泳道；
+   - `services/timetable/semester.ts` —— 教学周日期推算（第几周 / 周日期区间 / 表头日期 / 开学日校验，
+     `tests/timetable-semester.test.cjs`，全部按 UTC 日序号算，避免 iOS 时区差一天）。
+2. **主页（待做）**：按 `01` 的尺寸重做周网格、视图切换、课程详情弹层；今日速查条要等作息时间落地，
+   在那之前主页就是 `03` 的退化态——**这正是「没填作息就不显示任何时刻」的落实**。
+3. **设置页（待做）**：学期（开学日 / 总周数）与作息时间的存储与页面。
+4. **编辑与管理、导入确认页双视图（待做）**。
+
+进度随时以分支 `feat/timetable-ui-rework` 的提交为准，本节只写顺序与依赖。
 
 实现里不得出现与图不一致的间距与字号；图上覆盖不到的行为（滑动手势、加载态、失败态）
 仍按 `docs/development-spec.md` 与既有验收项处理。
