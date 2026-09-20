@@ -17,7 +17,7 @@ import {
   messageOf,
   updateCourse,
 } from '../../services/timetable/index';
-import { WEEKDAY_SHORT, WeekView, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
+import { CourseCard, WEEKDAY_SHORT, WeekView, buildWeekView, formatUpdatedAt, semesterLabel, toCard, weekSpan } from '../../services/timetable/view';
 import { ChatMessage, callAi, chatEvent, chatMessages, safetyNoteFor, transportMessage, userMessage } from '../../services/ai';
 import {
   AssistantReply,
@@ -72,7 +72,8 @@ Page({
     week: 1,
     weekOptions: [] as number[],
     weekIndex: 0,
-    view: { week: 1, weekLabel: '第 1 周', rows: [], days: [], total: 0 } as WeekView,
+    view: { week: 1, weekLabel: '第 1 周', rows: [], total: 0 } as WeekView,
+    sheetCourse: null as CourseCard | null,
     fileGuide: FILE_GUIDE,
     offlineNote: OFFLINE_NOTE,
     assistantOpen: false,
@@ -142,15 +143,15 @@ Page({
   openCreate() {
     wx.navigateTo({ url: `/pages/timetable/edit/index?scope=new&semester=${encodeURIComponent(this.data.semester)}` });
   },
+  openEditById(id: string) {
+    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(id)}` });
+  },
   openEdit(event: DatasetEvent) {
     const id = event.currentTarget.dataset.id;
     if (id === undefined || id === '') return;
-    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(id)}` });
+    this.openEditById(id);
   },
-  removeCourse(event: DatasetEvent) {
-    const id = event.currentTarget.dataset.id;
-    const name = event.currentTarget.dataset.name ?? '';
-    if (id === undefined || id === '') return;
+  removeCourseById(id: string, name: string) {
     wx.showModal({
       title: '删除课程',
       content: `确定删除「${name}」吗？删除后需要重新导入或手工添加。`,
@@ -163,6 +164,44 @@ Page({
             return this.load();
           })
           .catch((error) => wx.showToast({ title: messageOf(error), icon: 'none' }));
+      },
+    });
+  },
+  removeCourse(event: DatasetEvent) {
+    const id = event.currentTarget.dataset.id;
+    const name = event.currentTarget.dataset.name ?? '';
+    if (id === undefined || id === '') return;
+    this.removeCourseById(id, name);
+  },
+  /** 网格点开课程：先在滑层里看全字段，再决定修改或删除（取代原先的按天列表按钮）。 */
+  openSheet(event: DatasetEvent) {
+    const id = event.currentTarget.dataset.id;
+    if (id === undefined || id === '') return;
+    const course = this.data.courses.find((item) => item.id === id);
+    if (course === undefined) return;
+    this.setData({ sheetCourse: toCard(course) });
+  },
+  closeSheet() {
+    this.setData({ sheetCourse: null });
+  },
+  editFromSheet() {
+    const sheet = this.data.sheetCourse;
+    if (sheet === null) return;
+    this.setData({ sheetCourse: null });
+    this.openEditById(sheet.id);
+  },
+  /** 删除从滑层发起：确认后关闭滑层，取消则滑层保持打开，学生可以改主意。 */
+  deleteFromSheet() {
+    const sheet = this.data.sheetCourse;
+    if (sheet === null) return;
+    wx.showModal({
+      title: '删除课程',
+      content: `确定删除「${sheet.name}」（${sheet.weekdayText} ${sheet.sectionLabel}）吗？删除后需要重新导入或手工添加。`,
+      confirmText: '删除',
+      success: (result) => {
+        if (!result.confirm) return;
+        this.setData({ sheetCourse: null });
+        this.removeCourseById(sheet.id, sheet.name);
       },
     });
   },

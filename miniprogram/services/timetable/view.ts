@@ -86,9 +86,13 @@ export interface CourseCard {
   note: string;
   sectionLabel: string;
   weekLabel: string;
+  weekdayText: string;
+  credits: string;
   needsReview: boolean;
   warningText: string;
   source: 'excel' | 'manual' | 'photo';
+  /** 网格底色：按整周课程顺序交替分配，同一门连排课跨大节行保持同色。 */
+  tint: 'red' | 'gold';
 }
 
 export function toCard(course: Course): CourseCard {
@@ -102,9 +106,12 @@ export function toCard(course: Course): CourseCard {
     note: course.note,
     sectionLabel: sectionLabelOf(course),
     weekLabel: weekLabelOf(course),
+    weekdayText: weekdayLabel(course.weekday),
+    credits: course.credits,
     needsReview: course.warnings.length > 0,
     warningText: course.warnings.join('；'),
     source: course.source,
+    tint: 'red',
   };
 }
 
@@ -120,17 +127,10 @@ export interface WeekRow {
   cells: WeekCell[];
 }
 
-export interface WeekDay {
-  weekday: number;
-  label: string;
-  items: CourseCard[];
-}
-
 export interface WeekView {
   week: number;
   weekLabel: string;
   rows: WeekRow[];
-  days: WeekDay[];
   /** 本周课程数（同一门课只算一次）。 */
   total: number;
 }
@@ -144,18 +144,20 @@ export function coursesForWeek(courses: Course[], week: number): Course[] {
       || a.name.localeCompare(b.name, 'zh-Hans-CN'));
 }
 
-/** 组装某一教学周的网格与按天列表；课程按节次落进对应的大节行。 */
+/** 组装某一教学周的网格；课程按节次落进对应的大节行。 */
 export function buildWeekView(courses: Course[], week: number): WeekView {
   const rows: WeekRow[] = BIG_SECTION_LABELS.map((sectionLabel, index) => ({
     index: index + 1,
     sectionLabel,
     cells: WEEKDAY_LABELS.map((label, cellIndex) => ({ weekday: cellIndex + 1, label, items: [] as CourseCard[] })),
   }));
-  const days: WeekDay[] = WEEKDAY_LABELS.map((label, index) => ({ weekday: index + 1, label, items: [] as CourseCard[] }));
   const inWeek = coursesForWeek(courses, week);
+  const tintOf = new Map<string, CourseCard['tint']>();
+  inWeek.forEach((course, index) => {
+    tintOf.set(course.id, index % 2 === 0 ? 'red' : 'gold');
+  });
   for (const course of inWeek) {
-    days[course.weekday - 1].items.push(toCard(course));
-    const card = toCard(course);
+    const card: CourseCard = { ...toCard(course), tint: tintOf.get(course.id) ?? 'red' };
     for (const range of course.sectionRanges) {
       const firstRow = Math.ceil(range.start / 2);
       const lastRow = Math.ceil(range.end / 2);
@@ -175,7 +177,6 @@ export function buildWeekView(courses: Course[], week: number): WeekView {
     week,
     weekLabel: `第 ${week} 周`,
     rows,
-    days: days.filter((day) => day.items.length > 0),
     total: inWeek.length,
   };
 }

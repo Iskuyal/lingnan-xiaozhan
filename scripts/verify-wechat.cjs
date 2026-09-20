@@ -20,6 +20,16 @@ async function run() {
     }
     throw new Error(`等待页面超时：${route}`);
   }
+  /** 等到页面上出现某个元素；超时返回 null。冷启动与热重载下固定等待不可靠，改为轮询。 */
+  async function waitForElement(page, selector) {
+    const deadline = Date.now() + 15000;
+    for (;;) {
+      const element = await page.$(selector);
+      if (element !== null) return element;
+      if (Date.now() >= deadline) return null;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+  }
   /**
    * 等这一次追问的结果。两条路径都算「有反应」：
    * ① 多了一条助手气泡（`.qa-answer`，模型答出来了）；
@@ -103,7 +113,9 @@ async function run() {
       await ensurePanelOpen(list, '部门列表页'),
       '部门列表页既没有对话框也没有打开入口（#qa-open 与 #qa-prompt 都命不中）',
     );
-    const prompt = await (await list.$('#qa-prompt')).text();
+    const promptElement = await waitForElement(list, '#qa-prompt');
+    assert.ok(promptElement, '部门列表页没有问答提示（#qa-prompt 未出现）');
+    const prompt = await promptElement.text();
     assert.match(prompt, /你想了解什么部门/u, `对话框没有提示选择部门：${prompt}`);
     assert.match(prompt, /官网未公布/u, '对话框要说清资料里没有的会回答官网未公布');
     const options = await list.$$('.qa-option');
@@ -129,7 +141,9 @@ async function run() {
       await ensurePanelOpen(chatDetail, '部门详情页'),
       '部门详情页没有问答面板（#qa-open 与 #qa-prompt 都命不中）',
     );
-    assert.match(await (await chatDetail.$('#qa-prompt')).text(), /关于校学生会/u);
+    const detailPrompt = await waitForElement(chatDetail, '#qa-prompt');
+    assert.ok(detailPrompt, '部门详情页没有问答提示（#qa-prompt 未出现）');
+    assert.match(await detailPrompt.text(), /关于校学生会/u);
     const suggestions = await chatDetail.$$('.qa-suggestion');
     assert.equal(suggestions.length, 4, `详情页追问建议应为 4 条，实际 ${suggestions.length}`);
     const qaInput = await chatDetail.$('#qa-input');
@@ -164,7 +178,9 @@ async function run() {
     await mini.screenshot({ path: path.join(output, 'departments-qa-detail.png') });
 
     // 返回列表后对话不丢，可以直接接着问。
-    await (await chatDetail.$('#back-to-list')).tap();
+    const chatBack = await waitForElement(chatDetail, '#back-to-list');
+    assert.ok(chatBack, '部门详情页没有返回列表按钮');
+    await chatBack.tap();
     const listWithChat = await waitForPage('pages/departments/index');
     await listWithChat.waitFor(800);
     const kept = await listWithChat.$$('.qa-row-user');
@@ -174,7 +190,9 @@ async function run() {
     assert.ok(listInput, '返回列表后无法继续追问');
     const beforeRows = (await listWithChat.$$('.qa-answer')).length;
     await listInput.input('这个部门有联系方式吗？');
-    await (await listWithChat.$('#qa-send')).tap();
+    const listSend = await waitForElement(listWithChat, '#qa-send');
+    assert.ok(listSend, '列表页没有追问发送按钮');
+    await listSend.tap();
     const resumed = await waitForReply(listWithChat, beforeRows);
     assert.ok(resumed !== null, '在列表页继续追问后既没有回答也没有降级提示');
     console.log(`列表页继续追问（${resumed.kind}）：${resumed.text}`);
@@ -205,7 +223,9 @@ async function run() {
     assert.ok(await detail.$('#department-contact'), '部门详情缺少联系方式区块');
     assert.ok(await detail.$('#department-activities'), '部门详情缺少动态区块');
     await mini.screenshot({ path: path.join(output, 'departments-detail.png') });
-    await (await detail.$('#back-to-list')).tap();
+    const detailBack = await waitForElement(detail, '#back-to-list');
+    assert.ok(detailBack, '重新进入的部门详情页没有返回列表按钮');
+    await detailBack.tap();
     const listAgain = await waitForPage('pages/departments/index');
     await listAgain.waitFor(600);
     await (await listAgain.$('#back-home')).tap();
@@ -216,8 +236,8 @@ async function run() {
     await (await homeAgain.$('#timetable-entry')).tap();
     const timetable = await waitForPage('pages/timetable/index');
     await timetable.waitFor(800);
-    assert.equal(await (await timetable.$('.section-title')).text(), '我的课表');
-    // 云函数冷启动时页面会停在 loading，此时两种入口都还没渲染——等到脱离中间态再判定。
+    // 标题按状态渲染（加载中 / 还没有课表 / 我的课表），云函数冷启动时页面会停在 loading；
+    // 先等脱离中间态，再按最终状态断言，避免把「加载中」当成页面坏了。
     const settled = await waitForTimetableSettled(timetable);
     assert.ok(
       settled.importEntry || settled.retryLoad,
@@ -229,7 +249,43 @@ async function run() {
       console.log(`课表读取状态（错误态可重试）：${errorText}`);
     } else {
       const hint = await timetable.$('.tt-meta');
+      const expectedTitle = hint === null ? '还没有课表' : '我的课表';
+      assert.equal(await (await timetable.$('.section-title')).text(), expectedTitle);
       console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
+      // 收纳版交互：网格是唯一视图——点课程弹编辑滑层，取消后收起；
+      // 助手是悬浮入口 + 独立滑层，问完即收。只有「已就绪且有课表」才走这些交互，
+      // 空课表账号没有网格与周次切换，不能按同样的路径断言。
+      if (hint !== null) {
+        // 默认周可能恰好没课（网格不渲染），先往后翻周到有课的周，让滑层断言与截图都落在真实课程上。
+        let gridCourse = await timetable.$('.grid-course');
+        for (let attempts = 0; attempts < 20 && gridCourse === null; attempts += 1) {
+          const nextWeek = await timetable.$('#week-next');
+          assert.ok(nextWeek, '本周无课且没有「下一周」入口');
+          await nextWeek.tap();
+          await timetable.waitFor(500);
+          gridCourse = await timetable.$('.grid-course');
+        }
+        assert.ok(gridCourse, '课表有课程却没有一周能渲染出课程格子');
+        await gridCourse.tap();
+        const courseSheet = await waitForElement(timetable, '#course-sheet');
+        assert.ok(courseSheet, '点开网格课程没有弹出编辑滑层');
+        assert.ok(await timetable.$('#sheet-edit'), '编辑滑层缺少修改入口');
+        assert.ok(await timetable.$('#sheet-delete'), '编辑滑层缺少删除入口');
+        await mini.screenshot({ path: path.join(output, 'timetable-course-sheet.png') });
+        await (await timetable.$('#sheet-cancel')).tap();
+        await timetable.waitFor(400);
+        assert.equal(await timetable.$('#course-sheet'), null, '取消后编辑滑层没有收起');
+        const assistantEntry = await timetable.$('#assistant-open');
+        assert.ok(assistantEntry, '课表页缺少助手悬浮入口');
+        await assistantEntry.tap();
+        const assistantPanel = await waitForElement(timetable, '#assistant-panel');
+        assert.ok(assistantPanel, '点助手入口没有打开对话滑层');
+        assert.ok(await timetable.$('#assistant-input'), '助手滑层缺少输入框');
+        await mini.screenshot({ path: path.join(output, 'timetable-assistant-sheet.png') });
+        await (await timetable.$('.qa-close')).tap();
+        await timetable.waitFor(400);
+        assert.equal(await timetable.$('#assistant-panel'), null, '收起后助手滑层没有关闭');
+      }
     }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
     await (await timetable.$('#back-home')).tap();
@@ -239,7 +295,9 @@ async function run() {
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
     const importPage = await waitForPage('pages/timetable/import/index');
     await importPage.waitFor(800);
-    const guide = await (await importPage.$('#file-guide')).text();
+    const guideElement = await waitForElement(importPage, '#file-guide');
+    assert.ok(guideElement, '导入页没有引导文案（#file-guide 未出现）');
+    const guide = await guideElement.text();
     assert.match(guide, /聊天记录/u, '导入引导必须写明只能从聊天记录选择');
     assert.match(guide, /文件传输助手/u, '导入引导要给出可操作的中转办法');
     assert.ok(await importPage.$('#choose-file'), '导入页缺少选择文件入口');
@@ -399,7 +457,9 @@ async function run() {
     const directDetail = await waitForPage('pages/departments/detail/index');
     await directDetail.waitFor(800);
     assert.equal(await (await directDetail.$('.department-name')).text(), '校学生会');
-    await (await directDetail.$('#back-to-list')).tap();
+    const directBack = await waitForElement(directDetail, '#back-to-list');
+    assert.ok(directBack, '直接打开的部门详情页没有返回列表按钮');
+    await directBack.tap();
     await waitForPage('pages/departments/index');
     await mini.callWxMethod('reLaunch', { url: '/pages/departments/detail/index?id=not-a-department' });
     const missing = await waitForPage('pages/departments/detail/index');
@@ -475,6 +535,8 @@ async function run() {
         '真实样本导入到确认页后「放弃导入」不写库、草稿清空并回到引导态',
         '不写学分的版式在真实云端仍能拆出课程名与教师（3 门、0 条需要补全、3 条待核对）',
         '课程表单显示课程名、星期、起止节、周次与保存入口',
+        '网格课程点开弹出编辑滑层（修改/删除/取消），取消后收起',
+        '课表助手悬浮入口打开对话滑层，收起后关闭',
         '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
         '资讯详情显示标题、正文段落与复制原文链接入口', '列表与详情之间可往返'],
