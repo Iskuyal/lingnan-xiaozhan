@@ -1,0 +1,187 @@
+/**
+ * 课表设置页样式（设计图 07）。尺寸按 390px 图 ÷ 0.52 换算成 rpx：
+ * 卡片内边距 13px → 25rpx、输入框 8.3px/12.5px → 16rpx/24rpx、时间框 84px → 162rpx。
+ * 玻璃配方、圆角与色值全部取自 app.wxss 的令牌（一律带逐条一致的回退值）。
+ * 琥珀只用于警告（作息未核实的说明、填写有误），品牌红只用于主按钮与选中态。
+ */
+.settings-loading {
+  color: var(--text-3, #94867f);
+  font-size: 28rpx;
+}
+.settings-note {
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  color: var(--warn, #9a5b1e);
+  background: var(--warn-soft, rgba(255,244,228,0.86));
+  border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55));
+  border-radius: var(--r-control, 20rpx);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+.settings-card {
+  margin-bottom: 24rpx;
+  padding: 25rpx 30rpx 30rpx;
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 20rpx 52rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.settings-card .section-head {
+  margin-bottom: 22rpx;
+}
+.settings-field {
+  margin-bottom: 28rpx;
+}
+.settings-label {
+  color: var(--text-2, #6b5d57);
+  font-size: 24rpx;
+  margin-bottom: 10rpx;
+}
+.settings-input {
+  padding: 16rpx 24rpx;
+  font-size: 28rpx;
+  line-height: 1.4;
+  color: var(--text, #2b2422);
+  background: rgba(255,255,255,0.86);
+  border: 1rpx solid var(--glass-drop, rgba(92,28,26,0.13));
+  border-radius: var(--r-control, 20rpx);
+  font-variant-numeric: tabular-nums;
+}
+.settings-input-flex {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.settings-input-narrow {
+  flex: 0 0 162rpx;
+  width: 162rpx;
+}
+.settings-input-center {
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.settings-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14rpx;
+}
+.settings-pill {
+  padding: 8rpx 22rpx;
+  font-size: 24rpx;
+  color: var(--brand-ink, #7a1a12);
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  border: 1rpx solid var(--glass-drop, rgba(92,28,26,0.13));
+  border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
+}
+.settings-pill-on {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(196,28,35,0.90);
+  border-color: rgba(255,255,255,0.32);
+  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.36);
+}
+.settings-callout {
+  padding: 20rpx 24rpx;
+  color: var(--brand-ink, #7a1a12);
+  background: linear-gradient(150deg, rgba(198,154,40,0.22), rgba(198,154,40,0.10));
+  border: 1rpx solid rgba(198,154,40,0.30);
+  border-radius: var(--r-control, 20rpx);
+  font-size: 26rpx;
+  line-height: 1.75;
+}
+.settings-callout-warn {
+  color: var(--warn, #9a5b1e);
+  background: var(--warn-soft, rgba(255,244,228,0.86));
+  border-color: var(--warn-line, rgba(214,160,90,0.55));
+}
+.settings-hint {
+  margin-top: 8rpx;
+  color: var(--text-3, #94867f);
+  font-size: 23rpx;
+  line-height: 1.7;
+}
+.settings-hint-top {
+  margin-top: 10rpx;
+}
+.settings-hint-warn {
+  color: var(--warn, #9a5b1e);
+}
+.settings-preview {
+  margin: 0 0 24rpx;
+  color: var(--brand-deep, #8c1614);
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: center;
+}
+.settings-group {
+  margin: 16rpx 0 4rpx;
+  color: var(--text-3, #94867f);
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+}
+.settings-time-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70));
+}
+.settings-time-row-last {
+  border-bottom: 0;
+}
+.settings-time-no {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  color: var(--text-2, #6b5d57);
+  font-size: 24rpx;
+}
+.settings-time-fields {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.settings-time-sep {
+  color: var(--text-3, #94867f);
+}
+.settings-secondary {
+  margin: 24rpx 0 0;
+  padding: 16rpx 0;
+  font-size: 26rpx;
+  line-height: 1.6;
+  font-weight: 600;
+  color: var(--brand-ink, #7a1a12);
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  border: 1rpx solid var(--glass-drop, rgba(92,28,26,0.13));
+  border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
+}
+.settings-gap {
+  height: 40rpx;
+}
+.settings-error {
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  color: var(--warn, #9a5b1e);
+  background: var(--warn-soft, rgba(255,244,228,0.86));
+  border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55));
+  border-radius: var(--r-control, 20rpx);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+.settings-link {
+  margin-top: 24rpx;
+  text-align: center;
+  color: var(--text-3, #94867f);
+  font-size: 25rpx;
+  text-decoration: underline;
+}

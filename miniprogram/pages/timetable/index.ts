@@ -17,7 +17,29 @@ import {
   messageOf,
   updateCourse,
 } from '../../services/timetable/index';
-import { WEEKDAY_SHORT, WeekView, buildGrid, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
+import {
+  CourseCard,
+  WEEKDAY_SHORT,
+  WeekView,
+  buildGrid,
+  buildWeekView,
+  coursesForWeek,
+  formatUpdatedAt,
+  sectionLabelOf,
+  semesterLabel,
+  weekLabelOf,
+} from '../../services/timetable/view';
+import { courseColor } from '../../services/timetable/palette';
+import {
+  LoadedSettings,
+  TimetableSettings,
+  currentSectionAt,
+  emptySettings,
+  loadSettings,
+  minutesOfClock,
+} from '../../services/timetable/settings';
+import { TodayItem, TodaySummary, hasSectionTimes, summarizeToday } from '../../services/timetable/now';
+import { formatWeekRange, weekDateLabels, weekIndexOf, weekSpanWithSemester, weekdayOf } from '../../services/timetable/semester';
 import { ChatMessage, callAi, chatEvent, chatMessages, safetyNoteFor, transportMessage, userMessage } from '../../services/ai';
 import {
   AssistantReply,
@@ -62,17 +84,134 @@ function pickerIndex(value: string | number): number {
 /**
  * 切周时的整块数据：网格与列表都由同一份课程算出来，避免两处口径分叉
  * （`view` 给列表与统计，`grid` 给周网格）。
+ *
+ * 时间相关的推导都集中在这里，而且**只在「显示的正好是本周」时才给今日标记**：
+ * 入学日期与作息都来自用户自己填的设置，没填就没有日期、没有速查条，也不会假装知道现在上什么。
  */
-function weekPatch(courses: Course[], week: number) {
+interface WeekInputs {
+  settings: TimetableSettings;
+  /** 今天，'YYYY-MM-DD'（页面在 onLoad 里定下，测试可注入）。 */
+  today: string;
+  /** 现在几点（分钟数）。 */
+  clockMinutes: number;
+}
+
+function todayItems(courses: Course[], week: number, weekday: number): TodayItem[] {
+  if (weekday < 1 || weekday > 7) return [];
+  const items: TodayItem[] = [];
+  for (const course of coursesForWeek(courses, week)) {
+    if (course.weekday !== weekday) continue;
+    for (const range of course.sectionRanges) {
+      if (range.start < 1 || range.end < range.start) continue;
+      items.push({
+        key: `${course.id}:${range.start}`,
+        courseId: course.id,
+        name: course.name,
+        location: course.location,
+        teacher: course.teacher,
+        start: range.start,
+        end: range.end,
+      });
+    }
+  }
+  return items;
+}
+
+function weekPatch(courses: Course[], week: number, inputs: WeekInputs) {
+  const config = { startDate: inputs.settings.startDate, totalWeeks: inputs.settings.totalWeeks };
+  const todayWeek = weekIndexOf(config, inputs.today);
+  const weekday = weekdayOf(inputs.today) ?? 0;
+  const isThisWeek = todayWeek !== null && todayWeek === week;
+  const hasTimes = hasSectionTimes(inputs.settings);
+  const nowSection = isThisWeek && hasTimes ? currentSectionAt(inputs.settings, inputs.clockMinutes) : null;
+  const grid = buildGrid(courses, week, {
+    dateLabels: weekDateLabels(config, week),
+    todayWeekday: isThisWeek ? weekday : 0,
+    ...(nowSection === null ? {} : { nowSection }),
+  });
   return {
     week,
     view: buildWeekView(courses, week),
-    grid: buildGrid(courses, week),
+    grid,
+    weekRange: formatWeekRange(config, week),
+    todayBar:
+      isThisWeek && hasTimes
+        ? summarizeToday(todayItems(courses, week, weekday), inputs.settings, inputs.clockMinutes)
+        : null,
+  };
+}
+
+/** 详情弹层要展示的一条课程：颜色来自色板，其余按既有口径算文案。 */
+interface SheetCourse {
+  id: string;
+  name: string;
+  solid: string;
+  tint: string;
+  sectionLabel: string;
+  weekLabel: string;
+  teacher: string;
+  location: string;
+  campus: string;
+  siteNumber: string;
+  note: string;
+  sourceLabel: string;
+  updatedAtText: string;
+  rawText: string;
+  needsReview: boolean;
+  warningText: string;
+}
+
+interface SheetMember {
+  id: string;
+  name: string;
+  sectionLabel: string;
+}
+
+const SOURCE_LABELS: Record<Course['source'], string> = {
+  manual: '手工新增',
+  photo: '截图识别',
+  excel: '导入（Excel）',
+};
+
+function toSheet(course: Course): SheetCourse {
+  const color = courseColor(course.name, course.color ?? '');
+  return {
+    id: course.id,
+    name: course.name,
+    solid: color.solid,
+    tint: color.tint,
+    sectionLabel: sectionLabelOf(course),
+    weekLabel: weekLabelOf(course),
+    teacher: course.teacher,
+    location: course.location,
+    campus: course.campus,
+    siteNumber: course.siteNumber,
+    note: course.note,
+    sourceLabel: SOURCE_LABELS[course.source],
+    updatedAtText: formatUpdatedAt(course.updatedAt),
+    rawText: course.rawText,
+    needsReview: course.warnings.length > 0,
+    warningText: course.warnings.join('；'),
   };
 }
 
 const ASSISTANT_WELCOME = '你好，我是课表助手。你可以问我课表问题，比如「周三第几节有课」，也可以让我帮你加课、改课——改动都会先给你确认，确认后才生效。';
 const ASSISTANT_NOTE = '回答只依据你当前保存的课表；任何增改都会先给你确认，确认后才生效。';
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0');
+}
+
+/** 本地「今天」（'YYYY-MM-DD'）：只用于判断「显示的是不是本周」，不参与任何日期推算。 */
+function localToday(): string {
+  const at = new Date();
+  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`;
+}
+
+function localMinutes(): number {
+  const at = new Date();
+  return at.getHours() * 60 + at.getMinutes();
+}
 
 Page({
   data: {
@@ -90,6 +229,13 @@ Page({
     view: { week: 1, weekLabel: '第 1 周', rows: [], days: [], total: 0 } as WeekView,
     grid: buildGrid([], 1),
     viewMode: 'grid' as ViewMode,
+    weekRange: '',
+    settings: emptySettings() as TimetableSettings,
+    settingsError: '',
+    todayBar: null as TodaySummary | null,
+    sheetOpen: false,
+    sheetCourse: null as SheetCourse | null,
+    sheetMembers: [] as SheetMember[],
     fileGuide: FILE_GUIDE,
     offlineNote: OFFLINE_NOTE,
     assistantOpen: false,
@@ -102,17 +248,33 @@ Page({
     assistantNote: ASSISTANT_NOTE,
     pendingChange: null as PendingChange | null,
   },
+  /** 「今天」与「现在几点」在进入页面时定下：测试可用 `onLoad({ today, clock })` 注入。 */
+  today: '',
+  clockMinutes: 0,
+  /** 学生自己翻过周次之后就不再自动跳到本周（否则每次 onShow 都把他拽回来）。 */
+  weekPinned: false,
+  onLoad(query: { today?: string; clock?: string }) {
+    const injectedToday = typeof query.today === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(query.today) ? query.today : '';
+    this.today = injectedToday === '' ? localToday() : injectedToday;
+    const injectedClock = typeof query.clock === 'string' ? minutesOfClock(query.clock) : null;
+    this.clockMinutes = injectedClock === null ? localMinutes() : injectedClock;
+  },
   /** 从导入页或编辑页返回时也走这里，保证展示的是云端最新数据。 */
   onShow() {
     return this.load();
   },
   load() {
     if (this.data.count === 0) this.setData({ status: 'loading', errorMessage: '' });
-    return listCourses()
-      .then((feed) => {
+    // 设置读不到（云函数未部署、集合还没建）不能把整页拖进错误态：课表照常看，只是没有日期与速查条。
+    return Promise.all([listCourses(), loadSettings().catch(() => emptySettings() as LoadedSettings)])
+      .then(([feed, loaded]) => {
         const courses = feed.courses;
-        const options = Array.from({ length: weekSpan(courses) }, (_, index) => index + 1);
-        const week = Math.min(Math.max(this.data.week, 1), options.length);
+        const settings: TimetableSettings = loaded;
+        const options = Array.from({ length: weekSpanWithSemester(courses, settings) }, (_, index) => index + 1);
+        // 设了开学日就落在「本周」——这是开学日的意义；学生自己翻过周就尊重他的选择。
+        const todayWeek = weekIndexOf({ startDate: settings.startDate, totalWeeks: settings.totalWeeks }, this.today);
+        const preferred = this.weekPinned ? this.data.week : (todayWeek ?? 1);
+        const week = Math.min(Math.max(preferred, 1), options.length);
         this.setData({
           courses,
           count: feed.count,
@@ -121,7 +283,9 @@ Page({
           updatedAtText: formatUpdatedAt(feed.updatedAt),
           weekOptions: options,
           weekIndex: week - 1,
-          ...weekPatch(courses, week),
+          settings,
+          settingsError: loaded.loadError ?? '',
+          ...weekPatch(courses, week, { settings, today: this.today, clockMinutes: this.clockMinutes }),
           status: courses.length === 0 ? 'empty' : 'ready',
           errorMessage: '',
         });
@@ -134,11 +298,20 @@ Page({
   retry() {
     return this.load();
   },
+  /** 切周时重算网格、日期区间与速查条（同一份课程，换的只是「看哪一周」）。 */
+  patchWeek(week: number) {
+    return weekPatch(this.data.courses, week, {
+      settings: this.data.settings,
+      today: this.today,
+      clockMinutes: this.clockMinutes,
+    });
+  },
   selectWeek(event: PickerEvent) {
     const index = pickerIndex(event.detail.value);
     const week = this.data.weekOptions[index];
     if (week === undefined) return;
-    this.setData({ weekIndex: index, ...weekPatch(this.data.courses, week) });
+    this.weekPinned = true;
+    this.setData({ weekIndex: index, ...this.patchWeek(week) });
   },
   previousWeek() {
     return this.shiftWeek(-1);
@@ -150,7 +323,8 @@ Page({
     const index = this.data.weekIndex + delta;
     if (index < 0 || index >= this.data.weekOptions.length) return;
     const week = this.data.weekOptions[index];
-    this.setData({ weekIndex: index, ...weekPatch(this.data.courses, week) });
+    this.weekPinned = true;
+    this.setData({ weekIndex: index, ...this.patchWeek(week) });
   },
   /** 网格 / 列表切换：只换渲染，不重新读云端，也不改数据。 */
   switchView(event: DatasetEvent) {
@@ -164,15 +338,72 @@ Page({
   openCreate() {
     wx.navigateTo({ url: `/pages/timetable/edit/index?scope=new&semester=${encodeURIComponent(this.data.semester)}` });
   },
+  openSettings() {
+    wx.navigateTo({ url: '/pages/timetable/settings/index' });
+  },
+  /** 进课程管理时带上正在看的周次，「本周在读」才与课表页一致。 */
+  openManage() {
+    wx.navigateTo({ url: `/pages/timetable/manage/index?week=${this.data.week}` });
+  },
   openEdit(event: DatasetEvent) {
     const id = event.currentTarget.dataset.id;
     if (id === undefined || id === '') return;
     wx.navigateTo({ url: `/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(id)}` });
   },
+  /** 点课程块或速查条：打开详情弹层（全量信息 + 修改/删除）。 */
+  openSheet(event: DatasetEvent) {
+    const id = event.currentTarget.dataset.id;
+    if (id === undefined || id === '') return;
+    this.showSheet(id);
+  },
+  showSheet(id: string) {
+    const course = this.data.courses.find((item) => item.id === id);
+    if (course === undefined) return;
+    this.setData({ sheetOpen: true, sheetCourse: toSheet(course), sheetMembers: this.membersOf(id) });
+  },
+  closeSheet() {
+    this.setData({ sheetOpen: false, sheetCourse: null, sheetMembers: [] });
+  },
+  /** 同格多门时列出全部成员；单门返回空数组（弹层不显示这一段）。 */
+  membersOf(courseId: string): SheetMember[] {
+    for (const column of this.data.grid.columns) {
+      for (const block of column.blocks) {
+        if (block.ids.length < 2 || !block.ids.includes(courseId)) continue;
+        return block.ids.map((id) => {
+          const found = this.data.courses.find((course) => course.id === id);
+          return {
+            id,
+            name: found === undefined ? '' : found.name,
+            sectionLabel: block.start === block.end ? `第 ${block.start} 节` : `第 ${block.start}-${block.end} 节`,
+          };
+        });
+      }
+    }
+    return [];
+  },
+  pickSheetMember(event: DatasetEvent) {
+    const id = event.currentTarget.dataset.id;
+    if (id === undefined || id === '') return;
+    this.showSheet(id);
+  },
+  editSheetCourse() {
+    const course = this.data.sheetCourse;
+    if (course === null) return;
+    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(course.id)}` });
+  },
+  removeSheetCourse() {
+    const course = this.data.sheetCourse;
+    if (course === null) return;
+    this.confirmRemove(course.id, course.name);
+  },
   removeCourse(event: DatasetEvent) {
     const id = event.currentTarget.dataset.id;
     const name = event.currentTarget.dataset.name ?? '';
     if (id === undefined || id === '') return;
+    this.confirmRemove(id, name);
+  },
+  /** 删除一律先确认：确认框写清后果，取消不写任何数据。 */
+  confirmRemove(id: string, name: string) {
     wx.showModal({
       title: '删除课程',
       content: `确定删除「${name}」吗？删除后需要重新导入或手工添加。`,
@@ -182,6 +413,7 @@ Page({
         deleteCourse(id)
           .then(() => {
             wx.showToast({ title: '已删除', icon: 'success' });
+            this.setData({ sheetOpen: false, sheetCourse: null, sheetMembers: [] });
             return this.load();
           })
           .catch((error) => wx.showToast({ title: messageOf(error), icon: 'none' }));

@@ -1,6 +1,9 @@
 <view class="page">
   <view class="tt-heading">
-    <view class="eyebrow">{{semesterText}} · 按节次展示</view>
+    <view class="head-top">
+      <view class="eyebrow">{{semesterText}} · 按节次展示</view>
+      <view id="timetable-settings-entry" class="head-link" hover-class="pressed" bindtap="openSettings">课表设置</view>
+    </view>
     <view class="week-row">
       <button id="week-prev" class="week-nav" hover-class="pressed" bindtap="previousWeek">‹</button>
       <picker id="week-picker" class="week-pick" mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="selectWeek">
@@ -8,8 +11,28 @@
       </picker>
       <button id="week-next" class="week-nav" hover-class="pressed" bindtap="nextWeek">›</button>
     </view>
-    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程<block wx:if="{{updatedAtText !== ''}}"> · 最近保存于 {{updatedAtText}}</block></view>
+    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程<block wx:if="{{weekRange !== ''}}"> · {{weekRange}}</block><block wx:if="{{updatedAtText !== ''}}"> · 最近保存于 {{updatedAtText}}</block></view>
   </view>
+
+  <!-- 今日速查：只在「用户填了作息」且「正在看的就是本周」时出现；没填作息时整条不出现（设计图 03）。 -->
+  <view
+    wx:if="{{todayBar !== null}}"
+    id="today-summary"
+    class="today today-{{todayBar.kind}}"
+    data-id="{{todayBar.courseId}}"
+    hover-class="pressed"
+    bindtap="openSheet"
+  >
+    <view class="today-dot today-dot-{{todayBar.kind}}"></view>
+    <view class="today-body">
+      <view class="today-kicker today-kicker-{{todayBar.kind}}">{{todayBar.note}}</view>
+      <view class="today-name" wx:if="{{todayBar.name !== ''}}">{{todayBar.name}}</view>
+      <view class="today-sub" wx:if="{{todayBar.sectionLabel !== ''}}">{{todayBar.sectionLabel}}<block wx:if="{{todayBar.detail !== ''}}"> · {{todayBar.detail}}</block></view>
+    </view>
+    <view class="today-pill" wx:if="{{todayBar.timeLabel !== ''}}">{{todayBar.timeLabel}}</view>
+  </view>
+
+  <view wx:if="{{settingsError !== ''}}" class="tt-guide tt-guide-note">课表设置暂时读不到（{{settingsError}}）。课表照常可用，只是不显示日期与「正在上」。</view>
 
   <view wx:if="{{status === 'loading'}}" class="tt-hint">
     <view class="section-title">加载中</view>
@@ -81,7 +104,7 @@
                 style="top:{{block.topRpx}}rpx;height:{{block.heightRpx}}rpx;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}"
                 hover-class="pressed"
                 data-id="{{block.primaryId}}"
-                bindtap="openEdit"
+                bindtap="openSheet"
               >
                 <view class="grid-block-name">{{block.name}}</view>
                 <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
@@ -120,6 +143,7 @@
   <view wx:if="{{status === 'ready'}}" class="actionbar">
     <button id="import-entry" class="actionbar-item" hover-class="pressed" bindtap="openImport">导入课表</button>
     <button id="manual-add" class="actionbar-item" hover-class="pressed" bindtap="openCreate">手工新增</button>
+    <button id="manage-entry" class="actionbar-item" hover-class="pressed" bindtap="openManage">课程管理</button>
   </view>
 
   <block wx:if="{{status !== 'loading' && status !== 'error'}}">
@@ -145,4 +169,40 @@
   </block>
 
   <button wx:if="{{status !== 'error'}}" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+
+  <!-- 课程详情弹层（设计图 05）：点课块或速查条打开；同格多门时在这里列出全部成员。
+       课程色走与课块同一个令牌槽 --blk-solid，不为弹层新增令牌。 -->
+  <view wx:if="{{sheetOpen}}" class="sheet-mask" bindtap="closeSheet"></view>
+  <view wx:if="{{sheetOpen && sheetCourse !== null}}" id="course-sheet" class="sheet">
+    <view class="sheet-handle"></view>
+    <view class="sheet-head" style="--blk-solid:{{sheetCourse.solid}}">
+      <view class="sheet-name">{{sheetCourse.name}}</view>
+      <view class="sheet-sub">{{sheetCourse.sectionLabel}} · {{sheetCourse.weekLabel}}</view>
+    </view>
+    <scroll-view class="sheet-body" scroll-y>
+      <view wx:if="{{sheetCourse.needsReview}}" class="sheet-warn">待核对 · {{sheetCourse.warningText}}</view>
+      <view class="sheet-row" wx:if="{{sheetCourse.teacher !== ''}}"><view class="sheet-key">教师</view><view class="sheet-val">{{sheetCourse.teacher}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.location !== ''}}"><view class="sheet-key">地点</view><view class="sheet-val">{{sheetCourse.location}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.campus !== '' || sheetCourse.siteNumber !== ''}}">
+        <view class="sheet-key">校区</view>
+        <view class="sheet-val">{{sheetCourse.campus}}<block wx:if="{{sheetCourse.siteNumber !== ''}}"> · 场地编号 {{sheetCourse.siteNumber}}</block></view>
+      </view>
+      <view class="sheet-row" wx:if="{{sheetCourse.note !== ''}}"><view class="sheet-key">备注</view><view class="sheet-val">{{sheetCourse.note}}</view></view>
+      <view class="sheet-row"><view class="sheet-key">来源</view><view class="sheet-val">{{sheetCourse.sourceLabel}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.updatedAtText !== ''}}"><view class="sheet-key">最近修改</view><view class="sheet-val">{{sheetCourse.updatedAtText}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.rawText !== ''}}"><view class="sheet-key">原文</view><view class="sheet-val">{{sheetCourse.rawText}}</view></view>
+      <block wx:if="{{sheetMembers.length > 1}}">
+        <view class="sheet-group">同一格还有 {{sheetMembers.length}} 门课</view>
+        <view class="sheet-member" wx:for="{{sheetMembers}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="pickSheetMember">
+          <view class="sheet-member-name">{{item.name}}</view>
+          <view class="sheet-member-sub">{{item.sectionLabel}}</view>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="sheet-foot">
+      <button class="sheet-btn" hover-class="pressed" bindtap="editSheetCourse">修改这节课</button>
+      <button class="sheet-btn sheet-btn-warn" hover-class="pressed" bindtap="removeSheetCourse">删除</button>
+      <view class="sheet-close" hover-class="pressed" bindtap="closeSheet">关闭</view>
+    </view>
+  </view>
 </view>

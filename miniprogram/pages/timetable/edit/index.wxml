@@ -11,49 +11,176 @@
   </view>
 
   <block wx:else>
-    <view class="eyebrow">按节次保存 · 不填具体时刻</view>
-    <view class="section-title">{{title}}</view>
-
-    <view class="edit-raw" wx:if="{{rawText !== ''}}">原始条目：{{rawText}}</view>
-    <view class="edit-warning" wx:if="{{warningText !== ''}}">待核对：{{warningText}}</view>
-
-    <view class="edit-field">
-      <view class="edit-label">课程名（必填）</view>
-      <input id="field-name" class="edit-input" value="{{form.name}}" bindinput="onNameInput" placeholder="例如：高等数学" />
-    </view>
-    <view class="edit-field">
-      <view class="edit-label">教师</view>
-      <input id="field-teacher" class="edit-input" value="{{form.teacher}}" bindinput="onTeacherInput" placeholder="不知道可以留空" />
-    </view>
-    <view class="edit-field">
-      <view class="edit-label">地点</view>
-      <input id="field-location" class="edit-input" value="{{form.location}}" bindinput="onLocationInput" placeholder="例如：教学楼-A101-多媒体课室" />
-    </view>
-    <view class="edit-field">
-      <view class="edit-label">学分</view>
-      <input id="field-credits" class="edit-input" value="{{form.credits}}" bindinput="onCreditsInput" placeholder="可留空" />
+    <view class="edit-heading">
+      <view class="eyebrow">按节次保存 · 不填具体时刻</view>
+      <view class="section-title">{{title}}</view>
     </view>
 
-    <picker id="field-weekday" mode="selector" range="{{weekdayOptions}}" value="{{form.weekdayIndex}}" bindchange="onWeekdayChange">
-      <view class="edit-picker">星期：{{weekdayOptions[form.weekdayIndex]}} ▾</view>
-    </picker>
-    <picker id="field-start" mode="selector" range="{{sectionOptions}}" value="{{form.startIndex}}" bindchange="onStartChange">
-      <view class="edit-picker">起始节：{{sectionOptions[form.startIndex]}} ▾</view>
-    </picker>
-    <picker id="field-end" mode="selector" range="{{sectionOptions}}" value="{{form.endIndex}}" bindchange="onEndChange">
-      <view class="edit-picker">结束节：{{sectionOptions[form.endIndex]}} ▾</view>
-    </picker>
-
-    <view class="edit-field">
-      <view class="edit-label">周次</view>
-      <input id="field-weeks" class="edit-input" value="{{form.weeksText}}" bindinput="onWeeksInput" placeholder="如 1-16 或 2-6,8-17；留空表示每周" />
+    <!-- 基本信息 -->
+    <view class="edit-group">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="edit-group-title">基本信息</view>
+      </view>
+      <view class="edit-field">
+        <view class="edit-label">课程名</view>
+        <input id="field-name" class="edit-input" value="{{form.name}}" bindinput="onNameInput" placeholder="例如：高等数学" />
+      </view>
+      <view class="edit-field">
+        <view class="edit-label">教师</view>
+        <input id="field-teacher" class="edit-input" value="{{form.teacher}}" bindinput="onTeacherInput" placeholder="不知道可以留空" />
+      </view>
+      <view class="edit-field">
+        <view class="edit-label">地点</view>
+        <input id="field-location" class="edit-input" value="{{form.location}}" bindinput="onLocationInput" placeholder="例如：崇礼楼 306" />
+      </view>
+      <view class="edit-field">
+        <view class="edit-label">学分</view>
+        <input id="field-credits" class="edit-input" value="{{form.credits}}" bindinput="onCreditsInput" placeholder="没有可不填" />
+      </view>
+      <view class="edit-field edit-field-last">
+        <view class="edit-label">备注</view>
+        <input id="field-note" class="edit-input" value="{{form.note}}" bindinput="onNoteInput" placeholder="教学班、方向等，可不填" />
+      </view>
     </view>
 
-    <view class="edit-note">课表按节次展示：学校作息与具体时刻尚未核实，这里不需要也不能填上课时间。写得不认识的周次会保留原文并标注待核对，不会替你做判断。</view>
+    <!-- 上课时间 -->
+    <view class="edit-group">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="edit-group-title">上课时间</view>
+      </view>
 
-    <button id="save-course" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
-    <button id="delete-course" wx:if="{{deletable}}" class="home-button edit-delete" hover-class="pressed" bindtap="remove">删除课程</button>
-    <button id="back-from-edit" class="home-button edit-secondary" hover-class="pressed" bindtap="goBack">返回</button>
+      <!-- 原文永不丢失：识别出的原文与待核对项只读列出，不擅自改写 -->
+      <view wx:if="{{hasOriginal}}" class="edit-callout">
+        <view wx:if="{{calloutText !== ''}}">{{calloutLead}}<text class="edit-callout-strong">原文已保留</text>，保存前请确认</view>
+        <view class="edit-callout-raw" wx:if="{{rawText !== ''}}">原始条目：{{rawText}}</view>
+        <view class="edit-callout-raw" wx:if="{{warningText !== ''}}">待核对：{{warningText}}</view>
+      </view>
+
+      <view class="edit-field">
+        <view class="edit-label">星期</view>
+        <view id="field-weekday" class="edit-pills">
+          <view
+            class="edit-pill {{index === form.weekdayIndex ? 'edit-pill-on' : ''}}"
+            wx:for="{{weekdayLabels}}"
+            wx:key="*this"
+            data-index="{{index}}"
+            bindtap="onWeekdayTap"
+          >{{item}}</view>
+        </view>
+      </view>
+
+      <view class="edit-field">
+        <view class="edit-label">节次</view>
+        <view class="edit-input-row">
+          <view class="edit-unit">第</view>
+          <input id="field-start" class="edit-input edit-input-num" type="number" value="{{sectionStartText}}" bindinput="onStartInput" bindblur="onStartCommit" bindconfirm="onStartCommit" />
+          <view class="edit-unit">节</view>
+          <view class="edit-unit-to">到</view>
+          <view class="edit-unit">第</view>
+          <input id="field-end" class="edit-input edit-input-num" type="number" value="{{sectionEndText}}" bindinput="onEndInput" bindblur="onEndCommit" bindconfirm="onEndCommit" />
+          <view class="edit-unit">节</view>
+        </view>
+        <view class="edit-hint">按节次填写；学校作息与具体时刻尚未核实，这里不填上课时间。</view>
+      </view>
+
+      <view class="edit-field">
+        <view class="edit-label">起止周</view>
+        <view id="field-weeks" class="edit-input-row">
+          <view class="edit-unit">第</view>
+          <input class="edit-input edit-input-num" type="number" value="{{weeksStartText}}" bindinput="onWeeksStartInput" bindblur="onWeeksStartCommit" bindconfirm="onWeeksStartCommit" />
+          <view class="edit-unit">周</view>
+          <view class="edit-unit-to">到</view>
+          <view class="edit-unit">第</view>
+          <input class="edit-input edit-input-num" type="number" value="{{weeksEndText}}" bindinput="onWeeksEndInput" bindblur="onWeeksEndCommit" bindconfirm="onWeeksEndCommit" />
+          <view class="edit-unit">周</view>
+        </view>
+        <view class="edit-hint edit-hint-warn" wx:if="{{weeksError !== ''}}">{{weeksError}}</view>
+      </view>
+
+      <view class="edit-field edit-field-last">
+        <view class="edit-label">自选周次</view>
+        <view class="edit-pills">
+          <view
+            class="edit-pill {{item.on ? 'edit-pill-on' : ''}}"
+            wx:for="{{weeksPills}}"
+            wx:key="key"
+            data-mode="{{item.key}}"
+            bindtap="onWeeksMode"
+          >{{item.label}}</view>
+        </view>
+        <view class="edit-chips">
+          <view id="weeks-all" class="edit-chip" hover-class="pressed" bindtap="onWeeksAll">全选</view>
+          <view id="weeks-none" class="edit-chip" hover-class="pressed" bindtap="onWeeksNone">清空</view>
+          <view id="weeks-odd" class="edit-chip" hover-class="pressed" bindtap="onWeeksOdd">取奇</view>
+          <view id="weeks-even" class="edit-chip" hover-class="pressed" bindtap="onWeeksEven">取偶</view>
+        </view>
+        <view id="weeks-grid" class="edit-weeks">
+          <view
+            class="edit-wk {{item.on ? 'edit-wk-on' : ''}} {{item.outside ? 'edit-wk-off' : ''}}"
+            wx:for="{{weeksGrid}}"
+            wx:key="week"
+            data-week="{{item.week}}"
+            bindtap="onWeeksGridTap"
+          >{{item.week}}</view>
+        </view>
+        <view class="edit-hint">起止周与自选周是同一份周次的两种改法，改哪个都行；合并写法（如 4-5、7-16）由系统按你选的格子生成。</view>
+        <view class="edit-hint">{{weeksHint}}</view>
+      </view>
+    </view>
+
+    <!-- 颜色 -->
+    <view class="edit-group">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="edit-group-title">颜色</view>
+      </view>
+      <view class="edit-pills edit-pills-mid">
+        <view id="color-auto" class="edit-pill {{colorMode === 'auto' ? 'edit-pill-on' : ''}}" bindtap="onColorAuto">按课程名自动</view>
+        <view id="color-manual" class="edit-pill {{colorMode === 'manual' ? 'edit-pill-on' : ''}}" bindtap="onColorManual">手动指定</view>
+        <view class="edit-quiet edit-swatch-note">当前 {{colorName}}</view>
+      </view>
+      <view class="edit-swatches">
+        <view
+          id="color-{{item.key}}"
+          class="edit-swatch {{item.on ? 'edit-swatch-on' : ''}}"
+          wx:for="{{colorSwatches}}"
+          wx:key="key"
+          style="--blk-solid:{{item.solid}}"
+          data-key="{{item.key}}"
+          bindtap="onColorPick"
+        ></view>
+      </view>
+      <view class="edit-hint">自动配色保证同名课程永远同色</view>
+    </view>
+
+    <!-- 迷你课表预览 -->
+    <view class="edit-group">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="edit-group-title">迷你课表预览</view>
+      </view>
+      <view class="edit-mini">
+        <view class="edit-mini-grid">
+          <view class="edit-mini-col" wx:for="{{miniColumns}}" wx:key="key">
+            <view class="edit-mini-th">{{item.label}}</view>
+            <view
+              class="edit-mini-cell {{cell.block ? 'edit-mini-block' : ''}}"
+              wx:for="{{item.cells}}"
+              wx:for-item="cell"
+              wx:key="key"
+              style="{{cell.style}}"
+            ></view>
+          </view>
+        </view>
+      </view>
+      <view class="edit-quiet edit-mini-note">预览只画你正在编辑的这节课</view>
+    </view>
+
+    <button id="save-course" class="home-button edit-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
+    <button id="delete-course" wx:if="{{deletable}}" class="home-button edit-delete" hover-class="pressed" bindtap="remove">删除这节课</button>
+    <view id="back-from-edit" class="edit-cancel" hover-class="pressed" bindtap="goBack">取消</view>
     <view class="edit-footnote" wx:if="{{footnote !== ''}}">{{footnote}}</view>
   </block>
 </view>

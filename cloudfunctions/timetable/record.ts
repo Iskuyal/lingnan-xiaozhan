@@ -6,7 +6,7 @@
  * 但课程名、星期、节次必须有确定值，否则无法在周课表里定位。
  */
 import * as crypto from 'crypto';
-import { CourseFields, SectionRange, MAX_SECTION, MAX_WEEK } from './types';
+import { COURSE_COLOR_KEYS, CourseFields, SectionRange, MAX_SECTION, MAX_WEEK } from './types';
 
 const LIMITS = {
   name: 60,
@@ -41,6 +41,16 @@ function integerInRange(value: unknown, label: string, min: number, max: number)
     return { ok: false, error: `${label}必须是 ${min}-${max} 之间的整数` };
   }
   return { ok: true, value: parsed };
+}
+
+/**
+ * 课程色：只接受 8 个合法 key 或空。
+ *
+ * 不合法时**归为空而不是报错**：颜色是纯装饰字段，旧数据里的拼写错误不该让整条课程存不进去；
+ * 归空即「按课程名自动取色」，与小程序侧 `palette.ts` 的静默回落同一口径。
+ */
+function colorKey(value: unknown): string {
+  return typeof value === 'string' && (COURSE_COLOR_KEYS as readonly string[]).includes(value) ? value : '';
 }
 
 /** 校验并规范化一条课程（导入草稿或手工录入）。失败时不返回任何半成品字段。 */
@@ -129,6 +139,7 @@ export function normalizeCourseFields(input: unknown): NormalizedCourse {
       note: note.value,
       warnings,
       source: kind,
+      color: colorKey(source.color),
     },
   };
 }

@@ -1,0 +1,109 @@
+<view class="page {{showActions ? 'mg-page-bar' : ''}}">
+  <block wx:if="{{status === 'loading'}}">
+    <view class="mg-hint">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="section-title">课程管理</view>
+      </view>
+      <view class="mg-hint-copy">正在从云端读取你的课程…</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{status === 'error'}}">
+    <view class="mg-hint">
+      <view class="section-head">
+        <view class="section-bar"></view>
+        <view class="section-title">暂时读不到课程</view>
+      </view>
+      <view class="mg-hint-copy">{{errorMessage}}</view>
+      <button id="manage-retry" class="mg-btn mg-btn-secondary" hover-class="pressed" bindtap="retry">重试</button>
+      <view id="manage-back" class="mg-back" hover-class="pressed" bindtap="goBack"><text class="mg-back-text">返回课表</text></view>
+    </view>
+  </block>
+
+  <!-- 没有课程：一行说明 + 返回课表，不摆动作条（没有可操作的行）。 -->
+  <block wx:elif="{{status === 'empty'}}">
+    <view class="mg-empty">
+      <view class="mg-empty-title">还没有课程</view>
+      <view class="mg-empty-copy">导入课表文件或手工添加课程后，就能在这里成批整理。</view>
+      <button id="manage-back" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="goBack">返回课表</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 顶部玻璃统计卡：三个数字都随数据变，不写死。 -->
+    <view class="mg-head">
+      <view class="eyebrow">{{semesterText}}</view>
+      <view class="mg-stat">
+        <view class="mg-stat-item">
+          <view class="mg-stat-num">{{total}}</view>
+          <view class="mg-stat-label">共 {{total}} 门课程</view>
+        </view>
+        <view class="mg-stat-item">
+          <view class="mg-stat-num">{{weekInCount}}</view>
+          <view class="mg-stat-label">本周在读</view>
+        </view>
+        <view class="mg-stat-item">
+          <view class="mg-stat-num">{{reviewCount}}</view>
+          <view class="mg-stat-label">待核对</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="mg-pills">
+      <view id="manage-filter-all" class="mg-pill {{filter === 'all' ? 'mg-pill-on' : ''}}" data-key="all" bindtap="selectFilter">全部</view>
+      <view id="manage-filter-review" class="mg-pill {{filter === 'review' ? 'mg-pill-on' : ''}}" data-key="review" bindtap="selectFilter">待核对 {{reviewCount}}</view>
+      <view id="manage-filter-manual" class="mg-pill {{filter === 'manual' ? 'mg-pill-on' : ''}}" data-key="manual" bindtap="selectFilter">手工 {{manualCount}}</view>
+      <view id="manage-filter-excel" class="mg-pill {{filter === 'imported' ? 'mg-pill-on' : ''}}" data-key="imported" bindtap="selectFilter">导入 {{importedCount}}</view>
+    </view>
+
+    <!-- 筛选后为空：与「还没有课程」是两种文案，这里给的是换条件的出口。 -->
+    <view wx:if="{{rows.length === 0}}" class="mg-empty">
+      <view class="mg-empty-title">这个筛选下没有课程</view>
+      <view class="mg-empty-copy">换一个筛选条件，或者回到全部看看。</view>
+      <button id="manage-reset-filter" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="resetFilter">查看全部</button>
+    </view>
+
+    <!-- 列表：勾选圈 + 课程色条 + 课程名 + 副行；整行可点，选中行高亮。 -->
+    <view wx:else id="manage-list" class="mg-list">
+      <view
+        wx:for="{{rows}}"
+        wx:key="id"
+        class="mg-row {{item.selected ? 'mg-row-on' : ''}}"
+        data-id="{{item.id}}"
+        hover-class="pressed"
+        bindtap="toggleRow"
+      >
+        <view class="mg-check {{item.selected ? 'mg-check-on' : ''}}">{{item.selected ? '✓' : ''}}</view>
+        <view class="mg-bar" style="--blk-solid:{{item.solid}}"></view>
+        <view class="mg-main">
+          <view class="mg-name">{{item.name}}</view>
+          <view class="mg-sub">{{item.sub}}<text wx:if="{{item.needsReview}}" class="mg-chip mg-chip-review">待核对</text><text wx:if="{{item.manual}}" class="mg-chip mg-chip-plain">手工</text></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 动作条：固定在底部，先写清后果再给两个动作。没有可操作的行时整条不出现。 -->
+    <view wx:if="{{showActions}}" class="mg-actions">
+      <view class="mg-quiet">删除会连同这些课的全部分段一起删掉，无法撤销</view>
+      <view class="mg-btn-row">
+        <button
+          id="manage-delete-selected"
+          class="mg-btn mg-btn-warn"
+          hover-class="pressed"
+          disabled="{{selectedCount === 0 || deleting}}"
+          bindtap="deleteSelected"
+        >删除所选 {{selectedCount}} 门</button>
+        <button
+          id="manage-select-all"
+          class="mg-btn mg-btn-secondary"
+          hover-class="pressed"
+          disabled="{{rows.length === 0}}"
+          bindtap="toggleSelectAll"
+        >{{allSelected ? '取消全选' : '全选'}}</button>
+      </view>
+    </view>
+
+    <view id="manage-back" class="mg-back" hover-class="pressed" bindtap="goBack"><text class="mg-back-text">返回课表</text></view>
+  </block>
+</view>

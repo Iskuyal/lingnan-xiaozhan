@@ -1,11 +1,15 @@
 /**
  * 课程表单到提交数据的转换（手工新增与修改共用）。
  *
- * 表单只暴露学生能确定的字段：课程名、教师、地点、学分、星期、起止节、周次。
- * 校区、场地编号、备注、原文这些来自导入的字段在编辑时原样保留，不在表单里让用户重填。
+ * 表单只暴露学生能确定的字段：课程名、教师、地点、学分、备注、星期、起止节、周次、颜色。
+ * 校区、场地编号、原文这些来自导入的字段在编辑时原样保留，不在表单里让用户重填。
  * 校验失败时返回错误文案，页面直接展示，不做静默修正。
+ *
+ * 备注（`note`）从 06 的设计图起进了表单：导入时它常是「1班」「农民画」这类附加信息，
+ * 学生要看得到、改得动，所以它与其他表单字段同权，不再是「表单外保留」的字段。
  */
 import { Course, CourseInput, DraftCourse, SectionRange } from './types';
+import { colorIndexFromKey } from './palette';
 import { condenseWeeks, parseWeekNotation } from './weeks';
 
 export interface CourseForm {
@@ -13,6 +17,8 @@ export interface CourseForm {
   teacher: string;
   location: string;
   credits: string;
+  /** 备注：教学班、方向等附加信息，可留空。 */
+  note: string;
   /** 选择器下标：0 对应星期一。 */
   weekdayIndex: number;
   /** 选择器下标：0 对应第 1 节。 */
@@ -20,13 +26,14 @@ export interface CourseForm {
   endIndex: number;
   /** 周次输入，如 `1-16`、`2-6,8-17`；留空表示每周。 */
   weeksText: string;
+  /** 课程色：`palette.ts` 的 key；空字符串表示按课程名自动取色。 */
+  color: string;
 }
 
 /** 表单之外的字段：来自导入或上一次保存，编辑时原样保留。 */
 export interface CourseExtras {
   campus: string;
   siteNumber: string;
-  note: string;
   rawText: string;
   warnings: string[];
   source: 'excel' | 'manual' | 'photo';
@@ -37,6 +44,7 @@ export interface CourseFormSource {
   teacher: string;
   location: string;
   credits: string;
+  note: string;
   weekday: number;
   startSection: number;
   endSection: number;
@@ -46,10 +54,11 @@ export interface CourseFormSource {
   weekText: string;
   campus: string;
   siteNumber: string;
-  note: string;
   rawText: string;
   warnings: string[];
   source: 'excel' | 'manual' | 'photo';
+  /** 手动指定的课程色 key；缺失表示按课程名自动取色（旧记录没有这个字段）。 */
+  color?: string;
 }
 
 export const EMPTY_FORM: CourseForm = {
@@ -57,20 +66,26 @@ export const EMPTY_FORM: CourseForm = {
   teacher: '',
   location: '',
   credits: '',
+  note: '',
   weekdayIndex: 0,
   startIndex: 0,
   endIndex: 1,
   weeksText: '',
+  color: '',
 };
 
 /** 周次提示类警告：编辑周次后由本模块重新生成，不保留旧的那条。 */
 const WEEK_WARNING = /周次/u;
 
+/** 课程色 key 的规整：只认 8 个合法 key，其余（含旧数据的拼写错误）一律按「自动」处理。 */
+export function sanitizeColorKey(value: unknown): string {
+  return typeof value === 'string' && colorIndexFromKey(value) >= 0 ? value : '';
+}
+
 export function extrasOf(source: CourseFormSource): CourseExtras {
   return {
     campus: source.campus,
     siteNumber: source.siteNumber,
-    note: source.note,
     rawText: source.rawText,
     warnings: source.warnings.filter((warning) => !WEEK_WARNING.test(warning)),
     source: source.source,
@@ -87,10 +102,12 @@ export function formOf(source: CourseFormSource): CourseForm {
     teacher: source.teacher,
     location: source.location,
     credits: source.credits,
+    note: typeof source.note === 'string' ? source.note : '',
     weekdayIndex: Math.min(Math.max(source.weekday - 1, 0), 6),
     startIndex: Math.min(Math.max(start - 1, 0), 11),
     endIndex: Math.min(Math.max(end - 1, 0), 11),
     weeksText: source.weeksRecognized ? condenseWeeks(source.weeks) : source.weekText,
+    color: sanitizeColorKey(source.color),
   };
 }
 
@@ -155,9 +172,10 @@ export function buildCourseInput(form: CourseForm, extras: CourseExtras): FormBu
       location: form.location.trim(),
       campus: extras.campus,
       siteNumber: extras.siteNumber,
-      note: extras.note,
+      note: typeof form.note === 'string' ? form.note.trim() : '',
       warnings,
       source: extras.source,
+      color: sanitizeColorKey(form.color),
     },
   };
 }
