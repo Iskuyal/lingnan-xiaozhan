@@ -6,7 +6,7 @@
  */
 import { Course, SectionRange } from './types';
 import { condenseWeeks } from './weeks';
-import { colorIndexFor, colorIndexFromKey } from './palette';
+import { colorAt, colorIndexFor, colorIndexFromKey } from './palette';
 
 export const WEEKDAY_LABELS = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 export const WEEKDAY_SHORT = ['一', '二', '三', '四', '五', '六', '日'];
@@ -220,6 +220,11 @@ export function formatUpdatedAt(iso: string): string {
  * 由页面算好后经 `GridOptions` 传进来，因此本函数保持纯函数、可直接用 node:test 验证。
  */
 export const SECTION_COUNT = 12;
+/** 单节行高与块间距（rpx）：84rpx = 43.7px，取自设计图 01 的网格；间距让相邻两块不贴在一起。 */
+export const SECTION_ROW_RPX = 84;
+export const BLOCK_GAP_RPX = 3;
+/** 课块左右留白（占列宽的百分比）：设计图上块与列边之间约 1.6px。 */
+const BLOCK_INSET_PERCENT = 2.5;
 
 export interface GridBlock {
   /** 同格多门课时是全部课程 id，第一项是代表课。 */
@@ -227,6 +232,10 @@ export interface GridBlock {
   primaryId: string;
   name: string;
   colorIndex: number;
+  /** 颜色三件套：实色（色条）、浅底（填充）、描边。由 view 算好，WXML 只负责画。 */
+  solid: string;
+  tint: string;
+  lineColor: string;
   start: number;
   end: number;
   span: number;
@@ -242,6 +251,12 @@ export interface GridBlock {
   laneCount: number;
   /** 正在上（页面按作息算出当前节次后传入）。 */
   now: boolean;
+  /** 几何量（rpx）：WXML 里做不了算术，位置由这里算好，样式只管画。 */
+  topRpx: number;
+  heightRpx: number;
+  /** 泳道横向位置与宽度（百分比，相对所在列），**已含左右留白**，块之间不会贴在一起。 */
+  laneLeftPercent: number;
+  laneWidthPercent: number;
 }
 
 export interface GridColumn {
@@ -259,6 +274,8 @@ export interface GridLayout {
   week: number;
   weekLabel: string;
   rows: number;
+  /** 节次序号 1..12：模板用它画时间轴与横线，免得在 WXML 里拼数字。 */
+  sectionNumbers: number[];
   columns: GridColumn[];
   /** 本周有课的天（1-7）。 */
   hasCourseWeekdays: number[];
@@ -362,11 +379,16 @@ export function buildGrid(courses: Course[], week: number, options: GridOptions 
       const end = candidate.end;
       const span = end - start + 1;
       const tier = tierFor(span);
+      const colorIndex = colorIndexOf(primary);
+      const color = colorAt(colorIndex);
       return {
         ids: candidate.members.map((member) => member.id),
         primaryId: primary.id,
         name: primary.name,
-        colorIndex: colorIndexOf(primary),
+        colorIndex,
+        solid: color.solid,
+        tint: color.tint,
+        lineColor: color.line,
         start,
         end,
         span,
@@ -378,6 +400,10 @@ export function buildGrid(courses: Course[], week: number, options: GridOptions 
         lane,
         laneCount,
         now: options.nowSection !== undefined && options.nowSection >= start && options.nowSection <= end,
+        topRpx: (start - 1) * SECTION_ROW_RPX,
+        heightRpx: span * SECTION_ROW_RPX - BLOCK_GAP_RPX,
+        laneLeftPercent: (lane * 100) / laneCount + BLOCK_INSET_PERCENT,
+        laneWidthPercent: 100 / laneCount - BLOCK_INSET_PERCENT * 2,
       };
     }).sort((a, b) => a.start - b.start || a.lane - b.lane);
     return {
@@ -397,6 +423,7 @@ export function buildGrid(courses: Course[], week: number, options: GridOptions 
     week,
     weekLabel: `第 ${week} 周`,
     rows: SECTION_COUNT,
+    sectionNumbers: Array.from({ length: SECTION_COUNT }, (_, index) => index + 1),
     columns,
     hasCourseWeekdays: columns.filter((column) => column.blocks.length > 0).map((column) => column.weekday),
     total: inWeek.length,

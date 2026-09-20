@@ -17,7 +17,7 @@ import {
   messageOf,
   updateCourse,
 } from '../../services/timetable/index';
-import { WEEKDAY_SHORT, WeekView, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
+import { WEEKDAY_SHORT, WeekView, buildGrid, buildWeekView, formatUpdatedAt, semesterLabel, weekSpan } from '../../services/timetable/view';
 import { ChatMessage, callAi, chatEvent, chatMessages, safetyNoteFor, transportMessage, userMessage } from '../../services/ai';
 import {
   AssistantReply,
@@ -30,8 +30,11 @@ import {
 
 type Status = 'loading' | 'empty' | 'ready' | 'error';
 
+/** 网格 / 列表两种视图：网格看「一眼」，列表看「读全」。 */
+type ViewMode = 'grid' | 'list';
+
 interface DatasetEvent {
-  currentTarget: { dataset: { id?: string; name?: string } };
+  currentTarget: { dataset: { id?: string; name?: string; mode?: string } };
 }
 
 interface PickerEvent {
@@ -56,6 +59,18 @@ function pickerIndex(value: string | number): number {
   return Number.isFinite(index) && index >= 0 ? Math.floor(index) : 0;
 }
 
+/**
+ * 切周时的整块数据：网格与列表都由同一份课程算出来，避免两处口径分叉
+ * （`view` 给列表与统计，`grid` 给周网格）。
+ */
+function weekPatch(courses: Course[], week: number) {
+  return {
+    week,
+    view: buildWeekView(courses, week),
+    grid: buildGrid(courses, week),
+  };
+}
+
 const ASSISTANT_WELCOME = '你好，我是课表助手。你可以问我课表问题，比如「周三第几节有课」，也可以让我帮你加课、改课——改动都会先给你确认，确认后才生效。';
 const ASSISTANT_NOTE = '回答只依据你当前保存的课表；任何增改都会先给你确认，确认后才生效。';
 
@@ -73,6 +88,8 @@ Page({
     weekOptions: [] as number[],
     weekIndex: 0,
     view: { week: 1, weekLabel: '第 1 周', rows: [], days: [], total: 0 } as WeekView,
+    grid: buildGrid([], 1),
+    viewMode: 'grid' as ViewMode,
     fileGuide: FILE_GUIDE,
     offlineNote: OFFLINE_NOTE,
     assistantOpen: false,
@@ -104,8 +121,7 @@ Page({
           updatedAtText: formatUpdatedAt(feed.updatedAt),
           weekOptions: options,
           weekIndex: week - 1,
-          week,
-          view: buildWeekView(courses, week),
+          ...weekPatch(courses, week),
           status: courses.length === 0 ? 'empty' : 'ready',
           errorMessage: '',
         });
@@ -122,7 +138,7 @@ Page({
     const index = pickerIndex(event.detail.value);
     const week = this.data.weekOptions[index];
     if (week === undefined) return;
-    this.setData({ week, weekIndex: index, view: buildWeekView(this.data.courses, week) });
+    this.setData({ weekIndex: index, ...weekPatch(this.data.courses, week) });
   },
   previousWeek() {
     return this.shiftWeek(-1);
@@ -134,7 +150,13 @@ Page({
     const index = this.data.weekIndex + delta;
     if (index < 0 || index >= this.data.weekOptions.length) return;
     const week = this.data.weekOptions[index];
-    this.setData({ week, weekIndex: index, view: buildWeekView(this.data.courses, week) });
+    this.setData({ weekIndex: index, ...weekPatch(this.data.courses, week) });
+  },
+  /** 网格 / 列表切换：只换渲染，不重新读云端，也不改数据。 */
+  switchView(event: DatasetEvent) {
+    const mode = event.currentTarget.dataset.mode;
+    if (mode !== 'grid' && mode !== 'list') return;
+    this.setData({ viewMode: mode });
   },
   openImport() {
     wx.navigateTo({ url: '/pages/timetable/import/index' });

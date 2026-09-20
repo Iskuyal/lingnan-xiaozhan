@@ -81,6 +81,7 @@ test('索引取色：越界与负数回落到第一色，不返回 undefined', (
 test('空课表：12 行、7 列、每列都收窄、没有块', () => {
   const grid = view.buildGrid([], 4);
   assert.equal(grid.rows, 12);
+  assert.deepEqual(grid.sectionNumbers, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], '模板靠它画时间轴与横线');
   assert.equal(grid.columns.length, 7);
   assert.deepEqual(grid.columns.map((c) => c.narrow), [true, true, true, true, true, true, true]);
   assert.equal(grid.total, 0);
@@ -220,4 +221,33 @@ test('块按起始节次排序，同格折叠后总块数不超过节次上限',
   for (const block of grid.columns.flatMap((c) => c.blocks)) {
     assert.ok(block.start >= 1 && block.end <= 12, `块范围 ${block.start}-${block.end} 超出 1-12 节`);
   }
+});
+
+test('几何量按节次算好（WXML 里做不了算术）：第 5-6 节在 4 行之后，高度两节减间距', () => {
+  const grid = view.buildGrid([course({ sectionRanges: [{ start: 5, end: 6 }] })], 4);
+  const block = grid.columns[0].blocks[0];
+  assert.equal(block.topRpx, 4 * view.SECTION_ROW_RPX);
+  assert.equal(block.heightRpx, 2 * view.SECTION_ROW_RPX - view.BLOCK_GAP_RPX);
+  // 单泳道占满整列，但左右各留一点白，块与列边不贴死
+  assert.equal(block.laneLeftPercent, 2.5);
+  assert.equal(block.laneWidthPercent, 95);
+});
+
+test('泳道几何：两条泳道各占近一半、第二条从 50% 之后开始，且互不重叠', () => {
+  const grid = view.buildGrid([
+    course({ id: 'a', sectionRanges: [{ start: 5, end: 6 }] }),
+    course({ id: 'b', sectionRanges: [{ start: 6, end: 7 }] }),
+  ], 4);
+  const [first, second] = grid.columns[0].blocks;
+  assert.equal(first.laneLeftPercent, 2.5);
+  assert.equal(first.laneWidthPercent, 45);
+  assert.equal(second.laneLeftPercent, 52.5);
+  assert.equal(second.laneWidthPercent, 45);
+  assert.ok(first.laneLeftPercent + first.laneWidthPercent < second.laneLeftPercent, '两条泳道不该压住对方');
+});
+
+test('连堂块的高度按节数累加：1-4 节是四节高减一个间距', () => {
+  const grid = view.buildGrid([course({ sectionRanges: [{ start: 1, end: 4 }] })], 4);
+  assert.equal(grid.columns[0].blocks[0].topRpx, 0);
+  assert.equal(grid.columns[0].blocks[0].heightRpx, 4 * view.SECTION_ROW_RPX - view.BLOCK_GAP_RPX);
 });

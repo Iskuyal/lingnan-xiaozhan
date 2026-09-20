@@ -102,16 +102,27 @@ test('周课表主页：读云端课程、按周切换、删除后重新读取',
   assert.equal(page.data.weekOptions.length, 20);
   assert.equal(page.data.week, 1);
   assert.equal(page.data.view.total, 1, '第 1 周只有高等数学');
-  assert.deepEqual(page.data.view.rows[0].cells[0].items.map((item) => item.name), ['高等数学']);
+  // 网格与列表同源：网格按节次落位（高等数学在星期一第 1-2 节）
+  assert.deepEqual(page.data.grid.columns[0].blocks.map((block) => block.name), ['高等数学']);
+  assert.equal(page.data.grid.columns[0].blocks[0].start, 1);
+  assert.equal(page.data.grid.columns[0].blocks[0].end, 2);
+  assert.equal(page.data.grid.placed, 1);
+  assert.deepEqual(page.data.grid.hasCourseWeekdays, [1], '第 1 周只有星期一有课');
+  assert.deepEqual(page.data.grid.columns.map((column) => column.narrow), [false, true, true, true, true, true, true],
+    '有课的天不收窄、没课的天收窄（版式规则 1）');
 
   page.selectWeek({ detail: { value: '5' } });
   assert.equal(page.data.week, 6);
   assert.equal(page.data.view.total, 1, '第 6 周只有体育一');
-  assert.deepEqual(page.data.view.rows[3].cells[2].items.map((item) => item.name), ['体育一']);
+  assert.deepEqual(page.data.grid.columns[2].blocks.map((block) => block.name), ['体育一'], '体育一在星期三');
+  assert.equal(page.data.grid.columns[2].blocks[0].start, 7, '第 7-8 节');
   page.previousWeek();
   assert.equal(page.data.week, 5);
   assert.equal(page.data.view.total, 0, '第 5 周没有课');
   assert.equal(page.data.view.weekLabel, '第 5 周');
+  assert.equal(page.data.grid.total, 0, '网格口径跟着周次走');
+  assert.deepEqual(page.data.grid.columns.map((column) => column.narrow), [true, true, true, true, true, true, true],
+    '整周没课时所有列都收窄');
 
   page.removeCourse({ currentTarget: { dataset: { id: 'tc_1', name: '高等数学' } } });
   await new Promise((resolve) => setImmediate(resolve));
