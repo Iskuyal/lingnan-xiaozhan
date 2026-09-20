@@ -32,7 +32,12 @@
     <view class="today-pill" wx:if="{{todayBar.timeLabel !== ''}}">{{todayBar.timeLabel}}</view>
   </view>
 
-  <view wx:if="{{settingsError !== ''}}" class="tt-guide tt-guide-note">课表设置暂时读不到（{{settingsError}}）。课表照常可用，只是不显示日期与「正在上」。</view>
+  <!-- 退化态说明（设计图 03）：缺开学日或作息时讲清缺什么、点哪里补。
+       设置齐了这条就不出现，位置让给速查条。 -->
+  <view wx:if="{{setupHint !== ''}}" class="setup-hint">
+    <view class="setup-hint-text">{{setupHint}}</view>
+    <view id="settings-cta" class="setup-hint-btn" hover-class="pressed" bindtap="openSettings">去设置</view>
+  </view>
 
   <view wx:if="{{status === 'loading'}}" class="tt-hint">
     <view class="section-title">加载中</view>
@@ -147,7 +152,7 @@
   </view>
 
   <block wx:if="{{status !== 'loading' && status !== 'error'}}">
-    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="home-button tt-assistant-open" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
     <view wx:else class="qa-panel tt-qa" id="assistant-panel">
       <view class="qa-head">
         <view class="qa-title">课表助手</view>
@@ -168,7 +173,7 @@
     </view>
   </block>
 
-  <button wx:if="{{status !== 'error'}}" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  <button wx:if="{{status !== 'error'}}" id="back-home" class="tt-back-home" hover-class="pressed" bindtap="goHome">返回首页</button>
 
   <!-- 课程详情弹层（设计图 05）：点课块或速查条打开；同格多门时在这里列出全部成员。
        课程色走与课块同一个令牌槽 --blk-solid，不为弹层新增令牌。 -->

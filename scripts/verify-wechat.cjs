@@ -236,6 +236,55 @@ async function run() {
       console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
     }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
+
+    // 课表改版（2026-09-20）的三处新界面：周网格 + 课程详情弹层、课表设置页、课程管理页。
+    // 它们在本轮之前只有本地桩测试证据，这里补上真实渲染。
+    // 真实样本第 1 周没有课：往后翻，直到出现课程块（有开学日时页面会自己落在本周，所以不写死翻几周）
+    let blocks = [];
+    for (let step = 0; step < 6 && blocks.length === 0; step += 1) {
+      await (await timetable.$('#week-next')).tap();
+      await timetable.waitFor(400);
+      blocks = await timetable.$$('.grid-block');
+    }
+    assert.ok(blocks.length > 0, '往后翻周后应至少有一个课程块（周网格没有渲染出来）');
+    assert.ok((await timetable.$('#week-grid')) !== null, '有课的周应渲染周网格容器');
+    console.log(`周网格：出现 ${blocks.length} 个课程块（第 ${await (await timetable.$('.week-now')).text()}）`);
+    await blocks[0].tap();
+    await timetable.waitFor(500);
+    assert.ok((await timetable.$('#course-sheet')) !== null, '点课程块应弹出课程详情弹层');
+    const sheetName = await (await timetable.$('.sheet-name')).text();
+    assert.ok(sheetName.length > 0, '详情弹层应显示课程名');
+    await mini.screenshot({ path: path.join(output, 'timetable-sheet.png') });
+    console.log(`课程详情弹层：已弹出（${sheetName}）并截图`);
+    const sheetClose = await timetable.$('.sheet-close');
+    if (sheetClose !== null) await sheetClose.tap();
+    await timetable.waitFor(300);
+
+    await (await timetable.$('#timetable-settings-entry')).tap();
+    const settings = await waitForPage('pages/timetable/settings/index');
+    await settings.waitFor(800);
+    assert.ok((await settings.$('#settings-semester-name')) !== null, '设置页应有学期名称输入');
+    assert.ok((await settings.$('#settings-start-date')) !== null, '设置页应有第一周星期一的选择');
+    assert.ok((await settings.$('#settings-section-time-1')) !== null, '设置页应有第 1 节的作息输入');
+    assert.ok((await settings.$('#settings-save')) !== null, '设置页应有保存入口');
+    await mini.screenshot({ path: path.join(output, 'timetable-settings.png') });
+    console.log(`课表设置页：表单可渲染（预览「${await (await settings.$('#settings-preview')).text()}」）`);
+    await (await settings.$('#settings-back')).tap();
+    const backToTimetable = await waitForPage('pages/timetable/index');
+    await backToTimetable.waitFor(600);
+
+    await (await backToTimetable.$('#manage-entry')).tap();
+    const manage = await waitForPage('pages/timetable/manage/index');
+    await manage.waitFor(800);
+    const hasList = (await manage.$('#manage-list')) !== null;
+    const hasEmpty = (await manage.$('.mg-empty')) !== null;
+    assert.ok(hasList || hasEmpty, '课程管理页要么有列表要么有空态，不该是空白页');
+    assert.ok((await manage.$('#manage-delete-selected')) !== null || hasEmpty, '有列表时应有批量删除入口');
+    await mini.screenshot({ path: path.join(output, 'timetable-manage.png') });
+    console.log(`课程管理页：${hasList ? '列表已渲染' : '空态已渲染'}`);
+    await (await manage.$('#manage-back')).tap();
+    await waitForPage('pages/timetable/index');
+
     await (await timetable.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
@@ -479,6 +528,9 @@ async function run() {
         '真实样本导入到确认页后「放弃导入」不写库、草稿清空并回到引导态',
         '不写学分的版式在真实云端仍能拆出课程名与教师（3 门、0 条需要补全、3 条待核对）',
         '课程表单显示课程名、星期、起止节、周次与保存入口',
+        '周网格渲染出课程块，点课程块弹出课程详情弹层',
+        '课表设置页渲染学期与作息表单并可返回',
+        '课程管理页渲染列表或空态，并有批量删除入口',
         '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
         '资讯详情显示标题、正文段落与复制原文链接入口', '列表与详情之间可往返'],

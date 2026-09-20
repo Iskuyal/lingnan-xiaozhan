@@ -213,6 +213,19 @@ function localMinutes(): number {
   return at.getHours() * 60 + at.getMinutes();
 }
 
+/**
+ * 退化态的说明（设计图 03）：没设置就说清「缺什么、点哪里补」，
+ * 而不是让人对着一个没有日期、没有速查的课表页猜为什么。设置齐了返回空字符串。
+ */
+function setupHintFor(settings: TimetableSettings, hasTimes: boolean, loadError: string): string {
+  if (loadError !== '') return `课表设置暂时读不到（${loadError}），先按节次展示。`;
+  const missingDate = settings.startDate === '';
+  if (missingDate && !hasTimes) return '还没设置开学日与作息时间。设置后才知道今天是第几周，也才能显示「正在上/下一节」。';
+  if (missingDate) return '还没设置开学日。设置后才知道今天是第几周、本周是几月几号。';
+  if (!hasTimes) return '还没填作息时间。填了才会显示具体时刻与「正在上/下一节」。';
+  return '';
+}
+
 Page({
   data: {
     status: 'loading' as Status,
@@ -232,6 +245,7 @@ Page({
     weekRange: '',
     settings: emptySettings() as TimetableSettings,
     settingsError: '',
+    setupHint: '',
     todayBar: null as TodaySummary | null,
     sheetOpen: false,
     sheetCourse: null as SheetCourse | null,
@@ -285,6 +299,7 @@ Page({
           weekIndex: week - 1,
           settings,
           settingsError: loaded.loadError ?? '',
+          setupHint: setupHintFor(settings, hasSectionTimes(settings), loaded.loadError ?? ''),
           ...weekPatch(courses, week, { settings, today: this.today, clockMinutes: this.clockMinutes }),
           status: courses.length === 0 ? 'empty' : 'ready',
           errorMessage: '',
