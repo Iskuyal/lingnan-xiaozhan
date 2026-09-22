@@ -45,6 +45,8 @@ export interface Course {
   semester: string;
   /** 导入时的单元格原文；手工录入为空。 */
   rawText: string;
+  /** 手动指定的课程色：`palette.ts` 的 key（如 `c4`）；空字符串或缺失表示按课程名自动取色。 */
+  color?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -71,6 +73,8 @@ export interface DraftCourse {
   rawText: string;
   sourceRowLabel: string;
   sourceWeekdayLabel: string;
+  /** 手动指定的课程色 key；空字符串或缺失表示按课程名自动取色。 */
+  color?: string;
 }
 
 export interface DraftMeta {
@@ -121,4 +125,10 @@ export interface CourseInput {
   note: string;
   warnings: string[];
   source: 'excel' | 'manual' | 'photo';
+  /**
+   * 手动指定的课程色：`palette.ts` 的 key（如 `c4`）。
+   * 空字符串或缺失表示按课程名自动取色（同名课程恒定同色，见 `palette.ts`）；
+   * 云函数侧只接受 8 个合法 key 或空，其余一律归为空（静默回落到按名取色，不改写记录）。
+   */
+  color?: string;
 }

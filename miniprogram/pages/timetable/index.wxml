@@ -1,4 +1,44 @@
 <view class="page">
+  <view class="tt-heading">
+    <view class="head-top">
+      <view class="eyebrow">{{semesterText}} · 按节次展示</view>
+      <view id="timetable-settings-entry" class="head-link" hover-class="pressed" bindtap="openSettings">课表设置</view>
+    </view>
+    <view class="week-row">
+      <button id="week-prev" class="week-nav" hover-class="pressed" bindtap="previousWeek">‹</button>
+      <picker id="week-picker" class="week-pick" mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="selectWeek">
+        <view class="week-now">{{view.weekLabel}} ▾</view>
+      </picker>
+      <button id="week-next" class="week-nav" hover-class="pressed" bindtap="nextWeek">›</button>
+    </view>
+    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程<block wx:if="{{weekRange !== ''}}"> · {{weekRange}}</block><block wx:if="{{updatedAtText !== ''}}"> · 最近保存于 {{updatedAtText}}</block></view>
+  </view>
+
+  <!-- 今日速查：只在「用户填了作息」且「正在看的就是本周」时出现；没填作息时整条不出现（设计图 03）。 -->
+  <view
+    wx:if="{{todayBar !== null}}"
+    id="today-summary"
+    class="today today-{{todayBar.kind}}"
+    data-id="{{todayBar.courseId}}"
+    hover-class="pressed"
+    bindtap="openSheet"
+  >
+    <view class="today-dot today-dot-{{todayBar.kind}}"></view>
+    <view class="today-body">
+      <view class="today-kicker today-kicker-{{todayBar.kind}}">{{todayBar.note}}</view>
+      <view class="today-name" wx:if="{{todayBar.name !== ''}}">{{todayBar.name}}</view>
+      <view class="today-sub" wx:if="{{todayBar.sectionLabel !== ''}}">{{todayBar.sectionLabel}}<block wx:if="{{todayBar.detail !== ''}}"> · {{todayBar.detail}}</block></view>
+    </view>
+    <view class="today-pill" wx:if="{{todayBar.timeLabel !== ''}}">{{todayBar.timeLabel}}</view>
+  </view>
+
+  <!-- 退化态说明（设计图 03）：缺开学日或作息时讲清缺什么、点哪里补。
+       设置齐了这条就不出现，位置让给速查条。 -->
+  <view wx:if="{{setupHint !== ''}}" class="setup-hint">
+    <view class="setup-hint-text">{{setupHint}}</view>
+    <view id="settings-cta" class="setup-hint-btn" hover-class="pressed" bindtap="openSettings">去设置</view>
+  </view>
+
   <view wx:if="{{status === 'loading'}}" class="tt-hint">
     <view class="section-title">加载中</view>
     <view class="tt-hint-copy">正在从云端读取你的课表…</view>
@@ -22,97 +62,152 @@
   </view>
 
   <block wx:else>
-    <view class="tt-heading">
-      <view class="section-title">我的课表</view>
-      <view class="tt-meta">{{semesterText}}<block wx:if="{{count > 0}}"> · 共 {{count}} 门</block><block wx:if="{{updatedAtText !== ''}}"> · 最近保存于 {{updatedAtText}}</block></view>
-    </view>
-
-    <view class="week-switch">
-      <button id="week-prev" class="week-button" hover-class="pressed" bindtap="previousWeek">上一周</button>
-      <picker id="week-picker" class="week-picker" mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="selectWeek">
-        <view class="week-current">{{view.weekLabel}} ▾</view>
-      </picker>
-      <button id="week-next" class="week-button" hover-class="pressed" bindtap="nextWeek">下一周</button>
-    </view>
-
-    <view wx:if="{{view.total === 0}}" class="tt-hint-copy tt-empty-week">本周没有安排课程，可以切换其他周次查看。</view>
-
-    <view wx:else class="grid">
-      <view class="grid-row grid-head">
-        <view class="grid-cell grid-corner">节次</view>
-        <view class="grid-cell grid-th" wx:for="{{weekdayShort}}" wx:key="*this">{{item}}</view>
+    <view class="section-head">
+      <view class="section-bar"></view>
+      <view class="section-title">本周课表</view>
+      <view id="view-switch" class="seg">
+        <view class="seg-item {{viewMode === 'grid' ? 'seg-item-on' : ''}}" data-mode="grid" bindtap="switchView">课表</view>
+        <view class="seg-item {{viewMode === 'list' ? 'seg-item-on' : ''}}" data-mode="list" bindtap="switchView">列表</view>
       </view>
-      <view class="grid-row" wx:for="{{view.rows}}" wx:for-item="row" wx:key="index">
-        <view class="grid-cell grid-corner">{{row.sectionLabel}}</view>
-        <view class="grid-cell" wx:for="{{row.cells}}" wx:for-item="cell" wx:key="weekday">
+    </view>
+
+    <view wx:if="{{view.total === 0}}" class="tt-hint-copy tt-empty-week">本周没有安排课程，可以左右翻周查看其他周次。</view>
+
+    <block wx:else>
+      <!-- 周网格：12 节行，有课的天宽、没课的天窄（样式里的 -narrow）。
+           块的位置与高度由 view 层算好（topRpx/heightRpx/lane*Percent），模板只负责画。 -->
+      <view wx:if="{{viewMode === 'grid'}}" id="week-grid" class="grid">
+        <view class="grid-row grid-head">
+          <view class="grid-rail"></view>
           <view
-            class="grid-course {{course.needsReview ? 'grid-course-review' : (course.tint === 'red' ? 'grid-course-red' : 'grid-course-gold')}}"
-            wx:for="{{cell.items}}"
-            wx:for-item="course"
-            wx:key="id"
-            hover-class="pressed"
-            data-id="{{course.id}}"
-            bindtap="openSheet"
-          >{{course.name}}</view>
+            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}} {{column.today ? 'grid-th-today' : ''}}"
+            wx:for="{{grid.columns}}"
+            wx:for-item="column"
+            wx:key="weekday"
+          >
+            <view class="grid-th-day">{{column.label}}</view>
+            <view class="grid-th-date" wx:if="{{column.dateLabel !== ''}}">{{column.dateLabel}}</view>
+          </view>
+        </view>
+        <view class="grid-body">
+          <view class="grid-rail">
+            <view class="grid-no" wx:for="{{grid.sectionNumbers}}" wx:key="*this">{{item}}</view>
+          </view>
+          <view class="grid-cols">
+            <view
+              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}} {{column.today ? 'grid-col-today' : ''}}"
+              wx:for="{{grid.columns}}"
+              wx:for-item="column"
+              wx:key="weekday"
+            >
+              <view class="grid-line" wx:for="{{grid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
+              <view
+                class="grid-block {{block.needsReview ? 'grid-block-review' : ''}} {{block.now ? 'grid-block-now' : ''}}"
+                wx:for="{{column.blocks}}"
+                wx:for-item="block"
+                wx:key="primaryId"
+                style="top:{{block.topRpx}}rpx;height:{{block.heightRpx}}rpx;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}"
+                hover-class="pressed"
+                data-id="{{block.primaryId}}"
+                bindtap="openSheet"
+              >
+                <view class="grid-block-name">{{block.name}}</view>
+                <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
+                <view class="grid-block-meta" wx:if="{{block.teacher !== ''}}">{{block.teacher}}</view>
+                <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
+              </view>
+            </view>
+          </view>
         </view>
       </view>
-    </view>
 
-    <view class="tt-footer">课表按节次展示；学校作息与具体时刻尚未核实，不臆造上课时间。</view>
+      <!-- 列表视图：同一份数据的另一种读法，信息更全（周次、教师、修改/删除都在这里）。 -->
+      <view wx:else class="day-list">
+        <view wx:for="{{view.days}}" wx:for-item="day" wx:key="weekday" class="day-block">
+          <view class="day-title">{{day.label}}</view>
+          <view class="course-item" wx:for="{{day.items}}" wx:for-item="course" wx:key="id">
+            <view class="course-main">
+              <view class="course-name">{{course.name}}<text wx:if="{{course.source === 'manual'}}" class="course-tag">手工</text><text wx:if="{{course.needsReview}}" class="course-tag course-tag-review">待核对</text></view>
+              <view class="course-line">{{course.sectionLabel}}<block wx:if="{{course.location !== ''}}"> · {{course.location}}</block></view>
+              <view class="course-line">{{course.weekLabel}}<block wx:if="{{course.teacher !== ''}}"> · {{course.teacher}}</block></view>
+              <view class="course-warning" wx:if="{{course.needsReview}}">{{course.warningText}}</view>
+            </view>
+            <view class="course-ops">
+              <button class="course-op" hover-class="pressed" data-id="{{course.id}}" bindtap="openEdit">修改</button>
+              <button class="course-op course-op-delete" hover-class="pressed" data-id="{{course.id}}" data-name="{{course.name}}" bindtap="removeCourse">删除</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
 
-    <view class="tt-foot-actions">
-      <button id="import-entry" class="home-button tt-secondary" hover-class="pressed" bindtap="openImport">重新导入课表</button>
-      <button id="manual-add" class="home-button tt-secondary" hover-class="pressed" bindtap="openCreate">手工加课</button>
+  <view class="tt-footer">周课表按节次展示；学校作息与具体时刻尚未核实，不臆造上课时间。点课程块可以修改或删除。</view>
+
+  <!-- 动作条只在已就绪时出现：空态自己有导入/手工两个大按钮，避免同页出现两个 #import-entry。 -->
+  <view wx:if="{{status === 'ready'}}" class="actionbar">
+    <button id="import-entry" class="actionbar-item" hover-class="pressed" bindtap="openImport">导入课表</button>
+    <button id="manual-add" class="actionbar-item" hover-class="pressed" bindtap="openCreate">手工新增</button>
+    <button id="manage-entry" class="actionbar-item" hover-class="pressed" bindtap="openManage">课程管理</button>
+  </view>
+
+  <block wx:if="{{status !== 'loading' && status !== 'error'}}">
+    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+    <view wx:else class="qa-panel tt-qa" id="assistant-panel">
+      <view class="qa-head">
+        <view class="qa-title">课表助手</view>
+        <button class="qa-close" hover-class="pressed" bindtap="closeAssistant">收起</button>
+      </view>
+      <view class="qa-messages">
+        <!-- 与部门问答面板同一约定：助手回答带 qa-answer 标记，开发者工具验收靠它数气泡，测试锁住这个标记。 -->
+        <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}} {{item.role === 'assistant' ? 'qa-answer' : ''}}">{{item.text}}</view>
+      </view>
+      <view class="qa-error" wx:if="{{assistantError !== ''}}">{{assistantError}}</view>
+      <view id="assistant-safety-note" class="qa-warn" wx:if="{{assistantSafetyNote !== ''}}">{{assistantSafetyNote}}</view>
+      <view class="qa-cap" wx:if="{{assistantCapWarning !== ''}}">{{assistantCapWarning}}</view>
+      <view class="qa-input-row">
+        <input id="assistant-input" class="qa-input" value="{{assistantInput}}" bindinput="onAssistantInput" placeholder="例如：周三第几节有课？" confirm-type="send" bindconfirm="sendAssistant" />
+        <button id="assistant-send" class="qa-send" hover-class="pressed" disabled="{{assistantSending}}" bindtap="sendAssistant">发送</button>
+      </view>
+      <view class="qa-note">{{assistantNote}}</view>
     </view>
   </block>
 
-  <text wx:if="{{status !== 'error'}}" id="back-home" class="tt-back-link" bindtap="goHome">返回首页</text>
+  <button wx:if="{{status !== 'error'}}" id="back-home" class="tt-back-home" hover-class="pressed" bindtap="goHome">返回首页</button>
 
-  <!-- 课程滑层：网格点开课程后在此修改或删除，取代原先按天列表里的两个按钮。 -->
-  <view wx:if="{{sheetCourse !== null}}" class="tt-scrim" bindtap="closeSheet"></view>
-  <view wx:if="{{sheetCourse !== null}}" id="course-sheet" class="tt-sheet">
-    <view class="tt-sheet-handle"></view>
-    <view class="tt-sheet-title">{{sheetCourse.name}}<text wx:if="{{sheetCourse.source === 'manual'}}" class="course-tag">手工</text><text wx:if="{{sheetCourse.needsReview}}" class="course-tag course-tag-review">待核对</text></view>
-    <view class="tt-sheet-fields">
-      <view class="tt-field"><text class="tt-field-label">星期</text><text class="tt-field-value">{{sheetCourse.weekdayText === '' ? '未填写' : sheetCourse.weekdayText}}</text></view>
-      <view class="tt-field"><text class="tt-field-label">节次</text><text class="tt-field-value tt-field-key">{{sheetCourse.sectionLabel}}</text></view>
-      <view class="tt-field"><text class="tt-field-label">地点</text><text class="tt-field-value {{sheetCourse.location === '' ? 'tt-field-empty' : ''}}">{{sheetCourse.location === '' ? '未填写' : sheetCourse.location}}</text></view>
-      <view class="tt-field"><text class="tt-field-label">周次</text><text class="tt-field-value">{{sheetCourse.weekLabel}}</text></view>
-      <view class="tt-field"><text class="tt-field-label">教师</text><text class="tt-field-value {{sheetCourse.teacher === '' ? 'tt-field-empty' : ''}}">{{sheetCourse.teacher === '' ? '未填写' : sheetCourse.teacher}}</text></view>
-      <view class="tt-field" wx:if="{{sheetCourse.credits !== ''}}"><text class="tt-field-label">学分</text><text class="tt-field-value">{{sheetCourse.credits}}</text></view>
-      <view class="tt-field" wx:if="{{sheetCourse.campus !== ''}}"><text class="tt-field-label">校区</text><text class="tt-field-value">{{sheetCourse.campus}}</text></view>
-      <view class="tt-field" wx:if="{{sheetCourse.siteNumber !== ''}}"><text class="tt-field-label">场地编号</text><text class="tt-field-value">{{sheetCourse.siteNumber}}</text></view>
-      <view class="tt-field" wx:if="{{sheetCourse.note !== ''}}"><text class="tt-field-label">备注</text><text class="tt-field-value">{{sheetCourse.note}}</text></view>
+  <!-- 课程详情弹层（设计图 05）：点课块或速查条打开；同格多门时在这里列出全部成员。
+       课程色走与课块同一个令牌槽 --blk-solid，不为弹层新增令牌。 -->
+  <view wx:if="{{sheetOpen}}" class="sheet-mask" bindtap="closeSheet"></view>
+  <view wx:if="{{sheetOpen && sheetCourse !== null}}" id="course-sheet" class="sheet">
+    <view class="sheet-handle"></view>
+    <view class="sheet-head" style="--blk-solid:{{sheetCourse.solid}}">
+      <view class="sheet-name">{{sheetCourse.name}}</view>
+      <view class="sheet-sub">{{sheetCourse.sectionLabel}} · {{sheetCourse.weekLabel}}</view>
     </view>
-    <view class="tt-sheet-warn" wx:if="{{sheetCourse.needsReview}}">{{sheetCourse.warningText}}</view>
-    <view class="tt-sheet-actions">
-      <button id="sheet-edit" class="home-button" hover-class="pressed" bindtap="editFromSheet">修改课程</button>
-      <button id="sheet-delete" class="home-button tt-sheet-warn-btn" hover-class="pressed" bindtap="deleteFromSheet">删除课程</button>
-      <button id="sheet-cancel" class="home-button tt-secondary" hover-class="pressed" bindtap="closeSheet">取消</button>
+    <scroll-view class="sheet-body" scroll-y>
+      <view wx:if="{{sheetCourse.needsReview}}" class="sheet-warn">待核对 · {{sheetCourse.warningText}}</view>
+      <view class="sheet-row" wx:if="{{sheetCourse.teacher !== ''}}"><view class="sheet-key">教师</view><view class="sheet-val">{{sheetCourse.teacher}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.location !== ''}}"><view class="sheet-key">地点</view><view class="sheet-val">{{sheetCourse.location}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.campus !== '' || sheetCourse.siteNumber !== ''}}">
+        <view class="sheet-key">校区</view>
+        <view class="sheet-val">{{sheetCourse.campus}}<block wx:if="{{sheetCourse.siteNumber !== ''}}"> · 场地编号 {{sheetCourse.siteNumber}}</block></view>
+      </view>
+      <view class="sheet-row" wx:if="{{sheetCourse.note !== ''}}"><view class="sheet-key">备注</view><view class="sheet-val">{{sheetCourse.note}}</view></view>
+      <view class="sheet-row"><view class="sheet-key">来源</view><view class="sheet-val">{{sheetCourse.sourceLabel}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.updatedAtText !== ''}}"><view class="sheet-key">最近修改</view><view class="sheet-val">{{sheetCourse.updatedAtText}}</view></view>
+      <view class="sheet-row" wx:if="{{sheetCourse.rawText !== ''}}"><view class="sheet-key">原文</view><view class="sheet-val">{{sheetCourse.rawText}}</view></view>
+      <block wx:if="{{sheetMembers.length > 1}}">
+        <view class="sheet-group">同一格还有 {{sheetMembers.length}} 门课</view>
+        <view class="sheet-member" wx:for="{{sheetMembers}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="pickSheetMember">
+          <view class="sheet-member-name">{{item.name}}</view>
+          <view class="sheet-member-sub">{{item.sectionLabel}}</view>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="sheet-foot">
+      <button class="sheet-btn" hover-class="pressed" bindtap="editSheetCourse">修改这节课</button>
+      <button class="sheet-btn sheet-btn-warn" hover-class="pressed" bindtap="removeSheetCourse">删除</button>
+      <view class="sheet-close" hover-class="pressed" bindtap="closeSheet">关闭</view>
     </view>
-  </view>
-
-  <!-- 课表助手（Ticket 06）：悬浮入口 + 独立滑层，问完即收，不占课表视野。
-       滑层只在课表可用的状态下渲染：读取失败时收起，不压住错误态的重试入口。 -->
-  <button wx:if="{{!assistantOpen && status !== 'loading' && status !== 'error'}}" id="assistant-open" class="tt-fab" hover-class="pressed" bindtap="openAssistant">问问助手</button>
-  <view wx:if="{{assistantOpen && status !== 'loading' && status !== 'error'}}" class="tt-scrim" bindtap="closeAssistant"></view>
-  <view wx:if="{{assistantOpen && status !== 'loading' && status !== 'error'}}" id="assistant-panel" class="tt-sheet tt-qa">
-    <view class="tt-sheet-handle"></view>
-    <view class="qa-head">
-      <view class="qa-title">课表助手</view>
-      <button class="qa-close" hover-class="pressed" bindtap="closeAssistant">收起</button>
-    </view>
-    <view class="qa-messages">
-      <!-- 与部门问答面板同一约定：助手回答带 qa-answer 标记，开发者工具验收靠它数气泡，测试锁住这个标记。 -->
-      <view wx:for="{{assistantMessages}}" wx:key="index" class="qa-msg {{item.role === 'user' ? 'qa-msg-user' : 'qa-msg-ai'}} {{item.role === 'assistant' ? 'qa-answer' : ''}}">{{item.text}}</view>
-    </view>
-    <view class="qa-error" wx:if="{{assistantError !== ''}}">{{assistantError}}</view>
-    <view id="assistant-safety-note" class="qa-warn" wx:if="{{assistantSafetyNote !== ''}}">{{assistantSafetyNote}}</view>
-    <view class="qa-cap" wx:if="{{assistantCapWarning !== ''}}">{{assistantCapWarning}}</view>
-    <view class="qa-input-row">
-      <input id="assistant-input" class="qa-input" value="{{assistantInput}}" bindinput="onAssistantInput" placeholder="例如：周三第几节有课？" confirm-type="send" bindconfirm="sendAssistant" />
-      <button id="assistant-send" class="qa-send" hover-class="pressed" disabled="{{assistantSending}}" bindtap="sendAssistant">发送</button>
-    </view>
-    <view class="qa-note">{{assistantNote}}</view>
   </view>
 </view>

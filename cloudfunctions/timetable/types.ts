@@ -12,6 +12,8 @@ export const WEEKDAY_LABELS = ['星期一', '星期二', '星期三', '星期四
 export const MAX_SECTION = 12;
 /** 教学周上限：真实样本最大 19 周；超过 30 按越界标记，不擅自截断。 */
 export const MAX_WEEK = 30;
+/** 未设置或读不出总周数时的默认跨度：与小程序侧 `semester.ts` 的 `DEFAULT_TOTAL_WEEKS` 一致。 */
+export const DEFAULT_TOTAL_WEEKS = 20;
 /** 导入草稿在云存储里的路径前缀；每个用户的路径带自己的 openid 哈希。 */
 export const UPLOAD_ROOT = 'timetable-imports';
 
@@ -51,7 +53,18 @@ export interface CourseFields {
   warnings: string[];
   /** 记录来源：文件导入、截图识别或手工录入。 */
   source: 'excel' | 'manual' | 'photo';
+  /**
+   * 手动指定的课程色 key（见 `COURSE_COLOR_KEYS`）；空字符串或缺失表示按课程名自动取色。
+   * 色值本身不写进记录：色值将来要调，标识不能跟着变。
+   */
+  color?: string;
 }
+
+/**
+ * 课程色的合法 key：与小程序侧 `services/timetable/palette.ts` 的 `COURSE_COLORS` 逐条对应
+ * （云函数不能引用小程序模块：两份代码各自部署，所以这份列表是两侧的契约，改名要同步）。
+ */
+export const COURSE_COLOR_KEYS = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'] as const;
 
 /** 解析出来的草稿课程：业务字段 + 原文与来源位置，供确认页展示与裁决。 */
 export interface DraftCourse extends CourseFields {
@@ -112,6 +125,38 @@ export interface StoredCourse extends CourseFields {
   owner: string;
   semester: string;
   rawText: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * 一节的上课时刻，'HH:MM'（24 小时制）。
+ * 空字符串表示这一节没填——学校作息表尚未核实，服务端**不预置任何默认值**，
+ * 填一半（只有起始或只有结束）也是合法状态，那一节按「没填」处理。
+ */
+export interface SectionTime {
+  start: string;
+  end: string;
+}
+
+/**
+ * 学期设置与作息时间的业务字段（集合 `timetable_settings`，一条记录一个用户）。
+ * 小程序侧的同名契约在 `miniprogram/services/timetable/settings.ts`（字段名是两侧的契约）。
+ */
+export interface TimetableSettingsFields {
+  /** 学期名称，如「2026-2027学年第一学期」；空字符串表示未命名。 */
+  semesterName: string;
+  /** 第一周的星期一，'YYYY-MM-DD'；空字符串表示未设置（课表按第 1 周显示）。 */
+  startDate: string;
+  /** 总周数，1..MAX_WEEK。 */
+  totalWeeks: number;
+  /** 固定 MAX_SECTION 条，顺序即第 1..12 节。 */
+  sectionTimes: SectionTime[];
+}
+
+/** 数据库记录：设置 + 归属与时间戳。`owner` 同样只来自调用上下文。 */
+export interface StoredSettings extends TimetableSettingsFields {
+  owner: string;
   createdAt: string;
   updatedAt: string;
 }

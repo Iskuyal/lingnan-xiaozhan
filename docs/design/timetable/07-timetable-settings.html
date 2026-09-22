@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课表设置 · 学期与作息</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 本页局部微调：只动留白与文字对齐，色值一律取令牌变量 */
+  .group { padding: 13px 15.6px 15.6px; }
+  .group .section-head { margin-bottom: 11.5px; }
+  .input--flex { flex: 1 1 auto; min-width: 0; }
+  .input--center { text-align: center; padding-left: 0; padding-right: 0; }
+  .input--num { font-variant-numeric: tabular-nums; }
+  .pills--mid { align-items: center; }
+  /* 12 行作息排到下半页时卡片已接近纯白：输入框与次要按钮必须自带一条暖色描边才有边界。 */
+  .input { border-color: var(--glass-drop); }
+  .btn-secondary { border-color: var(--glass-drop); background: var(--glass-strong); }
+  /* 「第 10 节」比「第 9 节」宽一个字，固定 46px 会被折成两行，这里按内容排。 */
+  .times-no { flex: 0 0 auto; white-space: nowrap; }
+  .times-fields { margin-left: auto; display: flex; align-items: center; gap: 8.3px; }
+  .times-row--last { border-bottom: 0; }
+  .card-note { margin-top: 8.3px; }
+  /* 本页比 01 长：固定背景在视口高度处会留下一条横向接缝（上半页偏粉、下半页发白），
+     改成随页面滚动，同一组光晕摊到整页高度，接缝消失。 */
+</style>
+</head>
+<body>
+<!--
+  07 课表设置（学期与作息时间）
+  红线都落在这张图上：学校作息未核实，12 节时刻一个都不预置，全部由学生自己填；
+  没填的那几节就留空，不画「--:--」这类占位——填一半也是合法状态。
+  学期三项（名称 / 第一周的星期一 / 总周数）决定课表能不能显示「第几周」与日期区间。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课表设置</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+
+  <!-- 学期 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">学期</span></div>
+
+    <div class="field">
+      <div class="label">学期名称</div>
+      <div class="input">2026-2027学年第一学期</div>
+    </div>
+
+    <div class="field">
+      <div class="label">第一周的星期一</div>
+      <div class="input-row">
+        <span class="input input--flex input--num">2026-08-31</span>
+        <span class="pill">选择日期</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">总周数</div>
+      <div class="input-row">
+        <span class="input input-narrow input--center input--num">20</span>
+        <span class="pills pills--mid"><span class="pill">18</span><span class="pill pill--on">20</span><span class="pill">22</span></span>
+      </div>
+    </div>
+
+    <div class="callout">设置开学日后，课表才会显示今天是第几周、本周是几月几号；不设置就一直按第 1 周查看</div>
+    <div class="hint">开学日取第一周的星期一，多数学院是当周的周一</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 作息时间 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">作息时间</span></div>
+
+    <div class="callout callout-warn">学校作息表尚未核实，这里<strong>不预置任何默认时刻</strong>——你按自己的课表填写，填了才会在课表上显示时刻与「正在上/下一节」</div>
+    <div class="gap-12"></div>
+
+    <div class="times-group">上午 第 1-4 节</div>
+    <div class="times-row">
+      <span class="times-no">第 1 节</span>
+      <span class="times-fields"><span class="input input-narrow input--center input--num">08:15</span><span class="times-sep">—</span><span class="input input-narrow input--center input--num">09:00</span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 2 节</span>
+      <span class="times-fields"><span class="input input-narrow input--center input--num">09:05</span><span class="times-sep">—</span><span class="input input-narrow input--center input--num">09:50</span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 3 节</span>
+      <span class="times-fields"><span class="input input-narrow input--center input--num">10:10</span><span class="times-sep">—</span><span class="input input-narrow input--center input--num">10:55</span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 4 节</span>
+      <span class="times-fields"><span class="input input-narrow input--center input--num">11:00</span><span class="times-sep">—</span><span class="input input-narrow input--center input--num">11:45</span></span>
+    </div>
+
+    <div class="times-group">下午 第 5-10 节</div>
+    <div class="times-row">
+      <span class="times-no">第 5 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 6 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 7 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 8 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 9 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row">
+      <span class="times-no">第 10 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+
+    <div class="times-group">晚上 第 11-12 节</div>
+    <div class="times-row">
+      <span class="times-no">第 11 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+    <div class="times-row times-row--last">
+      <span class="times-no">第 12 节</span>
+      <span class="times-fields"><span class="input input-narrow"></span><span class="times-sep">—</span><span class="input input-narrow"></span></span>
+    </div>
+
+    <div class="hint card-note">填一半只会影响到那一节；清空某一节不会删除课表数据</div>
+    <div class="gap-12"></div>
+    <div class="btn btn-secondary btn-sm">清空作息</div>
+  </div>
+
+  <div class="gap-20"></div>
+  <div class="btn">保存设置</div>
+  <div class="gap-12"></div>
+  <div class="link-row">返回课表</div>
+</div>
+</body>
+</html>

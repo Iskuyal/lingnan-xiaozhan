@@ -102,16 +102,27 @@ test('周课表主页：读云端课程、按周切换、删除后重新读取',
   assert.equal(page.data.weekOptions.length, 20);
   assert.equal(page.data.week, 1);
   assert.equal(page.data.view.total, 1, '第 1 周只有高等数学');
-  assert.deepEqual(page.data.view.rows[0].cells[0].items.map((item) => item.name), ['高等数学']);
+  // 网格与列表同源：网格按节次落位（高等数学在星期一第 1-2 节）
+  assert.deepEqual(page.data.grid.columns[0].blocks.map((block) => block.name), ['高等数学']);
+  assert.equal(page.data.grid.columns[0].blocks[0].start, 1);
+  assert.equal(page.data.grid.columns[0].blocks[0].end, 2);
+  assert.equal(page.data.grid.placed, 1);
+  assert.deepEqual(page.data.grid.hasCourseWeekdays, [1], '第 1 周只有星期一有课');
+  assert.deepEqual(page.data.grid.columns.map((column) => column.narrow), [false, true, true, true, true, true, true],
+    '有课的天不收窄、没课的天收窄（版式规则 1）');
 
   page.selectWeek({ detail: { value: '5' } });
   assert.equal(page.data.week, 6);
   assert.equal(page.data.view.total, 1, '第 6 周只有体育一');
-  assert.deepEqual(page.data.view.rows[3].cells[2].items.map((item) => item.name), ['体育一']);
+  assert.deepEqual(page.data.grid.columns[2].blocks.map((block) => block.name), ['体育一'], '体育一在星期三');
+  assert.equal(page.data.grid.columns[2].blocks[0].start, 7, '第 7-8 节');
   page.previousWeek();
   assert.equal(page.data.week, 5);
   assert.equal(page.data.view.total, 0, '第 5 周没有课');
   assert.equal(page.data.view.weekLabel, '第 5 周');
+  assert.equal(page.data.grid.total, 0, '网格口径跟着周次走');
+  assert.deepEqual(page.data.grid.columns.map((column) => column.narrow), [true, true, true, true, true, true, true],
+    '整周没课时所有列都收窄');
 
   page.removeCourse({ currentTarget: { dataset: { id: 'tc_1', name: '高等数学' } } });
   await new Promise((resolve) => setImmediate(resolve));
@@ -438,4 +449,104 @@ test('课表页面模板里不出现具体时刻（学校作息未核实）', ()
   const main = fs.readFileSync(path.resolve(templates[0]), 'utf8');
   assert.match(main, /按节次展示/u);
   assert.match(main, /不显示具体时刻|尚未核实/u);
+});
+
+test('周课表主页：填了开学日与作息后，日期、今日列、速查条与详情弹层都到位', async () => {
+  /** 作息只填第 5、6 节（13:00–13:45 / 13:50–14:35），这样 13:10 一定落在第 5 节。 */
+  const slot = (start, end) => ({ start, end });
+  const sectionTimes = Array.from({ length: 12 }, () => slot('', ''));
+  sectionTimes[4] = slot('13:00', '13:45');
+  sectionTimes[5] = slot('13:50', '14:35');
+  const courses = [
+    { id: 'tc_1', name: '高等数学', teacher: '林加燕', weekday: 1, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6, weeks: [1, 2, 3, 4], weeksRecognized: true, weekText: '[1-4]周', location: '崇礼楼-306', campus: '清远校区', siteNumber: '44', note: '', warnings: [], source: 'excel', semester: '2026-2027学年第一学期', rawText: '', credits: '1.5', createdAt: '', updatedAt: '2026-09-18T10:00:00.000Z' },
+    { id: 'tc_2', name: '体育一', teacher: '陈壮寿', weekday: 3, sectionRanges: [{ start: 7, end: 8 }], startSection: 7, endSection: 8, weeks: [6, 7], weeksRecognized: true, weekText: '[6-7]周', location: '篮球1号场', campus: '清远校区', siteNumber: '44', note: '', warnings: [], source: 'excel', semester: '2026-2027学年第一学期', rawText: '', credits: '1', createdAt: '', updatedAt: '2026-09-18T10:00:00.000Z' },
+  ];
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: courses.length, semester: '2026-2027学年第一学期', updatedAt: '2026-09-18T10:00:00.000Z', courses }),
+    getSettings: () => ({
+      ok: true,
+      saved: true,
+      settings: { semesterName: '2026-2027学年第一学期', startDate: '2026-08-31', totalWeeks: 20, sectionTimes },
+    }),
+  });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  page.onLoad({ today: '2026-09-21', clock: '13:10' });
+  await page.onShow();
+
+  assert.equal(page.data.status, 'ready');
+  assert.equal(page.data.week, 4, '开学日 8/31 到 9/21 是第 4 周');
+  assert.equal(page.data.weekRange, '9/21 – 9/27');
+  assert.equal(page.data.grid.columns[0].dateLabel, '21', '表头带日期');
+  assert.equal(page.data.grid.columns[0].today, true, '今天列高亮');
+  assert.equal(page.data.grid.columns[2].today, false, '今天只有一天');
+  assert.equal(page.data.todayBar.kind, 'current');
+  assert.equal(page.data.todayBar.name, '高等数学');
+  assert.equal(page.data.todayBar.timeLabel, '13:00 – 14:35', '时刻只来自用户填的作息');
+  assert.equal(page.data.settingsError, '');
+
+  // 点课块 → 详情弹层；弹层的修改/删除走既有入口
+  page.openSheet({ currentTarget: { dataset: { id: 'tc_1' } } });
+  assert.equal(page.data.sheetOpen, true);
+  assert.equal(page.data.sheetCourse.name, '高等数学');
+  assert.equal(page.data.sheetCourse.sectionLabel, '第 5-6 节');
+  assert.equal(page.data.sheetCourse.sourceLabel, '导入（Excel）');
+  page.closeSheet();
+  assert.equal(page.data.sheetOpen, false);
+
+  // 入口：课表设置与课程管理（管理页带上正在看的周次）
+  page.openSettings();
+  page.openManage();
+  assert.ok(wx.actions.includes('navigateTo:/pages/timetable/settings/index'));
+  assert.ok(wx.actions.includes('navigateTo:/pages/timetable/manage/index?week=4'));
+  delete globalThis.wx;
+});
+
+test('周课表主页：同格两门课时弹层列出全部成员', async () => {
+  const courses = [
+    { id: 'tc_a', name: '习近平新时代中国特色社会主义思想概论', teacher: '', weekday: 2, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6, weeks: [4], weeksRecognized: true, weekText: '[4]周', location: '', campus: '', siteNumber: '', note: '', warnings: [], source: 'excel', semester: '', rawText: '', credits: '', createdAt: '', updatedAt: '' },
+    { id: 'tc_b', name: '形势与政策', teacher: '', weekday: 2, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6, weeks: [4], weeksRecognized: true, weekText: '[4-8]周', location: '', campus: '', siteNumber: '', note: '', warnings: [], source: 'excel', semester: '', rawText: '', credits: '', createdAt: '', updatedAt: '' },
+  ];
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: courses.length, semester: '', updatedAt: '', courses }),
+    // 开学日 8/31 + 今天 9/21 = 第 4 周，同格的两门课才落在当前这一周
+    getSettings: () => ({
+      ok: true,
+      saved: true,
+      settings: { semesterName: '', startDate: '2026-08-31', totalWeeks: 20, sectionTimes: Array.from({ length: 12 }, () => ({ start: '', end: '' })) },
+    }),
+  });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  page.onLoad({ today: '2026-09-21', clock: '13:10' });
+  await page.onShow();
+
+  const block = page.data.grid.columns[1].blocks[0];
+  assert.equal(block.count, 2, '同格两门折叠成一块');
+  page.openSheet({ currentTarget: { dataset: { id: block.primaryId } } });
+  assert.equal(page.data.sheetMembers.length, 2, '弹层要列出同一格的全部课程');
+  page.pickSheetMember({ currentTarget: { dataset: { id: 'tc_b' } } });
+  assert.equal(page.data.sheetCourse.name, '形势与政策', '点成员切换弹层内容');
+  delete globalThis.wx;
+});
+
+test('周课表主页：设置读不到时不显示日期与速查条，但课表照常可用', async () => {
+  const courses = [
+    { id: 'tc_1', name: '高等数学', teacher: '林加燕', weekday: 1, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6, weeks: [1], weeksRecognized: true, weekText: '[1]周', location: '崇礼楼-306', campus: '', siteNumber: '', note: '', warnings: [], source: 'excel', semester: '', rawText: '', credits: '', createdAt: '', updatedAt: '' },
+  ];
+  // 桩里没有 getSettings：云函数未部署/集合未建的真实情形（没有开学日 → 退回第 1 周）。
+  const cloud = cloudStub({ list: () => ({ ok: true, count: 1, semester: '', updatedAt: '', courses }) });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  page.onLoad({ today: '2026-09-21', clock: '13:10' });
+  await page.onShow();
+
+  assert.equal(page.data.status, 'ready', '设置读不到不能把整页拖进错误态');
+  assert.equal(page.data.weekRange, '', '没开学日就不显示日期区间');
+  assert.equal(page.data.todayBar, null, '没作息就不显示速查条');
+  assert.deepEqual(page.data.grid.columns.map((column) => column.dateLabel), ['', '', '', '', '', '', '']);
+  assert.deepEqual(page.data.grid.columns.map((column) => column.today), [false, false, false, false, false, false, false]);
+  assert.ok(page.data.settingsError !== '', '要如实说明设置读不到的原因');
+  assert.equal(page.data.grid.columns[0].blocks[0].name, '高等数学', '课表本体照常渲染');
+  delete globalThis.wx;
 });

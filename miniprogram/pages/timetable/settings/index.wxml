@@ -1,0 +1,78 @@
+<!--
+  课表设置（设计图 07）：学期与作息时间。
+  作息时刻**一个都不预置**：没填的节就是空框，不画「--:--」这类占位；填一半也合法。
+-->
+<view class="page">
+  <view wx:if="{{status === 'loading'}}" class="settings-loading">正在读取设置…</view>
+
+  <block wx:else>
+    <view wx:if="{{loadNote !== ''}}" class="settings-note">{{loadNote}}</view>
+
+    <!-- 学期 -->
+    <view class="settings-card">
+      <view class="section-head"><view class="section-bar"></view><view class="section-title">学期</view></view>
+
+      <view class="settings-field">
+        <view class="settings-label">学期名称</view>
+        <input id="settings-semester-name" class="settings-input" type="text" value="{{semesterName}}" placeholder="如：2026-2027学年第一学期" bindinput="onSemesterNameInput" />
+      </view>
+
+      <view class="settings-field">
+        <view class="settings-label">第一周的星期一</view>
+        <picker id="settings-start-date" mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="settings-row">
+            <view class="settings-input settings-input-flex">{{startDate}}</view>
+            <view class="settings-pill">选择日期</view>
+          </view>
+        </picker>
+      </view>
+
+      <view class="settings-field">
+        <view class="settings-label">总周数</view>
+        <view class="settings-row">
+          <input id="settings-total-weeks" class="settings-input settings-input-narrow settings-input-center" type="number" value="{{totalWeeksText}}" bindinput="onTotalWeeksInput" />
+          <view class="settings-pills">
+            <view id="settings-weeks-{{item}}" wx:for="{{weekOptions}}" wx:key="*this" class="settings-pill {{item === totalWeeks ? 'settings-pill-on' : ''}}" data-weeks="{{item}}" bindtap="chooseWeeks">{{item}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="settings-callout">设置开学日后，课表才会显示今天是第几周、本周是几月几号；不设置就一直按第 1 周查看</view>
+      <view class="settings-hint">开学日取第一周的星期一，多数学院是当周的周一</view>
+      <view wx:if="{{startDateHint !== ''}}" class="settings-hint settings-hint-warn">{{startDateHint}}</view>
+    </view>
+
+    <view id="settings-preview" class="settings-preview">{{preview}}</view>
+
+    <!-- 作息时间 -->
+    <view class="settings-card">
+      <view class="section-head"><view class="section-bar"></view><view class="section-title">作息时间</view></view>
+
+      <view class="settings-callout settings-callout-warn">学校作息表尚未核实，这里不预置任何默认时刻——你按自己的课表填写，填了才会在课表上显示时刻与「正在上/下一节」</view>
+
+      <block wx:for="{{groups}}" wx:key="label" wx:for-item="group">
+        <view class="settings-group">{{group.label}}</view>
+        <view class="settings-time-row {{row.last ? 'settings-time-row-last' : ''}}" wx:for="{{group.rows}}" wx:key="section" wx:for-item="row">
+          <view class="settings-time-no">{{row.label}}</view>
+          <view class="settings-time-fields">
+            <picker id="settings-section-time-{{row.section}}" mode="time" value="{{row.start}}" data-section="{{row.section}}" data-field="start" bindchange="onSectionTimeChange">
+              <view class="settings-input settings-input-narrow settings-input-center">{{row.start}}</view>
+            </picker>
+            <view class="settings-time-sep">—</view>
+            <picker id="settings-section-time-{{row.section}}-end" mode="time" value="{{row.end}}" data-section="{{row.section}}" data-field="end" bindchange="onSectionTimeChange">
+              <view class="settings-input settings-input-narrow settings-input-center">{{row.end}}</view>
+            </picker>
+          </view>
+        </view>
+      </block>
+
+      <view class="settings-hint settings-hint-top">填一半只会影响到那一节；清空某一节不会删除课表数据</view>
+      <button id="settings-clear-times" class="settings-secondary" hover-class="pressed" bindtap="clearTimes">清空作息</button>
+    </view>
+
+    <view class="settings-gap"></view>
+    <view wx:if="{{saveError !== ''}}" class="settings-error">{{saveError}}</view>
+    <button id="settings-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存设置</button>
+    <view id="settings-back" class="settings-link" bindtap="goBack">返回课表</view>
+  </block>
+</view>

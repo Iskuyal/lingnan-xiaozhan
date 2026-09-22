@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课程新增 / 修改</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 本页局部微调：只动留白与文字对齐，色值一律取令牌变量 */
+  .group { padding: 13px 15.6px 15.6px; }
+  .group .section-head { margin-bottom: 11.5px; }
+  .field--last { margin-bottom: 0; }
+  /* 表单页比 01 长得多，玻璃面到下半页已经接近纯白：输入框与迷你格必须自带一条暖色描边，
+     否则白盒子压在白卡上就读不出「这里可以填」。 */
+  .input { border-color: var(--glass-drop); }
+  .mini-cell { border: 0.5px solid var(--glass-drop); }
+  .input--center { text-align: center; padding-left: 0; padding-right: 0; }
+  .input--num { font-variant-numeric: tabular-nums; }
+  .unit { color: var(--text-2); font-size: 13.5px; }
+  .unit--to { color: var(--text-3); font-size: 12.5px; }
+  .pills--mid { align-items: center; }
+  .swatch-note { margin-left: auto; }
+  .mini-note { margin-top: 8.3px; }
+  /* 迷你预览的左右留白去掉，让格子与卡片里的小标题、说明同一左边缘。 */
+  .mini { padding: 10.4px 0 0; }
+  /* 本页比 01 长一倍：固定背景在视口高度处会留下一条横向接缝（上半页偏粉、下半页发白），
+     改成随页面滚动，同一组光晕摊到整页高度，接缝消失。 */
+</style>
+</head>
+<body>
+<!--
+  06 课程新增 / 修改（正例：导入来的原始文本已保留，用户正在按自己的理解核对）
+  重点不是表单本身，而是「原文永不丢失、问题只提示不擅自改」：
+  节次原文 5-6、周次原文 4-5、7-16 都留在琥珀提示条里，周次格子只是原文的一种可视化改法。
+  表单里没填的时刻一律留空——学校作息未核实，任何时刻都不得由设计图或实现预置。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">修改课程</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+
+  <!-- 基本信息 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">基本信息</span></div>
+
+    <div class="field">
+      <div class="label">课程名</div>
+      <div class="input">高等数学</div>
+    </div>
+
+    <div class="field">
+      <div class="label">教师</div>
+      <div class="input">林加燕</div>
+    </div>
+
+    <div class="field">
+      <div class="label">学分</div>
+      <div class="input input--ph">没有可不填</div>
+    </div>
+
+    <div class="field field--last">
+      <div class="label">备注</div>
+      <div class="input input--ph">教学班、方向等，可不填</div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 上课时间 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">上课时间</span></div>
+
+    <div class="callout callout-warn">节次原文是 5-6，周次原文是 4-5、7-16 —— <strong>原文已保留</strong>，保存前请确认</div>
+    <div class="gap-12"></div>
+
+    <div class="field">
+      <div class="label">星期</div>
+      <div class="pills">
+        <span class="pill pill--on">一</span><span class="pill">二</span><span class="pill">三</span><span class="pill">四</span>
+        <span class="pill">五</span><span class="pill">六</span><span class="pill">日</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">节次</div>
+      <div class="input-row">
+        <span class="unit">第</span><span class="input input-narrow input--center input--num">5</span><span class="unit">节</span>
+        <span class="unit--to">到</span>
+        <span class="unit">第</span><span class="input input-narrow input--center input--num">6</span><span class="unit">节</span>
+      </div>
+      <div class="hint">按节次填写；样本里没给时刻，所以这里不填时刻</div>
+    </div>
+
+    <div class="field">
+      <div class="label">起止周</div>
+      <div class="input-row">
+        <span class="unit">第</span><span class="input input-narrow input--center input--num">4</span><span class="unit">周</span>
+        <span class="unit--to">到</span>
+        <span class="unit">第</span><span class="input input-narrow input--center input--num">16</span><span class="unit">周</span>
+      </div>
+    </div>
+
+    <div class="field field--last">
+      <div class="label">自选周次</div>
+      <div class="pills">
+        <span class="pill">全学期</span><span class="pill">单周</span><span class="pill">双周</span><span class="pill pill--on">自选</span>
+      </div>
+      <div class="gap-8"></div>
+      <div class="weeks-grid">
+        <span class="wk wk--off">1</span><span class="wk wk--off">2</span><span class="wk wk--off">3</span>
+        <span class="wk wk--on">4</span><span class="wk wk--on">5</span><span class="wk">6</span>
+        <span class="wk wk--on">7</span><span class="wk wk--on">8</span><span class="wk wk--on">9</span><span class="wk wk--on">10</span>
+        <span class="wk wk--on">11</span><span class="wk wk--on">12</span><span class="wk wk--on">13</span><span class="wk wk--on">14</span>
+        <span class="wk wk--on">15</span><span class="wk wk--on">16</span>
+        <span class="wk wk--off">17</span><span class="wk wk--off">18</span><span class="wk wk--off">19</span><span class="wk wk--off">20</span>
+      </div>
+      <div class="hint">起止周与自选周是同一份周次的两种改法，改哪个都行；竖线分隔的合并写法（如 4-5、7-16）由系统按你选的格子生成。</div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 颜色 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">颜色</span></div>
+
+    <div class="pills pills--mid">
+      <span class="pill pill--on">按课程名自动</span>
+      <span class="pill">手动指定</span>
+      <span class="quiet swatch-note">当前 靛青</span>
+    </div>
+    <div class="gap-12"></div>
+    <div class="swatches">
+      <span class="swatch swatch--on" style="background:var(--c1)"></span>
+      <span class="swatch" style="background:var(--c2)"></span>
+      <span class="swatch" style="background:var(--c3)"></span>
+      <span class="swatch" style="background:var(--c4)"></span>
+      <span class="swatch" style="background:var(--c5)"></span>
+      <span class="swatch" style="background:var(--c6)"></span>
+      <span class="swatch" style="background:var(--c7)"></span>
+      <span class="swatch" style="background:var(--c8)"></span>
+    </div>
+    <div class="hint">自动配色保证同名课程永远同色</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <!-- 迷你课表预览 -->
+  <div class="glass group">
+    <div class="section-head"><span class="section-bar"></span><span class="section-title">迷你课表预览</span></div>
+    <div class="mini">
+      <div class="mini-grid">
+        <div class="mini-col">
+          <div class="mini-th">一</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-block" style="--c:var(--c1);--c-bg:var(--c1-bg);height:33.3px"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">二</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">三</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">四</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">五</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">六</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+        <div class="mini-col">
+          <div class="mini-th">日</div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+          <div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div>
+        </div>
+      </div>
+    </div>
+    <div class="quiet mini-note">预览只画你正在编辑的这节课</div>
+  </div>
+
+  <div class="gap-20"></div>
+  <div class="btn">保存</div>
+  <div class="gap-12"></div>
+  <div class="btn btn-warn">删除这节课</div>
+  <div class="gap-12"></div>
+  <div class="link-row">取消</div>
+</div>
+</body>
+</html>

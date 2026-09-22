@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>空课表与本周无课</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 本页局部样式（_tokens.css / _mockup.css 是共享文件，不动）。
+     一页两张同级画面（同一页面的两种空态），用一条状态说明条分开。
+     周次一览条是本图新画的组件，尺寸按 390px 宽写；颜色只用令牌变量。 */
+  .stage-cap {
+    display: flex; align-items: center; gap: 7.3px; padding: 11.5px 18.7px;
+    background: rgba(255, 255, 255, 0.52); border-top: 0.5px solid var(--glass-line);
+    border-bottom: 0.5px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
+  }
+  .stage-cap i { flex: 0 0 3.1px; width: 3.1px; height: 13px; border-radius: 1.6px; background: var(--gold); box-shadow: 0 0 6px rgba(198, 154, 40, 0.5); }
+  .stage-no { color: var(--brand-deep); font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px; }
+  .stage-desc { color: var(--text-3); font-size: 12.5px; }
+
+  /* 头部面板的标题位：本状态没有「第几周」可显示，字号字重沿用 .head-week，不另造一套 */
+  .head-title { color: var(--brand-deep); font-size: 26px; font-weight: 700; letter-spacing: 1px; line-height: 1.15; }
+
+  /* 周次一览条：一行 20 格（第 1–20 周）。有课的周 = 金；当前周 = 品牌红描边（今天所在的那一周） */
+  /* 20 格挤在 336px 里，每格只有 13.8px：字号压到 9.4px（与 .rail-time 同级）才放得下两位数 */
+  .week-strip { padding: 12.5px 8.3px 11.5px; }
+  .weeks-row { display: flex; gap: 3.1px; }
+  .wk-cell {
+    flex: 1 1 0; min-width: 0; height: 26px; display: flex; align-items: center; justify-content: center;
+    font-size: 9.4px; font-weight: 600; letter-spacing: -0.2px; font-variant-numeric: tabular-nums; color: var(--text-3);
+    border-radius: var(--r-chip); border: 0.5px solid var(--glass-line); background: rgba(255, 255, 255, 0.55);
+  }
+  .wk-cell--on { color: var(--gold-deep); font-weight: 700; background: rgba(198, 154, 40, 0.30); border-color: rgba(198, 154, 40, 0.55); }
+  .wk-cell--now { color: var(--brand-deep); font-weight: 700; background: rgba(255, 255, 255, 0.92); border: 1.5px solid var(--brand); }
+  .legend { display: flex; gap: 10.4px; margin-left: auto; color: var(--text-3); font-size: 11.5px; }
+  .legend-item { display: inline-flex; align-items: center; gap: 4.2px; }
+  .legend-item i { width: 9px; height: 9px; border-radius: 2.1px; }
+  .legend-on { background: rgba(198, 154, 40, 0.34); border: 0.5px solid rgba(198, 154, 40, 0.62); }
+  .legend-now { background: rgba(255, 255, 255, 0.92); border: 1.5px solid var(--brand); }
+  .callout .pills { margin-top: 8.3px; }
+</style>
+</head>
+<body>
+<!--
+  04 空课表（首次进入）与本周无课
+  同一页面的两种空态，上下排两块 390px 宽的整屏区，各自的标题条说明是哪个状态。
+  纪律：没有开学日就不显示第几周与日期区间（不摆「--」这类空壳）；没有作息就不出现任何时刻。
+  头部面板、按钮、callout 的尺寸都抄 01；周次一览条是为「本周无课」新画的出口。
+-->
+
+<!-- ============ 状态一：首次进入，还没有课表 ============ -->
+<div class="stage-cap"><i></i><span class="stage-no">状态一</span><span class="stage-desc">首次进入 · 还没有课表</span></div>
+
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="head-top">
+      <span class="eyebrow">2026-2027学年第一学期</span>
+      <span class="head-link">课表设置</span>
+    </div>
+    <div class="head-week-row">
+      <span class="head-title">我的课表</span>
+    </div>
+    <div class="head-meta">还没有课程 · 设置开学日后，这里显示第几周</div>
+  </div>
+
+  <div class="empty">
+    <div class="empty-art">
+      <i style="left:42px;top:42px;width:21px;height:42px;background:var(--c1)"></i>
+      <i style="left:63px;top:42px;width:21px;height:21px;background:var(--c4)"></i>
+      <i style="left:63px;top:84px;width:42px;height:21px;background:var(--c7)"></i>
+    </div>
+    <div class="empty-title">还没有课表</div>
+    <div class="empty-copy">
+      <div>· 从教务系统下载课表文件，导入后自动排进网格</div>
+      <div>· 也可以手工一节一节添加，多周次的课能拆开填</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    小程序读不到手机里的文件，只能从微信聊天记录里选。请先把课表文件发到微信（如「文件传输助手」），再回来导入。
+  </div>
+
+  <div class="gap-12"></div>
+  <div class="btn">导入课表文件</div>
+  <div class="gap-8"></div>
+  <div class="btn btn-secondary">手工新增课程</div>
+
+  <div class="gap-12"></div>
+  <div class="quiet">课表只存你自己的内容，按微信身份隔离，不需要教务账号，也不会把课表发给别人。</div>
+
+  <div class="gap-16"></div>
+  <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回首页</div>
+</div>
+
+<!-- ============ 状态二：本周无课 ============ -->
+<div class="stage-cap"><i></i><span class="stage-no">状态二</span><span class="stage-desc">本周无课 · 已有课表，这一周空着</span></div>
+
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="head-top">
+      <span class="eyebrow">2026-2027学年第一学期</span>
+      <span class="head-link">课表设置</span>
+    </div>
+    <div class="head-week-row">
+      <span class="head-nav">‹</span>
+      <span class="head-week">第 6 周</span>
+      <span class="head-nav">›</span>
+      <span class="head-sub">10/5 – 10/11</span>
+    </div>
+    <div class="head-meta">本周 0 门 · 共 45 门课程 · 左右滑动翻周</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="callout">
+    <div>本周没有安排课程</div>
+    <div class="pills"><span class="pill">查看第 5 周</span></div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="section-head">
+    <span class="section-bar"></span>
+    <span class="section-title">周次一览</span>
+    <span class="legend">
+      <span class="legend-item"><i class="legend-on"></i>有课</span>
+      <span class="legend-item"><i class="legend-now"></i>本周</span>
+    </span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong week-strip">
+    <div class="weeks-row">
+      <span class="wk-cell wk-cell--on">1</span>
+      <span class="wk-cell wk-cell--on">2</span>
+      <span class="wk-cell wk-cell--on">3</span>
+      <span class="wk-cell wk-cell--on">4</span>
+      <span class="wk-cell wk-cell--on">5</span>
+      <span class="wk-cell wk-cell--now">6</span>
+      <span class="wk-cell wk-cell--on">7</span>
+      <span class="wk-cell wk-cell--on">8</span>
+      <span class="wk-cell wk-cell--on">9</span>
+      <span class="wk-cell wk-cell--on">10</span>
+      <span class="wk-cell wk-cell--on">11</span>
+      <span class="wk-cell wk-cell--on">12</span>
+      <span class="wk-cell wk-cell--on">13</span>
+      <span class="wk-cell wk-cell--on">14</span>
+      <span class="wk-cell wk-cell--on">15</span>
+      <span class="wk-cell wk-cell--on">16</span>
+      <span class="wk-cell">17</span>
+      <span class="wk-cell">18</span>
+      <span class="wk-cell">19</span>
+      <span class="wk-cell">20</span>
+    </div>
+    <div class="quiet" style="margin-top:8.3px">有课的周已标出，点任一周可直接跳转。</div>
+  </div>
+
+  <div class="gap-20"></div>
+  <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回首页</div>
+</div>
+</body>
+</html>

@@ -23,6 +23,9 @@
 1. 按 [任务管理约定](agents/issue-tracker.md) 从当前本地 Ticket 或 GitHub Issues 选取任务；状态可执行、实现依赖与决策依赖均解除后，确认负责人、范围及验收标准。
 2. 新建短期分支，如 `docs/competition-setup`、`feat/<主题>`、`fix/<主题>`。
 3. 先给出计划和验证方法；实现最小完整结果。业务 bug 先复现，功能验证覆盖用户可观察行为。
+   **界面改动先出设计图**：在 `docs/design/<主题>/` 画 HTML 设计图并渲染成 PNG
+   （`node scripts/render-mockups.mjs`），PNG 是评审件、HTML 里的数字是实现的尺寸依据；
+   设计图定稿后再动代码，约定见 [设计图约定](design/README.md)。
 4. 提交 PR，链接本地 Ticket 或关联 Issue，说明改动、验证命令和结果；界面变更附截图，AI 行为变更附样例及评估。
 5. 审查通过并满足验收条件后合并到 `main`，在任务所属载体记录完成状态，更新成果证据和相关文档；阶段 Issue 按完整的阶段验收关闭。
 
