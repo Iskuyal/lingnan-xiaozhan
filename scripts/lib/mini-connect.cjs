@@ -7,6 +7,28 @@
  * 那句 `check if target project window is opened with automation enabled`
  * 看着像脚本坏了，实际只是前置条件没满足。
  */
+const path = require('node:path');
+
+/**
+ * miniprogram-automator 0.12.1 仍调用 Jimp 0.x 的 `default.read()`，而修复
+ * GHSA-5v7r-6r5c-r473 所需的 Jimp 1.x 将入口移到了 `Jimp.read()`。
+ * 在加载 automator 前只补导出形状，不改图像实现，避免为了兼容旧 SDK
+ * 把存在拒绝服务漏洞的 file-type 16.x 留在依赖树中。
+ */
+function installJimpCompatibility() {
+  const automatorDirectory = path.dirname(require.resolve('miniprogram-automator/package.json'));
+  const jimpEntry = require.resolve('jimp', { paths: [automatorDirectory] });
+  const jimp = require(jimpEntry);
+
+  if (typeof jimp.default?.read === 'function') return;
+  if (typeof jimp.Jimp?.read !== 'function') {
+    throw new Error('miniprogram-automator 的图像依赖缺少 Jimp.read()');
+  }
+
+  require.cache[jimpEntry].exports = { ...jimp, default: jimp.Jimp };
+}
+
+installJimpCompatibility();
 const automator = require('miniprogram-automator');
 
 const DEFAULT_PORT = '9420';

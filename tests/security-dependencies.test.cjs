@@ -60,26 +60,21 @@ test('CloudBase 传递依赖固定到无已知漏洞版本，安全 set 不允�
   assert.equal({}.wxMatchPolluted, undefined);
 });
 
-test('开发者工具自动化图像依赖固定在兼容版本（1.x 会让 SDK 的 read 路径失效）', () => {
+test('开发者工具自动化使用已修复的图像依赖，并保留 SDK 所需的 read 兼容入口', () => {
   const rootPackage = readJson('package.json');
-  assert.equal(rootPackage.overrides['miniprogram-automator'].jimp, '0.22.12');
+  assert.equal(rootPackage.overrides['miniprogram-automator'].jimp, '1.6.1');
 
   // 从 SDK 的解析路径取它实际装到的 jimp：override 是嵌套安装
-  // （node_modules/miniprogram-automator/node_modules/jimp），根目录 require 不到。
+  // 或提升到根目录；两种 npm 布局都应解析到修复后的版本。
   const jimpPackagePath = require.resolve('jimp/package.json', {
     paths: [path.join(root, 'node_modules/miniprogram-automator')],
   });
-  assert.equal(require(jimpPackagePath).version, '0.22.12', 'automator 必须拿到 0.22.x');
+  assert.equal(require(jimpPackagePath).version, '1.6.1', 'automator 必须拿到已修复版本');
 
-  // 行为断言：miniprogram-automator 的 util 调的是 `jimp.default.read()`。
-  // jimp 1.6.1 是 ESM 包且没有 read（实测 typeof 为 undefined），升上去会让扫码登录路径
-  // 直接不可用——这条断言就是为了防止它被"顺手升级"掉。
+  // miniprogram-automator 0.12.1 调的是旧入口 `jimp.default.read()`；Jimp 1.x
+  // 把实现放在 `Jimp.read()`。公共连接模块必须先装兼容入口再加载 automator。
+  require('../scripts/lib/mini-connect.cjs');
   const jimp = require(path.dirname(jimpPackagePath));
-  const read = typeof jimp.read === 'function' ? jimp.read : jimp.default && jimp.default.read;
-  assert.equal(typeof read, 'function', 'automator 依赖 jimp.read()，1.x 没有这个 API');
-
-  // 取舍记录：jimp 树的 moderate 通告（@jimp/core → file-type）只影响**本地测试依赖**，
-  // 不进小程序包、不进云函数；而升到 1.x 会卡住自动化验收（verify:wechat 依赖它）。
-  // 2026-09-20 实测：装 1.6.1 时验收连续三次在不同页面超时，改回 0.22.12 并通过。
-  // 若将来要修这条通告，应连 miniprogram-automator 一起升级，而不是单独升 jimp。
+  assert.equal(typeof jimp.Jimp?.read, 'function', 'Jimp 1.x 应提供新的静态 read API');
+  assert.equal(typeof jimp.default?.read, 'function', '兼容层应向旧 SDK 暴露 default.read');
 });
