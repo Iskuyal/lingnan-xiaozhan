@@ -1,0 +1,118 @@
+<!-- 真实页面片段，来源：https://lnc.edu.cn/cl/jyjx/zzyr/content_16590 ，抓取日期 2026-09-19。
+     取 div.printArea（含 h2.title、div.property 与正文）至正文右边界，字节未改写，行尾保持原样。 -->
+<div class="printArea" data-power-area='content'>
+                        <!-- 标题 -->
+                        <h2 class="title">
+                            家校共育|家访，一场家校双向奔赴的沟通之旅
+                            <div class="subheading"></div>
+                        </h2>
+                        <div class="property">
+                            <span>来源： </span> <span>发布时间：2024-02-27 12:29:01</span> <span>浏览次数：<span data-power-hits-action="/cl/contentmanage/ajax/getandupdate" data-power-hits-count="354" data-power-hits-id="16590" data-power-hits-mold="article" data-power-hits-nodeid="1800018" data-power-hits-open="true"></span> 次</span> <span class="size">【字体：<a href="javascript:;" data-power-command="reducefont">小</a> <a href="javascript:;" data-power-command="enlargefont">大</a>】</span>
+                            
+<span class="" id="content_AdminEdit" style="display:none;"></span>
+<span class="" id="content_QuickRepost" style="display:none;"></span>
+<script>
+    $(function () {
+        if (16590> 0) {
+            var url = '/cl/contentmanage/article/ajaxcheckcontentedit/16590';
+            var currentPageUrl = window.location.href;
+
+            var params = new URLSearchParams(currentPageUrl);
+            if (params.has('ispreview') && params.get('ispreview') === 'true') {
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                crossDomain: true, // 如果是跨域请求
+                xhrFields: {
+                    withCredentials: true // 如果需要发送cookies等凭据
+                },
+                success: function (data) {
+                    if (data.Code == 0) {
+                        if (!!data.Url) {
+                            $("#content_AdminEdit").html("【<a href='" + data.Url + "' target='_blank'>进入后台编辑</a>】")
+                            $("#content_AdminEdit").show();
+                        }
+
+                        if (!!data.QuickRepostUrl) {
+                            var repostHtml = `
+                            <div class="repost-container" id="repostContainer">
+                               【<a href="#" class="repost-btn" id="repostBtn"><span>一键转载</span></a>】
+                                <div class="repost-dropdown-menu" id="dropdownMenu">
+                                    <div class="menu-item full-text" id="fullTextOption">
+                                        <div class="menu-text">
+                                                <div class="menu-title"><a href="${data.QuickRepostUrl}" target="_blank">以全文方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                    <div class="menu-item link-only" id="linkOnlyOption">
+                                        <div class="menu-text">
+                                                    <div class="menu-title"><a href="${data.QuickRepostUrl}?isLinkRepost=true" target="_blank">以链接方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                            $("#content_QuickRepost").html(repostHtml);
+                            $("#content_QuickRepost").show();
+
+                            const $repostContainer = $('#repostContainer');
+                            const $repostBtn = $('#repostBtn');
+                            const $dropdownMenu = $('#dropdownMenu');
+
+                            $repostBtn.on('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                $repostContainer.toggleClass('active');
+                            });
+
+                            $('#fullTextOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $('#linkOnlyOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $(document).on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $dropdownMenu.on('click', function (e) {
+                                e.stopPropagation();
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+                        </div>
+                        <!-- 正文 -->
+                        <div class="conTxt" data-power-defaultFontSize="14" data-power-defaultLineHeight="2" data-power-imgMaxWidth="800">
+                            <section style="margin: 0; padding: 0; outline: 0; max-width: 100%; color: rgba(0, 0, 0, 0.9); font-family: system-ui, -apple-system, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif; letter-spacing: 0.544px; white-space: normal; background-color: rgba(255, 255, 255, 1); text-align: justify; overflow-wrap: break-word !important"><p style="margin-bottom: 0; padding: 0; outline: 0; max-width: 100%; clear: both; min-height: 1em; text-indent: 2em; overflow-wrap: break-word !important; text-align: center"><span style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; font-size: 15px">家校共育家访</span></p><p style="margin-bottom: 0; padding: 0; outline: 0; max-width: 100%; clear: both; min-height: 1em; text-indent: 2em; overflow-wrap: break-word !important; text-align: center"><span style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; font-size: 15px">一场家校双向奔赴的沟通之旅</span></p><p style="margin-bottom: 0; padding: 0; outline: 0; max-width: 100%; clear: both; min-height: 1em; text-indent: 2em; overflow-wrap: break-word !important"><span style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; font-size: 15px">为强化家校沟通，密切家校联系，更好发挥家校育人合力作用。根据广东岭南职业技术学院关于开展2024年寒假辅导员家访活动工作相关要求，崇礼书院于2024年1-2月开展辅导员寒假家访活动。本次活动旨在通过辅导员家访，深入了解学生的生活环境、生活状况等，加强家校沟通，共同关注和引导学生成长。</span></p><p style="margin-bottom: 0; padding: 0; outline: 0; max-width: 100%; clear: both; min-height: 1em; text-indent: 2em; overflow-wrap: break-word !important"><span style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; font-size: 15px">崇礼书院辅导员走访了湛江地区三名学生家庭，在家访的过程中，与学生家长零距离进行了深入的交流，全面了解学生的实际情况和未来发展规划等，发挥家校协同育人的重要力量，为学生的成长保驾护航。</span></p><p style="margin-bottom: 0; padding: 0; outline: 0; max-width: 100%; clear: both; min-height: 1em; text-indent: 2em; overflow-wrap: break-word !important"><span style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; font-size: 15px"></span></p><p style="text-align: center"><img src="/upload/cl/contentmanage/article/image/2024/02/27/bfe095ab3441405a8eb9eb259ce0ed13.png" style="max-width: 100%" title="bfe095ab3441405a8eb9eb259ce0ed13.png" alt="bfe095ab3441405a8eb9eb259ce0ed13.png"></p><p style="text-align: center"><img src="/upload/cl/contentmanage/article/image/2024/02/27/287c97290f794045a4300b25ce69e525.jpg" style="max-width: 100%" title="287c97290f794045a4300b25ce69e525.jpg" alt="287c97290f794045a4300b25ce69e525.jpg"></p><p style="text-align: center"><img src="/upload/cl/contentmanage/article/image/2024/02/27/276127d84b484836991f0af631a4f703.jpg" style="max-width: 100%" title="276127d84b484836991f0af631a4f703.jpg" alt="276127d84b484836991f0af631a4f703.jpg"></p><p style="text-indent: 2em"><span style="font-size: 15px; letter-spacing: 0.544px; text-align: justify; text-indent: 2em">一个个足迹，坚守的是“立德树人”的初心；一次次家访，履行的是培养“时代新人”的使命担当。家访敲开的不仅是学生们的家门，更敲开了家长们的“心门”。接下来，我院将继续推进学生思想政治教育工作建设，加强家校沟通，共同助力学生成长成才。</span></p></section>
+                            
+
+
+
+<div class="auditRecordcss">
+            <span>终审：崇礼书院</span>
+</div>
+                        </div>
+                    </div>
+                    
+
+
+                    
+
+
+
+                    
+
+
+                   
+
+                    
+
+

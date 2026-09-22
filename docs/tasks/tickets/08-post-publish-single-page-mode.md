@@ -6,7 +6,7 @@
 
 **Blocked by:** 外部条件——微信认证 + 小程序备案 + 版本发布。不依赖其他任何 ticket。
 
-**Status:** blocked-until-published
+**Status:** wontfix（2026-09-19 负责人决定：本次参赛不做认证 / 备案 / 体验版，P6 用「预览」做真机演示并在材料中如实标注未发布，因此本票不执行）
 
 - [ ] 页面开启 `onShareAppMessage` 与 `onShareTimeline`
 - [ ] 分享到朋友圈，从朋友圈以单页模式打开资讯详情

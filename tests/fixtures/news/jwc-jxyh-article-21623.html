@@ -1,0 +1,118 @@
+<!-- 真实页面片段，来源：https://lnc.edu.cn/jwc/jxyh/content_21623 ，抓取日期 2026-09-19。
+     取 div.printArea（含 h2.title、div.property 与正文）至正文右边界，字节未改写，行尾保持原样。 -->
+<div class="printArea" data-power-area='content'>
+                        <!-- 标题 -->
+                        <h2 class="title">
+                            关于教材选用委员会成员的公示（教务部&nbsp;〔2025〕8号  ）
+                            <div class="subheading"></div>
+                        </h2>
+                        <div class="property">
+                            <span>来源： </span> <span>发布时间：2025-03-03 11:49:28</span> <span>浏览次数：<span data-power-hits-action="/jwc/contentmanage/ajax/getandupdate" data-power-hits-count="264" data-power-hits-id="21623" data-power-hits-mold="article" data-power-hits-nodeid="3600019" data-power-hits-open="true"></span> 次</span> <span class="size">【字体：<a href="javascript:;" data-power-command="reducefont">小</a> <a href="javascript:;" data-power-command="enlargefont">大</a>】</span>
+                            
+<span class="" id="content_AdminEdit" style="display:none;"></span>
+<span class="" id="content_QuickRepost" style="display:none;"></span>
+<script>
+    $(function () {
+        if (21623> 0) {
+            var url = '/jwc/contentmanage/article/ajaxcheckcontentedit/21623';
+            var currentPageUrl = window.location.href;
+
+            var params = new URLSearchParams(currentPageUrl);
+            if (params.has('ispreview') && params.get('ispreview') === 'true') {
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                crossDomain: true, // 如果是跨域请求
+                xhrFields: {
+                    withCredentials: true // 如果需要发送cookies等凭据
+                },
+                success: function (data) {
+                    if (data.Code == 0) {
+                        if (!!data.Url) {
+                            $("#content_AdminEdit").html("【<a href='" + data.Url + "' target='_blank'>进入后台编辑</a>】")
+                            $("#content_AdminEdit").show();
+                        }
+
+                        if (!!data.QuickRepostUrl) {
+                            var repostHtml = `
+                            <div class="repost-container" id="repostContainer">
+                               【<a href="#" class="repost-btn" id="repostBtn"><span>一键转载</span></a>】
+                                <div class="repost-dropdown-menu" id="dropdownMenu">
+                                    <div class="menu-item full-text" id="fullTextOption">
+                                        <div class="menu-text">
+                                                <div class="menu-title"><a href="${data.QuickRepostUrl}" target="_blank">以全文方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                    <div class="menu-item link-only" id="linkOnlyOption">
+                                        <div class="menu-text">
+                                                    <div class="menu-title"><a href="${data.QuickRepostUrl}?isLinkRepost=true" target="_blank">以链接方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                            $("#content_QuickRepost").html(repostHtml);
+                            $("#content_QuickRepost").show();
+
+                            const $repostContainer = $('#repostContainer');
+                            const $repostBtn = $('#repostBtn');
+                            const $dropdownMenu = $('#dropdownMenu');
+
+                            $repostBtn.on('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                $repostContainer.toggleClass('active');
+                            });
+
+                            $('#fullTextOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $('#linkOnlyOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $(document).on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $dropdownMenu.on('click', function (e) {
+                                e.stopPropagation();
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+                        </div>
+                        <!-- 正文 -->
+                        <div class="conTxt" data-power-defaultFontSize="14" data-power-defaultLineHeight="2" data-power-imgMaxWidth="800">
+                            <p><span class="image-container center" eid="eid_0be7feb204b1"> <img src="/upload/jwc/contentmanage/article/image/2025/03/03/eb33ba4632c94a6a96bc7b012806c782.png" title="关于教材选用委员会成员的公示（教务部&nbsp;〔2025〕8号 &nbsp;）_00" alt="关于教材选用委员会成员的公示（教务部&nbsp;〔2025〕8号 &nbsp;）_00" eid="eid_0be7feb204b1" style="max-width: 100%"> <span class="image-title" eid="eid_0be7feb204b1">关于教材选用委员会成员的公示（教务部&nbsp;〔2025〕8号 &nbsp;）_00</span> </span> </p><p style="text-align: center"><br></p>
+                            
+
+
+
+<div class="auditRecordcss">
+            <span>终审：教学科研处</span>
+</div>
+                        </div>
+                    </div>
+                    
+
+
+                    
+
+
+
+                    
+
+
+                   
+
+                    
+
+

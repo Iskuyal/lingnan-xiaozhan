@@ -51,9 +51,7 @@ test('节次文案只写节次，不出现具体时刻', () => {
   const labels = [
     ...view.BIG_SECTION_LABELS,
     ...weekView.rows.map((row) => row.sectionLabel),
-    ...weekView.days.map((day) => day.label),
     weekView.weekLabel,
-    ...weekView.days.flatMap((day) => day.items.flatMap((item) => [item.sectionLabel, item.weekLabel])),
   ];
   for (const label of labels) {
     assert.ok(!/[:：]/u.test(label), `课表里不应出现时刻：${label}`);
@@ -90,12 +88,12 @@ test('周课表按大节落格，连排课程同时出现在两个大节行', ()
   assert.deepEqual(cellOf(1, 1), ['使用JSP开发Web应用系统']);
   assert.deepEqual(cellOf(2, 1), ['使用JSP开发Web应用系统'], '1-4 节横跨第一、第二个大节');
   assert.deepEqual(cellOf(6, 3), ['体育三']);
-  assert.deepEqual(week2.days.map((day) => day.label), ['星期一', '星期三']);
+  assert.equal(week2.rows[0].cells[0].items[0].tint, week2.rows[1].cells[0].items[0].tint, '连排课程跨大节行应保持同一底色');
+  assert.notEqual(week2.rows[0].cells[0].items[0].tint, week2.rows[5].cells[2].items[0].tint, '同周内相邻课程底色应交替');
   assert.equal(week2.total, 2);
   const week5 = view.buildWeekView(courses, 5);
   assert.equal(week5.total, 1, '第 5 周只有只在该周上课的那门课');
   assert.deepEqual(week5.rows[0].cells[4].items.map((item) => item.name), ['只在第 5 周的课']);
-  assert.deepEqual(week5.days.map((day) => day.label), ['星期五']);
 });
 
 test('手工表单校验：必填项、节次顺序与周次写法', () => {

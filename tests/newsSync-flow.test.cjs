@@ -16,6 +16,16 @@ const REQUEST_INTERVAL_MS = 1300;
 const MAX_REQUESTS_PER_CALL = 10;
 
 /**
+ * 「两个栏目」的用例固定用「校园动态 + 团委通知公告」这一份清单。
+ *
+ * 它们断言的是**配额怎么分**与**撞限速后是否停轮**，与生产清单里到底有几个栏目无关；
+ * 直接吃生产清单会让每次追加栏目都误伤这些用例（Ticket 10 把栏目从 2 个加到 10 个时踩到过）。
+ * 需要真实清单的用例照常不传 `columns`。
+ */
+const TWO_COLUMNS = require(path.resolve('dist/cloudfunctions/newsSync/columns.js')).COLUMNS
+  .filter((column) => column.id === 'xyxw-xydt' || column.id === 'tw-tqsd');
+
+/**
  * 最小可用的官网页面桩：结构照抄实测模板（见 docs/news-sources.md 的「通知公告类栏目」）。
  * 解析器的真实页面验证在 tests/news.test.cjs 用真 fixture；这里只为同步引擎提供可控输入。
  */
@@ -161,6 +171,10 @@ function harness(options = {}) {
     require(name) {
       if (name === 'https') return https;
       if (name === 'wx-server-sdk') return { init() {}, database: () => db };
+      // options.columns 用于固定栏目清单（见 TWO_COLUMNS 的说明），其余模块照常走真实实现。
+      if (options.columns !== undefined && name.endsWith('columns')) {
+        return { ...realRequire(name), COLUMNS: options.columns };
+      }
       return realRequire(name);
     },
   };
@@ -563,6 +577,7 @@ test('待抓队列里的坏条目被丢弃，不会卡住续跑', async () => {
 
 test('任一栏目撞上限速 403：本轮立即结束，后面的栏目不再请求同一台主机', async () => {
   const app = harness({
+    columns: TWO_COLUMNS,
     responses: (url) => {
       if (url === XYXW_LIST_URL) return { status: 200, html: fixture('list-page-1.html') };
       if (url.includes('/xyxw/xydt/')) return { status: 403, html: '每秒不能多于1个页面请求' };
@@ -776,6 +791,7 @@ test('未知栏目直接返回错误，不发起请求', async () => {
 
 test('两个栏目平分单批配额，请求仍严格串行限速', async () => {
   const app = harness({
+    columns: TWO_COLUMNS,
     responses: (url) => {
       if (url === XYXW_LIST_URL) return { status: 200, html: fixture('list-page-1.html') };
       if (url === LIST_URL) return { status: 200, html: fixture('tw-list-page-1.html') };

@@ -1,0 +1,118 @@
+<!-- 真实页面片段，来源：https://lnc.edu.cn/ln/xssw/ggtz/content_10585 ，抓取日期 2026-09-19。
+     取 div.printArea（含 h2.title、div.property 与正文）至正文右边界，字节未改写，行尾保持原样。 -->
+<div class="printArea" data-power-area='content'>
+                        <!-- 标题 -->
+                        <h2 class="title">
+                            关于陈志欣、魏建敏同学自动退学处理的公告
+                            <div class="subheading"></div>
+                        </h2>
+                        <div class="property">
+                            <span>来源： </span> <span>发布时间：2022-06-26 10:50:23</span> <span>浏览次数：<span data-power-hits-action="/ln/contentmanage/ajax/getandupdate" data-power-hits-count="526" data-power-hits-id="10585" data-power-hits-mold="article" data-power-hits-nodeid="400025" data-power-hits-open="true"></span> 次</span> <span class="size">【字体：<a href="javascript:;" data-power-command="reducefont">小</a> <a href="javascript:;" data-power-command="enlargefont">大</a>】</span>
+                            
+<span class="" id="content_AdminEdit" style="display:none;"></span>
+<span class="" id="content_QuickRepost" style="display:none;"></span>
+<script>
+    $(function () {
+        if (10585> 0) {
+            var url = '/ln/contentmanage/article/ajaxcheckcontentedit/10585';
+            var currentPageUrl = window.location.href;
+
+            var params = new URLSearchParams(currentPageUrl);
+            if (params.has('ispreview') && params.get('ispreview') === 'true') {
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                crossDomain: true, // 如果是跨域请求
+                xhrFields: {
+                    withCredentials: true // 如果需要发送cookies等凭据
+                },
+                success: function (data) {
+                    if (data.Code == 0) {
+                        if (!!data.Url) {
+                            $("#content_AdminEdit").html("【<a href='" + data.Url + "' target='_blank'>进入后台编辑</a>】")
+                            $("#content_AdminEdit").show();
+                        }
+
+                        if (!!data.QuickRepostUrl) {
+                            var repostHtml = `
+                            <div class="repost-container" id="repostContainer">
+                               【<a href="#" class="repost-btn" id="repostBtn"><span>一键转载</span></a>】
+                                <div class="repost-dropdown-menu" id="dropdownMenu">
+                                    <div class="menu-item full-text" id="fullTextOption">
+                                        <div class="menu-text">
+                                                <div class="menu-title"><a href="${data.QuickRepostUrl}" target="_blank">以全文方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                    <div class="menu-item link-only" id="linkOnlyOption">
+                                        <div class="menu-text">
+                                                    <div class="menu-title"><a href="${data.QuickRepostUrl}?isLinkRepost=true" target="_blank">以链接方式一键转载</a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                            $("#content_QuickRepost").html(repostHtml);
+                            $("#content_QuickRepost").show();
+
+                            const $repostContainer = $('#repostContainer');
+                            const $repostBtn = $('#repostBtn');
+                            const $dropdownMenu = $('#dropdownMenu');
+
+                            $repostBtn.on('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                $repostContainer.toggleClass('active');
+                            });
+
+                            $('#fullTextOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $('#linkOnlyOption').on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $(document).on('click', function () {
+                                $repostContainer.removeClass('active');
+                            });
+
+                            $dropdownMenu.on('click', function (e) {
+                                e.stopPropagation();
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+                        </div>
+                        <!-- 正文 -->
+                        <div class="conTxt" data-power-defaultFontSize="14" data-power-defaultLineHeight="2" data-power-imgMaxWidth="800">
+                            <section style="text-align: center"><section><section><section style="text-align: center"><span style="font-size: 21px">学生退学告知书</span></section></section></section><section style="margin: 0; padding: 0; outline: 0; max-width: 100%; overflow-wrap: break-word !important; display: inline-block; visibility: visible"><section><section><br></section></section></section></section><section><section><p style="text-indent: 2em">砺能书院计算机网络技术专业21计算机网络技术（云计算）班学生陈志欣，于2022年2月31日学校开学至今，仍未返校；计算机网络技术专业20计算机网络技术（云计算）2班学生魏建敏，于2021年8月30日学校开学至今，仍未返校。期间校方曾多次联系学生以及学生家长，告之逾期不返校的相关影响以及后果，但学生仍未返校，现已连续6周未参加学校规定的教学活动，根据广东岭南职业技术学院学生学籍管理实施细则（修订）第一章入学与注册第五条的有关规定，学校决定给予自动退学处理。</p></section><section><p style="text-align: center"><br></p><p><span class="image-container center" eid="eid_0ffd1901f85d"> <img src="/upload/ln/contentmanage/article/image/2024/04/26/c0687b1076ae41e4b0ed47c9b509afc2.jpg" alt="微信图片_20240426232140" eid="eid_0ffd1901f85d" style="max-width: 100%"></span><img src="/upload/ln/contentmanage/article/image/2022/07/05/7947cd7443c34045b3114309285a7e5b.jpeg" style="text-align: justify; max-width: 100%"></p></section><section><p style="text-indent: 2em">请相关学生认真核实。并在五个工作日内与书院（或教务处）联系。以上公示如有异议，可向书院反映，联系电话: 0763-3918367 李朝辉。</p><p><br></p><p style="text-align: right">砺能书院</p><p style="text-align: right">2022年6月26日</p></section></section><p><br></p><p><br></p>
+                            
+
+
+
+<div class="auditRecordcss">
+            <span>终审：潘授平</span>
+</div>
+                        </div>
+                    </div>
+                    
+
+
+                    
+
+
+
+                    
+
+
+                   
+
+                    
+
+

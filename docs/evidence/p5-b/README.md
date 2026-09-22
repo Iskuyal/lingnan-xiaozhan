@@ -685,3 +685,47 @@ provider=openai model=deepseek/deepseek-v4.1-flash bands=auto
 **本轮顺手修掉的噪声**：真实运行里 5 个空带各写一条 `problems`，小图就冒出 5 行「这一段没有识别出课程」。现已合并成一条并列出节次范围（`第 3-4 节、第 5-6 节、… 没有识别出课程，请核对这几节是否确实没有课。`）——课少的年级或 11-12 节本来就常空，按带刷屏会把真正要看的问题淹掉。
 
 **仍未验证（不计为通过）**：**真实课表截图**的识别链路（本轮只有合成小图）与**字段准确率评估**（需要负责人的三张真实截图，含个人信息不入库）——这两项仍卡在这里。
+
+## 开发者工具验收复跑与验收脚本的一处修复（2026-09-19 晚）
+
+`cli.bat auto --project D:\wx-match-main\dist --auto-port 9420 --trust-project` 打开自动化端口后复跑
+`npm run verify:wechat`：**18 项检查全部通过**（`result: "passed"`、SDKVersion 3.17.2、
+model `iPhone 12/13 (Pro)`、`realDevice: false`；原始结果与三张截图在 `artifacts/verify/`）。
+课表页读到的是**真实云端数据**：`2026-2027学年第一学期 · 共 46 门课程`（Ticket 03 验收时为 15 门，之后又有导入）。
+
+### 复跑时发现并修掉的一个验收脚本缺陷（缺陷在脚本，不在小程序）
+
+首次复跑在第 135 行断言失败：
+
+```text
+AssertionError: 降级提示无法识别：部门资料随小程序包提供，AI 不可用时仍可正常查看列表与详情。
+  expected: /暂时不可用|超时|内部错误|额度|未通过安全检测|尚未部署|权限/u
+```
+
+连上模拟器把真实 DOM 只读打印出来（检查脚本在 `artifacts/`，不随仓库提交）：
+
+```text
+.qa-error   : "AI 服务内部错误，请稍后重试。"
+#qa-offline : "部门资料随小程序包提供，AI 不可用时仍可正常查看列表与详情。"
+```
+
+模板里 `.qa-error` 是**失败原因**、`#qa-offline` 是**固定不变的安慰语**（`qa.wxml` 两个 view 同由
+`qaError !== ''` 驱动）；而 `currentErrorText()` 原实现**先取 `#qa-offline`**，于是把安慰语拿去匹配
+「失败关键词」正则——**任何降级都会误报**。小程序本身是对的（原因与安慰语两条都在），问题在验收脚本取错了元素。
+
+修复：`currentErrorText()` 改为 `.qa-error` 优先、`#qa-offline` 回退（后者仍由紧随其后的独立断言
+「仍可正常查看」负责），并在代码注释里留下上面这段证据。修复后复跑**通过**。
+该分支只在**降级路径**上触发，所以此前「模型正常回答」的那几轮没有暴露它。
+
+### 顺带复现的两条环境事实
+
+1. **AI 文本链路当天仍被内容安全配额挡住**（与上一节记录一致，**不是新问题**）：`npm run smoke:ai`
+   返回 `failureClass=internal`、`errcode=45009 reach max api daily quota limit`，
+   `AI_SAFETY_FAIL_MODE=closed` 直接拒绝调用；同轮 `npm run probe:wechat` 显示
+   `security.msgSecCheck` **45009**、`security.imgSecCheck` **errCode=0 正常**。
+2. **当月用量读数**（`ai` 云函数 `usage` 动作）：**196 次调用、46,723 token、0.011682 元**（上限 50 元），
+   其中**失败 48 次**——主要来自 `vision` 的多轮复测与当天的配额拒绝。
+
+**演示风险提示**：默认 fail-closed 下，内容安全配额用尽的当天**问答 / 助手 / 识图全部不可用**，
+用户看到的是「AI 服务内部错误，请稍后重试。」。录屏与现场演示前应确认当天配额，或按 `probe:wechat`
+的建议切第三方适配器（`AI_SAFETY_PROVIDER=openai` / `anthropic`，代码已支持）覆盖文本与图片两条路径。
