@@ -2,11 +2,14 @@
 
 AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，正式作品名称待定。
 
-当前阶段：P1 首页入口、P2 学生部门、P3-1 云端资讯链路已完成并通过开发者工具验收，云函数与数据库已部署且线上收尾完成。历史验收见 [P2 / P3 验证记录](docs/evidence/p2-p3/README.md)；审查修复与部署状态见 [审查验证记录](docs/review/p2-p3/verification.md)。P3-2、P4-B 课表导入与 P5-B AI 三落点按后续阶段推进。
+当前状态见[项目状态](docs/status.md)：P1–P3 的基础页面和资讯链路、导入制课表及三个 AI 落点的代码已形成；课表改版与依赖整改随 PR #57 合入 `main`。云端部署、模拟器验收与真机效果分别记录，不以合并代码代替真实效果验收。
 
 ## 项目入口
 
 - [项目设定与待定事项](CONTEXT.md)
+- [项目当前状态与验证边界](docs/status.md)
+- [数据使用说明](docs/data-usage.md)
+- [真实环境人工验收清单](docs/testing/manual-acceptance.md)
 - [开发规格与功能边界](docs/development-spec.md)
 - [分段开发、依赖与验收](docs/development-phases.md)
 - [框架选择](docs/adr/0001-native-wechat-typescript.md)
@@ -14,7 +17,7 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 - [赛事要求、评分与待核实事项](docs/competition.md)
 - [赛事信息核实：已核实事实与待问清单](docs/tasks/competition-verification.md)
 - [候选场景对比与选题建议](docs/tasks/scenario-comparison.md)
-- [待实施 Ticket（9 票，含依赖关系）](docs/tasks/tickets/README.md)
+- [执行 Ticket（11 票，含依赖关系）](docs/tasks/tickets/README.md)
 - [比赛工作流与阶段验收](docs/workflow.md)
 - [作品说明模板与提交清单](docs/submission.md)
 - [架构决策记录](docs/adr/README.md)
@@ -24,7 +27,7 @@ AI 微信小程序开发挑战赛参赛项目。`wx-match` 是临时仓库名，
 
 ## 协作
 
-阶段任务在 [GitHub Issues](https://github.com/Iskuyal/wx-match/issues) 管理；当前 9 张执行票按负责人要求保存在 [本地 Ticket](docs/tasks/tickets/README.md)，不重复建 Issue。每个任务包含问题、范围、验收标准和成果证据；开发使用短期分支和 PR，提交说明及交付报告使用中文。
+阶段任务在 [GitHub Issues](https://github.com/Iskuyal/wx-match/issues) 管理；当前 11 张执行票按负责人要求保存在 [本地 Ticket](docs/tasks/tickets/README.md)，不重复建 Issue。每个任务包含问题、范围、验收标准和成果证据；开发使用短期分支和 PR，提交说明及交付报告使用中文。
 
 开始工作前阅读 [AGENTS.md](AGENTS.md)。原生 TypeScript 小程序代码位于 `miniprogram/`，构建产物位于 `dist/`，后台在 P3 引入微信云开发。
 
@@ -63,8 +66,4 @@ AI 的三条云端链路同样从小程序端验证（过内容安全的动作**
 
 ## 下一步
 
-P1、P2、P3-1、首页资讯入口与分页（Ticket 02）以及课表导入（Ticket 03，云端端上验收已完成）均已交付；云函数、数据库、构建接入与线上收尾（超时 20 秒、`invoke: false`）均已完成，资讯扩大同步（Ticket 04）的新版 `newsSync` 也已部署上线。云端现状见 [云开发环境与 P3 云端实施](docs/cloud-development.md)。
-
-接下来：资讯的 06:00 触发器实测与首次全量导入（Ticket 04 剩余人工步骤）；**AI 的图片识别路径（`vision`）当前超时不可用，它卡住 Ticket 05 的字段准确率评估**——候选修复与复测入口见 [云开发文档](docs/cloud-development.md#ticket-01-人工步骤)；其余按 P4-B/P5-B 的剩余验收推进。当前状态与依赖见 [Ticket 索引](docs/tasks/tickets/README.md)，功能边界见 [开发规格](docs/development-spec.md)。
-
-微信真机预览尚未执行（单页模式实测被备案阻塞，挂在 P6）；正式作品名仍待定。赛事日期与冲突已由官方确认结清，见 [赛事要求](docs/competition.md)。
+按[项目状态](docs/status.md)核对 GitHub 版本、云端部署和已验收范围；按[人工验收清单](docs/testing/manual-acceptance.md)补双账号、真实版式课表、AI 题集及真机结果。分带 `vision` 在合成小图上已有云端成功记录，真实课表截图的准确率尚未测定。正式作品名与参赛七项材料仍待完成，见[提交清单](docs/submission.md)。
