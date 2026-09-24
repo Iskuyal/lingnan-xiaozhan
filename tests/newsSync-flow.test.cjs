@@ -170,7 +170,11 @@ function harness(options = {}) {
     exports: {}, Buffer, URL, console, Date: clock.Date, setTimeout: clock.setTimeout,
     require(name) {
       if (name === 'https') return https;
-      if (name === 'wx-server-sdk') return { init() {}, database: () => db };
+      if (name === 'wx-server-sdk') return {
+        init() {}, database: () => db,
+        getWXContext: () => ({ SOURCE: options.source === undefined ? 'wx_trigger' : options.source }),
+      };
+      if (name === '@cloudbase/node-sdk') return realRequire(name);
       // options.columns 用于固定栏目清单（见 TWO_COLUMNS 的说明），其余模块照常走真实实现。
       if (options.columns !== undefined && name.endsWith('columns')) {
         return { ...realRequire(name), COLUMNS: options.columns };
@@ -179,7 +183,13 @@ function harness(options = {}) {
     },
   };
   vm.runInNewContext(fs.readFileSync(filename, 'utf8'), context, { filename });
-  return { run: context.exports.main, exports: context.exports, requests, articles, stateDocs, stateWrites, clock };
+  return {
+    run: (event = {}) => context.exports.main(
+      { Type: 'Timer', TriggerName: 'newsSyncDaily', ...event },
+      { environment: JSON.stringify({ TRIGGER_SRC: options.triggerSrc === undefined ? 'timer' : options.triggerSrc }) },
+    ),
+    exports: context.exports, requests, articles, stateDocs, stateWrites, clock,
+  };
 }
 
 /** 请求间隔核对：相邻请求的开始时间差不得小于 1.3 秒。 */
@@ -487,7 +497,7 @@ test('偶发失败的条目在同一轮内重试一次，成功写入后不再�
   assert.equal(app.requests.filter((request) => request.url.includes('content_9')).length, 2, '同一篇至多重试一次');
 });
 
-test('维护者可用 reset 重跑全量：游标回到第 1 页，按 URL 更新而非新增', async () => {
+test('可信定时事件的 reset 可重跑全量：游标回到第 1 页，按 URL 更新而非新增', async () => {
   const app = harness({
     stateDocs: { 'tw-tqsd': { _id: 'tw-tqsd', backfillDone: true, backfillPage: 17 } },
     articles: [articleRecord('content_32355', ARTICLE_URL, '旧标题', '2026-09-01')],
@@ -757,7 +767,7 @@ test('文章页缺「发布时间」时保留记录里的旧日期，不再每�
 
 // ---------- 触发方式与状态字段 ----------
 
-test('定时触发与手动触发都可运行，记录时区与实际运行时间', async () => {
+test('可信定时触发记录时区与实际运行时间', async () => {
   const app = harness({
     now: '2026-09-17T22:20:00.000Z',
     responses: (url) => (url.startsWith(LIST_URL)
@@ -775,10 +785,24 @@ test('定时触发与手动触发都可运行，记录时区与实际运行时�
   assert.equal(state.lastTrigger, 'timer', '状态文档记录最近一次调用来自定时触发器');
   assert.equal(state.lastTriggerName, 'newsSyncDaily', '记录触发器名，便于对照控制台配置');
 
-  const manual = await app.run({ column: 'tw-tqsd' });
-  assert.equal(manual.trigger, 'manual');
-  assert.equal(manual.triggerName, '');
-  assert.equal(app.stateDocs['tw-tqsd'].lastTrigger, 'manual', '手动触发覆盖为手动，不影响同步进度');
+  const again = await app.run({ column: 'tw-tqsd' });
+  assert.equal(again.trigger, 'timer');
+  assert.equal(app.stateDocs['tw-tqsd'].lastTrigger, 'timer');
+});
+
+test('SEC-03: 客户端伪造 Timer 事件和 reset 不得访问官网或写入状态', async () => {
+  for (const [source, triggerSrc] of [['wx_client', 'timer'], ['wx_trigger', '']]) {
+    const app = harness({ source, triggerSrc, responses: () => ({ status: 200, html: '' }) });
+    const result = await app.run({ Type: 'Timer', TriggerName: 'newsSyncDaily', reset: true, column: 'tw-tqsd' });
+    assert.equal(result.ok, false);
+    assert.match(result.error, /定时触发|调用来源/);
+    assert.equal(app.requests.length, 0);
+    assert.equal(app.stateWrites.length, 0);
+  }
+  const app = harness({ source: 'wx_trigger', triggerSrc: 'timer' });
+  const missingContext = await app.exports.main({ Type: 'Timer', TriggerName: 'newsSyncDaily' }, {});
+  assert.equal(missingContext.ok, false, '缺少本次运行的上下文也要拒绝');
+  assert.equal(app.requests.length, 0);
 });
 
 test('未知栏目直接返回错误，不发起请求', async () => {

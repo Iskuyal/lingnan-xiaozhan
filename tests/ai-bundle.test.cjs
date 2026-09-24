@@ -125,7 +125,7 @@ test('云函数只 require Node 内置模块、相对文件与 wx-server-sdk', (
         continue;
       }
       if (specifier === 'wx-server-sdk') continue;
-      if (builtins.has(specifier)) continue;
+      if (builtins.has(specifier) || (specifier.startsWith('node:') && builtins.has(specifier.slice(5)))) continue;
       offenders.push(`${path.relative(DIST, file)} 依赖了未声明的外部模块：${specifier}`);
     }
   }

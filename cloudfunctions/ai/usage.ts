@@ -19,7 +19,7 @@ export const USAGE_MONTH_COLLECTION = 'ai_usage_monthly';
 
 /** 单次调用记录的字段契约（测试据此锁定形状，避免字段悄悄改名）。 */
 export const USAGE_RECORD_FIELDS: string[] = [
-  'requestId', 'feature', 'action', 'kind', 'provider', 'model', 'ok', 'failureClass',
+  'requestId', 'userKey', 'feature', 'action', 'kind', 'provider', 'model', 'ok', 'failureClass',
   'durationMs', 'promptTokens', 'completionTokens', 'totalTokens', 'estimated', 'usageUnknown',
   'costYuan', 'month', 'createdAt',
 ];
@@ -283,6 +283,7 @@ export async function recordSubCall(db: UsageDb, record: SubCallRecord, config: 
   const createdAt = now.toISOString();
   const data: Record<string, unknown> = {
     requestId: record.requestId,
+    userKey: record.userKey,
     feature: record.feature,
     action: record.action,
     kind: record.kind,
@@ -376,8 +377,7 @@ export function assertWithinCap(summary: UsageSummary): void {
   if (!summary.exceeded) return;
   fail(
     'quota_exhausted',
-    `本月（${summary.month}）累计成本 ${summary.costYuan} 元，已达上限 ${summary.capYuan} 元；`
-    + `调整 AI_MONTHLY_CAP_YUAN 或等下一自然月后自动恢复。`,
+    '本月 AI 总成本已达上限；维护者可通过专用用量接口核对。',
   );
 }
 

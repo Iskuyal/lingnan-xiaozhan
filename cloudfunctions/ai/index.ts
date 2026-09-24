@@ -49,6 +49,7 @@ import {
   unknownUsage,
 } from './usage';
 import { BandCallResult, VISION_PROFILE, bandMaxTokens, bandedSystem, mergeBands, planBands, predictSeconds } from './vision';
+import { assertAdmin, assertOwnPhotoFile, consumeProbeWindow, consumeUserLimits, isAdmin, requireOpenid, userKey } from './access';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法（与 newsSync 一致）。
@@ -90,6 +91,8 @@ export interface AiEvent {
 /** 一次调用的可变状态：失败路径也要能拿到已发生的用量与告警。 */
 interface RunLog {
   requestId: string;
+  userKey: string;
+  isAdmin: boolean;
   feature: string;
   action: ActionName | '';
   config: Config;
@@ -180,7 +183,7 @@ function stripDataUrl(raw: string): { base64: string; mimeType: string } {
  * 大小与格式在这里拦住：微信 imgSecCheck 明确限制 1MB / PNG-JPG，早失败比送上去被拒清楚。
  * 格式判断不出来时**报参数错误**，不猜一个默认值——猜错会让非图片通过格式门。
  */
-async function resolveImage(raw: unknown, config: Config): Promise<NormalizedImage> {
+async function resolveImage(raw: unknown, config: Config, openid: string): Promise<NormalizedImage> {
   if (raw === null || raw === undefined || typeof raw !== 'object') {
     fail('invalid_request', '图片参数需要 {"fileID":"cloud://..."} 或 {"base64":"..."}');
   }
@@ -188,32 +191,33 @@ async function resolveImage(raw: unknown, config: Config): Promise<NormalizedIma
   let base64 = '';
   let mimeType = safeString(source.mimeType).toLowerCase();
   if (typeof source.fileID === 'string' && source.fileID !== '') {
+    assertOwnPhotoFile(source.fileID, openid);
     let content: Buffer;
     try {
       // 下载走硬超时：云存储同样可能一直不返回，不能让一次 vision 调用无限挂起。
       const downloaded = await withTimeout(
         cloud.downloadFile({ fileID: source.fileID }) as Promise<unknown>,
         config.downloadTimeoutMs,
-        `云存储下载 ${source.fileID}`,
+        '云存储图片下载',
       );
       const value = downloaded === null || downloaded === undefined
         ? undefined
         : (downloaded as { fileContent?: unknown }).fileContent;
-      if (!Buffer.isBuffer(value)) fail('invalid_request', `云存储文件下载结果异常：${source.fileID}`);
+      if (!Buffer.isBuffer(value)) fail('invalid_request', '云存储图片下载结果异常');
       content = value as Buffer;
     } catch (error) {
       if (error instanceof AiFailure) throw error;
       if (isTimeoutError(error)) {
-        fail('model_unavailable', `云存储文件下载超时（${config.downloadTimeoutMs}ms，AI_DOWNLOAD_TIMEOUT_MS）：${source.fileID}`);
+        fail('model_unavailable', `云存储图片下载超时（${config.downloadTimeoutMs}ms，AI_DOWNLOAD_TIMEOUT_MS）`);
       }
-      fail('invalid_request', `云存储文件下载失败：${describeError(error)}`);
+      fail('invalid_request', '云存储图片下载失败');
     }
     if (mimeType === '') {
       const guessed = mimeFromFileID(source.fileID);
       if (guessed === null) {
         fail(
           'invalid_request',
-          `无法从 fileID 判断图片格式：${source.fileID}；请在 image.mimeType 里显式给出（${ALLOWED_IMAGE_MIME.join(' / ')}）`,
+          `无法从 fileID 判断图片格式；请在 image.mimeType 里显式给出（${ALLOWED_IMAGE_MIME.join(' / ')}）`,
         );
       }
       mimeType = guessed;
@@ -334,10 +338,11 @@ function pushWarning(log: RunLog, warning: string): void {
 }
 
 /** 写一条调用记录并累加月度汇总；记账失败不推翻已经完成的模型调用，但要在返回值里告警。 */
-async function record(log: RunLog, entry: SubCallRecord): Promise<void> {
+async function record(log: RunLog, entry: Omit<SubCallRecord, 'userKey'>): Promise<void> {
   try {
-    await recordSubCall(db, entry, log.config, new Date());
-    log.summary = applyRecord(log.summary, entry);
+    const recordWithUser = { ...entry, userKey: log.userKey };
+    await recordSubCall(db, recordWithUser, log.config, new Date());
+    log.summary = applyRecord(log.summary, recordWithUser);
   } catch (error) {
     pushWarning(log, `用量记账失败，本次成本未计入月度累计：${describeError(error)}`);
   }
@@ -640,12 +645,11 @@ async function runVision(
  * chat / vision 的完整流水线：配额 → 输入检测 → 模型 → 输出检测。
  * 顺序是刻意的：先判上限（不该花的钱不花）、先检输入（违规内容不送第三方）、再检输出（生成内容不上屏前不放手）。
  */
-async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): Promise<string> {
+async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, openid: string): Promise<string> {
   const vision = log.action === 'vision';
   const messages = parseMessages(event.messages);
   const system = safeString(event.system);
   const wechat = wechatSecurity();
-  const openid = currentOpenid();
 
   if (!vision && event.image !== undefined && event.image !== null) {
     fail('invalid_request', '图片请走 vision 动作；chat 动作只处理文字');
@@ -655,7 +659,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number): P
     if (event.image === undefined || event.image === null) {
       fail('invalid_request', 'vision 动作需要 image（云存储 fileID 或 base64）');
     }
-    image = await resolveImage(event.image, log.config);
+    image = await resolveImage(event.image, log.config, openid);
     attachImage(messages, image);
   }
 
@@ -709,8 +713,8 @@ function baseResponse(options: {
     text: '',
     safety: log === null ? null : log.safety,
     usage: log === null ? null : log.usage,
-    usageSummary: log === null ? null : log.summary,
-    capWarning: log === null ? '' : capWarningFor(log.summary),
+    usageSummary: log === null || !log.isAdmin ? null : log.summary,
+    capWarning: log === null || !log.isAdmin ? '' : capWarningFor(log.summary),
     warnings: log === null ? [] : log.warnings.slice(),
     probe: null,
     elapsedMs: Date.now() - options.startedAt,
@@ -753,11 +757,15 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
   const secrets: string[] = [];
   const action = sanitizeAction(event.action);
   const feature = sanitizeFeature(event.feature, action);
+  const openid = currentOpenid();
+  const admin = isAdmin(openid);
 
   // 探测不需要模型配置：维护者可能还没配密钥就先跑它。
   if (action === 'probe') {
     try {
-      const result = await runProbe({ wechat: wechatSecurity(), openid: currentOpenid(), env: currentEnv(), now });
+      assertAdmin(openid);
+      await consumeProbeWindow(db, now);
+      const result = await runProbe({ wechat: wechatSecurity(), openid, env: currentEnv(), now });
       return {
         ok: result.ok,
         action,
@@ -783,14 +791,20 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
 
   let log: RunLog | null = null;
   try {
+    if (action === null) fail('invalid_request', `未知动作「${safeString(event.action)}」，可用动作：${ALLOWED_ACTIONS.join('、')}`);
+    if (action === 'usage' || action === 'moderateText' || action === 'moderateImage') {
+      assertAdmin(openid);
+    } else {
+      requireOpenid(openid);
+      await consumeUserLimits(db, openid, now);
+    }
     const config = loadConfig();
     secrets.push(...secretsOf(config));
-    if (action === null) {
-      fail('invalid_request', `未知动作「${safeString(event.action)}」，可用动作：${ALLOWED_ACTIONS.join('、')}`);
-    }
     const summary = await readSummary(config, now);
     log = {
       requestId,
+      userKey: userKey(openid),
+      isAdmin: admin,
       feature,
       action,
       config,
@@ -819,7 +833,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       if (raw === '') fail('invalid_request', 'moderateText 需要 text');
       // 长文本按窗口逐段检测（与 chat 的输入检测同一套分片逻辑）：前 2 万字全检，
       // 超出部分在报告里写明范围并置 checked=false，不静默放过。
-      const outcome = await moderateText(log, raw, wechatSecurity(), currentOpenid(), startedAt);
+      const outcome = await moderateText(log, raw, wechatSecurity(), openid, startedAt);
       const response = successResponse(log, action, startedAt);
       response.safety = outcome.report;
       if (outcome.rejected) {
@@ -833,8 +847,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
 
     if (action === 'moderateImage') {
       if (event.image === undefined || event.image === null) fail('invalid_request', 'moderateImage 需要 image（fileID 或 base64）');
-      const image = await resolveImage(event.image, log.config);
-      const outcome = await moderateImage(log, image, wechatSecurity(), currentOpenid(), startedAt);
+      const image = await resolveImage(event.image, log.config, openid);
+      const outcome = await moderateImage(log, image, wechatSecurity(), openid, startedAt);
       const response = successResponse(log, action, startedAt);
       response.safety = outcome.report;
       if (outcome.rejected) {
@@ -847,7 +861,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       return response;
     }
 
-    const text = await runModelAction(log, event, startedAt);
+    const text = await runModelAction(log, event, startedAt, openid);
     const response = successResponse(log, action, startedAt);
     response.text = text;
     return response;

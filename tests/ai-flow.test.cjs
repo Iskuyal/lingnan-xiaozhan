@@ -6,11 +6,14 @@
  */
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const { createHarness, openAiTextResponse, currentMonth } = require('./ai-harness.cjs');
 
 const KEY = 'test-key-000000000000';
 const IMAGE = { base64: 'aGVsbG8=', mimeType: 'image/png' };
-const SCREENSHOT = { fileID: 'cloud://example/lesson.png' };
+const PHOTO_OWNER = 'photo-owner-openid';
+const PHOTO_OWNER_HASH = crypto.createHash('sha256').update(PHOTO_OWNER).digest('hex').slice(0, 16);
+const SCREENSHOT = { fileID: `cloud://example.bucket/timetable-imports/${PHOTO_OWNER_HASH}/mtest-12345678.png` };
 
 function wechatOk(overrides = {}) {
   return {
@@ -410,6 +413,7 @@ test('微信内容安全调用不响应时在超时边界内返回可识别失�
 
 test('云存储下载不响应时同样有硬超时：vision 不会无限挂起', async () => {
   const harness = createHarness({
+    openid: PHOTO_OWNER,
     env: { AI_DOWNLOAD_TIMEOUT_MS: '1000' },
     security: wechatOk(),
     downloadFile: () => new Promise(() => {}), // 永不返回
@@ -536,6 +540,7 @@ test('内容被拒的文案按输入类型区分：图片说「换一张」，�
 
 test('vision 支持云存储 fileID，并按扩展名推断图片格式', async () => {
   const harness = createHarness({
+    openid: PHOTO_OWNER,
     security: wechatOk(),
     downloadFile: (params) => {
       assert.equal(params.fileID, SCREENSHOT.fileID);
@@ -884,7 +889,7 @@ test('未知动作与空事件都返回参数错误，不抛异常', async () =>
   assert.equal(tooMany.failureClass, 'invalid_request');
 });
 
-test('图片格式判断不出来就报参数错误：不再默认按 PNG 放过', async () => {
+test('图片路径不可信时拒绝，即使调用方显式指定 MIME 也不能绕过归属校验', async () => {
   const harness = createHarness({
     security: wechatOk(),
     downloadFile: () => ({ fileContent: Buffer.from('not-an-image') }),
@@ -896,7 +901,7 @@ test('图片格式判断不出来就报参数错误：不再默认按 PNG 放过
     image: { fileID: 'cloud://example/upload-without-extension' },
   });
   assert.equal(unknownExtension.failureClass, 'invalid_request');
-  assert.ok(unknownExtension.detail.includes('mimeType'), `细节要告诉调用方怎么补：${unknownExtension.detail}`);
+  assert.equal(harness.cloud.downloadFile.length, 0, '路径不可信不应下载');
 
   const unsupported = await harness.main({
     action: 'vision',

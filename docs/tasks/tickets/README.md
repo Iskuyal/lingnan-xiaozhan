@@ -27,10 +27,10 @@
 
 | # | Ticket | 状态 | 尚待完成的核心项 | Blocked by |
 | --- | --- | --- | --- | --- |
-| 01 | [AI 服务端基础设施](01-ai-foundation.md) | in-progress | 真实效果复测、安全审计 SEC-01/02 | — |
+| 01 | [AI 服务端基础设施](01-ai-foundation.md) | in-progress | SEC-01/02 代码整改见[记录](../../review/security-remediation-2026-09-24.md)；云端部署与真实效果复测待完成 | — |
 | 02 | [首页资讯入口与分页](02-home-news-entry-and-paging.md) | done | 真实多页数据的补验归入 04 | — |
 | 03 | [Excel 导入与周课表](03-timetable-excel-import.md) | in-progress | 两个微信号隔离；新版设置接口云端回读 | — |
-| 04 | [资讯同步扩展与定时](04-expand-sync-and-daily-schedule.md) | in-progress | 触发器实测、目标栏目全量、真实多页 | — |
+| 04 | [资讯同步扩展与定时](04-expand-sync-and-daily-schedule.md) | in-progress | SEC-03 代码仅允许定时触发；仍需部署后验证触发器、目标栏目全量和真实多页 | — |
 | 05 | [截图识别与校对](05-timetable-screenshot-import.md) | in-progress | 真实课表截图准确率与保存流程 | 01、03 的代码已有；需真实验收 |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | in-progress | 固定 10 题、失败降级、真机 | 01、03 的代码已有；需真实验收 |
 | 07 | [部门 AI 问答](07-department-ai-qa.md) | in-progress | 固定 10 题、防幻觉、真机 | 01 的代码已有；需真实验收 |

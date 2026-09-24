@@ -18,6 +18,7 @@
  */
 import * as https from 'https';
 import * as cloud from 'wx-server-sdk';
+import * as cloudbase from '@cloudbase/node-sdk';
 import { newsIdFromUrl, parseArticle, parseList } from './parse';
 import { NewsArticleRecord, toArticleRecord } from './record';
 import {
@@ -91,7 +92,7 @@ type Phase = 'backfill' | 'incremental';
 type Mode = Phase | 'auto';
 /** 一轮同步的结果：整批成功 / 部分成功 / 全部失败 / 本轮没跑完 / 撞上限速；空字符串表示还没跑过。 */
 type LastOutcome = 'ok' | 'partial' | 'failed' | 'running' | 'rate-limited' | '';
-/** 调用来源：定时触发器还是维护者手动触发。 */
+/** 调用来源：可信定时触发或被拒绝的手动调用。 */
 type TriggerKind = 'timer' | 'manual';
 
 interface RoundState {
@@ -131,7 +132,7 @@ interface ColumnState {
   lastError: string;
   lastRequestAt: string;
   lastRunAtLocal: string;
-  /** 最近一次调用来自定时触发器还是维护者手动触发；定时触发额外记录触发器名。 */
+  /** 历史状态可能记录手动调用；新版成功同步只来自定时触发。 */
   lastTrigger: TriggerKind | '';
   lastTriggerName: string;
   rateLimitedAt: string;
@@ -212,7 +213,7 @@ function fetchOnce(url: string): Promise<FetchOutcome> {
  * 请求闸门：串行、限速、限额。
  *
  * - 与上一次请求保持 REQUEST_INTERVAL_MS 的间隔；上一次请求发生在别的调用里也能接着排
- *   （构造时传入落盘的 lastRequestAt），避免连续手动触发时把两次调用连成高频请求。
+ *   （构造时传入落盘的 lastRequestAt），避免连续触发时把两次调用连成高频请求。
  * - 配额与截止时间同时约束：任一超出就不再发起新请求，剩余进度留给下一次调用。
  * `intervalMs` 只为测试注入更短的间隔，生产调用不传。
  */
@@ -303,23 +304,22 @@ function laterIso(a: string, b: string): string {
 }
 
 /**
- * 判断这次调用是不是定时触发器发来的，并取出触发器名。
- *
- * 依据：官方文档给的判据是 `getWXContext().SOURCE === 'wx_trigger'`，定时事件本身还带
- * `Type: 'Timer'`、`TriggerName`、`Time`（早期文档中的写法）。两者都认：事件字段够用时
- * 不调用 getWXContext（本地测试与旧版 SDK 没有该方法）。判断只影响日志与状态里的记录，
- * 不影响是否执行同步——定时与手动都走同一条路径。
+ * 调用者可伪造 event.Type/TriggerName，因此它们只能与平台来源同时核对。
+ * getCloudbaseContext(context) 优先读取本次调用的 context，避免实例复用时读取残留环境变量。
+ * 当前只接受 newsSyncDaily 定时器；控制台/客户端手动调用不执行同步。
  */
-function detectTrigger(event: { Type?: unknown; TriggerName?: unknown }): { kind: 'timer' | 'manual'; name: string } {
-  const name = typeof event.TriggerName === 'string' ? event.TriggerName : '';
-  if (event.Type === 'Timer' || event.Type === 'timer') return { kind: 'timer', name };
+function trustedTimer(event: { Type?: unknown; TriggerName?: unknown }, invocationContext: unknown): boolean {
+  if (event.Type !== 'Timer' || event.TriggerName !== 'newsSyncDaily') return false;
+  if (invocationContext === null || typeof invocationContext !== 'object') return false;
+  const current = invocationContext as { environment?: unknown; environ?: unknown };
+  if (typeof current.environment !== 'string' && typeof current.environ !== 'string') return false;
   try {
-    const context = cloud.getWXContext() as { SOURCE?: unknown } | undefined;
-    if (context !== undefined && context !== null && context.SOURCE === 'wx_trigger') return { kind: 'timer', name };
+    const runtime = cloudbase.getCloudbaseContext(invocationContext as Parameters<typeof cloudbase.getCloudbaseContext>[0]);
+    const wechat = cloud.getWXContext() as { SOURCE?: unknown } | undefined;
+    return runtime.TRIGGER_SRC === 'timer' && wechat?.SOURCE === 'wx_trigger';
   } catch {
-    // 不在云函数环境（本地测试）时 getWXContext 不可用：按事件字段判断即可。
+    return false;
   }
-  return { kind: 'manual', name };
 }
 
 /** 正文是否不在官网：外链条目（如 mp.weixin.qq.com）只存标题、日期与原文链接。 */
@@ -952,13 +952,22 @@ function skippedRun(column: NewsColumn, state: ColumnState, reason: string): Col
   return run;
 }
 
-export async function main(event: { mode?: unknown; column?: unknown; maxRequests?: unknown; limit?: unknown; reset?: unknown; Type?: unknown; TriggerName?: unknown } = {}) {
+export async function main(event: { mode?: unknown; column?: unknown; maxRequests?: unknown; limit?: unknown; reset?: unknown; Type?: unknown; TriggerName?: unknown } = {}, invocationContext?: unknown) {
   const startedAt = Date.now();
   const nowIso = new Date(startedAt).toISOString();
   const runAtLocal = shanghaiStamp(new Date(startedAt));
   const context: SyncContext = { capturedAt: shanghaiDate(new Date(startedAt)), nowIso };
-  const { kind: trigger, name: triggerName } = detectTrigger(event);
+  const trigger = trustedTimer(event, invocationContext) ? 'timer' : 'manual';
+  const triggerName = trigger === 'timer' ? 'newsSyncDaily' : '';
   const runs: ColumnRun[] = [];
+
+  if (trigger !== 'timer') {
+    return {
+      ok: false, trigger, triggerName, runAt: runAtLocal, timeZone: TIME_ZONE,
+      error: '仅允许平台定时触发同步；手动调用来源已拒绝', columns: runs,
+      elapsedMs: Date.now() - startedAt,
+    };
+  }
 
   try {
     const mode = resolveMode(event);

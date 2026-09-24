@@ -6,8 +6,8 @@
 
 | 对象 | 已核实状态 | 证据与边界 |
 | --- | --- | --- |
-| GitHub `main` | PR [#57](https://github.com/Iskuyal/wx-match/pull/57) 已于 2026-09-24 合并，合并提交 `4d888b3`；包含课表界面改版和依赖整改 | 代码已合入；不能由此推断新版云函数已部署 |
-| 本地代码 | 在 PR #57 合并后的 `main` 基础上，`npm ci`、`npm run typecheck`、`npm test`（440/440）及 `npm audit --audit-level=low`（0 项）均通过 | 自动化通过不等于真机通过 |
+| GitHub `main` | PR [#57](https://github.com/Iskuyal/wx-match/pull/57) 与 [#58](https://github.com/Iskuyal/wx-match/pull/58) 已合并；2026-09-24 安全审计整改另见[整改记录](review/security-remediation-2026-09-24.md) | 代码合入不能推断云函数已部署 |
+| 本地代码 | PR #57 合并时 `npm test` 为 440/440；安全整改分支的 `npm run typecheck` 与 `npm test`（448/448）通过，四份依赖审计均为 0 项已知漏洞 | 自动化通过不等于真机通过 |
 | 云端 | `ai`、`timetable`、`newsSync` 曾在 2026-09-20 前部署并取得部分调用证据；新版课表设置在改版分支有云端写入、读回、恢复的冒烟记录 | SheetJS 0.20.3 在一次性探针函数安装成功，但生产 `timetable` 是否已使用 PR #57 最终依赖、当前云端是否与合并后的 `main` 一致，尚未读回核实 |
 | 发布 | 本次参赛采用微信开发者工具「预览」做真机演示；认证、备案、体验版及正式发布不在已完成范围 | [Ticket 08](tasks/tickets/08-post-publish-single-page-mode.md) 为 `wontfix`，未登录单页模式未实测 |
 
@@ -25,7 +25,7 @@
 
 ## 使用真实学生数据前的关口
 
-1. [PR #57 安全审计](review/pr-57-security-audit.md)记录的 **SEC-01**（AI 图片 `fileID` 归属校验）未修复；**SEC-02**（运维动作及单用户额度隔离）也未修复。完成修复和部署验证前，只用取得同意的测试数据做受控验证，不开展公开招募试点。
+1. [PR #57 安全审计](review/pr-57-security-audit.md)记录的 SEC-01 至 SEC-05 已有[代码整改](review/security-remediation-2026-09-24.md)；云端部署与版本回读未完成。线上确认安全修复前，只用不含真实学生个人资料的测试数据，不开展公开招募试点。
 2. [数据使用说明](data-usage.md)已记录当前处理链路，但第三方模型的保存期限、数据处理责任方、完整删除途径及校方授权范围尚待确定；仓库文档不等于已向小程序用户完成告知。
 3. PR #57 提到的一次性云函数 `xlsx-cdn-probe` 是否已删除尚未核实；本次 CLI 读取被访问令牌校验拒绝（401）。
 

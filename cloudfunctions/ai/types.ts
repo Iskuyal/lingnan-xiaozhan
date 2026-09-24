@@ -82,6 +82,8 @@ export interface CallUsage extends TokenUsage {
 
 /** 单次子调用（模型调用、第三方审核调用）的落库记录。 */
 export interface SubCallRecord {
+  /** 不可逆的用户摘要；不落明文 openid。 */
+  userKey: string;
   /** 同一次云函数调用内的子调用共用，便于把「一次用户请求」在库里串起来。 */
   requestId: string;
   /** 业务落点：department-qa / timetable-screenshot / timetable-assistant / probe / 未知。 */
