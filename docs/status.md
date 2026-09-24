@@ -6,9 +6,9 @@
 
 | 对象 | 已核实状态 | 证据与边界 |
 | --- | --- | --- |
-| GitHub `main` | PR [#57](https://github.com/Iskuyal/wx-match/pull/57) 与 [#58](https://github.com/Iskuyal/wx-match/pull/58) 已合并；2026-09-24 安全审计整改另见[整改记录](review/security-remediation-2026-09-24.md) | 代码合入不能推断云函数已部署 |
-| 本地代码 | PR #57 合并时 `npm test` 为 440/440；安全整改分支的 `npm run typecheck` 与 `npm test`（448/448）通过，四份依赖审计均为 0 项已知漏洞 | 自动化通过不等于真机通过 |
-| 云端 | `ai`、`timetable`、`newsSync` 曾在 2026-09-20 前部署并取得部分调用证据；新版课表设置在改版分支有云端写入、读回、恢复的冒烟记录 | SheetJS 0.20.3 在一次性探针函数安装成功，但生产 `timetable` 是否已使用 PR #57 最终依赖、当前云端是否与合并后的 `main` 一致，尚未读回核实 |
+| GitHub `main` | PR [#57](https://github.com/Iskuyal/wx-match/pull/57)、[#58](https://github.com/Iskuyal/wx-match/pull/58)、[#59](https://github.com/Iskuyal/wx-match/pull/59) 已合并；安全整改合并提交 `0f184cd` | 代码合入与云端生效分别核对 |
+| 本地代码 | 安全整改后的 `main`：`npm run typecheck` 与 `npm test`（448/448）通过，根项目及三个云函数的依赖审计均为 0 项已知漏洞 | 自动化通过不等于真机通过 |
+| 云端 | 2026-09-24 从 `main` 合并提交 `0f184cd` 重新部署 `ai`、`newsSync`、`timetable`，三条均 Active；远端入口文件与锁文件哈希和本地一致，`timetable` 的 SheetJS 为 0.20.3，固定短文本、安全拒绝和课表只读路径已做端上冒烟 | [云端证据](evidence/security-remediation/README.md)；真实定时器、两账号、合法维护者与 Excel 导入仍待验 |
 | 发布 | 本次参赛采用微信开发者工具「预览」做真机演示；认证、备案、体验版及正式发布不在已完成范围 | [Ticket 08](tasks/tickets/08-post-publish-single-page-mode.md) 为 `wontfix`，未登录单页模式未实测 |
 
 ## 功能与验收
@@ -16,7 +16,7 @@
 | 功能 | 已有成果 | 仍需验证或完成 |
 | --- | --- | --- |
 | 首页、学生部门、官网资讯 | 页面与公开资料、云端资讯读取已实现，有历史开发者工具记录 | 真机显示；资讯定时触发、目标栏目全量入库与真实多页场景（Ticket 04） |
-| Excel 课表与手工编辑 | 真样本解析、云端读写、确认后保存及手工增删改有端上记录；课表改版界面已有 24 项模拟器验收，设置链路在改版分支有云端冒烟 | 两个微信号隔离；当前云端版本与合并后 `main` 的一致性、真机交互、真实数据上的批量操作 |
+| Excel 课表与手工编辑 | 真样本解析、云端读写、确认后保存及手工增删改有端上记录；课表改版界面已有 24 项模拟器验收，当前云端代码与合并后 `main` 哈希一致且本人只读路径通过 | 两个微信号隔离、真机交互、真实 Excel 导入与批量操作 |
 | AI 基础与三个落点 | 文字调用、课表助手部分真实调用、分带图片模型调用已有云端或模拟器证据；代码已合入 | 真实课表截图的字段准确率与校对；部门与课表问答各 10 题；逐次耗时、成本、失败降级及真机复测 |
 | 校园通知 RAG、OCR | [Ticket 10](tasks/tickets/10-campus-rag-qa.md) 有语料 PoC；[Ticket 11](tasks/tickets/11-ocr-document-parsing.md) 有 OCR 清单与脚本 | 尚未形成可对学生开放的 RAG 问答或已抽检入库的 OCR 语料；国赛版方向，不能计入省赛已完成能力 |
 | 参赛材料 | [七项材料模板](submission.md)与历史截图存在 | 正式作品名、校内收口日期、真机录屏、效果评估、七项完整正文、提交回执 |
@@ -25,8 +25,8 @@
 
 ## 使用真实学生数据前的关口
 
-1. [PR #57 安全审计](review/pr-57-security-audit.md)记录的 SEC-01 至 SEC-05 已有[代码整改](review/security-remediation-2026-09-24.md)；云端部署与版本回读未完成。线上确认安全修复前，只用不含真实学生个人资料的测试数据，不开展公开招募试点。
+1. [PR #57 安全审计](review/pr-57-security-audit.md)记录的 SEC-01 至 SEC-05 已有[代码整改](review/security-remediation-2026-09-24.md)；三条云函数已部署且代码哈希读回一致。**双账号归属、个人额度边界和真实定时触发尚未验收**；这些完成前仍不开展公开招募试点。
 2. [数据使用说明](data-usage.md)已记录当前处理链路，但第三方模型的保存期限、数据处理责任方、完整删除途径及校方授权范围尚待确定；仓库文档不等于已向小程序用户完成告知。
-3. PR #57 提到的一次性云函数 `xlsx-cdn-probe` 是否已删除尚未核实；本次 CLI 读取被访问令牌校验拒绝（401）。
+3. CLI 函数列表已确认 PR #57 遗留的一次性探针函数 `xlsx-cdn-probe` **仍存在**。它不属于 SEC-01 至 SEC-05 的业务入口，仍应由维护者在云开发控制台清理并保存结果。
 
 真实效果的执行步骤与记录格式见[人工验收清单](testing/manual-acceptance.md)。

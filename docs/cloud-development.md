@@ -5,12 +5,14 @@
 ## 安全整改部署关卡（2026-09-24）
 
 1. 从已通过 CI 的提交构建 `dist/`；确认 `dist/cloudfunctions/{ai,newsSync,timetable}/package-lock.json` 存在。部署前把旧云函数版本或控制台配置记下，便于出错时回退。
-2. 用微信开发者工具 CLI 的 `cloud functions deploy --env <环境 ID> --names ai newsSync --project <dist 绝对路径> --remote-npm-install` 更新两条安全相关函数；依赖由各自锁文件约束。`timetable` 代码未因 SEC-01 至 SEC-05 改动，不属于这轮必需的云端更新。
+2. 用微信开发者工具 CLI 的 `cloud functions deploy --env <环境 ID> --names ai newsSync timetable --project <dist 绝对路径> --remote-npm-install` 更新三条函数；依赖由各自锁文件约束。`timetable` 一并部署是为了让 PR #57 的 SheetJS 0.20.3 与本轮锁文件在线上生效。
 3. `AI_ADMIN_OPENIDS` 是 `ai` 云函数环境变量，填写允许执行 `usage`、`probe`、独立审核的维护者微信 `openid`，多个值用英文逗号分隔。未配置时运维动作默认拒绝；普通 `chat`/`vision` 仍可按自身身份与个人额度调用。`AI_USER_MINUTE_LIMIT` 默认 6，`AI_USER_DAILY_LIMIT` 默认 30，可按真实配额调整。不要把白名单、模型密钥或 CLI 令牌写进仓库。
 4. 读回 `ai`、`newsSync` 的 Active 状态、更新时间、超时和触发器；保留 `newsSync.invoke: false`。新版 `newsSync` 需要平台来源 `wx_trigger` 和本次调用上下文的 `TRIGGER_SRC=timer`，客户端即使伪造 `Type: Timer` 也会在抓取前被拒绝。下一次 06:00 触发后再核对状态记录；只凭部署成功不能标定时链路通过。
 5. 核对 AI 图片他人 `fileID` 在下载前被拒、普通账号不能读 `usage` 或跑 `probe`、维护者探测冷却、业务调用限额。需要两账号和小程序端真实环境；代码测试与 CLI 信息页不替代这一步。
 
 腾讯云[定时事件结构](https://intl.cloud.tencent.com/document/product/583/9708?lang=en)中的 `Type` 和 `TriggerName` 来自 `event`，客户端也能提交同名字段；平台来源从[本次调用上下文](https://github.com/TencentCloudBase/node-sdk/blob/master/docs/env.md)解析。实例复用可能使全局环境变量残留，见[CloudBase 说明](https://docs.cloudbase.net/cloud-function/instance)。
+
+2026-09-24 实施结果：上述第 1 步的构建与锁文件确认、第 2 步三条函数部署已完成；旧云函数的控制台配置没有完整导出，不把它写成已备份。三条均 Active，远端入口文件和锁文件哈希与本地合并提交一致，`timetable` 下载产物中 SheetJS 为 0.20.3，课表只读调用成功。`ai` 的固定短文本成功，当前账号的运维 `usage` 被拒、伪造图片路径被拒；普通客户端调用 `newsSync` 被平台拒。第 3 步合法维护者白名单、以及第 4、5 步中的**真实定时器和双账号验证**仍待完成，逐项见[安全整改云端证据](evidence/security-remediation/README.md)。
 
 状态（2026-09-18 收尾记录）：P3-1 修复版云函数已部署，超时已调整为 20 秒，`newsSync.invoke: false` 已应用并通过客户端复核。证据见 [审查验证记录](review/p2-p3/verification.md) 及本文权限复核表。普通真机渲染与未登录单页模式尚未实测，分别由 P6 真机回归与 Ticket 08 跟踪。
 
