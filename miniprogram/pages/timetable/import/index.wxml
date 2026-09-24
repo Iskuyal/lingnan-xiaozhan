@@ -1,6 +1,9 @@
 <view class="page">
-  <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
-  <view class="section-title">导入课表文件</view>
+  <!-- 确认页自带头部卡（设计图 09）：eyebrow + 一句话结论都在卡里，因此引导/解析/失败态才显示页面标题。 -->
+  <block wx:if="{{step !== 'review'}}">
+    <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
+    <view class="section-title">导入课表文件</view>
+  </block>
 
   <view wx:if="{{step === 'guide'}}" class="imp-block">
     <view id="file-guide" class="imp-guide">{{fileGuide}}</view>
@@ -37,45 +40,134 @@
   </view>
 
   <block wx:else>
+    <!-- 元信息卡：先回答「这是什么文件、解析出多少」，再给按钮。 -->
     <view class="imp-summary">
-      <view class="imp-summary-title">{{metaTitle === '' ? '课表草稿' : metaTitle}}</view>
-      <view class="imp-summary-line">学期：{{semesterText}}</view>
+      <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
+      <view class="imp-title">解析完成，请核对</view>
+      <view class="imp-rows">
+        <view class="imp-sheet-row" wx:for="{{metaRows}}" wx:key="key">
+          <text class="imp-sheet-key">{{item.key}}</text>
+          <text class="imp-sheet-val">{{item.value}}</text>
+        </view>
+      </view>
       <view class="imp-summary-line" wx:for="{{metaLines}}" wx:key="*this">{{item}}</view>
-      <view class="imp-summary-line">解析结果：{{courseCount}} 门课程<block wx:if="{{warningCount > 0}}"> · {{warningCount}} 门待核对</block><block wx:if="{{blockedCount > 0}}"> · {{blockedCount}} 门需要补全</block></view>
-      <view class="imp-summary-line">{{statsText}}</view>
+      <view class="imp-head-meta">{{metaLine}}</view>
       <view class="imp-summary-line imp-problem" wx:if="{{problemsText !== ''}}">{{problemsText}}</view>
     </view>
 
-    <view class="imp-notice">确认保存会替换当前已保存的课表（包括手工添加的课程）；下面这些内容还没有写入任何数据，可以随时放弃。</view>
+    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加的课程）；下面这些内容还没写入任何数据，随时可以放弃</view>
 
-    <view id="draft-list" class="imp-list">
-      <view class="imp-item {{item.blocking !== '' ? 'imp-item-blocked' : ''}}" wx:for="{{items}}" wx:key="index">
-        <view class="imp-item-head">
-          <text class="imp-item-index">{{item.index + 1}}</text>
-          <text class="imp-item-name">{{item.name}}</text>
-          <text wx:if="{{item.needsReview}}" class="imp-tag">待核对</text>
-        </view>
-        <view class="imp-item-line">{{item.weekdayText}} · {{item.sectionText}} · {{item.weekText}}</view>
-        <view class="imp-item-line">教师：{{item.teacherText}}</view>
-        <view class="imp-item-line">地点：{{item.locationText}}<block wx:if="{{item.noteText !== ''}}">（{{item.noteText}}）</block></view>
-        <view class="imp-item-warning" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
-        <view class="imp-item-blocked-hint" wx:if="{{item.blocking !== ''}}">{{item.blocking}}</view>
-        <view class="imp-item-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
-        <view class="imp-item-ops">
-          <button class="imp-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
-          <button class="imp-op imp-op-delete" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
-        </view>
+    <!-- 金杠小标题 + 右侧「列表 / 课表」切换（与主页 .seg 同一套写法）。 -->
+    <view class="section-head imp-result-head">
+      <view class="section-bar"></view>
+      <view class="section-title">解析结果</view>
+      <view id="draft-view-switch" class="seg">
+        <view class="seg-item {{draftView === 'list' ? 'seg-item-on' : ''}}" data-mode="list" bindtap="switchView">列表</view>
+        <view class="seg-item {{draftView === 'grid' ? 'seg-item-on' : ''}}" data-mode="grid" bindtap="switchView">课表</view>
       </view>
     </view>
 
-    <button id="confirm-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认并保存 {{courseCount}} 门课程</button>
+    <!-- 列表视图：一门课一张卡（课程色条 + 课程名 + 星期 / 节次 / 周次 / 地点 + 原文 + 修正 / 删除）。 -->
+    <block wx:if="{{draftView === 'list'}}">
+      <view id="draft-list" class="imp-list">
+        <block wx:for="{{items}}" wx:key="index">
+          <view class="imp-card {{item.needsReview ? 'imp-card-review' : ''}}" wx:if="{{item.blocking === ''}}">
+            <view class="imp-card-bar" style="background:{{item.barSolid}}"></view>
+            <view class="imp-card-main">
+              <view class="imp-card-name">{{item.name}}<text wx:if="{{item.needsReview}}" class="imp-chip">待核对</text></view>
+              <view class="imp-card-line">{{item.cardLine}}</view>
+              <view class="imp-card-line" wx:if="{{item.cardNote !== ''}}">{{item.cardNote}}</view>
+              <view class="imp-card-warn" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
+              <view class="imp-card-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
+            </view>
+            <view class="imp-card-ops">
+              <button class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
+              <button class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
+            </view>
+          </view>
+        </block>
+        <view class="imp-quiet" wx:if="{{courseCount === 0}}">草稿里已经没有条目了；可以放弃导入，或重新选择文件。</view>
+      </view>
+
+      <!-- 未识别的行：还不是一门课（缺课程名 / 星期 / 节次），只列原文，补录或跳过。 -->
+      <view class="imp-unrecognized" wx:if="{{blockedCount > 0}}">
+        <view class="imp-unrecognized-head">有 {{blockedCount}} 行没能识别，已留空——可以在这里补录，或先跳过</view>
+        <block wx:for="{{items}}" wx:key="index">
+          <view class="imp-unrecognized-row" wx:if="{{item.blocking !== ''}}">
+            <view class="imp-card-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
+            <view class="imp-quiet" wx:else>这一行没有可核对的原文（截图识别只给重新表述过的字段）</view>
+            <view class="imp-unrecognized-hint">{{item.blocking}}</view>
+            <view class="imp-unrecognized-ops">
+              <button class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">补录</button>
+              <button class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="skipItem">跳过</button>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <view class="imp-quiet imp-view-hint" wx:if="{{courseCount > 0}}">课表视图 · 切到课表可以看它落到哪一节，草稿态用虚线框</view>
+    </block>
+
+    <!-- 课表视图：同一份草稿落进周网格，草稿一律虚线框；缺节次的条目不猜位置，只给一行说明。 -->
+    <block wx:else>
+      <view class="imp-quiet">课表视图按节次落位，不筛周次，也不出现具体时刻（学校作息未核实）；草稿一律虚线框，待核对换成琥珀虚线框。</view>
+      <view class="imp-callout-warn" wx:if="{{gridHintWarn !== ''}}">{{gridHintWarn}}</view>
+      <view id="draft-grid" class="grid">
+        <view class="grid-row grid-head">
+          <view class="grid-rail"></view>
+          <view
+            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}}"
+            wx:for="{{draftGrid.columns}}"
+            wx:for-item="column"
+            wx:key="weekday"
+          >
+            <view class="grid-th-day">{{column.label}}</view>
+          </view>
+        </view>
+        <view class="grid-body">
+          <view class="grid-rail">
+            <view class="grid-no" wx:for="{{draftGrid.sectionNumbers}}" wx:key="*this">{{item}}</view>
+          </view>
+          <view class="grid-cols">
+            <view
+              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}}"
+              wx:for="{{draftGrid.columns}}"
+              wx:for-item="column"
+              wx:key="weekday"
+            >
+              <view class="grid-line" wx:for="{{draftGrid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
+              <view
+                class="grid-block {{block.needsReview ? 'grid-block-review' : ''}}"
+                wx:for="{{column.blocks}}"
+                wx:for-item="block"
+                wx:key="primaryId"
+                style="top:{{block.topRpx}}rpx;height:{{block.heightRpx}}rpx;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}"
+              >
+                <view class="grid-block-name">{{block.name}}</view>
+                <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
+                <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 底部动作：主按钮是唯一用品牌红的地方；「保存前不会写入任何数据」紧贴按钮。 -->
+    <view class="imp-actions">
+      <view class="imp-quiet">保存前不会写入任何数据</view>
+      <view class="imp-btn-row">
+        <button id="confirm-save" class="imp-btn" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认保存</button>
+        <button id="abandon-import" class="imp-btn imp-btn-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
+      </view>
+    </view>
+
     <block wx:if="{{isPhoto}}">
       <view class="imp-guide imp-guide-note">{{reviewExitsNote}}</view>
       <button id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
       <button id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
       <button id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
     </block>
-    <button id="abandon-import" class="home-button imp-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
     <view class="imp-privacy">{{privacyText}}</view>
   </block>
 </view>

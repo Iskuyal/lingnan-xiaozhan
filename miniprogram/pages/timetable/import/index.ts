@@ -22,7 +22,17 @@ import {
 } from '../../../services/timetable/index';
 import { clearDraft, getDraft, removeCourseAt, setDraft } from '../../../services/timetable/draft';
 import { rawErrorText } from '../../../services/cloud';
-import { blockingReason, sectionLabelOf, semesterLabel, weekLabelOf, weekdayLabel } from '../../../services/timetable/view';
+import {
+  GridLayout,
+  blockingReason,
+  buildGrid,
+  sectionLabelOf,
+  semesterLabel,
+  weekLabelOf,
+  weekdayLabel,
+} from '../../../services/timetable/view';
+import { colorAt, colorIndexFor } from '../../../services/timetable/palette';
+import { UNKNOWN_COURSE_NAME, buildDraftGrid } from './draft-grid';
 import { callAi, userMessage, visionEvent } from '../../../services/ai';
 import {
   MAX_PHOTO_BYTES,
@@ -42,11 +52,19 @@ import {
 
 type Step = 'guide' | 'parsing' | 'review' | 'error';
 type ImportKind = '' | 'file' | 'photo';
+/** 确认页的两种读法：列表看细节，课表看落位（设计图 09）。两者是同一份内存草稿。 */
+type DraftView = 'list' | 'grid';
 
 interface ChosenFile {
   path: string;
   name: string;
   size?: number;
+}
+
+/** 元信息卡的一行：左键右值（设计图 09 的 sheet-row）。 */
+interface MetaRow {
+  key: string;
+  value: string;
 }
 
 interface DraftItemView {
@@ -56,8 +74,12 @@ interface DraftItemView {
   sectionText: string;
   weekText: string;
   teacherText: string;
-  locationText: string;
-  noteText: string;
+  /** 列表卡的第二行：星期 · 节次 · 周次 · 地点（设计图 09 的 card-line）。 */
+  cardLine: string;
+  /** 列表卡的第三行：教师与校区 / 场地编号 / 备注。 */
+  cardNote: string;
+  /** 课程色条的实色：草稿卡的颜色按课程名取（services/timetable/palette.ts）。 */
+  barSolid: string;
   needsReview: boolean;
   warningText: string;
   rawText: string;
@@ -65,8 +87,13 @@ interface DraftItemView {
 }
 
 interface DatasetEvent {
-  currentTarget: { dataset: { index?: number } };
+  currentTarget: { dataset: { index?: number; mode?: string } };
 }
+
+/** 确认页默认视图：列表（设计图 09 的默认选中项）。 */
+const DEFAULT_DRAFT_VIEW: DraftView = 'list';
+/** 初始网格：草稿还没来之前也要有个合法形状可渲染。 */
+const EMPTY_GRID: GridLayout = buildGrid([], 1);
 
 /** 压缩结果：成功给可用路径；失败要带原因，页面按真实原因措辞（不把一切都归成「超过 1MB」）。 */
 type CompressResult =
@@ -80,6 +107,20 @@ const REVIEW_EXITS_NOTE = '识别结果可能不全：可以重试识别、改�
 
 function textOr(value: string, fallback: string): string {
   return value === '' ? fallback : value;
+}
+
+/** 「解析结果」行：既给门数，也给「文件里 N 条课条目」这类来龙去脉，别让人觉得门数是凭空来的。 */
+function parseResultText(draft: TimetableDraft): string {
+  if (draft.meta.origin === 'photo') {
+    return `${draft.stats.courses} 门课程（截图里识别出 ${draft.stats.entries} 条课程条目）`;
+  }
+  return `${draft.stats.courses} 门课程（文件里 ${draft.stats.entries} 条课条目，按大节去重后 ${draft.stats.courses} 门）`;
+}
+
+/** 元信息卡最后一行：待核对 / 待补全的条数与「现在能不能保存」写在同一句里（设计图 09 的 head-meta）。 */
+function metaLineOf(warningCount: number, blockedCount: number): string {
+  const counts = `其中 ${warningCount} 门待核对、${blockedCount} 门需要补全`;
+  return blockedCount > 0 ? `${counts}，补全后才能保存` : `${counts}，可以保存`;
 }
 
 const FILE_PRIVACY = '保存后才写入数据库，且只写入你自己的课表；临时文件在解析后已从云存储删除。';
@@ -98,16 +139,19 @@ Page({
     errorMessage: '',
     photoError: false,
     capWarning: '',
-    metaTitle: '',
+    draftView: DEFAULT_DRAFT_VIEW as DraftView,
+    metaRows: [] as MetaRow[],
     metaLines: [] as string[],
+    metaLine: '',
     problemsText: '',
     items: [] as DraftItemView[],
+    draftGrid: EMPTY_GRID,
+    gridHintWarn: '',
     semester: '',
     semesterText: '',
     courseCount: 0,
     warningCount: 0,
     blockedCount: 0,
-    statsText: '',
     privacyText: FILE_PRIVACY,
     isPhoto: false,
     reviewExitsNote: REVIEW_EXITS_NOTE,
@@ -402,39 +446,65 @@ Page({
       });
     });
   },
+  /** 按内存草稿刷新确认页：列表卡的字段、元信息卡、以及课表视图要的网格都在这里算好。 */
   refresh() {
     const draft = getDraft();
     if (draft === null) {
-      this.setData({ step: 'guide', items: [], courseCount: 0 });
+      this.setData({ step: 'guide', items: [], courseCount: 0, blockedCount: 0, warningCount: 0, draftGrid: EMPTY_GRID });
       return;
     }
-    const items: DraftItemView[] = draft.courses.map((course: DraftCourse, index: number) => ({
-      index,
-      name: textOr(course.name, '课程名未识别'),
-      weekdayText: textOr(weekdayLabel(course.weekday), '星期待核对'),
-      sectionText: sectionLabelOf(course),
-      weekText: weekLabelOf(course),
-      teacherText: textOr(course.teacher, '教师未识别'),
-      locationText: textOr(course.location, '地点未识别'),
-      noteText: [course.campus, course.siteNumber === '' ? '' : `场地编号 ${course.siteNumber}`, course.note]
+    const items: DraftItemView[] = draft.courses.map((course: DraftCourse, index: number) => {
+      const name = textOr(course.name, UNKNOWN_COURSE_NAME);
+      const weekdayText = textOr(weekdayLabel(course.weekday), '星期待核对');
+      const sectionText = sectionLabelOf(course);
+      const weekText = weekLabelOf(course);
+      const locationText = textOr(course.location, '地点未识别');
+      const noteText = [course.campus, course.siteNumber === '' ? '' : `场地编号 ${course.siteNumber}`, course.note]
         .filter((part) => part !== '')
-        .join(' · '),
-      needsReview: course.warnings.length > 0,
-      warningText: course.warnings.join('；'),
-      rawText: course.rawText,
-      blocking: blockingReason(course),
-    }));
+        .join(' · ');
+      return {
+        index,
+        name,
+        weekdayText,
+        sectionText,
+        weekText,
+        teacherText: textOr(course.teacher, '教师未识别'),
+        // 列表卡按「星期 · 节次 · 周次 · 地点」一行读完（设计图 09 的 card-line），
+        // 教师与校区 / 场地编号 / 备注跟在下一行；原文单独一行，永不省略。
+        cardLine: [weekdayText, sectionText, weekText, locationText].filter((part) => part !== '').join(' · '),
+        cardNote: [`教师：${textOr(course.teacher, '教师未识别')}`, noteText].filter((part) => part !== '').join(' · '),
+        barSolid: colorAt(colorIndexFor(course.name)).solid,
+        needsReview: course.warnings.length > 0,
+        warningText: course.warnings.join('；'),
+        rawText: course.rawText,
+        blocking: blockingReason(course),
+      };
+    });
     const blocked = items.filter((item) => item.blocking !== '');
+    const warningCount = items.filter((item) => item.needsReview).length;
     const isPhoto = draft.meta.origin === 'photo';
+    const placed = buildDraftGrid(draft);
+    // 越界（字段齐全、节次落在 1-12 节之外）的条目不在「待补全」口径里，单独说一句，
+    // 免得「画不出来」这件事在课表视图里没有任何解释。
+    const strayed = placed.unplaced - placed.unplacedBlocked;
+    const gridHintWarn = [
+      blocked.length > 0 ? `${blocked.length} 条待补全，切到列表可以修正` : '',
+      strayed > 0 ? `${strayed} 条节次落在 1-12 节之外，没有画进课表，列表里可以看到原文` : '',
+    ].filter((part) => part !== '').join(' ');
     this.setData({
       items,
       isPhoto,
       courseCount: draft.courses.length,
-      warningCount: items.filter((item) => item.needsReview).length,
+      warningCount,
       blockedCount: blocked.length,
       semester: draft.meta.semester,
       semesterText: semesterLabel(draft.meta.semester),
-      metaTitle: isPhoto ? '课表截图识别草稿' : [draft.meta.className, draft.meta.major, draft.meta.grade].filter((part) => part !== '').join(' · '),
+      metaRows: [
+        { key: '学期', value: semesterLabel(draft.meta.semester) },
+        { key: '班级', value: textOr(draft.meta.className, '班级未识别') },
+        { key: '来源文件', value: textOr(draft.meta.fileName, '未读到文件名') },
+        { key: '解析结果', value: parseResultText(draft) },
+      ],
       metaLines: isPhoto
         ? [
             '识别来源：课表截图（AI 多模态识别，可能有误，请逐条确认）',
@@ -444,19 +514,37 @@ Page({
             draft.meta.school === '' ? '学校名称未识别' : draft.meta.school,
             draft.meta.department === '' ? '院系未识别' : draft.meta.department,
             draft.meta.exportedAt === '' ? '未读到导出时间' : `文件导出时间 ${draft.meta.exportedAt}`,
-            `来源文件 ${draft.meta.fileName}`,
           ],
+      metaLine: metaLineOf(warningCount, blocked.length),
       problemsText: draft.problems.join('；'),
-      statsText: isPhoto
-        ? `截图识别出 ${draft.stats.entries} 条课程条目，可入周课表 ${draft.stats.courses} 门`
-        : `文件里共解析出 ${draft.stats.entries} 条课程条目，按大节去重后 ${draft.stats.courses} 门（合并 ${draft.stats.duplicates} 条）`,
+      draftGrid: placed.layout,
+      gridHintWarn,
       privacyText: isPhoto ? PHOTO_PRIVACY : FILE_PRIVACY,
     });
   },
+  /** 列表 / 课表切换：只换渲染，不动草稿，也不写任何数据（与主页 switchView 同一套）。 */
+  switchView(event: DatasetEvent) {
+    const mode = event.currentTarget.dataset.mode;
+    if (mode !== 'grid' && mode !== 'list') return;
+    this.setData({ draftView: mode });
+  },
+  /** 修正 / 补录：打开这条草稿的编辑表单（草稿态），返回时 onShow 会重新刷新。 */
   fixItem(event: DatasetEvent) {
     const index = Number(event.currentTarget.dataset.index);
     if (!Number.isInteger(index)) return;
     wx.navigateTo({ url: `/pages/timetable/edit/index?scope=draft&index=${index}` });
+  },
+  /**
+   * 跳过未识别的行：只从内存草稿里去掉这一行，不写任何数据（放弃导入仍可整批撤销）。
+   * 不「先留着、保存时再丢」——它缺课程名 / 星期 / 节次，留着就会一直拦住保存。
+   */
+  skipItem(event: DatasetEvent) {
+    const index = Number(event.currentTarget.dataset.index);
+    if (!Number.isInteger(index)) return;
+    if (removeCourseAt(index)) {
+      wx.showToast({ title: '已跳过这一行', icon: 'none' });
+      this.refresh();
+    }
   },
   deleteItem(event: DatasetEvent) {
     const index = Number(event.currentTarget.dataset.index);

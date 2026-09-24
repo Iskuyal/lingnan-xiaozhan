@@ -7,20 +7,24 @@
  * - `list`：读取本人已保存的课表；
  * - `saveDraft`：确认页确认后整份替换本人课表（先写新批次，成功后再删旧批次，失败回滚本次写入）；
  * - `createCourse` / `updateCourse` / `deleteCourse`：独立于导入的手工新增、修改、删除。
+ * - `getSettings` / `saveSettings`：学期设置与作息时间（集合 `timetable_settings`，一条记录一个用户）。
+ *   作息时刻全部由学生自填，服务端不预置任何默认值；倒置与重叠在写入前拒绝。
  *
  * 文件标识统一用 `wx.cloud.uploadFile` 返回的 **fileID**（`cloud://…`）：
  * `cloud.downloadFile` / `cloud.deleteFile` 只认 fileID，把 `prepareUpload` 给的裸
  * cloudPath 当 fileID 传下去会直接失败。归属校验因此改为**从 fileID 解析出云存储路径**，
  * 再要求它落在调用者自己的 openid 前缀下（fileID 前的环境信息不参与比较）。
  *
- * 集合 `timetable_courses` 的权限取最严格预设（所有用户不可读写）：读写都只发生在这里。
- * 函数本身需要允许客户端调用（与 `newsSync` 不同），见 docs/cloud-development.md 的控制台步骤。
+ * 集合 `timetable_courses` 与 `timetable_settings` 的权限都取最严格预设（所有用户不可读写）：
+ * 读写都只发生在这里。函数本身需要允许客户端调用（与 `newsSync` 不同），
+ * 见 docs/cloud-development.md 的控制台步骤。
  */
 import * as cloud from 'wx-server-sdk';
 import * as crypto from 'crypto';
 import { parseWorkbook } from './parse';
 import { makeCourseId, normalizeCourseFields, sanitizeSemester } from './record';
-import { CourseFields, StoredCourse, UPLOAD_ROOT } from './types';
+import { SETTINGS_COLLECTION, emptySettings, normalizeSettingsFields, readStoredSettings } from './settings';
+import { CourseFields, StoredCourse, StoredSettings, UPLOAD_ROOT } from './types';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法。
@@ -323,6 +327,8 @@ const COURSE_FIELD_KEYS = [
   'siteNumber',
   'note',
   'warnings',
+  // 课程色：客户端显式给出才覆盖（空字符串 = 回到按课程名自动取色）。
+  'color',
 ] as const;
 
 async function handleUpdateCourse(event: CloudEvent, openid: string) {
@@ -363,6 +369,41 @@ async function handleDeleteCourse(event: CloudEvent, openid: string) {
   return { ok: true, id, count: remaining.length };
 }
 
+/**
+ * 读本人的学期设置与作息时间。
+ *
+ * 还没有记录时返回**空设置**（`saved: false`）：这不是错误，学生第一次进来就是这样。
+ * 集合未创建/无权限这类技术性失败**不在这里吞掉**——照常抛给 main 的兜底，
+ * 由小程序侧的降级路径处理（页面照常可用，同时把原因显示出来，便于发现「集合还没建」）。
+ */
+async function handleGetSettings(openid: string) {
+  const rows = await queryData<StoredSettings>(db.collection(SETTINGS_COLLECTION).where({ owner: openid }).limit(1));
+  if (rows.length === 0) return { ok: true, saved: false, settings: emptySettings() };
+  return { ok: true, saved: true, settings: readStoredSettings(rows[0]) };
+}
+
+/**
+ * 写本人的设置：一条记录一个用户，第一次插入、之后更新同一条。
+ *
+ * 校验在 `settings.ts`（倒置、重叠、格式、范围），失败整份拒绝并给可理解的原因；
+ * `owner` / `createdAt` / `updatedAt` 由服务端掌握，不接受客户端传入。
+ */
+async function handleSaveSettings(event: CloudEvent, openid: string) {
+  const normalized = normalizeSettingsFields(event.settings);
+  if (!normalized.ok) return { ok: false, error: normalized.error };
+  const now = new Date().toISOString();
+  const rows = await queryData<StoredSettings & { _id: string }>(
+    db.collection(SETTINGS_COLLECTION).where({ owner: openid }).limit(1),
+  );
+  if (rows.length === 0) {
+    const record: StoredSettings = { ...normalized.value, owner: openid, createdAt: now, updatedAt: now };
+    await db.collection(SETTINGS_COLLECTION).add({ data: record });
+  } else {
+    await db.collection(SETTINGS_COLLECTION).doc(rows[0]._id).update({ data: { ...normalized.value, updatedAt: now } });
+  }
+  return { ok: true, saved: true, settings: normalized.value, updatedAt: now };
+}
+
 export async function main(event: CloudEvent = {}) {
   const context = cloud.getWXContext();
   const openid = typeof context.OPENID === 'string' ? context.OPENID : '';
@@ -390,6 +431,10 @@ export async function main(event: CloudEvent = {}) {
         return await handleUpdateCourse(event, openid);
       case 'deleteCourse':
         return await handleDeleteCourse(event, openid);
+      case 'getSettings':
+        return await handleGetSettings(openid);
+      case 'saveSettings':
+        return await handleSaveSettings(event, openid);
       default:
         return { ok: false, error: `不支持的操作：${action === '' ? '(空)' : action}` };
     }

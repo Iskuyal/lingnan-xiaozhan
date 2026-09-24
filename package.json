@@ -10,6 +10,7 @@
     "verify:wechat": "node scripts/verify-wechat.cjs",
     "probe:wechat": "node scripts/probe-wechat.cjs",
     "smoke:ai": "node scripts/smoke-ai.cjs",
+    "smoke:settings": "node scripts/smoke-settings.cjs",
     "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs"
   },
   "engines": {
@@ -21,11 +22,14 @@
     "miniprogram-automator": "0.12.1",
     "typescript": "5.9.3",
     "wx-server-sdk": "4.0.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "overrides": {
+    "axios": "0.33.0",
+    "lodash.set": "npm:set-value@4.1.0",
+    "lodash.unset": "4.18.0",
     "miniprogram-automator": {
-      "jimp": "0.22.12"
+      "jimp": "1.6.1"
     }
   }
 }

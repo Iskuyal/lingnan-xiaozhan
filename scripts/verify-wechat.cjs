@@ -20,16 +20,6 @@ async function run() {
     }
     throw new Error(`等待页面超时：${route}`);
   }
-  /** 等到页面上出现某个元素；超时返回 null。冷启动与热重载下固定等待不可靠，改为轮询。 */
-  async function waitForElement(page, selector) {
-    const deadline = Date.now() + 15000;
-    for (;;) {
-      const element = await page.$(selector);
-      if (element !== null) return element;
-      if (Date.now() >= deadline) return null;
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-  }
   /**
    * 等这一次追问的结果。两条路径都算「有反应」：
    * ① 多了一条助手气泡（`.qa-answer`，模型答出来了）；
@@ -113,9 +103,7 @@ async function run() {
       await ensurePanelOpen(list, '部门列表页'),
       '部门列表页既没有对话框也没有打开入口（#qa-open 与 #qa-prompt 都命不中）',
     );
-    const promptElement = await waitForElement(list, '#qa-prompt');
-    assert.ok(promptElement, '部门列表页没有问答提示（#qa-prompt 未出现）');
-    const prompt = await promptElement.text();
+    const prompt = await (await list.$('#qa-prompt')).text();
     assert.match(prompt, /你想了解什么部门/u, `对话框没有提示选择部门：${prompt}`);
     assert.match(prompt, /官网未公布/u, '对话框要说清资料里没有的会回答官网未公布');
     const options = await list.$$('.qa-option');
@@ -141,9 +129,7 @@ async function run() {
       await ensurePanelOpen(chatDetail, '部门详情页'),
       '部门详情页没有问答面板（#qa-open 与 #qa-prompt 都命不中）',
     );
-    const detailPrompt = await waitForElement(chatDetail, '#qa-prompt');
-    assert.ok(detailPrompt, '部门详情页没有问答提示（#qa-prompt 未出现）');
-    assert.match(await detailPrompt.text(), /关于校学生会/u);
+    assert.match(await (await chatDetail.$('#qa-prompt')).text(), /关于校学生会/u);
     const suggestions = await chatDetail.$$('.qa-suggestion');
     assert.equal(suggestions.length, 4, `详情页追问建议应为 4 条，实际 ${suggestions.length}`);
     const qaInput = await chatDetail.$('#qa-input');
@@ -178,9 +164,7 @@ async function run() {
     await mini.screenshot({ path: path.join(output, 'departments-qa-detail.png') });
 
     // 返回列表后对话不丢，可以直接接着问。
-    const chatBack = await waitForElement(chatDetail, '#back-to-list');
-    assert.ok(chatBack, '部门详情页没有返回列表按钮');
-    await chatBack.tap();
+    await (await chatDetail.$('#back-to-list')).tap();
     const listWithChat = await waitForPage('pages/departments/index');
     await listWithChat.waitFor(800);
     const kept = await listWithChat.$$('.qa-row-user');
@@ -190,9 +174,7 @@ async function run() {
     assert.ok(listInput, '返回列表后无法继续追问');
     const beforeRows = (await listWithChat.$$('.qa-answer')).length;
     await listInput.input('这个部门有联系方式吗？');
-    const listSend = await waitForElement(listWithChat, '#qa-send');
-    assert.ok(listSend, '列表页没有追问发送按钮');
-    await listSend.tap();
+    await (await listWithChat.$('#qa-send')).tap();
     const resumed = await waitForReply(listWithChat, beforeRows);
     assert.ok(resumed !== null, '在列表页继续追问后既没有回答也没有降级提示');
     console.log(`列表页继续追问（${resumed.kind}）：${resumed.text}`);
@@ -223,9 +205,7 @@ async function run() {
     assert.ok(await detail.$('#department-contact'), '部门详情缺少联系方式区块');
     assert.ok(await detail.$('#department-activities'), '部门详情缺少动态区块');
     await mini.screenshot({ path: path.join(output, 'departments-detail.png') });
-    const detailBack = await waitForElement(detail, '#back-to-list');
-    assert.ok(detailBack, '重新进入的部门详情页没有返回列表按钮');
-    await detailBack.tap();
+    await (await detail.$('#back-to-list')).tap();
     const listAgain = await waitForPage('pages/departments/index');
     await listAgain.waitFor(600);
     await (await listAgain.$('#back-home')).tap();
@@ -236,8 +216,12 @@ async function run() {
     await (await homeAgain.$('#timetable-entry')).tap();
     const timetable = await waitForPage('pages/timetable/index');
     await timetable.waitFor(800);
-    // 标题按状态渲染（加载中 / 还没有课表 / 我的课表），云函数冷启动时页面会停在 loading；
-    // 先等脱离中间态，再按最终状态断言，避免把「加载中」当成页面坏了。
+    // 头部的主角是「第 N 周」（学期在副标题），课表本体在「本周课表」小标题下：
+    // 原来断言的是「我的课表」，那是旧版头部的标题，2026-09-20 改版后由导航栏承担。
+    const week = await timetable.$('.week-now');
+    assert.ok(week !== null, '课表页头部应有周次');
+    assert.match(await week.text(), /第 \d+ 周/u, '头部应显示当前周次');
+    // 云函数冷启动时页面会停在 loading，此时两种入口都还没渲染——等到脱离中间态再判定。
     const settled = await waitForTimetableSettled(timetable);
     assert.ok(
       settled.importEntry || settled.retryLoad,
@@ -249,45 +233,58 @@ async function run() {
       console.log(`课表读取状态（错误态可重试）：${errorText}`);
     } else {
       const hint = await timetable.$('.tt-meta');
-      const expectedTitle = hint === null ? '还没有课表' : '我的课表';
-      assert.equal(await (await timetable.$('.section-title')).text(), expectedTitle);
       console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
-      // 收纳版交互：网格是唯一视图——点课程弹编辑滑层，取消后收起；
-      // 助手是悬浮入口 + 独立滑层，问完即收。只有「已就绪且有课表」才走这些交互，
-      // 空课表账号没有网格与周次切换，不能按同样的路径断言。
-      if (hint !== null) {
-        // 默认周可能恰好没课（网格不渲染），先往后翻周到有课的周，让滑层断言与截图都落在真实课程上。
-        let gridCourse = await timetable.$('.grid-course');
-        for (let attempts = 0; attempts < 20 && gridCourse === null; attempts += 1) {
-          const nextWeek = await timetable.$('#week-next');
-          assert.ok(nextWeek, '本周无课且没有「下一周」入口');
-          await nextWeek.tap();
-          await timetable.waitFor(500);
-          gridCourse = await timetable.$('.grid-course');
-        }
-        assert.ok(gridCourse, '课表有课程却没有一周能渲染出课程格子');
-        await gridCourse.tap();
-        const courseSheet = await waitForElement(timetable, '#course-sheet');
-        assert.ok(courseSheet, '点开网格课程没有弹出编辑滑层');
-        assert.ok(await timetable.$('#sheet-edit'), '编辑滑层缺少修改入口');
-        assert.ok(await timetable.$('#sheet-delete'), '编辑滑层缺少删除入口');
-        await mini.screenshot({ path: path.join(output, 'timetable-course-sheet.png') });
-        await (await timetable.$('#sheet-cancel')).tap();
-        await timetable.waitFor(400);
-        assert.equal(await timetable.$('#course-sheet'), null, '取消后编辑滑层没有收起');
-        const assistantEntry = await timetable.$('#assistant-open');
-        assert.ok(assistantEntry, '课表页缺少助手悬浮入口');
-        await assistantEntry.tap();
-        const assistantPanel = await waitForElement(timetable, '#assistant-panel');
-        assert.ok(assistantPanel, '点助手入口没有打开对话滑层');
-        assert.ok(await timetable.$('#assistant-input'), '助手滑层缺少输入框');
-        await mini.screenshot({ path: path.join(output, 'timetable-assistant-sheet.png') });
-        await (await timetable.$('.qa-close')).tap();
-        await timetable.waitFor(400);
-        assert.equal(await timetable.$('#assistant-panel'), null, '收起后助手滑层没有关闭');
-      }
     }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
+
+    // 课表改版（2026-09-20）的三处新界面：周网格 + 课程详情弹层、课表设置页、课程管理页。
+    // 它们在本轮之前只有本地桩测试证据，这里补上真实渲染。
+    // 真实样本第 1 周没有课：往后翻，直到出现课程块（有开学日时页面会自己落在本周，所以不写死翻几周）
+    let blocks = [];
+    for (let step = 0; step < 6 && blocks.length === 0; step += 1) {
+      await (await timetable.$('#week-next')).tap();
+      await timetable.waitFor(400);
+      blocks = await timetable.$$('.grid-block');
+    }
+    assert.ok(blocks.length > 0, '往后翻周后应至少有一个课程块（周网格没有渲染出来）');
+    assert.ok((await timetable.$('#week-grid')) !== null, '有课的周应渲染周网格容器');
+    console.log(`周网格：出现 ${blocks.length} 个课程块（第 ${await (await timetable.$('.week-now')).text()}）`);
+    await blocks[0].tap();
+    await timetable.waitFor(500);
+    assert.ok((await timetable.$('#course-sheet')) !== null, '点课程块应弹出课程详情弹层');
+    const sheetName = await (await timetable.$('.sheet-name')).text();
+    assert.ok(sheetName.length > 0, '详情弹层应显示课程名');
+    await mini.screenshot({ path: path.join(output, 'timetable-sheet.png') });
+    console.log(`课程详情弹层：已弹出（${sheetName}）并截图`);
+    const sheetClose = await timetable.$('.sheet-close');
+    if (sheetClose !== null) await sheetClose.tap();
+    await timetable.waitFor(300);
+
+    await (await timetable.$('#timetable-settings-entry')).tap();
+    const settings = await waitForPage('pages/timetable/settings/index');
+    await settings.waitFor(800);
+    assert.ok((await settings.$('#settings-semester-name')) !== null, '设置页应有学期名称输入');
+    assert.ok((await settings.$('#settings-start-date')) !== null, '设置页应有第一周星期一的选择');
+    assert.ok((await settings.$('#settings-section-time-1')) !== null, '设置页应有第 1 节的作息输入');
+    assert.ok((await settings.$('#settings-save')) !== null, '设置页应有保存入口');
+    await mini.screenshot({ path: path.join(output, 'timetable-settings.png') });
+    console.log(`课表设置页：表单可渲染（预览「${await (await settings.$('#settings-preview')).text()}」）`);
+    await (await settings.$('#settings-back')).tap();
+    const backToTimetable = await waitForPage('pages/timetable/index');
+    await backToTimetable.waitFor(600);
+
+    await (await backToTimetable.$('#manage-entry')).tap();
+    const manage = await waitForPage('pages/timetable/manage/index');
+    await manage.waitFor(800);
+    const hasList = (await manage.$('#manage-list')) !== null;
+    const hasEmpty = (await manage.$('.mg-empty')) !== null;
+    assert.ok(hasList || hasEmpty, '课程管理页要么有列表要么有空态，不该是空白页');
+    assert.ok((await manage.$('#manage-delete-selected')) !== null || hasEmpty, '有列表时应有批量删除入口');
+    await mini.screenshot({ path: path.join(output, 'timetable-manage.png') });
+    console.log(`课程管理页：${hasList ? '列表已渲染' : '空态已渲染'}`);
+    await (await manage.$('#manage-back')).tap();
+    await waitForPage('pages/timetable/index');
+
     await (await timetable.$('#back-home')).tap();
     await waitForPage('pages/home/index');
 
@@ -295,9 +292,7 @@ async function run() {
     await mini.callWxMethod('reLaunch', { url: '/pages/timetable/import/index' });
     const importPage = await waitForPage('pages/timetable/import/index');
     await importPage.waitFor(800);
-    const guideElement = await waitForElement(importPage, '#file-guide');
-    assert.ok(guideElement, '导入页没有引导文案（#file-guide 未出现）');
-    const guide = await guideElement.text();
+    const guide = await (await importPage.$('#file-guide')).text();
     assert.match(guide, /聊天记录/u, '导入引导必须写明只能从聊天记录选择');
     assert.match(guide, /文件传输助手/u, '导入引导要给出可操作的中转办法');
     assert.ok(await importPage.$('#choose-file'), '导入页缺少选择文件入口');
@@ -457,9 +452,7 @@ async function run() {
     const directDetail = await waitForPage('pages/departments/detail/index');
     await directDetail.waitFor(800);
     assert.equal(await (await directDetail.$('.department-name')).text(), '校学生会');
-    const directBack = await waitForElement(directDetail, '#back-to-list');
-    assert.ok(directBack, '直接打开的部门详情页没有返回列表按钮');
-    await directBack.tap();
+    await (await directDetail.$('#back-to-list')).tap();
     await waitForPage('pages/departments/index');
     await mini.callWxMethod('reLaunch', { url: '/pages/departments/detail/index?id=not-a-department' });
     const missing = await waitForPage('pages/departments/detail/index');
@@ -535,8 +528,9 @@ async function run() {
         '真实样本导入到确认页后「放弃导入」不写库、草稿清空并回到引导态',
         '不写学分的版式在真实云端仍能拆出课程名与教师（3 门、0 条需要补全、3 条待核对）',
         '课程表单显示课程名、星期、起止节、周次与保存入口',
-        '网格课程点开弹出编辑滑层（修改/删除/取消），取消后收起',
-        '课表助手悬浮入口打开对话滑层，收起后关闭',
+        '周网格渲染出课程块，点课程块弹出课程详情弹层',
+        '课表设置页渲染学期与作息表单并可返回',
+        '课程管理页渲染列表或空态，并有批量删除入口',
         '直接进入部门列表后返回首页', '直接进入课表页后返回首页',
         '首页展示最近资讯并可进入资讯列表', '资讯列表显示条目与分页页脚状态',
         '资讯详情显示标题、正文段落与复制原文链接入口', '列表与详情之间可往返'],

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课表主页 · 网格视图</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+</head>
+<body>
+<!--
+  01 课表主页 · 周网格视图（有开学日 + 已填作息的正例，也是其余设计图的样板）
+  设计图里的课程与时刻都是占位示例：作息时间必须由用户自己填写，实现不得内置默认值。
+  版式要点：周次与日期是头部主角；有课的天变宽、没课的天收窄（否则 7 列均分只能排两个字就折行）。
+-->
+<div class="statusbar">
+  <span>14:04</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="head-top">
+      <span class="eyebrow">2026-2027学年第一学期</span>
+      <span class="head-link">课表设置</span>
+    </div>
+    <div class="head-week-row">
+      <span class="head-nav">‹</span>
+      <span class="head-week">第 4 周</span>
+      <span class="head-nav">›</span>
+      <span class="head-sub">9/21 – 9/27</span>
+    </div>
+    <div class="head-meta">本周 14 门 · 共 45 门课程 · 左右滑动翻周</div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong today">
+    <span class="today-dot"></span>
+    <div class="today-body">
+      <div class="today-kicker">正在上</div>
+      <div class="today-name">高等数学</div>
+      <div class="today-sub">第 5-6 节 · 崇礼楼 306 · 林加燕</div>
+    </div>
+    <span class="today-pill">13:00–14:35</span>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="section-head">
+    <span class="section-bar"></span>
+    <span class="section-title">本周课表</span>
+    <span class="seg seg--compact" style="margin-left:auto">
+      <span class="seg-item seg-item--on">课表</span><span class="seg-item">列表</span>
+    </span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong grid">
+    <div class="grid-head">
+      <div class="grid-rail"></div>
+      <div class="grid-th grid-th--today"><span class="grid-th-day">一</span><span class="grid-th-sub">21</span></div>
+      <div class="grid-th">二<span class="grid-th-sub">22</span></div>
+      <div class="grid-th">三<span class="grid-th-sub">23</span></div>
+      <div class="grid-th">四<span class="grid-th-sub">24</span></div>
+      <div class="grid-th grid-th--narrow">五<span class="grid-th-sub">25</span></div>
+      <div class="grid-th grid-th--narrow">六<span class="grid-th-sub">26</span></div>
+      <div class="grid-th grid-th--narrow">日<span class="grid-th-sub">27</span></div>
+    </div>
+
+    <div class="grid-body">
+      <div class="rail">
+        <div class="rail-cell"><span class="rail-no">1</span><span class="rail-time">08:15</span></div>
+        <div class="rail-cell"><span class="rail-no">2</span><span class="rail-time">09:05</span></div>
+        <div class="rail-cell"><span class="rail-no">3</span><span class="rail-time">10:10</span></div>
+        <div class="rail-cell"><span class="rail-no">4</span><span class="rail-time">11:00</span></div>
+        <div class="rail-cell"><span class="rail-no">5</span><span class="rail-time">13:00</span></div>
+        <div class="rail-cell"><span class="rail-no">6</span><span class="rail-time">13:50</span></div>
+        <div class="rail-cell"><span class="rail-no">7</span><span class="rail-time">14:55</span></div>
+        <div class="rail-cell"><span class="rail-no">8</span><span class="rail-time">15:45</span></div>
+        <div class="rail-cell"><span class="rail-no">9</span><span class="rail-time">16:50</span></div>
+        <div class="rail-cell"><span class="rail-no">10</span><span class="rail-time">17:40</span></div>
+        <div class="rail-cell"><span class="rail-no">11</span><span class="rail-time">19:20</span></div>
+        <div class="rail-cell"><span class="rail-no">12</span><span class="rail-time">20:10</span></div>
+      </div>
+
+      <div class="cols">
+        <!-- 星期一（今日） -->
+        <div class="col col--today">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:173.2px">
+            <div class="block-name">劳动教育（一）</div>
+            <div class="block-meta">40号楼-B310</div>
+            <div class="block-meta">夏舜丽</div>
+          </div>
+          <div class="block block--now" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:174.8px;height:85.8px">
+            <div class="block-name">高等数学</div>
+            <div class="block-meta">崇礼楼 306</div>
+          </div>
+          <div class="block" style="--c:var(--c6);--c-bg:var(--c6-bg);--c-line:var(--c6-line);top:262.2px;height:85.8px">
+            <div class="block-name">中华传统文化精粹（一）</div>
+          </div>
+          <div class="block" style="--c:var(--c8);--c-bg:var(--c8-bg);--c-line:var(--c8-line);top:349.6px;height:85.8px">
+            <div class="block-name">大学美育</div>
+            <div class="block-meta">崇礼楼</div>
+          </div>
+          <div class="block" style="--c:var(--c2);--c-bg:var(--c2-bg);--c-line:var(--c2-line);top:437px;height:85.8px">
+            <div class="block-name">信息技术与人工智能应用</div>
+          </div>
+        </div>
+
+        <!-- 星期二 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c7);--c-bg:var(--c7-bg);--c-line:var(--c7-line);top:0;height:173.2px">
+            <div class="block-name">低代码平台应用开发</div>
+            <div class="block-meta">崇礼楼 602</div>
+          </div>
+          <div class="block block--badged" style="--c:var(--c3);--c-bg:var(--c3-bg);--c-line:var(--c3-line);top:174.8px;height:85.8px">
+            <div class="block-name">习近平新时代中国特色社会主义思想概论</div>
+            <span class="block-badge">2</span>
+          </div>
+          <div class="block" style="--c:var(--c4);--c-bg:var(--c4-bg);--c-line:var(--c4-line);top:349.6px;height:173.2px">
+            <div class="block-name">网页设计与制作技术</div>
+            <div class="block-meta">崇礼楼 208</div>
+          </div>
+        </div>
+
+        <!-- 星期三 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:0;height:85.8px">
+            <div class="block-name">公共外语（英语）一</div>
+          </div>
+          <div class="block" style="--c:var(--c8);--c-bg:var(--c8-bg);--c-line:var(--c8-line);top:87.4px;height:85.8px">
+            <div class="block-name">我的大学生活我做主</div>
+          </div>
+          <div class="block" style="--c:var(--c2);--c-bg:var(--c2-bg);--c-line:var(--c2-line);top:174.8px;height:85.8px">
+            <div class="block-name">信息技术与人工智能应用</div>
+          </div>
+          <div class="block" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:437px;height:85.8px">
+            <div class="block-name">公共外语（英语）一</div>
+          </div>
+        </div>
+
+        <!-- 星期四 -->
+        <div class="col">
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+          <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:85.8px">
+            <div class="block-name">毛泽东思想和中国特色社会主义理论体系概论</div>
+          </div>
+          <div class="block block--review" style="top:87.4px;height:85.8px">
+            <div class="block-name">体育（三）</div>
+            <div class="block-meta">周次待核对</div>
+          </div>
+          <div class="block" style="--c:var(--c6);--c-bg:var(--c6-bg);--c-line:var(--c6-line);top:437px;height:85.8px">
+            <div class="block-name">思想道德与法治</div>
+          </div>
+        </div>
+
+        <!-- 周五、六、日：本周没课，收窄 -->
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+        <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-8"></div>
+  <div class="quiet">周课表按节次展示。作息时间由你自己填写，未填写时不显示任何时刻，也不臆造上课时间。点课程块看详情。</div>
+
+  <div class="gap-16"></div>
+  <div class="btn-assistant"><span class="dot-gold"></span>问问课表助手</div>
+
+  <div class="gap-16"></div>
+  <div class="actionbar">
+    <div class="actionbar-item">导入课表</div>
+    <div class="actionbar-item">手工新增</div>
+    <div class="actionbar-item">课程管理</div>
+  </div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回首页</div>
+</div>
+</body>
+</html>

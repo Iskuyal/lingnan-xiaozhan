@@ -1,13 +1,12 @@
 /**
  * 周课表页面样式：液态玻璃——玻璃面板与玻璃网格，表头带金色薄层。
- * 单视图收纳版：网格是唯一视图，点课程弹编辑滑层；导入与手工入口收进页脚；
- * 课表助手改为悬浮入口 + 独立滑层。标题沿用全局 .section-title，在本页作用域内改色。
+ * 标题沿用全局 .section-title / .eyebrow，在本页作用域内改色，不改标记。
  * 待核对与失败项一律琥珀色，刻意避开品牌红，避免与「重点」混淆。
- * 颜色与材质引用 app.wxss 的令牌（含回退值）。
+ * 颜色与材质引用 app.wxss 的令牌（含回退值）；课块颜色的三个槽 --blk-* 由数据在内联样式里填，
+ * 具体值见 services/timetable/palette.ts。
  */
 .tt-heading {
-  margin-bottom: 28rpx; padding: 22rpx 28rpx;
-  display: flex; align-items: baseline; justify-content: space-between; gap: 16rpx;
+  margin-bottom: 24rpx; padding: 28rpx 30rpx;
   background: var(--glass, rgba(255,255,255,0.52));
   -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
   backdrop-filter: blur(var(--glass-blur, 16px));
@@ -15,8 +14,10 @@
   border-radius: var(--r-panel, 32rpx);
   box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 20rpx 52rpx var(--glass-drop, rgba(92,28,26,0.13));
 }
-.tt-heading .section-title { color: var(--brand-deep, #8c1614); font-size: 36rpx; font-weight: 700; letter-spacing: 2rpx; }
-.tt-heading .tt-meta { color: var(--text-3, #94867f); font-size: 23rpx; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tt-heading .eyebrow { color: var(--text-3, #94867f); letter-spacing: 1rpx; }
+.head-top { display: flex; align-items: center; justify-content: space-between; }
+.head-link { color: var(--brand-ink, #7a1a12); font-size: 25rpx; border-bottom: 1rpx solid rgba(122,26,18,0.35); padding-bottom: 3rpx; }
+.tt-meta { color: var(--text-3, #94867f); font-size: 25rpx; margin-top: 8rpx; }
 .tt-hint { margin-top: 60rpx; }
 .tt-hint-copy { color: var(--text-2, #6b5d57); font-size: 28rpx; margin: 16rpx 0; line-height: 1.8; }
 .tt-empty { margin-top: 40rpx; }
@@ -28,30 +29,41 @@
 }
 .tt-guide-note { background: var(--warn-soft, rgba(255,244,228,0.86)); border-color: var(--warn-line, rgba(214,160,90,0.55)); color: var(--warn, #9a5b1e); }
 .tt-privacy { color: var(--text-3, #94867f); font-size: 24rpx; margin-top: 24rpx; }
-.tt-secondary { background: var(--glass, rgba(255,255,255,0.52)); color: var(--brand-ink, #7a1a12); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
 
-.week-switch { display: flex; align-items: center; margin-bottom: 24rpx; gap: 20rpx; }
 /**
- * 小程序 button 的默认宽度按容器撑开，两个按钮把中间的周次挤到只剩 26pt（「第 1 周」折行），
- * 而禁止收缩又会让整行溢出（「下一周」被裁）。
- * 用 flex-basis 定宽而不是 width：在 flex 布局里 flex-basis 优先于 width，
- * 不会被 button 的默认宽度盖掉。两个按钮各 152rpx，剩下全给中间。
+ * 周次与翻周。周次是头部的主角（学期副标题在上面一行），左右两个圆钮翻周，
+ * 中间点开是周次选择器；「上一周/下一周」两字按钮会跟周次抢宽度，所以用符号。
  */
-.week-button {
-  flex: 0 0 152rpx; width: auto; text-align: center;
-  padding: 14rpx 0; font-size: 25rpx; margin: 0; color: var(--brand-deep, #8c1614);
+.week-row { display: flex; align-items: center; gap: 16rpx; margin-top: 10rpx; }
+.week-nav {
+  flex: 0 0 76rpx; width: auto; text-align: center; padding: 6rpx 0; font-size: 34rpx; line-height: 1.2; margin: 0;
+  color: var(--brand-deep, #8c1614);
   background: var(--glass, rgba(255,255,255,0.52));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
   border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
   border-radius: var(--r-pill, 999rpx);
   box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
 }
-.week-picker { flex: 1 1 0%; min-width: 0; text-align: center; }
-/* 「第 3 周」的数字两侧是空格，容器一窄就会在空格处折成三行，禁止换行。 */
-.week-current { font-size: 30rpx; font-weight: 700; color: var(--brand-deep, #8c1614); letter-spacing: 1rpx; white-space: nowrap; }
-.tt-empty-week { margin-top: 20rpx; }
+.week-pick { flex: 1 1 0%; min-width: 0; text-align: center; }
+/* 「第 3 周」的数字两侧是空格，容器一窄就会在空格处折行，禁止换行。 */
+.week-now { font-size: 40rpx; font-weight: 700; color: var(--brand-deep, #8c1614); letter-spacing: 1rpx; white-space: nowrap; }
 
+/* 金杠小标题 + 右侧「课表 / 列表」切换 */
+.section-head { margin: 8rpx 0 16rpx; }
+.seg {
+  margin-left: auto; display: flex; padding: 4rpx;
+  background: rgba(255,255,255,0.42);
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-pill, 999rpx);
+}
+.seg-item { padding: 4rpx 26rpx; font-size: 24rpx; color: var(--text-2, #6b5d57); border-radius: var(--r-pill, 999rpx); }
+.seg-item-on { background: rgba(196,28,35,0.90); color: #fff; font-weight: 600; box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.36); }
+
+/**
+ * 周网格（设计图 01）。
+ * 几何：单节行高 84rpx（= 43.7px）、左侧节次栏 84rpx；**列宽自适应**——有课的天均分剩余宽度，
+ * 没课的天收窄到 44rpx。7 列均分时每列只有约 82rpx，课名两个字就折行，这是本版最关键的取舍。
+ * 块的位置/高度/泳道由 view 层算好写在内联样式里，这里只负责长什么样。
+ */
 .grid {
   border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
   border-radius: var(--r-control, 20rpx); overflow: hidden;
@@ -60,75 +72,215 @@
   backdrop-filter: blur(var(--glass-blur, 16px));
   box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
 }
-.grid-row { display: flex; border-top: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.grid-row:first-child { border-top: 0; }
-.grid-head { background: linear-gradient(150deg, rgba(198,154,40,0.24), rgba(198,154,40,0.12)); }
-.grid-cell { flex: 1; min-width: 0; border-left: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); padding: 8rpx 6rpx; font-size: 20rpx; line-height: 1.4; }
-.grid-cell:first-child { border-left: 0; }
-.grid-corner { flex: 0 0 96rpx; color: var(--text-3, #94867f); font-size: 19rpx; display: flex; align-items: center; }
-.grid-th { text-align: center; color: var(--brand-deep, #8c1614); font-weight: 700; }
-.grid-course { color: var(--text, #2b2422); margin-bottom: 6rpx; word-break: break-all; border-radius: 8rpx; padding: 4rpx 6rpx; }
-/* 有课的格子按红/金交替着色，同一格内相邻课程一眼可分；待核对仍用琥珀色，不与主题色混同。 */
-.grid-course-red { background: rgba(196,28,35,0.10); color: var(--brand-ink, #7a1a12); }
-.grid-course-gold { background: rgba(198,154,40,0.20); color: #5c4714; }
-.grid-course-review { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); }
-.course-tag { font-size: 20rpx; font-weight: 400; color: var(--text-2, #6b5d57); background: rgba(255,255,255,0.75); border-radius: var(--r-pill, 999rpx); padding: 2rpx 12rpx; }
-.course-tag-review { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); }
-
-.tt-footer { color: var(--text-3, #94867f); font-size: 23rpx; margin-top: 28rpx; }
-/* 学期级动作收纳在课表下方：仍是独立按钮，但不压在日常视野顶部；空状态才做主角。 */
-.tt-foot-actions { display: flex; flex-direction: column; gap: 16rpx; margin-top: 20rpx; }
-.tt-foot-actions .home-button { margin: 0; }
-.tt-back-link { display: block; text-align: center; color: var(--text-3, #94867f); font-size: 24rpx; margin-top: 36rpx; }
-
-/* 底部滑层：课程编辑与课表助手共用；scrim 负责压暗背后内容。 */
-.tt-scrim {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 20;
-  background: rgba(43,36,34,0.38);
+.grid-row { display: flex; align-items: center; }
+.grid-head { height: 64rpx; background: linear-gradient(150deg, rgba(198,154,40,0.24), rgba(198,154,40,0.12)); border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
+.grid-rail { flex: 0 0 84rpx; }
+.grid-th { flex: 1 1 0; min-width: 0; text-align: center; color: var(--brand-deep, #8c1614); font-size: 24rpx; font-weight: 700; line-height: 1.15; }
+.grid-th-narrow { flex: 0 0 44rpx; }
+.grid-th-narrow .grid-th-date { font-size: 18rpx; }
+.grid-th-date { display: block; color: var(--text-3, #94867f); font-size: 20rpx; font-weight: 400; }
+.grid-th-today .grid-th-day {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40rpx; height: 40rpx; border-radius: 50%; background: var(--brand, #c41c23); color: #fff;
 }
-.tt-sheet {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 21;
-  max-height: 82vh; overflow-y: auto;
-  padding: 14rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+.grid-th-today .grid-th-date { color: var(--brand-ink, #7a1a12); font-weight: 600; }
+.grid-body { display: flex; background: rgba(255,255,255,0.30); }
+.grid-no {
+  height: 84rpx; display: flex; align-items: center; justify-content: center;
+  color: var(--text-3, #94867f); font-size: 22rpx; font-weight: 600;
+  border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70));
+}
+.grid-cols { flex: 1 1 0; min-width: 0; display: flex; }
+.grid-col { flex: 1 1 0; min-width: 0; position: relative; border-left: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
+.grid-col:first-child { border-left: 0; }
+.grid-col-narrow { flex: 0 0 44rpx; background: rgba(255,255,255,0.14); }
+.grid-col-today { background: rgba(198,154,40,0.14); }
+.grid-line { height: 84rpx; border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
+
+.grid-block {
+  position: absolute; box-sizing: border-box; padding: 6rpx 8rpx 6rpx 14rpx; overflow: hidden;
+  border: 1rpx solid var(--blk-line, rgba(255,255,255,0.62));
+  border-left-width: 6rpx; border-left-style: solid;
+  border-left-color: var(--blk-solid, rgba(148,134,127,0.55));
+  background: var(--blk-tint, rgba(255,255,255,0.72));
+  border-radius: var(--r-chip, 12rpx);
+}
+.grid-block-name {
+  font-size: 20rpx; font-weight: 600; line-height: 1.28; color: var(--text, #2b2422);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+.grid-block-meta {
+  font-size: 18rpx; color: var(--text-2, #6b5d57); line-height: 1.3; margin-top: 2rpx;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.grid-block-badge {
+  position: absolute; top: 4rpx; right: 4rpx; min-width: 28rpx; height: 28rpx; padding: 0 6rpx;
+  border-radius: var(--r-pill, 999rpx); background: #fff; color: var(--brand-ink, #7a1a12);
+  border: 1rpx solid var(--gold, #c69a28); font-size: 18rpx; font-weight: 700; text-align: center; line-height: 28rpx;
+}
+/* 待核对：琥珀虚线 + 琥珀底，与列表里的警示行同一语义（只标记不猜）。 */
+.grid-block-review {
+  border-style: dashed;
+  background: var(--warn-soft, rgba(255,244,228,0.86));
+  border-color: var(--warn-line, rgba(214,160,90,0.55));
+  border-left-color: var(--warn, #9a5b1e);
+}
+.grid-block-review .grid-block-name { color: var(--warn, #9a5b1e); }
+/* 正在上：金描边，与今日速查条指的是同一节课。 */
+.grid-block-now { box-shadow: 0 0 0 3rpx rgba(198,154,40,0.75); }
+
+/* 今日速查（设计图 01 与 10 的三态）：正在上＝红点红字，下一节＝金点金字（不是警告），
+   今天没课/已上完＝灰点中性。时刻胶囊只在用户填了作息、且这一节的起止都填了时才出现。
+   玻璃面按 app.wxss 的配方在本页实现（全项目不抽公共类，各处圆角与不透明度本就不同）。 */
+.today {
+  display: flex; align-items: center; gap: 20rpx; padding: 24rpx 28rpx; margin-bottom: 24rpx;
   background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px)); backdrop-filter: blur(var(--glass-blur, 16px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
   border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-bottom: 0;
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.today-dot { flex: 0 0 auto; width: 18rpx; height: 18rpx; border-radius: 50%; background: var(--brand, #c41c23); box-shadow: 0 0 14rpx rgba(196,28,35,0.55); }
+.today-dot-next { background: var(--gold, #c69a28); box-shadow: 0 0 14rpx rgba(198,154,40,0.55); }
+.today-dot-none, .today-dot-done { background: var(--text-3, #94867f); box-shadow: none; }
+.today-body { flex: 1; min-width: 0; }
+.today-kicker { color: var(--brand-deep, #8c1614); font-size: 24rpx; font-weight: 700; letter-spacing: 1rpx; }
+.today-kicker-next { color: var(--gold-deep, #a67f1c); }
+.today-kicker-none, .today-kicker-done { color: var(--text-2, #6b5d57); }
+.today-name { font-size: 30rpx; font-weight: 600; }
+.today-sub { color: var(--text-2, #6b5d57); font-size: 24rpx; margin-top: 2rpx; }
+.today-pill {
+  flex: 0 0 auto; padding: 6rpx 18rpx; border-radius: var(--r-pill, 999rpx);
+  background: rgba(196,28,35,0.10); border: 1rpx solid rgba(196,28,35,0.20);
+  color: var(--brand-ink, #7a1a12); font-size: 23rpx; font-weight: 600; white-space: nowrap;
+}
+.today-next .today-pill { background: rgba(198,154,40,0.14); border-color: rgba(198,154,40,0.30); color: var(--gold-deep, #a67f1c); }
+
+/* 课程详情弹层（设计图 05）：贴底、圆角、课程色头部；正文区可滚动，按钮固定在底部。 */
+.sheet-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background: rgba(24,12,12,0.45); z-index: 20; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 76vh;
+  display: flex; flex-direction: column;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border-top: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
   border-radius: var(--r-panel, 32rpx) var(--r-panel, 32rpx) 0 0;
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 -12rpx 40rpx rgba(43,36,34,0.28);
-  animation: tt-sheet-in 0.22s ease;
+  box-shadow: 0 -12rpx 60rpx rgba(92,28,26,0.22);
 }
-@keyframes tt-sheet-in { from { transform: translateY(40rpx); opacity: 0.6; } to { transform: none; opacity: 1; } }
-.tt-sheet-handle { width: 64rpx; height: 8rpx; border-radius: var(--r-pill, 999rpx); background: rgba(43,36,34,0.16); margin: 8rpx auto 20rpx; }
-.tt-sheet-title { font-size: 31rpx; font-weight: 700; color: var(--brand-deep, #8c1614); display: flex; align-items: center; flex-wrap: wrap; gap: 8rpx; }
-/* 课程详情逐字段成行：左侧灰色标签、右侧取值；节次是核心字段，用深红加重。 */
-.tt-sheet-fields { margin-top: 16rpx; }
-.tt-field { display: flex; align-items: baseline; margin-top: 12rpx; }
-.tt-field-label { flex: 0 0 120rpx; color: var(--text-3, #94867f); font-size: 24rpx; }
-.tt-field-value { flex: 1; min-width: 0; color: var(--text, #2b2422); font-size: 26rpx; word-break: break-all; }
-.tt-field-key { color: var(--brand-deep, #8c1614); font-weight: 700; }
-.tt-field-empty { color: var(--text-3, #94867f); }
-.tt-sheet-warn { margin-top: 12rpx; background: var(--warn-soft, rgba(255,244,228,0.86)); border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55)); color: var(--warn, #9a5b1e); border-radius: var(--r-control, 20rpx); padding: 12rpx 18rpx; font-size: 23rpx; line-height: 1.7; }
-.tt-sheet-actions { display: flex; flex-direction: column; gap: 16rpx; margin-top: 24rpx; }
-/* 全局 .home-button 自带 64rpx 上边距，滑层内不需要。 */
-.tt-sheet-actions .home-button { margin: 0; }
-.tt-sheet-warn-btn { background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); box-shadow: none; border-color: var(--warn-line, rgba(214,160,90,0.55)); }
+.sheet-handle { width: 62rpx; height: 6rpx; border-radius: var(--r-pill, 999rpx); background: rgba(148,134,127,0.45); margin: 14rpx auto 0; }
+.sheet-head { padding: 20rpx 30rpx 24rpx; background: var(--blk-solid, rgba(148,134,127,0.55)); }
+.sheet-name { color: #fff; font-size: 38rpx; font-weight: 700; letter-spacing: 1rpx; }
+.sheet-sub { color: rgba(255,255,255,0.88); font-size: 24rpx; margin-top: 4rpx; }
+.sheet-body { flex: 1 1 auto; min-height: 0; padding: 12rpx 30rpx 0; }
+.sheet-warn { margin: 12rpx 0; padding: 16rpx 20rpx; border-radius: var(--r-control, 20rpx); background: var(--warn-soft, rgba(255,244,228,0.86)); border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55)); color: var(--warn, #9a5b1e); font-size: 24rpx; line-height: 1.7; }
+.sheet-row { display: flex; gap: 24rpx; padding: 14rpx 0; border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
+.sheet-key { flex: 0 0 124rpx; color: var(--text-3, #94867f); font-size: 25rpx; }
+.sheet-val { flex: 1; min-width: 0; font-size: 27rpx; word-break: break-all; }
+.sheet-group { color: var(--text-3, #94867f); font-size: 23rpx; margin: 18rpx 0 8rpx; }
+.sheet-member { padding: 16rpx 20rpx; margin-bottom: 12rpx; border-radius: var(--r-control, 20rpx); background: rgba(255,255,255,0.72); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
+.sheet-member-name { font-size: 27rpx; font-weight: 600; }
+.sheet-member-sub { color: var(--text-2, #6b5d57); font-size: 23rpx; margin-top: 2rpx; }
+.sheet-foot { padding: 20rpx 30rpx calc(24rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 20rpx; }
+.sheet-btn {
+  flex: 1; margin: 0; padding: 20rpx 0; font-size: 28rpx; font-weight: 600; color: #fff;
+  background: linear-gradient(150deg, rgba(196,28,35,0.95) 0%, rgba(140,22,20,0.92) 100%);
+  border: 1rpx solid rgba(255,255,255,0.30); border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.42);
+}
+.sheet-btn-warn { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); border-color: var(--warn-line, rgba(214,160,90,0.55)); box-shadow: none; }
+.sheet-close { flex: 0 0 auto; color: var(--text-3, #94867f); font-size: 26rpx; padding: 10rpx 6rpx; }
 
-/* 课表助手悬浮入口：课表可问时出现，问完即收，不占课表视野。 */
-.tt-fab {
-  position: fixed; right: 32rpx; bottom: calc(40rpx + env(safe-area-inset-bottom)); z-index: 15;
-  margin: 0; padding: 0 32rpx; line-height: 2.6; font-size: 26rpx; font-weight: 600;
-  color: #fff; background: linear-gradient(150deg, rgba(196,28,35,0.96) 0%, rgba(140,22,20,0.92) 100%);
-  border: 1rpx solid rgba(255,255,255,0.34); border-radius: var(--r-pill, 999rpx);
-  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.42), 0 16rpx 40rpx rgba(140,22,20,0.36);
+.tt-empty-week { margin: 20rpx 0 0; }
+.day-list { margin-top: 8rpx; }
+.day-block { margin-bottom: 24rpx; }
+.day-title { color: var(--text-3, #94867f); font-size: 26rpx; margin-bottom: 8rpx; }
+.course-item {
+  padding: 22rpx 24rpx; margin-bottom: 16rpx; display: flex; justify-content: space-between; gap: 20rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-card, 24rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
+.course-main { flex: 1; min-width: 0; }
+.course-name { font-size: 29rpx; font-weight: 600; }
+.course-tag { font-size: 20rpx; font-weight: 400; color: var(--text-2, #6b5d57); background: rgba(255,255,255,0.75); border-radius: var(--r-pill, 999rpx); padding: 2rpx 12rpx; margin-left: 10rpx; }
+.course-tag-review { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); }
+.course-line { color: var(--text-2, #6b5d57); font-size: 25rpx; margin-top: 6rpx; }
+.course-warning { color: var(--warn, #9a5b1e); font-size: 23rpx; margin-top: 8rpx; }
+.course-ops { display: flex; flex-direction: column; gap: 10rpx; }
+.course-op {
+  padding: 10rpx 20rpx; font-size: 23rpx; margin: 0; color: #fff;
+  background: rgba(196,28,35,0.90); border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.36);
+}
+.course-op-delete { background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); box-shadow: none; }
+.tt-secondary { background: var(--glass, rgba(255,255,255,0.52)); color: var(--brand-ink, #7a1a12); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
+.tt-footer { color: var(--text-3, #94867f); font-size: 23rpx; margin-top: 32rpx; }
+
+/* 底部动作条：导入与手工新增不再占头部，进来第一眼是本周课表。 */
+.actionbar { display: flex; gap: 20rpx; margin-top: 24rpx; }
+.actionbar-item {
+  flex: 1; padding: 18rpx 0; font-size: 26rpx; font-weight: 600; margin: 0;
+  color: var(--brand-ink, #7a1a12);
+  background: var(--glass, rgba(255,255,255,0.52));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-control, 20rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
 }
 
-/* 课表助手（Ticket 06）：与部门问答共用一套对话语言，材质随主题，装在滑层里。 */
-.tt-qa .qa-messages { max-height: 40vh; overflow-y: auto; margin-top: 20rpx; }
+/* 退化态说明（设计图 03）：金边 callout + 一个「去设置」入口。缺开学日/作息时替代速查条的位置，
+   不是错误态，所以用金色而不是琥珀。 */
+.setup-hint {
+  margin-bottom: 24rpx; padding: 22rpx 26rpx;
+  border-radius: var(--r-panel, 32rpx); border: 1rpx solid rgba(198,154,40,0.30);
+  background: linear-gradient(150deg, rgba(198,154,40,0.22), rgba(198,154,40,0.10));
+}
+.setup-hint-text { color: var(--brand-ink, #7a1a12); font-size: 26rpx; line-height: 1.8; }
+.setup-hint-btn {
+  display: inline-block; margin-top: 16rpx; padding: 8rpx 26rpx;
+  font-size: 25rpx; font-weight: 600; color: var(--brand-ink, #7a1a12);
+  background: rgba(255,255,255,0.72); border: 1rpx solid rgba(198,154,40,0.45);
+  border-radius: var(--r-pill, 999rpx);
+}
+
+/* 助手入口（设计图 01）：金色玻璃，不用品牌红——红留给「今天」与主要动作，
+   一屏里同时出现两个大红按钮会把重点冲淡。 */
+.tt-assistant {
+  margin: 24rpx 0 0; padding: 22rpx 0; font-size: 29rpx; font-weight: 600;
+  color: var(--brand-ink, #7a1a12);
+  background: linear-gradient(150deg, rgba(198,154,40,0.26), rgba(198,154,40,0.12));
+  border: 1rpx solid rgba(198,154,40,0.45);
+  border-radius: var(--r-pill, 999rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92));
+}
+/* 返回首页在原生导航栏已有返回箭头，这里按设计图收成一行安静的文字。 */
+.tt-back-home {
+  margin: 24rpx 0 0; padding: 8rpx 0; font-size: 26rpx; line-height: 1.6;
+  color: var(--text-3, #94867f); background: none; border: none;
+  text-decoration: underline; text-decoration-color: rgba(148,134,127,0.5);
+}
+.tt-back-home::after { border: none; }
+.tt-qa { margin-top: 24rpx; }
+.qa-panel {
+  padding: 26rpx 28rpx;
+  background: var(--glass-strong, rgba(255,255,255,0.72));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
+  border-radius: var(--r-panel, 32rpx);
+  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+}
 .qa-head { display: flex; align-items: center; justify-content: space-between; }
 .qa-title { font-size: 30rpx; font-weight: 600; color: var(--brand-deep, #8c1614); }
 .qa-close { font-size: 24rpx; color: var(--text-3, #94867f); padding: 0; margin: 0; background: none; border: none; line-height: 1; }
 .qa-close::after { border: none; }
+.qa-messages { margin-top: 20rpx; }
 .qa-msg { font-size: 26rpx; line-height: 1.7; padding: 14rpx 20rpx; border-radius: var(--r-control, 20rpx); margin-bottom: 12rpx; }
 .qa-msg-ai { background: rgba(198,154,40,0.16); border: 1rpx solid rgba(198,154,40,0.28); color: var(--text, #2b2422); }
 .qa-msg-user { background: rgba(196,28,35,0.12); border: 1rpx solid rgba(196,28,35,0.22); color: var(--brand-ink, #7a1a12); }

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课程管理</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+/* 08 页局部微调（共享文件不动，取色只用令牌变量）。
+   选中行的极淡红底用 opacity 压在伪元素上：红只用于品牌、今天与主要动作，选中态属于后者，
+   但不做大面积实底，6% 只够让人看出「这两行被勾了」。 */
+.mg-list { overflow: hidden; }
+.mg-list .mg-row + .mg-row { border-top: 0.5px solid var(--glass-divide); }
+.mg-row { position: relative; }
+.mg-row--on::before { content: ""; position: absolute; inset: 0; background: var(--brand); opacity: 0.05; }
+.mg-row--on > * { position: relative; }
+/* 未勾选的圈在玻璃面上是「白描白」，几乎看不出还能勾：本页把描边压到文字第三级，
+   让它像一个真的空勾选框。（共享组件里这一档需要复核，本页只是局部调。） */
+.mg-list .mg-check:not(.mg-check--on) { border-color: var(--text-3); }
+/* 底部动作条：两条动作 + 一行后果说明，玻璃面与页面同宽，靠下留白。 */
+.mg-actions { padding: 14.6px 15.6px; }
+</style>
+</head>
+<body>
+<!--
+  08 课程管理：统计 + 筛选 + 多选列表 + 批量删除。
+  课程数据沿用课表样本（劳动教育（一）、高等数学、大学美育、5+3 真创项目 …），
+  待核对与手工两种状态各画一行：待核对行给琥珀 chip，手工行给灰 chip，都不改课程名的写法。
+  统计数字是占位示例：45 门课里本周在读 12 门、待核对 1 门，与 09 的解析结果对得上。
+-->
+<div class="statusbar">
+  <span>14:06</span>
+  <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+</div>
+<div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课程管理</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+<div class="page">
+  <div class="glass head">
+    <div class="eyebrow">2026-2027学年第一学期</div>
+    <div class="gap-12"></div>
+    <div class="stat">
+      <div class="stat-item"><div class="stat-num">45</div><div class="stat-label">共 45 门课程</div></div>
+      <div class="stat-item"><div class="stat-num">14</div><div class="stat-label">本周在读</div></div>
+      <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">待核对</div></div>
+    </div>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="pills">
+    <span class="pill pill--on">全部</span>
+    <span class="pill">待核对 1</span>
+    <span class="pill">手工 1</span>
+    <span class="pill">导入 44</span>
+  </div>
+
+  <div class="gap-12"></div>
+
+  <div class="glass-strong mg-list">
+    <div class="mg-row mg-row--on">
+      <span class="mg-check mg-check--on">✓</span>
+      <span class="mg-bar" style="--c:var(--c5)"></span>
+      <div class="mg-main">
+        <div class="mg-name">劳动教育（一）</div>
+        <div class="mg-sub">星期一 · 第 1-4 节 · 第 4 周 · 夏舜丽</div>
+      </div>
+    </div>
+
+    <div class="mg-row mg-row--on">
+      <span class="mg-check mg-check--on">✓</span>
+      <span class="mg-bar" style="--c:var(--c1)"></span>
+      <div class="mg-main">
+        <div class="mg-name">高等数学</div>
+        <div class="mg-sub">星期一 · 第 5-6 节 · 第 4-5、7-16 周 · 林加燕</div>
+      </div>
+    </div>
+
+    <div class="mg-row">
+      <span class="mg-check"></span>
+      <span class="mg-bar" style="--c:var(--c6)"></span>
+      <div class="mg-main">
+        <div class="mg-name">中华传统文化精粹（一）</div>
+        <div class="mg-sub">星期一 · 第 7-8 节 · 第 4-12 周 · 易定军</div>
+      </div>
+    </div>
+
+    <div class="mg-row">
+      <span class="mg-check"></span>
+      <span class="mg-bar" style="--c:var(--c8)"></span>
+      <div class="mg-main">
+        <div class="mg-name">大学美育</div>
+        <div class="mg-sub">星期一 · 第 9-10 节 · 第 4-5、7-16 周 · 程晓明</div>
+      </div>
+    </div>
+
+    <div class="mg-row">
+      <span class="mg-check"></span>
+      <span class="mg-bar" style="--c:var(--c3)"></span>
+      <div class="mg-main">
+        <div class="mg-name">5+3 真创项目</div>
+        <div class="mg-sub">星期三 · 第 7-8 节 · 第 1-16 周 · 陈实</div>
+      </div>
+    </div>
+
+    <div class="mg-row">
+      <span class="mg-check"></span>
+      <span class="mg-bar" style="--c:var(--warn)"></span>
+      <div class="mg-main">
+        <div class="mg-name">体育（三）</div>
+        <div class="mg-sub">星期四 · 第 3-4 节 · 周次待核对<span class="chip chip-warn">待核对</span></div>
+      </div>
+    </div>
+
+    <div class="mg-row">
+      <span class="mg-check"></span>
+      <span class="mg-bar" style="--c:var(--c7)"></span>
+      <div class="mg-main">
+        <div class="mg-name">我的大学生活我做主</div>
+        <div class="mg-sub">星期三 · 第 3-4 节 · 第 1-16 周 · 教师未填<span class="chip chip-plain">手工</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-16"></div>
+
+  <div class="glass mg-actions">
+    <div class="quiet">删除会连同这些课的全部分段一起删掉，无法撤销</div>
+    <div class="gap-8"></div>
+    <div class="btn-row">
+      <div class="btn btn-warn">删除所选 2 门</div>
+      <div class="btn btn-secondary">全选</div>
+    </div>
+  </div>
+
+  <div class="gap-16"></div>
+  <div class="link-row">返回课表</div>
+</div>
+</body>
+</html>

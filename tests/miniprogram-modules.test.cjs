@@ -79,7 +79,10 @@ test('小程序产物不含 Excel 解析库，解析器只在云函数产物里'
 
   // 反向断言：解析器确实随云函数构建，并且声明了 xlsx 依赖，否则解析跑不起来。
   const functionPackage = JSON.parse(fs.readFileSync(path.resolve('cloudfunctions/timetable/package.json'), 'utf8'));
-  assert.equal(functionPackage.dependencies.xlsx, '0.18.5');
+  assert.equal(
+    functionPackage.dependencies.xlsx,
+    'https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz',
+  );
   assert.ok(fs.existsSync(path.resolve('dist/cloudfunctions/timetable/parse.js')), '云函数产物应包含解析器');
   const parseSource = fs.readFileSync(path.resolve('dist/cloudfunctions/timetable/parse.js'), 'utf8');
   assert.match(parseSource, /require\("xlsx"\)/u, '云函数侧的解析器应在运行时引入 xlsx');

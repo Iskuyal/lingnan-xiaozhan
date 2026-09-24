@@ -54,6 +54,13 @@ page {
   --warn-soft: rgba(255,244,228,0.86);
   --warn-line: rgba(214,160,90,0.55);
 
+  /* 课块颜色槽：课块的颜色是**数据驱动的**（按课程名取色，见 services/timetable/palette.ts），
+     WXSS 里写不出具体值，所以这里给的是兜底面——每块在内联样式里覆盖 --blk-* 三个槽。
+     内联样式失效时课块退回统一的浅色，版面仍然成立，不会烂掉。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
   /* 背景：红金光晕 + 暖白渐变。半透明面层需要有「背后有东西」的光，否则玻璃会读成
      一块浅色方块；高斯模糊也需要背景有对比才看得出来，太平滑的底色会让模糊几乎无感。 */
   background:
@@ -79,10 +86,10 @@ button::after { border: 0; }
 /**
  * 玻璃面的构成（各页面按需自行实现，配方如下，参数取自上面的令牌）：
  *
- *   background: var(--glass, …) 或 var(--glass-strong, …)   面层；承载长文本用 strong
+ *   background: var(--glass, rgba(255,255,255,0.52)) 或 var(--glass-strong, rgba(255,255,255,0.72))   面层；承载长文本用 strong
  *   backdrop-filter: blur(var(--glass-blur, 16px))          高斯模糊，同时写 -webkit- 前缀
- *   border: 1rpx solid var(--glass-line, …)                 高光描边
- *   box-shadow: inset 0 2rpx 0 var(--glass-edge, …), 0 … var(--glass-drop, …)
+ *   border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62))                 高光描边
+ *   box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 … var(--glass-drop, rgba(92,28,26,0.13))
  *                                                           内高光 + 投影
  *   border-radius: var(--r-panel | --r-card | --r-control, …)
  *

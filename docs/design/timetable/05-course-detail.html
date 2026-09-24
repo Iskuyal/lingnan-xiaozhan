@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课程详情底部弹层</title>
+<link rel="stylesheet" href="_tokens.css">
+<link rel="stylesheet" href="_mockup.css">
+<style>
+  /* 本页局部样式（_tokens.css / _mockup.css 是共享文件，不动）。
+     两块 390×844 的一屏：背景是 01 的课表屏（压暗），弹层贴在各自这一屏的底部。
+     背景只排到网格第 6 行，其余由 .phone 的 overflow:hidden 裁掉——一屏之外的内容在这张图里没有意义。 */
+  .stage-cap {
+    display: flex; align-items: center; gap: 7.3px; padding: 11.5px 18.7px;
+    background: rgba(255, 255, 255, 0.52); border-top: 0.5px solid var(--glass-line);
+    border-bottom: 0.5px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
+  }
+  .stage-cap i { flex: 0 0 3.1px; width: 3.1px; height: 13px; border-radius: 1.6px; background: var(--gold); box-shadow: 0 0 6px rgba(198, 154, 40, 0.5); }
+  .stage-no { color: var(--brand-deep); font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px; }
+  .stage-desc { color: var(--text-3); font-size: 12.5px; }
+
+  /* 弹层内部：主按钮比删除宽；分组小标题沿用 .times-group 的层级（更小更淡）。
+     六行信息要在网格表头之下留出干净的分界，行内边距从 7.3 收到 6.2（省 13px，每行仍有 32.5px）。 */
+  .sheet-row { padding: 6.2px 0; }
+  .sheet-head .sheet-tag {
+    display: inline-block; margin-left: 6.2px; padding: 1px 7.3px; vertical-align: 3px;
+    border-radius: var(--r-pill); background: var(--warn-soft); border: 0.5px solid var(--warn-line);
+    color: var(--warn); font-size: 11.5px; font-weight: 600;
+  }
+  .sheet-group { color: var(--text-3); font-size: 11.5px; letter-spacing: 0.5px; margin: 12.5px 0 2.1px; }
+  .sheet-body > .callout-warn { margin-top: 12.5px; }
+  .sheet-body .callout-warn div + div { margin-top: 2.1px; }
+  .sheet-foot .btn-row > .btn:first-child { flex: 1.7; }
+  .sheet-foot .quiet { text-align: center; margin-top: 8.3px; }
+</style>
+</head>
+<body>
+<!--
+  05 课程详情底部弹层
+  两块一屏：状态一是普通课程（高等数学），状态二是待核对的课程（体育（三））。
+  待核对一律琥珀：弹层里用 callout-warn 逐条列出原因，并展示导入时的单元格原文。
+  弹层头部用课程色实底 + 白字（--c 由行内设给 .sheet-head），课程色板以外不出现大面积实底。
+-->
+
+<!-- ============ 状态一：高等数学（信息齐全） ============ -->
+<div class="stage-cap"><i></i><span class="stage-no">状态一</span><span class="stage-desc">点课块 · 课程信息齐全时的弹层</span></div>
+
+<div class="phone">
+  <div class="dim">
+    <div class="statusbar">
+      <span>14:04</span>
+      <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+    </div>
+    <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+    <div class="page">
+      <div class="glass head">
+        <div class="head-top">
+          <span class="eyebrow">2026-2027学年第一学期</span>
+          <span class="head-link">课表设置</span>
+        </div>
+        <div class="head-week-row">
+          <span class="head-nav">‹</span>
+          <span class="head-week">第 4 周</span>
+          <span class="head-nav">›</span>
+          <span class="head-sub">9/21 – 9/27</span>
+        </div>
+        <div class="head-meta">本周 14 门 · 共 45 门课程 · 左右滑动翻周</div>
+      </div>
+
+      <div class="gap-12"></div>
+
+      <div class="glass-strong today">
+        <span class="today-dot"></span>
+        <div class="today-body">
+          <div class="today-kicker">正在上</div>
+          <div class="today-name">高等数学</div>
+          <div class="today-sub">第 5-6 节 · 崇礼楼 306 · 林加燕</div>
+        </div>
+        <span class="today-pill">13:00–14:35</span>
+      </div>
+
+      <div class="gap-16"></div>
+
+      <div class="section-head">
+        <span class="section-bar"></span>
+        <span class="section-title">本周课表</span>
+        <span class="seg seg--compact" style="margin-left:auto">
+          <span class="seg-item seg-item--on">课表</span><span class="seg-item">列表</span>
+        </span>
+      </div>
+
+      <div class="gap-12"></div>
+
+      <div class="glass-strong grid">
+        <div class="grid-head">
+          <div class="grid-rail"></div>
+          <div class="grid-th grid-th--today"><span class="grid-th-day">一</span><span class="grid-th-sub">21</span></div>
+          <div class="grid-th">二<span class="grid-th-sub">22</span></div>
+          <div class="grid-th">三<span class="grid-th-sub">23</span></div>
+          <div class="grid-th">四<span class="grid-th-sub">24</span></div>
+          <div class="grid-th grid-th--narrow">五<span class="grid-th-sub">25</span></div>
+          <div class="grid-th grid-th--narrow">六<span class="grid-th-sub">26</span></div>
+          <div class="grid-th grid-th--narrow">日<span class="grid-th-sub">27</span></div>
+        </div>
+
+        <div class="grid-body">
+          <div class="rail">
+            <div class="rail-cell"><span class="rail-no">1</span><span class="rail-time">08:15</span></div>
+            <div class="rail-cell"><span class="rail-no">2</span><span class="rail-time">09:05</span></div>
+            <div class="rail-cell"><span class="rail-no">3</span><span class="rail-time">10:10</span></div>
+            <div class="rail-cell"><span class="rail-no">4</span><span class="rail-time">11:00</span></div>
+            <div class="rail-cell"><span class="rail-no">5</span><span class="rail-time">13:00</span></div>
+            <div class="rail-cell"><span class="rail-no">6</span><span class="rail-time">13:50</span></div>
+          </div>
+
+          <div class="cols">
+            <div class="col col--today">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:173.2px">
+                <div class="block-name">劳动教育（一）</div>
+                <div class="block-meta">40号楼-B310</div>
+                <div class="block-meta">夏舜丽</div>
+              </div>
+              <div class="block block--now" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:174.8px;height:85.8px">
+                <div class="block-name">高等数学</div>
+                <div class="block-meta">崇礼楼 306</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c7);--c-bg:var(--c7-bg);--c-line:var(--c7-line);top:0;height:173.2px">
+                <div class="block-name">低代码平台应用开发</div>
+                <div class="block-meta">崇礼楼 602</div>
+              </div>
+              <div class="block block--badged" style="--c:var(--c3);--c-bg:var(--c3-bg);--c-line:var(--c3-line);top:174.8px;height:85.8px">
+                <div class="block-name">习近平新时代中国特色社会主义思想概论</div>
+                <span class="block-badge">2</span>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:0;height:85.8px">
+                <div class="block-name">公共外语（英语）一</div>
+              </div>
+              <div class="block" style="--c:var(--c8);--c-bg:var(--c8-bg);--c-line:var(--c8-line);top:87.4px;height:85.8px">
+                <div class="block-name">我的大学生活我做主</div>
+              </div>
+              <div class="block" style="--c:var(--c2);--c-bg:var(--c2-bg);--c-line:var(--c2-line);top:174.8px;height:85.8px">
+                <div class="block-name">信息技术与人工智能应用</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:85.8px">
+                <div class="block-name">毛泽东思想和中国特色社会主义理论体系概论</div>
+              </div>
+              <div class="block block--review" style="top:87.4px;height:85.8px">
+                <div class="block-name">体育（三）</div>
+                <div class="block-meta">周次待核对</div>
+              </div>
+            </div>
+
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head" style="--c:var(--c1)">
+        <div class="sheet-name">高等数学</div>
+        <div class="sheet-sub">第 5-6 节 · 第 4-5、7-16 周</div>
+      </div>
+      <div class="sheet-body">
+        <div class="sheet-row"><span class="sheet-key">教师</span><span class="sheet-val">林加燕</span></div>
+        <div class="sheet-row"><span class="sheet-key">地点</span><span class="sheet-val">崇礼楼 306</span></div>
+        <div class="sheet-row"><span class="sheet-key">校区</span><span class="sheet-val">清远校区 · 场地编号 44</span></div>
+        <div class="sheet-row"><span class="sheet-key">备注</span><span class="sheet-val">教学班</span></div>
+        <div class="sheet-row"><span class="sheet-key">来源</span><span class="sheet-val">导入（Excel）</span></div>
+        <div class="sheet-row"><span class="sheet-key">最近修改</span><span class="sheet-val">2026-09-20 14:01</span></div>
+      </div>
+      <div class="sheet-foot">
+        <div class="btn-row">
+          <div class="btn">修改这节课</div>
+          <div class="btn btn-warn">删除</div>
+        </div>
+        <div class="quiet">删除会同时移除它的全部分段</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 状态二：体育（三）（待核对） ============ -->
+<div class="stage-cap"><i></i><span class="stage-no">状态二</span><span class="stage-desc">点课块 · 原文对不上、标成待核对的弹层</span></div>
+
+<div class="phone">
+  <div class="dim">
+    <div class="statusbar">
+      <span>14:04</span>
+      <span class="sb-icons"><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-bar"></i><i class="sb-wifi"></i><i class="sb-batt"></i></span>
+    </div>
+    <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule">••• <span style="font-size:15px">◉</span></span></div>
+
+    <div class="page">
+      <div class="glass head">
+        <div class="head-top">
+          <span class="eyebrow">2026-2027学年第一学期</span>
+          <span class="head-link">课表设置</span>
+        </div>
+        <div class="head-week-row">
+          <span class="head-nav">‹</span>
+          <span class="head-week">第 4 周</span>
+          <span class="head-nav">›</span>
+          <span class="head-sub">9/21 – 9/27</span>
+        </div>
+        <div class="head-meta">本周 14 门 · 共 45 门课程 · 左右滑动翻周</div>
+      </div>
+
+      <div class="gap-12"></div>
+
+      <div class="glass-strong today">
+        <span class="today-dot"></span>
+        <div class="today-body">
+          <div class="today-kicker">正在上</div>
+          <div class="today-name">高等数学</div>
+          <div class="today-sub">第 5-6 节 · 崇礼楼 306 · 林加燕</div>
+        </div>
+        <span class="today-pill">13:00–14:35</span>
+      </div>
+
+      <div class="gap-16"></div>
+
+      <div class="section-head">
+        <span class="section-bar"></span>
+        <span class="section-title">本周课表</span>
+        <span class="seg seg--compact" style="margin-left:auto">
+          <span class="seg-item seg-item--on">课表</span><span class="seg-item">列表</span>
+        </span>
+      </div>
+
+      <div class="gap-12"></div>
+
+      <div class="glass-strong grid">
+        <div class="grid-head">
+          <div class="grid-rail"></div>
+          <div class="grid-th grid-th--today"><span class="grid-th-day">一</span><span class="grid-th-sub">21</span></div>
+          <div class="grid-th">二<span class="grid-th-sub">22</span></div>
+          <div class="grid-th">三<span class="grid-th-sub">23</span></div>
+          <div class="grid-th">四<span class="grid-th-sub">24</span></div>
+          <div class="grid-th grid-th--narrow">五<span class="grid-th-sub">25</span></div>
+          <div class="grid-th grid-th--narrow">六<span class="grid-th-sub">26</span></div>
+          <div class="grid-th grid-th--narrow">日<span class="grid-th-sub">27</span></div>
+        </div>
+
+        <div class="grid-body">
+          <div class="rail">
+            <div class="rail-cell"><span class="rail-no">1</span><span class="rail-time">08:15</span></div>
+            <div class="rail-cell"><span class="rail-no">2</span><span class="rail-time">09:05</span></div>
+            <div class="rail-cell"><span class="rail-no">3</span><span class="rail-time">10:10</span></div>
+            <div class="rail-cell"><span class="rail-no">4</span><span class="rail-time">11:00</span></div>
+            <div class="rail-cell"><span class="rail-no">5</span><span class="rail-time">13:00</span></div>
+            <div class="rail-cell"><span class="rail-no">6</span><span class="rail-time">13:50</span></div>
+          </div>
+
+          <div class="cols">
+            <div class="col col--today">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:173.2px">
+                <div class="block-name">劳动教育（一）</div>
+                <div class="block-meta">40号楼-B310</div>
+                <div class="block-meta">夏舜丽</div>
+              </div>
+              <div class="block block--now" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:174.8px;height:85.8px">
+                <div class="block-name">高等数学</div>
+                <div class="block-meta">崇礼楼 306</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c7);--c-bg:var(--c7-bg);--c-line:var(--c7-line);top:0;height:173.2px">
+                <div class="block-name">低代码平台应用开发</div>
+                <div class="block-meta">崇礼楼 602</div>
+              </div>
+              <div class="block block--badged" style="--c:var(--c3);--c-bg:var(--c3-bg);--c-line:var(--c3-line);top:174.8px;height:85.8px">
+                <div class="block-name">习近平新时代中国特色社会主义思想概论</div>
+                <span class="block-badge">2</span>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c1);--c-bg:var(--c1-bg);--c-line:var(--c1-line);top:0;height:85.8px">
+                <div class="block-name">公共外语（英语）一</div>
+              </div>
+              <div class="block" style="--c:var(--c8);--c-bg:var(--c8-bg);--c-line:var(--c8-line);top:87.4px;height:85.8px">
+                <div class="block-name">我的大学生活我做主</div>
+              </div>
+              <div class="block" style="--c:var(--c2);--c-bg:var(--c2-bg);--c-line:var(--c2-line);top:174.8px;height:85.8px">
+                <div class="block-name">信息技术与人工智能应用</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div>
+              <div class="block" style="--c:var(--c5);--c-bg:var(--c5-bg);--c-line:var(--c5-line);top:0;height:85.8px">
+                <div class="block-name">毛泽东思想和中国特色社会主义理论体系概论</div>
+              </div>
+              <div class="block block--review" style="top:87.4px;height:85.8px">
+                <div class="block-name">体育（三）</div>
+                <div class="block-meta">周次待核对</div>
+              </div>
+            </div>
+
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+            <div class="col col--narrow"><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div><div class="cell-line"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head" style="--c:var(--c4)">
+        <div class="sheet-name">体育（三）<span class="sheet-tag">待核对</span></div>
+        <div class="sheet-sub">第 3-4 节 · 周次待核对</div>
+      </div>
+      <div class="sheet-body">
+        <div class="callout callout-warn">
+          <div>待核对 · 这节课的原文有一处认不出来，已按原文保留</div>
+          <div>· 周次原文只有一个「4」，没识别成教学周，已按「每周」展示，没有替你改成别的周次</div>
+          <div>· 原文里没有教师与地点（就是空的），未做填充</div>
+        </div>
+        <div class="sheet-row"><span class="sheet-key">教师</span><span class="sheet-val">—（原文没有）</span></div>
+        <div class="sheet-row"><span class="sheet-key">地点</span><span class="sheet-val">—（原文没有）</span></div>
+        <div class="sheet-row"><span class="sheet-key">周次</span><span class="sheet-val">每周 · 待核对</span></div>
+        <div class="sheet-row"><span class="sheet-key">来源</span><span class="sheet-val">导入（Excel）</span></div>
+        <div class="sheet-row"><span class="sheet-key">最近修改</span><span class="sheet-val">2026-09-20 14:01</span></div>
+        <div class="sheet-group">原文 · 下面是导入时单元格里的原话</div>
+        <div class="sheet-row"><span class="sheet-key">节次原文</span><span class="sheet-val">第 3-4 节</span></div>
+        <div class="sheet-row"><span class="sheet-key">周次原文</span><span class="sheet-val">4</span></div>
+      </div>
+      <div class="sheet-foot">
+        <div class="btn-row">
+          <div class="btn">修改这节课</div>
+          <div class="btn btn-warn">删除</div>
+        </div>
+        <div class="quiet">删除会同时移除它的全部分段</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

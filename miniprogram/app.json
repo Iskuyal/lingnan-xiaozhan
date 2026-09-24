@@ -6,6 +6,8 @@
     "pages/timetable/index",
     "pages/timetable/import/index",
     "pages/timetable/edit/index",
+    "pages/timetable/settings/index",
+    "pages/timetable/manage/index",
     "pages/news/index",
     "pages/news/detail/index"
   ],
