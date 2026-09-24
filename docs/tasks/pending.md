@@ -93,7 +93,7 @@
 | I5 | Ticket 10 每日增量在 10 栏目下每批约 3 批但每日只触发 1 次 | **这条不改代码就不算完成**：减少 `INCREMENTAL_PAGES`、增加一次每日触发、或栏目轮转，三选一 | [Ticket 10](tickets/10-campus-rag-qa.md) |
 | I6 | `date + id` 组合索引未建 | 按 Ticket 04 的索引建议建立 | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md) |
 | I7 | AI 资讯实测报告尚未进 `main` | 报告在 `docs/ai-news-poc` 分支，结论为「AI 资讯不建议进首版」（8 篇真实文章、43 次真实调用，行动项抽取 8/8 为「无」，防幻觉 8/8）。采纳后应落进仓库并关闭 Issue #16，避免重复讨论 | [Issue #16](https://github.com/Iskuyal/wx-match/issues/16) |
-| I8 | 已合并分支未清理 | `chore/dependency-pin`、`feat/department-qa-guard-hardening`、`feat/glass-theme`、`feat/timetable-ui-rework`、`test/cloud-retest-nocredits`、`codex/*`、`docs/quota-mitigation` 等与 `main` 无差异，可删 | `git branch -a` 对照 `main` |
+| I8 | 已合并分支未清理 | 与 `main` 已无内容差异、可删的远端分支共 10 条：`chore/dependency-pin`、`codex/data-usage-and-status`、`codex/security-audit-fixes`、`codex/security-deploy-evidence`、`docs/cloud-recheck-2026-09-24`、`docs/pending-work-list`、`feat/department-qa-guard-hardening`、`feat/glass-theme`、`feat/timetable-ui-rework`、`test/cloud-retest-nocredits`。`docs/ai-news-poc` 是**唯一**仍带未合并内容的分支（见 I7）。`test/cloud-retest-nocredits` 的两条提交已由 PR #48 / #49 进入 `main`，`ahead_by` 非 0 是重放出来的旧提交，内容无差异 | `gh api repos/Iskuyal/wx-match/compare/main...<分支>` 逐个核对；删远端分支前再确认一次 |
 
 ## 四、明确不在本次范围
 
