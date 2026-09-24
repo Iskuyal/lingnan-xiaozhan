@@ -21,6 +21,7 @@ function defaultEnv() {
     AI_VISION_MODEL: 'test-vision-model',
     AI_SAFETY_PROVIDER: 'wechat',
     AI_MONTHLY_CAP_YUAN: '50',
+    AI_ADMIN_OPENIDS: 'test-admin-openid',
   };
 }
 
@@ -124,8 +125,8 @@ function createDbStub(options = {}) {
       if (name === 'ai_usage_monthly') {
         return {
           async add({ data }) {
-            if (options.monthlyAddError !== undefined) throw options.monthlyAddError;
             const id = typeof data._id === 'string' ? data._id : `auto-${Object.keys(monthly).length}`;
+            if (/^\d{4}-\d{2}$/.test(id) && options.monthlyAddError !== undefined) throw options.monthlyAddError;
             if (monthly[id] !== undefined) {
               const error = new Error(`document.add:fail _id already exists: ${id}`);
               error.errCode = -501001;
@@ -137,7 +138,7 @@ function createDbStub(options = {}) {
             return {
               async get() {
                 // monthlyReadError 用来模拟数据库故障（区别于「文档不存在」）。
-                if (options.monthlyReadError !== undefined) throw options.monthlyReadError;
+                if (/^\d{4}-\d{2}$/.test(id) && options.monthlyReadError !== undefined) throw options.monthlyReadError;
                 if (monthly[id] === undefined) throw new DocumentNotFound(id);
                 return { data: monthly[id] };
               },
@@ -147,7 +148,7 @@ function createDbStub(options = {}) {
               },
               async update({ data }) {
                 // monthlyUpdateError 模拟写失败（网络 / 权限 / 集合不存在），不是「文档不存在」。
-                if (options.monthlyUpdateError !== undefined) throw options.monthlyUpdateError;
+                if (/^\d{4}-\d{2}$/.test(id) && options.monthlyUpdateError !== undefined) throw options.monthlyUpdateError;
                 if (monthly[id] === undefined) {
                   if (options.monthlyUpdateMissing === 'zero') return { stats: { updated: 0 } };
                   throw new DocumentNotFound(id);
@@ -192,7 +193,7 @@ function createCloudStub(options = {}) {
         if (options.downloadFile === undefined) throw new Error('未提供 downloadFile 桩');
         return options.downloadFile(params);
       },
-      getWXContext: () => (options.openid === undefined ? {} : { OPENID: options.openid }),
+      getWXContext: () => ({ OPENID: options.openid === undefined ? 'test-admin-openid' : options.openid }),
     },
   };
 }
@@ -245,6 +246,7 @@ function createModuleLoader(context) {
       require(specifier) {
         if (specifier === 'wx-server-sdk') return context.cloud;
         if (specifier === 'https' || specifier === 'http') return context.http;
+        if (specifier === 'node:crypto') return require('node:crypto');
         if (specifier.startsWith('./') || specifier.startsWith('../')) {
           const target = specifier.startsWith('./') ? `${specifier.slice(2)}.js` : `${specifier.slice(3)}.js`;
           return load(target);
