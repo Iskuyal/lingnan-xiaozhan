@@ -81,6 +81,7 @@
 | V3 | `AI_ADMIN_OPENIDS` 合法维护者路径 | 先在云端设置维护者白名单，再用该账号核对 `usage` 与 `probe`。当前冒烟账号被拒属预期 | 同上 |
 | V4 | `newsSync` 首次全量入库 | 按 D6 选定的口径跑完分批导入（Ticket 04 口径约 155 批；Ticket 10 口径为团委 171 次 + 8 个新栏目 122 次 ≈ 30 批——两者范围不同） | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md)、[Ticket 10](tickets/10-campus-rag-qa.md) |
 | V5 | 本机之外的记录格式 | 每项另存私有测试记录：`编号、日期时间、Git SHA、设备/微信版本、云函数版本、输入样本代号、预期、实际、耗时、成本、截图或录屏路径、问题链接`；截图遮掉姓名、班级、课表原文及个人信息 | [人工验收清单](../testing/manual-acceptance.md) |
+| V6 | **文字链路的空响应**（已观察到一次，未归档） | `artifacts/verify/ai-smoke.json` 记到一次 `ok=false`、`failureClass=model_unavailable`、`detail=模型返回内容为空（OpenAI 兼容格式）`、`elapsedMs=5201`，`smokeAt=2026-09-24T15:42:44Z`——**在已归档的复测证据之后**，`docs/evidence/cloud-recheck/README.md` 只记了同一批里 `ok=true` 的那次，没有记这次。判据：重跑 `npm run smoke:ai` 多次，确认是偶发还是必现；这是 fail-closed 下最可能打断演示的形态（模型返回空 → 用户看到「模型暂时不可用」）。**演示与录屏前先确认** | `artifacts/verify/ai-smoke.json`（`artifacts/` 被 gitignore，只在执行机上）；[云端复测](../evidence/cloud-recheck/README.md) |
 
 ## 三、代码与文档收尾（不需要等人）
 
@@ -99,8 +100,8 @@
 
 写在这里是为了不被误当漏项。
 
-- **Ticket 08 发布后单页模式**：`wontfix`。本次参赛不做认证、备案与体验版，P6 用「预览」做真机演示，材料中如实标注未发布。
-- **Ticket 10 校园通知 RAG 与 Ticket 11 OCR**：国赛版方向，**不能计入省赛已完成能力**。Ticket 11 目前只差腾讯云密钥即可跑通，但省赛可暂缓。
+- **Ticket 08 发布后单页模式**：`wontfix`。本次参赛不做认证、备案与体验版，P6 用「预览」做真机演示，材料中如实标注未发布。注意票面的第一条验收（页面开启分享接口）**从未实现**——全仓库没有 `onShareAppMessage` / `onShareTimeline`；将来若走发布路径，要补的不只是单页模式实测，分享能力本身也要做。
+- **Ticket 10 校园通知 RAG 与 Ticket 11 OCR**：国赛版方向，**不能计入省赛已完成能力**。Ticket 11 目前只差腾讯云密钥即可跑通，但省赛可暂缓。Ticket 10 的 `recall` / `answer` 两个子命令目前跑不起来——`scripts/rag-poc.cjs` 引用的题库 `docs/evidence/p6-rag/questions.json` 尚未产出。
 - **认证、备案、体验版与正式发布**：不在已完成范围。
 
 ## 五、排期上的硬约束
