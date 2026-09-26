@@ -1,9 +1,10 @@
 /**
  * 课表设置：学期（名称 / 第一周的星期一 / 总周数）与作息时间（12 节，全部由学生自填）。
  *
- * 设计图 07。两条纪律落在这个页面上：
+ * 设计图 16。两条纪律落在这个页面上：
  * - **不预置任何默认时刻**：学校作息表尚未核实，12 节的时刻框一开始全是空的，
  *   填了才会在课表上显示时刻与「正在上 / 下一节」；没填就留空，不画「--:--」这类占位；
+ * - 作息按上午 / 下午 / 晚上折叠；全空时先展开上午组，有已填时刻的组自动展开；
  * - **没开学日也不显示假日期**：预览行只说「还没设置开学日，课表按第 1 周显示」。
  *
  * 读设置失败（云函数未部署、集合未建、断网）**不白屏**：`loadSettings` 会降级为空设置，
@@ -50,9 +51,15 @@ interface SectionRow {
 interface SectionGroup {
   label: string;
   rows: SectionRow[];
+  open: boolean;
+  toggleLabel: string;
 }
 
-/** 分组的依据是学校的作息节律（上午 / 下午 / 晚上），与设计图 07 一致。 */
+interface GroupToggleEvent {
+  currentTarget: { dataset: { index?: string | number } };
+}
+
+/** 分组的依据是学校的作息节律（上午 / 下午 / 晚上），与设计图 16 一致。 */
 const GROUP_DEFS = [
   { label: '上午 第 1-4 节', from: 1, to: 4 },
   { label: '下午 第 5-10 节', from: 5, to: 10 },
@@ -83,9 +90,9 @@ function timeAt(sectionTimes: SectionTime[], index: number): SectionTime {
   return { start: raw.start, end: raw.end };
 }
 
-/** 12 节按上午 / 下午 / 晚上分组渲染；每行的两个值是「已填就显示、没填就空」。 */
-function buildGroups(sectionTimes: SectionTime[]): SectionGroup[] {
-  return GROUP_DEFS.map((group) => {
+/** 12 节按上午 / 下午 / 晚上分组；每行已填就显示、没填就空。 */
+function buildGroups(sectionTimes: SectionTime[], openGroupIndexes: number[]): SectionGroup[] {
+  return GROUP_DEFS.map((group, index) => {
     const rows: SectionRow[] = [];
     for (let section = group.from; section <= group.to; section += 1) {
       const time = timeAt(sectionTimes, section - 1);
@@ -97,8 +104,21 @@ function buildGroups(sectionTimes: SectionTime[]): SectionGroup[] {
         last: section === SECTION_COUNT,
       });
     }
-    return { label: group.label, rows };
+    const open = openGroupIndexes.includes(index);
+    return { label: group.label, rows, open, toggleLabel: open ? '收起' : `${rows.length} 节 · 展开` };
   });
+}
+
+/** 有已填时刻的分组展开；全空时先展开上午，让人知道这张表怎么填。 */
+function openGroupsFor(sectionTimes: SectionTime[]): number[] {
+  const open: number[] = [];
+  GROUP_DEFS.forEach((group, index) => {
+    const hasTime = sectionTimes
+      .slice(group.from - 1, group.to)
+      .some((time) => time.start !== '' || time.end !== '');
+    if (hasTime) open.push(index);
+  });
+  return open.length > 0 ? open : [0];
 }
 
 /** 非周一时的提示：开学日就是「第一周的星期一」，其它日期会把周次整体挪位。 */
@@ -135,7 +155,8 @@ Page({
     totalWeeks: DEFAULT_TOTAL_WEEKS,
     weekOptions: WEEK_OPTIONS,
     sectionTimes: BLANK.sectionTimes,
-    groups: buildGroups(BLANK.sectionTimes),
+    openGroupIndexes: [0],
+    groups: buildGroups(BLANK.sectionTimes, [0]),
     preview: '',
   },
   /** 预览与「第几周」用的今天；测试可经 onLoad 注入，真机取本地日期。 */
@@ -157,13 +178,15 @@ Page({
   },
   applySettings(settings: TimetableSettings) {
     const sectionTimes = settings.sectionTimes.map((time) => ({ start: time.start, end: time.end }));
+    const openGroupIndexes = openGroupsFor(sectionTimes);
     this.setData({
       semesterName: settings.semesterName,
       startDate: settings.startDate,
       totalWeeksText: String(settings.totalWeeks),
       totalWeeks: settings.totalWeeks,
       sectionTimes,
-      groups: buildGroups(sectionTimes),
+      openGroupIndexes,
+      groups: buildGroups(sectionTimes, openGroupIndexes),
       startDateHint: mondayHint(settings.startDate),
       preview: previewText(settings.startDate, settings.totalWeeks, this.today),
     });
@@ -212,7 +235,16 @@ Page({
       else next.start = value;
       return next;
     });
-    this.setData({ sectionTimes, groups: buildGroups(sectionTimes), saveError: '' });
+    this.setData({ sectionTimes, groups: buildGroups(sectionTimes, this.data.openGroupIndexes), saveError: '' });
+  },
+  toggleGroup(event: GroupToggleEvent) {
+    const index = Number(event.currentTarget.dataset.index);
+    if (!Number.isInteger(index) || index < 0 || index >= GROUP_DEFS.length) return;
+    const open = new Set(this.data.openGroupIndexes);
+    if (open.has(index)) open.delete(index);
+    else open.add(index);
+    const openGroupIndexes = Array.from(open).sort((a, b) => a - b);
+    this.setData({ openGroupIndexes, groups: buildGroups(this.data.sectionTimes, openGroupIndexes) });
   },
   clearTimes() {
     wx.showModal({
@@ -222,7 +254,8 @@ Page({
       success: (result) => {
         if (!result.confirm) return;
         const sectionTimes = emptySettings().sectionTimes;
-        this.setData({ sectionTimes, groups: buildGroups(sectionTimes), saveError: '' });
+        const openGroupIndexes = [0];
+        this.setData({ sectionTimes, openGroupIndexes, groups: buildGroups(sectionTimes, openGroupIndexes), saveError: '' });
         wx.showToast({ title: '已清空，记得保存', icon: 'none' });
       },
     });

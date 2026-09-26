@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表未设置状态</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .tt-top { display:flex; justify-content:space-between; align-items:center; }
+    .week-title { margin-top:6px; color:var(--brand-deep); font-size:25px; line-height:1.3; font-weight:700; }
+    .settings-entry { color:var(--brand-ink); font-size:11px; }
+    .setup-hint { margin-top:14px; padding:10px 11px; display:flex; align-items:center; gap:9px; border-left:4px solid var(--gold); background:var(--paper-shade); }
+    .setup-hint-copy { flex:1; color:var(--text-2); font-size:10px; line-height:1.6; }
+    .setup-hint-link { color:var(--brand-ink); font-size:10px; font-weight:700; }
+    .course-line { margin-top:8px; display:flex; align-items:stretch; gap:8px; padding:10px 0; border-bottom:1px solid rgba(43,36,34,.15); }
+    .course-mark { width:4px; background:var(--c1); }
+    .course-name { color:var(--text); font-size:12px; font-weight:700; }
+    .course-meta { margin-top:3px; color:var(--text-2); font-size:10px; }
+    .review .course-mark { background:var(--warn); }
+    .review .course-name,.review .course-meta { color:var(--warn); }
+    .tool-row { margin-top:15px; display:flex; gap:7px; }
+    .tool-row button { flex:1; min-height:42px; border:1px solid rgba(43,36,34,.18); color:var(--brand-ink); background:transparent; font-size:10px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="tt-top"><span class="eyebrow">2026-2027 学年第一学期 · 按节次展示</span><span class="settings-entry">课表设置</span></div>
+    <div class="week-title">第 1 周　⌄</div>
+    <div class="quiet" style="margin-top:5px">课程已保存 · 共 45 门</div>
+    <div class="setup-hint"><span class="setup-hint-copy">还没设置开学日与作息时间。设置后才显示周日期和「正在上/下一节」。</span><span class="setup-hint-link">去设置</span></div>
+    <div class="section-head"><span class="section-title">本周课表</span><span class="section-note">课表　|　列表</span></div>
+    <div class="course-line c1"><span class="course-mark"></span><div><div class="course-name">5+3 真创项目</div><div class="course-meta">星期三 · 第 7-8 节 · 第 1-16 周 · 博雅D102</div></div></div>
+    <div class="course-line review"><span class="course-mark"></span><div><div class="course-name">体育（三） · 待核对</div><div class="course-meta">周次未识别；原文已保留供核对。</div></div></div>
+    <div class="tool-row"><button>导入课表</button><button>手工新增</button><button>课程管理</button></div>
+    <button class="primary" style="width:100%;margin-top:11px;justify-content:center">问问课表助手</button>
+    <div class="quiet" style="margin-top:10px">按节次查看，不显示任何默认时刻。</div>
+  </main>
+</body>
+</html>

@@ -30,13 +30,15 @@
 
   <view wx:else class="news-list">
     <view
-      class="news-item"
+      class="news-item {{index === 0 ? 'news-item-feature' : ''}}"
       wx:for="{{items}}"
       wx:key="id"
+      wx:for-index="index"
       hover-class="pressed"
       data-id="{{item.id}}"
       bindtap="openDetail"
     >
+      <view wx:if="{{index === 0}}" class="news-item-stamp">动态</view>
       <view class="news-item-title">{{item.title}}</view>
       <view class="news-item-foot">
         <text class="news-item-date">{{item.date === '' ? '日期待核实' : item.date}}</text>

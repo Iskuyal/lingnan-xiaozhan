@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学生部门</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .dept-intro { margin-top:8px; max-width:340px; }
+    .qa-entry { min-height:50px; margin:12px 0 14px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid rgba(43,36,34,.14); border-left:3px solid var(--gold); background:var(--paper-shade); }
+    .qa-entry strong { color:var(--brand-deep); font-size:13px; }
+    .qa-entry span { display:block; margin-top:2px; color:var(--text-2); font-size:10px; }
+    .qa-entry-arrow { margin-top:0 !important; color:var(--gold-deep); font-size:19px; }
+    .dept-count { margin-top:16px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center; background:var(--paper-shade); border-left:3px solid var(--gold); }
+    .dept-count strong { color:var(--brand-deep); font-size:13px; }
+    .dept-list { margin-top:7px; }
+    .dept-row { display:grid; grid-template-columns:30px 1fr 17px; align-items:center; gap:11px; min-height:72px; border-bottom:1px solid rgba(43,36,34,.15); }
+    .dept-mark { width:25px; height:25px; display:grid; place-items:center; border:1px solid rgba(198,154,40,.62); color:var(--brand-ink); font-size:11px; font-weight:700; }
+    .dept-name { font-size:14px; line-height:1.5; font-weight:700; }
+    .dept-campus { color:var(--text-3); font-size:10px; }
+    .dept-arrow { color:var(--gold-deep); font-size:19px; }
+    .dept-qa { margin-top:18px; border:1px solid rgba(43,36,34,.18); background:rgba(255,255,255,.62); }
+    .dept-qa-head { padding:10px 12px; display:flex; align-items:center; justify-content:space-between; background:var(--brand-deep); color:#fff; }
+    .dept-qa-head strong { color:#fff; font-size:12px; }
+    .dept-qa-head span { min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.76); font-size:10px; }
+    .dept-qa-body { padding:11px; }
+    .dept-qa-prompt { padding:9px 10px; border-left:3px solid var(--gold); background:var(--paper-shade); color:var(--text); font-size:10px; line-height:1.65; }
+    .dept-qa-options { margin-top:9px; display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+    .dept-qa-options span { min-height:44px; padding:6px 7px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.15); color:var(--text-2); background:rgba(255,255,255,.56); font-size:9px; line-height:1.45; }
+    .dept-qa-input { margin-top:9px; padding:8px; border:1px solid rgba(43,36,34,.2); color:var(--text-3); font-size:10px; }
+    .dept-qa-note { margin-top:8px; color:var(--text-3); font-size:9px; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">学生部门</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">学校官网 · 团委 · 学生组织</div>
+    <h1 class="page-title">学生部门</h1>
+    <p class="copy dept-intro">以下组织来自学校官网「学生组织」页面。介绍与下设部门按原文转录。</p>
+    <div class="qa-entry"><div><strong>问问部门</strong><span>选一个组织，或直接提问 · 仅依据官网已核实资料</span></div><span class="qa-entry-arrow">↓</span></div>
+    <div class="dept-count"><strong>已核实名录</strong><span class="quiet">5 个组织</span></div>
+    <section class="dept-list">
+      <article class="dept-row"><span class="dept-mark">团</span><span><strong class="dept-name">校学生团委</strong><span class="dept-campus" style="display:block">官网未标注所属校区</span></span><span class="dept-arrow">›</span></article>
+      <article class="dept-row"><span class="dept-mark">会</span><span><strong class="dept-name">校学生会</strong><span class="dept-campus" style="display:block">官网未标注所属校区</span></span><span class="dept-arrow">›</span></article>
+      <article class="dept-row"><span class="dept-mark">社</span><span><strong class="dept-name">校学生社团管理部</strong><span class="dept-campus" style="display:block">官网未标注所属校区</span></span><span class="dept-arrow">›</span></article>
+      <article class="dept-row"><span class="dept-mark">志</span><span><strong class="dept-name">青年志愿者联合会</strong><span class="dept-campus" style="display:block">广州校区、清远校区</span></span><span class="dept-arrow">›</span></article>
+      <article class="dept-row"><span class="dept-mark">服</span><span><strong class="dept-name">退役军人事务服务部</strong><span class="dept-campus" style="display:block">官网未标注所属校区</span></span><span class="dept-arrow">›</span></article>
+    </section>
+    <section class="dept-qa">
+      <header class="dept-qa-head"><strong>部门答疑</strong><span>收起 ×</span></header>
+      <div class="dept-qa-body">
+        <div class="dept-qa-prompt">你想了解什么部门？我只依据官网已核实资料回答；资料里没有的，会说“官网未公布”。</div>
+        <div class="dept-qa-options">
+          <span>校学生团委</span><span>校学生会</span><span>校学生社团管理部</span><span>青年志愿者联合会</span><span>退役军人事务服务部</span>
+        </div>
+        <div class="dept-qa-input">继续提问…　　发送</div>
+        <div class="dept-qa-note">部门名录和详情可继续浏览。</div>
+      </div>
+    </section>
+    <div class="source-block"><div class="quiet">核查于 2026-09-18</div><div class="quiet">官网未公布的校区或联系方式会明确标注。</div></div>
+    <button class="secondary" style="width:100%;margin-top:18px">返回首页</button>
+  </main>
+</body>
+</html>

@@ -68,6 +68,11 @@ Page({
   refreshQa() {
     this.setData(qaPanelPatch({ departmentId: this.data.qaDepartmentId, withOptions: true }));
   },
+  /** 首屏快捷入口跳到已展开的问答区；若用户先收起过，则先按显式操作重新打开。 */
+  scrollToQa() {
+    if (!this.data.qaOpen) this.openQa();
+    setTimeout(() => wx.pageScrollTo({ selector: '#department-qa-panel', duration: 250 }), 40);
+  },
   /**
    * 打开对话框：回到这个部门的开场白与可点选项。
    * 与 main 既有行为一致——收起再打开不保留上一轮；要保留就别收起。

@@ -192,6 +192,28 @@ test('导入页：引导文案写清只能从聊天记录选文件，且解析�
   delete globalThis.wx;
 });
 
+test('导入页：缺少聊天记录选文件 API 时说明替代方案并留在引导页', () => {
+  const cloud = cloudStub({});
+  const modals = [];
+  const wx = baseWx(cloud, {
+    chooseMessageFile: undefined,
+    showModal: (options) => modals.push(options),
+  });
+  const page = loadPage('timetable/import', wx);
+  page.onLoad();
+
+  try {
+    assert.doesNotThrow(() => page.chooseFile(), '缺少 API 不应抛出 TypeError');
+    assert.equal(page.data.step, 'guide', '保持在可选截图或返回课表的引导页');
+    assert.equal(cloud.calls.length, 0, '缺少本地选文件能力时不应调用云函数');
+    assert.equal(modals.length, 1, '应展示可读说明');
+    assert.match(modals[0].content, /不支持.*聊天记录/u);
+    assert.match(modals[0].content, /截图.*手工录入/u);
+  } finally {
+    delete globalThis.wx;
+  }
+});
+
 test('取消选文件/图片不是失败：不报错、不打诊断日志，从确认页发起时回到确认页', async () => {
   const draft = realDraft();
   const cloud = cloudStub({
@@ -449,6 +471,46 @@ test('课表页面模板里不出现具体时刻（学校作息未核实）', ()
   const main = fs.readFileSync(path.resolve(templates[0]), 'utf8');
   assert.match(main, /按节次展示/u);
   assert.match(main, /不显示具体时刻|尚未核实/u);
+});
+
+// 品牌红 (#c41c23) 上的正文色 #2b2422 对比度约 2.5:1（WCAG AA 正文要 4.5:1）。
+// 「问问课表助手」曾经只有 .tt-assistant，没写 color，于是继承了正文色，红底上是一片深字。
+test('课表主页：品牌红底上的主按钮写明白字，「手工新增」用次级样式', () => {
+  const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
+  const appWxss = fs.readFileSync(path.resolve('miniprogram/app.wxss'), 'utf8');
+
+  const assistant = wxml.match(/<button[^>]*id="assistant-open"[^>]*>/u);
+  assert.ok(assistant !== null, '助手入口按钮应当存在');
+  assert.match(assistant[0], /class="[^"]*\bhome-button\b[^"]*"/u, '助手入口要用全局主按钮');
+
+  const mainButton = appWxss.match(/\.home-button\s*\{[^}]*\}/u);
+  assert.ok(mainButton !== null, 'app.wxss 里应当有 .home-button');
+  assert.match(mainButton[0], /background:\s*var\(--brand/u);
+  assert.match(mainButton[0], /color:\s*#fff/u, '品牌红底必须写白字');
+
+  const manual = wxml.match(/<button[^>]*id="manual-add"[^>]*>/u);
+  assert.ok(manual !== null, '空态的「手工新增课程」按钮应当存在');
+  assert.match(manual[0], /class="[^"]*\bsecondary\b[^"]*"/u, '次级动作要用 .secondary（.tt-secondary 没有定义）');
+});
+
+// 空白天曾经被整列去掉（2026-09-26 为了省宽度），负责人当天就报了 BUG：
+// 「当天没课的话直接不显示天数了」——整列消失会分不清「那天没课」和「表被截了」。
+// 所以七天都留在表里，没课的天只收窄（32rpx）并写单字星期。
+test('周网格七天都在表里：没课的天收窄不消失', () => {
+  const templates = [
+    'miniprogram/pages/timetable/index.wxml',
+    'miniprogram/pages/timetable/import/index.wxml',
+  ];
+  for (const file of templates) {
+    const wxml = fs.readFileSync(path.resolve(file), 'utf8');
+    assert.ok(!/wx:if="\{\{!column\.narrow\}\}"/u.test(wxml), `${file}: 不应按有没有课跳过整列`);
+    const narrow = wxml.match(/column\.narrow \?/gu) ?? [];
+    assert.equal(narrow.length, 3, `${file}: 表头与网格体都要按 narrow 加细列样式与单字星期`);
+    assert.match(wxml, /grid-th-narrow/u, `${file}: 表头要有细列样式`);
+    assert.match(wxml, /grid-col-narrow/u, `${file}: 网格体要有细列样式`);
+  }
+  const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
+  assert.match(wxss, /\.grid-col-narrow \{ flex:0 0 32rpx; \}/u, '细列宽度写在样式里');
 });
 
 test('周课表主页：填了开学日与作息后，日期、今日列、速查条与详情弹层都到位', async () => {

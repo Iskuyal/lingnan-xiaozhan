@@ -73,6 +73,13 @@ test('表头日期数字：7 个「几号」，缺配置时返回空数组（表
   assert.deepEqual(semester.weekDateLabels(CONFIG, 1), ['31', '1', '2', '3', '4', '5', '6'], '跨月照给，月份交给区间文案');
 });
 
+test('列表日期：7 个完整日期，同一天在列表里能单独读懂', () => {
+  assert.deepEqual(semester.weekDateFullLabels(CONFIG, 4), [
+    '2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-26', '2026-09-27',
+  ]);
+  assert.deepEqual(semester.weekDateFullLabels(CONFIG, 1)[0], '2026-08-31', '跨月也给完整日期');
+});
+
 test('头部文案：9/21 – 9/27，跨月跨年也读得懂', () => {
   assert.equal(semester.formatWeekRange(CONFIG, 4), '9/21 – 9/27');
   assert.equal(semester.formatWeekRange(CONFIG, 1), '8/31 – 9/6');

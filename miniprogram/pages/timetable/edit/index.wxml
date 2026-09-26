@@ -12,7 +12,6 @@
 
   <block wx:else>
     <view class="edit-heading">
-      <view class="eyebrow">按节次保存 · 不填具体时刻</view>
       <view class="section-title">{{title}}</view>
     </view>
 

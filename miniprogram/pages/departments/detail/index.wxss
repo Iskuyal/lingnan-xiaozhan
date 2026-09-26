@@ -1,50 +1,27 @@
 @import "../qa.wxss";
 
-/**
- * 部门详情页：液态玻璃——各区块是高不透明度的玻璃卡，缺失信息如实呈现。
- */
-.department-detail { padding-bottom: 8rpx; }
-.department-detail .qa { margin-top: 32rpx; }
-.department-detail .section-title { color: var(--brand-deep, #8c1614); letter-spacing: 2rpx; }
-.department-name { font-size: 42rpx; font-weight: 700; line-height: 1.4; margin-top: 12rpx; color: var(--brand-deep, #8c1614); letter-spacing: 1rpx; }
-.department-campus-line { display: flex; align-items: baseline; margin-top: 18rpx; font-size: 25rpx; color: var(--text-2, #6b5d57); }
-.department-campus-label { color: var(--text-3, #94867f); margin-right: 14rpx; font-size: 23rpx; }
-.department-campus-note { margin-top: 12rpx; color: var(--text-3, #94867f); font-size: 22rpx; line-height: 1.7; }
-.detail-block {
-  margin-top: 32rpx; padding: 30rpx;
-  background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-panel, 32rpx);
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+.department-profile {
+  margin:-42rpx -36rpx 0; padding:30rpx 36rpx 25rpx;
+  border-left:6rpx solid var(--gold, #c69a28); background:var(--paper-shade, #faeee9); color:var(--text, #2b2422);
 }
-.detail-copy { margin-top: 18rpx; color: var(--text-2, #6b5d57); font-size: 28rpx; line-height: 1.9; }
-.detail-unit-note { margin-top: 16rpx; }
-.detail-units { display: flex; flex-wrap: wrap; margin-top: 8rpx; }
-.detail-unit {
-  margin: 12rpx 12rpx 0 0; padding: 10rpx 22rpx; font-size: 24rpx;
-  background: rgba(196,28,35,0.10); border: 1rpx solid rgba(196,28,35,0.22);
-  color: var(--brand-ink, #7a1a12); border-radius: var(--r-pill, 999rpx);
-}
-.detail-missing {
-  margin-top: 18rpx; padding: 18rpx 22rpx; font-size: 25rpx; line-height: 1.7;
-  background: var(--warn-soft, rgba(255,244,228,0.86)); border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55));
-  color: var(--warn, #9a5b1e); border-radius: var(--r-control, 20rpx);
-}
-.detail-contact { margin-top: 14rpx; color: var(--text-2, #6b5d57); font-size: 27rpx; }
-.detail-activity { padding: 20rpx 0; border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.detail-activity:last-child { border-bottom: 0; padding-bottom: 0; }
-.detail-activity-title { color: var(--text, #2b2422); font-size: 27rpx; line-height: 1.7; }
-.detail-activity-date { margin-top: 8rpx; color: var(--text-3, #94867f); font-size: 22rpx; }
-.detail-source { margin-top: 36rpx; padding-top: 26rpx; border-top: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.detail-source-label { font-size: 23rpx; color: var(--text-3, #94867f); }
-.detail-verified-date { color: var(--text-3, #94867f); font-size: 22rpx; margin-top: 4rpx; }
-.source-button {
-  color: var(--brand-ink, #7a1a12); margin: 20rpx 0 0; padding: 18rpx 24rpx; font-size: 25rpx; line-height: 1.5;
-  background: var(--glass, rgba(255,255,255,0.52));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-pill, 999rpx);
-}
+.department-profile .eyebrow { color:var(--text-3, #746760); }
+.department-profile .department-name { margin-top:8rpx; color:var(--brand-deep, #8c1614); font-size:46rpx; line-height:1.35; }
+.department-campus-line { margin-top:10rpx; display:flex; gap:12rpx; align-items:baseline; color:var(--text-2, #6b5d57); font-size:21rpx; }
+.department-campus-label { color:var(--text-3, #746760); }
+.department-campus-note { margin-top:12rpx; padding:11rpx 12rpx; border-left:6rpx solid var(--gold, #c69a28); background:rgba(255,255,255,0.65); color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.65; }
+.detail-block { padding:23rpx 0 21rpx; border-bottom:1rpx solid rgba(43,36,34,0.15); }
+.detail-block .section-title { margin-bottom:10rpx; font-size:28rpx; }
+.detail-copy { color:var(--text-2, #6b5d57); font-size:25rpx; line-height:1.8; }
+.detail-unit-note { margin-bottom:10rpx; }
+.detail-units { display:flex; flex-wrap:wrap; gap:10rpx; }
+.detail-unit { padding:8rpx 14rpx; border:1rpx solid rgba(198,154,40,0.55); color:var(--brand-ink, #7a1a12); background:rgba(198,154,40,0.12); font-size:21rpx; }
+.detail-missing { padding:17rpx 18rpx; border-left:6rpx solid var(--warn, #9a5b1e); border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); border-left-width:6rpx; background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:22rpx; line-height:1.7; }
+.detail-contact,.detail-activity { padding:10rpx 0; color:var(--text-2, #6b5d57); font-size:23rpx; line-height:1.65; }
+.detail-activity + .detail-activity { border-top:1rpx solid rgba(43,36,34,0.12); }
+.detail-activity-title { color:var(--text, #2b2422); font-weight:600; }
+.detail-activity-date { margin-top:4rpx; color:var(--text-3, #746760); font-size:20rpx; }
+.detail-source { margin-top:22rpx; padding-top:17rpx; border-top:1rpx solid rgba(43,36,34,0.16); }
+.detail-source-label,.detail-verified-date { color:var(--text-3, #746760); font-size:20rpx; line-height:1.6; }
+.detail-verified-date { margin-top:4rpx; }
+.source-button { margin-top:13rpx; min-height:84rpx; padding:12rpx 18rpx; border:1rpx solid rgba(122,26,18,0.35); color:var(--brand-ink, #7a1a12); }
+.department-detail > .home-button { margin-top:16rpx; }

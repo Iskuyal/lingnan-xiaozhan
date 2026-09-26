@@ -2,6 +2,7 @@
 <view class="page">
   <block wx:if="{{detail}}">
     <view id="department-detail" class="department-detail">
+      <view class="department-profile">
       <view class="eyebrow">{{detail.campusLabel}}</view>
       <view class="department-name">{{detail.name}}</view>
       <view class="department-campus-line">
@@ -9,11 +10,15 @@
         <text class="department-campus">{{detail.campusLabel}}</text>
       </view>
       <view wx:if="{{detail.campusNote}}" class="department-campus-note">{{detail.campusNote}}</view>
+      </view>
 
-      <template
-        is="department-qa"
-        data="{{qaOpen: qaOpen, qaPrompt: qaPrompt, qaMessages: qaMessages, qaOptions: qaOptions, qaSuggestionList: qaSuggestionList, qaInput: qaInput, qaSending: qaSending, qaError: qaError, qaCapWarning: qaCapWarning, qaSafetyNote: qaSafetyNote, qaSourceNote: qaSourceNote, qaOfflineNote: qaOfflineNote}}"
-      />
+      <button id="department-detail-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到当前部门问答">
+        <view class="qa-entry-copy">
+          <view class="qa-entry-title">问问{{detail.name}}</view>
+          <view class="qa-entry-note">查看已核实资料，或继续提问</view>
+        </view>
+        <text class="qa-entry-arrow">↓</text>
+      </button>
 
       <view class="detail-block">
         <view class="section-title">组织介绍</view>
@@ -25,7 +30,7 @@
         <view class="detail-copy detail-unit-note">{{detail.unitNote}}</view>
         <view class="detail-units">
           <text wx:for="{{detail.units}}" wx:key="*this" class="detail-unit">{{item}}</text>
-        </view>
+      </view>
       </view>
 
       <view class="detail-block">
@@ -45,6 +50,13 @@
             <view class="detail-activity-date">{{item.publishedAt}}</view>
           </view>
         </view>
+      </view>
+
+      <view id="department-qa-panel">
+        <template
+          is="department-qa"
+          data="{{qaOpen: qaOpen, qaPrompt: qaPrompt, qaMessages: qaMessages, qaOptions: qaOptions, qaSuggestionList: qaSuggestionList, qaInput: qaInput, qaSending: qaSending, qaError: qaError, qaCapWarning: qaCapWarning, qaSafetyNote: qaSafetyNote, qaSourceNote: qaSourceNote, qaOfflineNote: qaOfflineNote}}"
+        />
       </view>
 
       <view class="detail-source">

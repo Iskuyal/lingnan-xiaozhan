@@ -39,7 +39,7 @@ import {
   minutesOfClock,
 } from '../../services/timetable/settings';
 import { TodayItem, TodaySummary, hasSectionTimes, summarizeToday } from '../../services/timetable/now';
-import { formatWeekRange, weekDateLabels, weekIndexOf, weekSpanWithSemester, weekdayOf } from '../../services/timetable/semester';
+import { formatWeekRange, weekDateFullLabels, weekDateLabels, weekIndexOf, weekSpanWithSemester, weekdayOf } from '../../services/timetable/semester';
 import { ChatMessage, callAi, chatEvent, chatMessages, safetyNoteFor, transportMessage, userMessage } from '../../services/ai';
 import {
   AssistantReply,
@@ -131,7 +131,11 @@ function weekPatch(courses: Course[], week: number, inputs: WeekInputs) {
   });
   return {
     week,
-    view: buildWeekView(courses, week),
+    view: buildWeekView(courses, week, {
+      // 列表里的某一天要能单独读懂，所以用完整日期，不用表头的「几号」。
+      dateLabels: weekDateFullLabels(config, week),
+      todayWeekday: isThisWeek ? weekday : 0,
+    }),
     grid,
     weekRange: formatWeekRange(config, week),
     todayBar:
@@ -214,7 +218,7 @@ function localMinutes(): number {
 }
 
 /**
- * 退化态的说明（设计图 03）：没设置就说清「缺什么、点哪里补」，
+ * 退化态的说明（设计图 19）：没设置就说清「缺什么、点哪里补」，
  * 而不是让人对着一个没有日期、没有速查的课表页猜为什么。设置齐了返回空字符串。
  */
 function setupHintFor(settings: TimetableSettings, hasTimes: boolean, loadError: string): string {

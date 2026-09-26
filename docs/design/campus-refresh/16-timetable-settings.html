@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表设置</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .settings-head { margin:2px 0 14px; padding-left:11px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px; border-left:4px solid var(--gold); }
+    .settings-head-copy { flex:1; }
+    .settings-lead { color:var(--brand-deep); font-size:18px; line-height:1.35; font-weight:700; }
+    .settings-note { margin-top:3px; color:var(--text-2); font-size:11px; }
+    .settings-back { min-height:44px; padding:0 4px; display:flex; align-items:center; color:var(--brand-ink); font-size:10px; white-space:nowrap; }
+    .settings-group { margin-top:13px; padding:13px; border:1px solid rgba(43,36,34,.15); background:rgba(255,255,255,.54); }
+    .settings-group h2 { margin:0 0 11px; color:var(--brand-deep); font-size:14px; }
+    .settings-field { margin-top:10px; }
+    .settings-label { margin-bottom:4px; color:var(--text-2); font-size:12px; }
+    .settings-value { min-height:44px; padding:8px 9px; display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(43,36,34,.2); background:var(--paper); color:var(--text-2); font-size:11px; }
+    .choices { display:flex; gap:5px; margin-top:6px; }
+    .choices span { flex:1; min-height:44px; display:grid; place-items:center; padding:5px 0; text-align:center; border:1px solid rgba(43,36,34,.16); color:var(--text-2); font-size:9px; }
+    .choices .on { background:var(--brand); border-color:var(--brand); color:#fff; }
+    .time-group { margin-top:8px; border-top:1px solid rgba(43,36,34,.12); }
+    .time-group-toggle { min-height:44px; padding:5px 2px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .time-group-toggle strong { color:var(--brand-ink); font-size:11px; }
+    .time-group-toggle span { color:var(--text-3); font-size:10px; white-space:nowrap; }
+    .time-group-open .time-group-toggle { border-left:3px solid var(--gold); padding-left:8px; }
+    .time-row { min-height:44px; display:grid; grid-template-columns:45px 1fr 16px 1fr; gap:6px; align-items:center; border-bottom:1px solid rgba(43,36,34,.12); font-size:10px; }
+    .time-row span:first-child { color:var(--text-2); }
+    .time-input { min-height:33px; padding:5px; display:grid; place-items:center; border:1px solid rgba(43,36,34,.18); color:var(--text-3); text-align:center; }
+    .not-verified { margin-top:10px; }
+    .settings-preview { margin-top:12px; padding:10px; background:var(--paper-shade); color:var(--text-2); font-size:10px; }
+    .settings-bottom { margin:16px -18px -40px; padding:11px 18px 20px; background:var(--paper); border-top:1px solid rgba(43,36,34,.16); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课表设置</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="settings-head"><div class="settings-head-copy"><div class="settings-lead">先定学期，再补作息</div><div class="settings-note">日期和时刻只显示你亲自确认的内容。</div></div><div class="settings-back">返回课表</div></header>
+    <section class="settings-group">
+      <h2>学期</h2>
+      <div class="settings-field"><div class="settings-label">学期名称</div><div class="settings-value">2026-2027 学年第一学期</div></div>
+      <div class="settings-field"><div class="settings-label">第一周的星期一</div><div class="settings-value">选择日期 <span>⌄</span></div></div>
+      <div class="settings-field"><div class="settings-label">总周数</div><div class="settings-value">20 周 <span>选择</span></div><div class="choices"><span>18</span><span class="on">20</span><span>22</span></div></div>
+      <div class="settings-preview">开学日设置后，课表会显示当前周次和日期；不设置时按第 1 周查看。</div>
+    </section>
+    <section class="settings-group">
+      <h2>作息时间</h2>
+      <div class="warn-block not-verified">学校作息表尚未核实，不预置默认时刻。只有你填写并保存后，课表才显示对应时刻。</div>
+      <div class="time-group time-group-open"><div class="time-group-toggle"><strong>上午 第 1-4 节</strong><span>收起 −</span></div>
+        <div class="time-row"><span>第 1 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+        <div class="time-row"><span>第 2 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+        <div class="time-row"><span>第 3 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+        <div class="time-row"><span>第 4 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+      </div>
+      <div class="time-group"><div class="time-group-toggle"><strong>下午 第 5-10 节</strong><span>6 节 · 展开 +</span></div>
+      </div>
+      <div class="time-group"><div class="time-group-toggle"><strong>晚上 第 11-12 节</strong><span>2 节 · 展开 +</span></div>
+      </div>
+      <div class="quiet" style="margin-top:8px">已填写时刻的分组会自动展开；清空某一节不会删除课程数据。</div>
+    </section>
+    <div class="settings-bottom"><button class="primary" style="width:100%;justify-content:center">保存设置</button></div>
+  </main>
+</body>
+</html>

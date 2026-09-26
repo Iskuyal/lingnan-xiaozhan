@@ -48,6 +48,7 @@ export interface DepartmentsSource {
 export interface DepartmentListItem {
   id: string;
   name: string;
+  mark: string;
   campusLabel: string;
   campusMissing: boolean;
 }
@@ -280,6 +281,16 @@ export const departments: Department[] = [
   },
 ];
 
+/** 名录徽记取组织类别字，给相近的「校学生…」名称一个可扫读的区别。 */
+function departmentMark(name: string): string {
+  if (name.includes('团委')) return '团';
+  if (name.includes('学生会')) return '会';
+  if (name.includes('社团')) return '社';
+  if (name.includes('志愿者')) return '志';
+  if (name.includes('服务部')) return '服';
+  return Array.from(name)[0] ?? '';
+}
+
 export function listDepartments(): Department[] {
   return departments;
 }
@@ -295,6 +306,7 @@ export function buildDepartmentList(source: Department[] = departments): Departm
   const items = source.map((item) => ({
     id: item.id,
     name: item.name,
+    mark: departmentMark(item.name),
     campusLabel: item.campus ?? MISSING_CAMPUS_TEXT,
     campusMissing: item.campus === null,
   }));

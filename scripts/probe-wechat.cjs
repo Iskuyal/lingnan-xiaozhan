@@ -19,6 +19,7 @@
  *         2 = 探测记录无效（触发方式或上下文不对），需按提示重跑。
  */
 const { connectMini } = require('./lib/mini-connect.cjs');
+const { diagnoseMissingProbe } = require('./lib/probe-wechat-diagnostics.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
@@ -76,9 +77,19 @@ async function run() {
     const result = parsed.result || {};
     const record = result.probe;
     if (!record) {
-      console.error('❌ 云函数返回里没有 probe 记录（函数版本不对或 action 未被识别）');
-      console.error(`   ok=${result.ok} message=${result.message}`);
-      process.exitCode = 1;
+      const diagnosis = diagnoseMissingProbe(result);
+      console.error(`❌ ${diagnosis.message}`);
+      console.error(`   diagnosis=${diagnosis.kind} failureClass=${result.failureClass || '(空)'} message=${result.message || '(空)'}`);
+      writeFileSync(path.join(output, 'ai-probe.json'), JSON.stringify({
+        probedAt: new Date().toISOString(),
+        realDevice: false,
+        invoked: true,
+        ok: result.ok === true,
+        diagnosis: diagnosis.kind,
+        failureClass: result.failureClass || null,
+        message: result.message || '',
+      }, null, 2));
+      process.exitCode = 2;
       return;
     }
 

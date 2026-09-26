@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表列表 · 可读性返工</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .tt-top { display:flex; align-items:center; justify-content:space-between; }
+    .tt-settings { min-height:44px; display:flex; align-items:center; color:var(--brand-ink); font-size:11px; }
+    .week-switch { margin-top:6px; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .week-switch button { width:44px; height:44px; border:1px solid rgba(43,36,34,.18); color:var(--brand-deep); font-size:18px; }
+    /* 周次行三件挨在一起：翻周箭头与选择器都不撑满整行（原生按钮自带 auto 外边距会把人推开）。 */
+    .week-main { flex:0 1 auto; min-width:0; }
+    .week-label { color:var(--brand-deep); font-size:25px; line-height:1.25; font-weight:700; }
+    .tt-meta { margin-top:6px; color:var(--text-2); font-size:11px; text-align:center; }
+    .week-section { margin-top:20px; padding-top:12px; border-top:2px solid var(--brand); display:flex; align-items:center; justify-content:space-between; }
+    .switch { display:flex; border:1px solid rgba(43,36,34,.17); }
+    .switch span { min-width:44px; min-height:44px; padding:4px 9px; display:flex; align-items:center; justify-content:center; color:var(--text-2); font-size:10px; }
+    .switch .on { background:var(--brand); color:#fff; }
+
+    /* 列表：同一天归一组，行里给全信息；地点与教师不再省略，因为这里放得下。 */
+    .day-group { margin-top:18px; }
+    .day-title { margin-bottom:8px; display:flex; align-items:center; gap:8px; color:var(--brand-deep); font-size:13px; font-weight:700; }
+    .day-title i { width:6px; height:6px; flex:none; background:var(--gold); }
+    .day-title span { color:var(--text-3); font-size:11px; font-weight:400; }
+    /* 行底用纸面中性色，颜色只留在左侧色条上：8 种课色同时铺满行底会盖过正文。 */
+    .course-row { margin-top:8px; padding:10px 10px 10px 8px; display:grid; grid-template-columns:1fr auto; gap:10px; border:1px solid rgba(43,36,34,.13); border-left:4px solid var(--course); background:rgba(255,255,255,.55); }
+    .course-name { display:flex; align-items:center; flex-wrap:wrap; gap:6px; color:var(--text); font-size:13px; font-weight:700; line-height:1.45; }
+    .course-line { margin-top:3px; color:var(--text-2); font-size:10.5px; line-height:1.6; }
+    .chip { display:inline-flex; align-items:center; min-height:16px; padding:1px 6px; border:1px solid rgba(43,36,34,.16); border-radius:3px; color:var(--text-2); font-size:9px; }
+    .chip-warn { color:var(--warn); border-color:var(--warn-line); background:var(--warn-soft); }
+    .course-warn { margin-top:4px; color:var(--warn); font-size:10px; line-height:1.5; }
+    .course-ops { flex:0 0 52px; display:flex; flex-direction:column; gap:3px; }
+    .course-ops button { width:100%; min-height:42px; padding:2px 4px; border:1px solid rgba(43,36,34,.17); color:var(--brand-ink); font-size:10px; }
+    .course-ops .del { color:var(--warn); border-color:var(--warn-line); }
+    .course-row.review { border-left-color:var(--warn); border-color:var(--warn-line); background:var(--warn-soft); }
+    .course-row.review .course-name { color:var(--warn); }
+    .tt-actions { margin:17px -18px 0; padding:11px 18px; display:grid; grid-template-columns:repeat(3,1fr); gap:7px; border-top:1px solid rgba(43,36,34,.15); }
+    .tt-actions button { min-height:44px; border:1px solid rgba(43,36,34,.2); color:var(--brand-ink); font-size:11px; }
+    .tt-assistant { margin:11px 0 0; width:100%; justify-content:center; font-size:15px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="tt-top"><span class="eyebrow">2026-2027 学年第一学期 · 按节次展示</span><span class="tt-settings">课表设置</span></div>
+    <div class="week-switch"><button>‹</button><div class="week-main"><div class="week-label">第 4 周　⌄</div><div class="tt-meta">9/21 – 9/27</div></div><button>›</button></div>
+    <div class="tt-meta">本周 14 门 · 共 50 门课程</div>
+
+    <div class="week-section"><span class="section-title">本周课表</span><span class="switch"><span>课表</span><span class="on">列表</span></span></div>
+
+    <section class="day-group">
+      <div class="day-title"><i></i>星期一<span>2026-09-21 · 今天</span></div>
+      <article class="course-row c1">
+        <div><div class="course-name">劳动教育（一）</div><div class="course-line">第 1-4 节 · 40号楼-B310-服装工艺室（2）</div><div class="course-line">第 1-16 周 · 夏舜丽</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c2">
+        <div><div class="course-name">高等数学</div><div class="course-line">第 5-6 节 · 崇礼楼-306-计算机十九室</div><div class="course-line">第 4-5、7-16 周 · 林加燕</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c3">
+        <div><div class="course-name">中华传统文化精粹（一）</div><div class="course-line">第 7-8 节 · 博雅楼-A507-多媒体课室</div><div class="course-line">第 4-12 周 · 易定军</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c5">
+        <div><div class="course-name">大学美育</div><div class="course-line">第 9-10 节 · 博雅楼-D102-多媒体课</div><div class="course-line">第 4-5、7-16 周 · 程晓明</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c4">
+        <div><div class="course-name">信息技术与人工智能应用</div><div class="course-line">第 11-12 节 · 博雅楼-B207-计算机九室</div><div class="course-line">第 4-16 周 · 贺锋</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+    </section>
+
+    <section class="day-group">
+      <div class="day-title"><i></i>星期二<span>2026-09-22</span></div>
+      <article class="course-row c7">
+        <div><div class="course-name">低代码平台应用开发</div><div class="course-line">第 1-4 节 · 博雅楼-B604-前端H5创新应用中心</div><div class="course-line">第 4-16 周 · 吴丽娟</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c6">
+        <div><div class="course-name">习近平经济思想概论</div><div class="course-line">第 5-6 节 · 博雅楼-A508-多媒体课室</div><div class="course-line">第 4-16 周</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c8">
+        <div><div class="course-name">网页设计与制作技术</div><div class="course-line">第 9-12 节 · 博雅楼-B504-服务外包软件实训室</div><div class="course-line">第 4-16 周 · 刘云芬</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+    </section>
+
+    <section class="day-group">
+      <div class="day-title"><i></i>星期三<span>2026-09-23</span></div>
+      <article class="course-row c1">
+        <div><div class="course-name">公共外语（英语）一</div><div class="course-line">第 1-2 节 · 博雅楼-A509-多媒体课室</div><div class="course-line">第 4-16 周</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c8">
+        <div><div class="course-name">我的大学生活我做主</div><div class="course-line">第 3-4 节</div><div class="course-line">第 1-16 周</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c2">
+        <div><div class="course-name">信息技术与人工智能应用</div><div class="course-line">第 5-6 节 · 博雅楼-B207-计算机九室</div><div class="course-line">第 4-16 周 · 贺锋</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+    </section>
+
+    <section class="day-group">
+      <div class="day-title"><i></i>星期四<span>2026-09-24</span></div>
+      <article class="course-row c6">
+        <div><div class="course-name">毛泽东思想和中国特色社会主义理论体系概论</div><div class="course-line">第 1-2 节 · 博雅楼-A508-多媒体课室</div><div class="course-line">第 4-16 周</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row review">
+        <div>
+          <div class="course-name">体育（三）<span class="chip chip-warn">待核对</span></div>
+          <div class="course-line">第 3-4 节 · 篮球1号场</div>
+          <div class="course-warn">周次未识别；原文已保留供核对。</div>
+        </div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+      <article class="course-row c6">
+        <div><div class="course-name">思想道德与法治（一）</div><div class="course-line">第 11-12 节 · 博雅楼-D102-多媒体课</div><div class="course-line">第 4-16 周</div></div>
+        <div class="course-ops"><button>修改</button><button class="del">删除</button></div>
+      </article>
+    </section>
+
+    <div class="quiet" style="margin-top:16px">周课表按节次展示；学校作息未核实，不显示具体时刻。课表保存于 2026-09-24 16:34。</div>
+
+    <div class="tt-actions"><button>导入课表</button><button>手工新增</button><button>课程管理</button></div>
+    <button class="primary tt-assistant">问问课表助手</button>
+    <div class="back-link">返回首页</div>
+  </main>
+</body>
+</html>

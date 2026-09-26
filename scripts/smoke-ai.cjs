@@ -9,7 +9,8 @@
  *   `cli auto --project <仓库>/dist --auto-port 9420 --trust-project`
  *   打开项目；云函数 `ai` 已部署、环境变量（模型地址/密钥/模型名）已在控制台配好。
  *
- * 用法：`npm run smoke:ai`（端口可用 WECHAT_AUTO_PORT 覆盖，默认 9420）
+ * 用法：`npm run smoke:ai`；用 `npm run smoke:ai -- --attempts=3` 顺序复测 3 次。
+ * 端口可用 WECHAT_AUTO_PORT 覆盖，默认 9420；每次结果追加到 ai-smoke.jsonl，最新一次写入 ai-smoke.json。
  *
  * 退出码：0 = 端到端成功（`ok: true` 且 `text` 非空）；
  *         1 = 云函数调用没跑通（未部署 / 权限 / 网络）；
@@ -18,101 +19,159 @@
 const { connectMini } = require('./lib/mini-connect.cjs');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
-
+const { appendAttemptRecord, makeAttemptRecord, parseOptions } = require('./lib/ai-smoke-records.cjs');
 
 /** 冒烟文本与步骤 E 保持一致：固定、短、不含任何个人信息。 */
 const SMOKE_TEXT = '只回复四个字：链路已通';
+const REQUEST = { action: 'chat', feature: 'e2e-check', text: SMOKE_TEXT, maxTokens: 64 };
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function errorText(error) {
+  return String((error && (error.errMsg || error.message)) || error);
+}
+
+function printRecord(record) {
+  console.log('');
+  console.log(`第 ${record.attempt}/${record.attempts} 次：ok=${record.ok} 可重试=${record.retryable} failureClass=${record.failureClass || '(空)'} elapsedMs=${record.elapsedMs ?? '(空)'}`);
+  console.log(`provider=${record.provider || '(空)'} model=${record.model || '(空)'}`);
+  if (record.response.text) console.log(`模型输出：${record.response.text}`);
+  if (record.response.message) console.log(`失败文案：${record.response.message}`);
+  if (record.response.detail) console.log(`细节：${String(record.response.detail).slice(0, 500)}`);
+  if (record.err) console.log(`调用错误：${String(record.err).slice(0, 500)}`);
+  if (record.response.safety) {
+    const safety = record.response.safety;
+    console.log(`内容安全：provider=${safety.provider} checked=${safety.checked} passed=${safety.passed}｜${safety.detail}`);
+  }
+  if (record.response.usage) {
+    const usage = record.response.usage;
+    console.log(`本次用量：${usage.totalTokens} token / ${usage.costYuan} 元（estimated=${usage.estimated}）`);
+  }
+  if (record.response.usageSummary) {
+    const summary = record.response.usageSummary;
+    console.log(`当月累计：${summary.calls} 次 / ${summary.costYuan} 元（上限 ${summary.capYuan} 元）`);
+  }
+  if (record.response.capWarning) console.log(`上限告警：${record.response.capWarning}`);
+  if (Array.isArray(record.response.warnings) && record.response.warnings.length > 0) {
+    console.log(`告警：${record.response.warnings.join('｜')}`);
+  }
+}
 
 async function run() {
+  let options;
+  try {
+    options = parseOptions(process.argv.slice(2));
+  } catch (error) {
+    console.error(error.message);
+    console.error('用法：npm run smoke:ai -- --attempts=3（次数 1 到 5，默认 1）');
+    process.exitCode = 1;
+    return;
+  }
+
   const output = path.resolve('artifacts/verify');
   mkdirSync(output, { recursive: true });
-  const mini = await connectMini();
-  try {
-    await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  const latestPath = path.join(output, 'ai-smoke.json');
+  const historyPath = path.join(output, 'ai-smoke.jsonl');
+  const runId = `${new Date().toISOString().replace(/[:.]/gu, '-')}-${process.pid}`;
+  let mini = null;
+  let exitCode = 0;
 
-    // 函数体在模拟器里执行，取不到外层变量，因此文本与等待上限都写成字面量。
-    const raw = await mini.evaluate(
-      () =>
-        new Promise((resolve) => {
-          const timer = setTimeout(
-            () => resolve(JSON.stringify({ invoked: false, err: '云函数调用超过 60 秒未返回' })),
-            60000,
-          );
-          wx.cloud
-            .callFunction({
-              name: 'ai',
-              data: {
-                action: 'chat',
-                feature: 'e2e-check',
-                system: '你是一个只做连通性检查的助手，回答尽量短。',
-                messages: [{ role: 'user', text: '只回复四个字：链路已通' }],
-                maxTokens: 64,
-              },
-            })
-            .then((res) => {
-              clearTimeout(timer);
-              resolve(JSON.stringify({ invoked: true, result: res.result }));
-            })
-            .catch((error) => {
-              clearTimeout(timer);
-              resolve(
-                JSON.stringify({
-                  invoked: false,
-                  err: (error && (error.errMsg || error.message)) || String(error),
-                }),
-              );
-            });
-        }),
-    );
-
-    const parsed = JSON.parse(raw);
-    if (!parsed.invoked) {
-      console.error('❌ 调用云函数 ai 失败，端到端没跑起来');
-      console.error(`   ${String(parsed.err).slice(0, 500)}`);
-      writeFileSync(
-        path.join(output, 'ai-smoke.json'),
-        JSON.stringify({ smokeAt: new Date().toISOString(), invoked: false, err: parsed.err }, null, 2),
-      );
-      process.exitCode = 1;
-      return;
-    }
-
-    const result = parsed.result || {};
-    const system = await mini.systemInfo();
-    const report = {
-      smokeAt: new Date().toISOString(),
-      platform: system.platform,
-      model: system.model,
-      SDKVersion: system.SDKVersion,
-      realDevice: false,
-      request: { action: 'chat', feature: 'e2e-check', text: SMOKE_TEXT, maxTokens: 64 },
-      response: result,
-    };
-    writeFileSync(path.join(output, 'ai-smoke.json'), JSON.stringify(report, null, 2));
-
-    console.log('');
-    console.log(`ok=${result.ok} failureClass=${result.failureClass || '(空)'} elapsedMs=${result.elapsedMs}`);
-    console.log(`provider=${result.provider || '(空)'} model=${result.model || '(空)'}`);
-    console.log(`模型输出：${result.text || '(空)'}`);
-    if (result.message) console.log(`失败文案：${result.message}`);
-    if (result.detail) console.log(`细节：${String(result.detail).slice(0, 500)}`);
-    if (result.safety) console.log(`内容安全：provider=${result.safety.provider} checked=${result.safety.checked} passed=${result.safety.passed}｜${result.safety.detail}`);
-    if (result.usage) console.log(`本次用量：${result.usage.totalTokens} token / ${result.usage.costYuan} 元（estimated=${result.usage.estimated}）`);
-    if (result.usageSummary) console.log(`当月累计：${result.usageSummary.calls} 次 / ${result.usageSummary.costYuan} 元（上限 ${result.usageSummary.capYuan} 元）`);
-    if (result.capWarning) console.log(`上限告警：${result.capWarning}`);
-    if (Array.isArray(result.warnings) && result.warnings.length > 0) console.log(`告警：${result.warnings.join('｜')}`);
-    console.log('');
-    console.log(`记录已写入 ${path.relative(process.cwd(), path.join(output, 'ai-smoke.json'))}`);
-
-    if (result.ok !== true) {
-      console.error('');
-      console.error('❌ 云函数返回失败：先看上面的失败文案与细节（环境变量没配全会直接写在这里）');
-      process.exitCode = 2;
-    }
-  } finally {
-    mini.disconnect();
+  function saveRecord(record) {
+    appendAttemptRecord(historyPath, record);
+    // Keep the long-standing one-result report shape for existing readers; the JSONL is the history.
+    writeFileSync(latestPath, JSON.stringify({
+      ...record,
+      platform: record.system?.platform ?? null,
+      model: record.system?.model ?? null,
+      SDKVersion: record.system?.SDKVersion ?? null,
+    }, null, 2));
+    printRecord(record);
   }
+
+  try {
+    mini = await connectMini();
+    await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
+    await sleep(1500);
+    const system = await mini.systemInfo();
+
+    for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
+      if (attempt > 1) await sleep(1500);
+      let parsed;
+      try {
+        // 函数体在模拟器里执行，取不到外层变量，因此请求与等待上限写成字面量。
+        const raw = await mini.evaluate(
+          () =>
+            new Promise((resolve) => {
+              const timer = setTimeout(
+                () => resolve(JSON.stringify({ invoked: false, err: '云函数调用超过 60 秒未返回' })),
+                60000,
+              );
+              wx.cloud
+                .callFunction({
+                  name: 'ai',
+                  data: {
+                    action: 'chat',
+                    feature: 'e2e-check',
+                    system: '你是一个只做连通性检查的助手，回答尽量短。',
+                    messages: [{ role: 'user', text: '只回复四个字：链路已通' }],
+                    maxTokens: 64,
+                  },
+                })
+                .then((res) => {
+                  clearTimeout(timer);
+                  resolve(JSON.stringify({ invoked: true, result: res.result }));
+                })
+                .catch((error) => {
+                  clearTimeout(timer);
+                  resolve(JSON.stringify({
+                    invoked: false,
+                    err: (error && (error.errMsg || error.message)) || String(error),
+                  }));
+                });
+            }),
+        );
+        parsed = JSON.parse(raw);
+      } catch (error) {
+        parsed = { invoked: false, err: errorText(error) };
+      }
+
+      const record = makeAttemptRecord({
+        smokeAt: new Date().toISOString(),
+        runId,
+        attempt,
+        attempts: options.attempts,
+        system: { platform: system.platform, model: system.model, SDKVersion: system.SDKVersion },
+        request: REQUEST,
+        invoked: parsed.invoked === true,
+        result: parsed.result,
+        err: parsed.err,
+      });
+      saveRecord(record);
+      if (!record.invoked) exitCode = Math.max(exitCode, 1);
+      else if (!record.ok) exitCode = Math.max(exitCode, 2);
+    }
+    console.log('');
+    console.log(`全部 ${options.attempts} 次结果已追加到 ${path.relative(process.cwd(), historyPath)}`);
+    console.log(`最新一次结果：${path.relative(process.cwd(), latestPath)}`);
+  } catch (error) {
+    const record = makeAttemptRecord({
+      smokeAt: new Date().toISOString(),
+      runId,
+      attempt: 1,
+      attempts: options.attempts,
+      request: REQUEST,
+      invoked: false,
+      err: errorText(error),
+    });
+    saveRecord(record);
+    console.error(`❌ 冒烟测试未能启动：${record.err}`);
+    exitCode = 1;
+  } finally {
+    if (mini) mini.disconnect();
+  }
+  process.exitCode = exitCode;
 }
 
 run().catch((error) => {

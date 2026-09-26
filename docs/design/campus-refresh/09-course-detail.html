@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课程详情</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .underlay { height:390px; padding:20px 18px; opacity:.4; }
+    .sheet-mask { height:210px; background:rgba(43,36,34,.42); }
+    .sheet { padding:0 18px 25px; background:var(--paper); border-top:4px solid var(--course); }
+    .sheet-handle { width:36px; height:3px; margin:10px auto 14px; background:rgba(43,36,34,.26); }
+    .sheet-name { color:var(--course); font-size:22px; line-height:1.4; font-weight:700; }
+    .sheet-sub { margin-top:3px; color:var(--text-2); font-size:11px; }
+    .sheet-row { min-height:39px; display:grid; grid-template-columns:65px 1fr; align-items:center; border-bottom:1px solid rgba(43,36,34,.13); font-size:12px; }
+    .sheet-key { color:var(--text-3); }
+    .sheet-val { color:var(--text); }
+    .sheet-source { margin-top:10px; color:var(--text-3); font-size:10px; }
+    .sheet-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+    .sheet-actions button { min-height:44px; border:1px solid rgba(43,36,34,.2); background:transparent; color:var(--brand-ink); }
+    .sheet-actions .delete { color:var(--warn); border-color:var(--warn-line); }
+    .sheet .back-link { min-height:44px; display:flex; align-items:center; justify-content:center; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <div class="underlay">
+    <div class="eyebrow">第 4 周 · 周网格</div><h1 class="page-title">课程详情</h1>
+    <div class="surface" style="height:170px;margin-top:14px;position:relative">
+      <div style="position:absolute;left:28px;right:0;top:42px;bottom:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 24px,rgba(43,36,34,.18) 24px,rgba(43,36,34,.18) 25px),repeating-linear-gradient(to right,transparent 0,transparent 44px,rgba(43,36,34,.18) 44px,rgba(43,36,34,.18) 45px)"></div>
+      <div style="position:absolute;left:29px;top:43px;width:54px;height:48px;background:var(--c1-bg);border-left:3px solid var(--c1)"></div>
+    </div>
+  </div>
+  <div class="sheet-mask"></div>
+  <section class="sheet c1">
+    <div class="sheet-handle"></div>
+    <div class="sheet-name">劳动教育（一）</div>
+    <div class="sheet-sub">第 1-4 节 · 第 4 周</div>
+    <div class="sheet-row"><span class="sheet-key">教师</span><span class="sheet-val">夏舜丽</span></div>
+    <div class="sheet-row"><span class="sheet-key">地点</span><span class="sheet-val">40号楼-B310</span></div>
+    <div class="sheet-row"><span class="sheet-key">来源</span><span class="sheet-val">导入课表</span></div>
+    <div class="sheet-source">学校作息未核实；课程详情不显示默认时刻。</div>
+    <div class="sheet-actions"><button>修改这节课</button><button class="delete">删除</button></div>
+    <div class="back-link">关闭</div>
+  </section>
+</body>
+</html>
