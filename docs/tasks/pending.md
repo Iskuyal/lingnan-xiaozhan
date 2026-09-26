@@ -90,7 +90,7 @@
 | --- | --- | --- | --- |
 | I1 | 导入页缺少 `wx.chooseMessageFile` 的存在性兜底 | 本地存在性检查与页面回归测试通过；本轮开发者工具实际 API 可用，因此“API 缺失”原生弹窗分支未在该模拟器触发，真机兼容性仍待验 | [云端复测](../evidence/cloud-recheck/README.md)；`miniprogram/pages/timetable/import/index.ts` |
 | I2 | 维护者白名单拒绝仍沿用 `invalid_request` 分类 | 2026-09-25 `npm run probe:wechat` 实测识别 `maintainer_not_allowlisted` 并提示核对 `AI_ADMIN_OPENIDS`；云函数分类与用户文案未改，是否新增独立权限分类仍待定口径 | 同上；`cloudfunctions/ai/access.ts`、`scripts/probe-wechat.cjs` |
-| I3 | `npm run verify:wechat` 的选文件 API 缺失分支 | 本轮 API 实际可用，Excel 错误文件、仓库样本放弃、无学分合成版式均已走过；脚本后续在资讯阶段遇到 automator timeout，未生成新 `verification.json`。缺失 API 时的 `partial` 分支仍未在模拟器实测 | [云端复测](../evidence/cloud-recheck/README.md) |
+| I3 | `npm run verify:wechat` 的选文件 API 缺失分支 | 本轮 API 实际可用，Excel 错误文件、仓库样本放弃、无学分合成版式均已走过。**2026-09-26 复跑 24 项全过**、`verification.json` 重新生成（`result=passed`，`realDevice=false`）；09-25 那次「资讯阶段 automator timeout」是开发者工具长跑后退化，重开工具即恢复，不是脚本缺陷。缺失 API 时的 `partial` 分支仍未在模拟器实测 | [云端复测](../evidence/cloud-recheck/README.md) |
 | I4 | 删除云端遗留探针函数 `xlsx-cdn-probe` | 云开发控制台删除并保存结果。它不属于 SEC-01 至 SEC-05 的业务入口 | [项目状态](../status.md)；[安全整改证据](../evidence/security-remediation/README.md) |
 | I5 | Ticket 10 每日增量在 10 栏目下每批约 3 批但每日只触发 1 次 | **这条不改代码就不算完成**：减少 `INCREMENTAL_PAGES`、增加一次每日触发、或栏目轮转，三选一 | [Ticket 10](tickets/10-campus-rag-qa.md) |
 | I6 | `date + id` 组合索引未建 | 按 Ticket 04 的索引建议建立 | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md) |
