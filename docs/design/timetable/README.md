@@ -152,3 +152,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01 # 单张
 
 实现里不得出现与图不一致的间距与字号；图上覆盖不到的行为（滑动手势、加载态、失败态）
 仍按 `docs/development-spec.md` 与既有验收项处理。
+
+### 平台能力缺失的导入降级
+
+如果当前微信环境没有 `wx.chooseMessageFile`，导入页留在当前页面并显示系统说明弹窗，提示改用课表截图识别，或返回课表后手工录入；不调用云函数，也不改动课表数据。这是既有导入引导页上的原生系统弹窗，不新增页面版式。

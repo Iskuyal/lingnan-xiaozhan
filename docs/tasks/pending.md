@@ -1,6 +1,6 @@
 # 待办总表
 
-核对日期：2026-09-24。基线为 `main` 合并提交 `6d743cd`（`npm run typecheck` 与 `npm test` 448/448 通过）。
+核对日期：2026-09-25。基线为 `main` 合并提交 `6d743cd`（`npm run typecheck` 与 `npm test` 448/448 通过）。
 
 本页把散在各 Ticket、人工验收清单与证据记录里的**未完成项**集中成一张可执行清单，按「谁能做、卡在什么上」分组。**代码合入、云端部署、模拟器验证、真机验证是四个不同状态**——本页只登记尚未取得的证据，不代表代码还没写。各票的完整过程与早期数字仍以票内为准，跨票版本边界见[项目状态](../status.md)。
 
@@ -42,10 +42,11 @@
 | D13 | **P2/P3 审查尚未逐条确认的 6 条** | 数据来源是否可接受（A1 名录来自图片、A3 校区缺失、A4 联系方式缺失）、三个技术判断是否认可（B2 更新时间语义、B3 删除随包快照、B5 自定义安全规则）。其中 B3、B5 已实测有效，但「是否认可这个取舍」仍是判断 | 材料如实性 | [known-gaps.md](../review/p2-p3/known-gaps.md) |
 | D14 | **Issue #24 的三问** | 上课第一周起算日用哪个候选（09-08 / 09-14 / 其他）、是否接受「课表页周次小条」形态、图片内日期类通知是否安排人工补录 | Ticket 03 的周次切换验收 | [Issue #24](https://github.com/Iskuyal/wx-match/issues/24) |
 | D15 | **演示配额与测试夹具** | 演示脚本按「未上线小程序内容安全日上限 100 次」倒排，录屏与现场演示前用 `getApiQuota` 查额度；`tests/fixtures/timetable/`（含教师姓名与班级人数）是否随包提交 | 演示可用性；包内隐私 | [Ticket 09](tickets/09-p6-submission.md) |
+| D16 | **界面改版的定稿与两条设计取舍** | `docs/design/campus-refresh/` 已定稿（2026-09-25，20 屏）；`docs/design/timetable-readability/` 状态仍是「待评审」，两条待拍板：网格里地点缩成「楼栋-房间」（原文留在列表与详情）是否接受、课名行数上限（高块 4 行 / 2 节块 3 行 / 1 节块 2 行）是否再收紧 | 设计说明的定稿状态；后续界面按哪一版对齐 | [课表返工设计说明](../design/timetable-readability/README.md) 待拍板项 |
 
 ## 二、必须人工在真实条件下做的验证
 
-[人工验收清单](../testing/manual-acceptance.md)的 10 项**全部仍为「未测」**，不能由代码测试、模拟器截图或历史云端记录替代。以下按前置条件分组——**建议集中约一次时间做完**，因为多数项共用「第二微信号」「当天配额未用尽」「次日 06:00」这些一次性条件。
+[人工验收清单](../testing/manual-acceptance.md)中，A1 已由负责人反馈实测，历史记录见 Ticket 03 验证记录；A1 本次字段对照结果尚未补入本表，其余项目仍有未完成判据。不能把代码测试或模拟器截图当成真机证据。以下按前置条件分组——**建议集中约一次时间做完**，因为多数项共用「第二微信号」「当天配额未用尽」「次日 06:00」这些一次性条件。
 
 ### 只需要人、不需要额外条件
 
@@ -81,15 +82,15 @@
 | V3 | `AI_ADMIN_OPENIDS` 合法维护者路径 | 先在云端设置维护者白名单，再用该账号核对 `usage` 与 `probe`。当前冒烟账号被拒属预期 | 同上 |
 | V4 | `newsSync` 首次全量入库 | 按 D6 选定的口径跑完分批导入（Ticket 04 口径约 155 批；Ticket 10 口径为团委 171 次 + 8 个新栏目 122 次 ≈ 30 批——两者范围不同） | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md)、[Ticket 10](tickets/10-campus-rag-qa.md) |
 | V5 | 本机之外的记录格式 | 每项另存私有测试记录：`编号、日期时间、Git SHA、设备/微信版本、云函数版本、输入样本代号、预期、实际、耗时、成本、截图或录屏路径、问题链接`；截图遮掉姓名、班级、课表原文及个人信息 | [人工验收清单](../testing/manual-acceptance.md) |
-| V6 | **文字链路的空响应**（已观察到一次，未归档） | `artifacts/verify/ai-smoke.json` 记到一次 `ok=false`、`failureClass=model_unavailable`、`detail=模型返回内容为空（OpenAI 兼容格式）`、`elapsedMs=5201`，`smokeAt=2026-09-24T15:42:44Z`——**在已归档的复测证据之后**，`docs/evidence/cloud-recheck/README.md` 只记了同一批里 `ok=true` 的那次，没有记这次。判据：重跑 `npm run smoke:ai` 多次，确认是偶发还是必现；这是 fail-closed 下最可能打断演示的形态（模型返回空 → 用户看到「模型暂时不可用」）。**演示与录屏前先确认** | `artifacts/verify/ai-smoke.json`（`artifacts/` 被 gitignore，只在执行机上）；[云端复测](../evidence/cloud-recheck/README.md) |
+| V6 | **文字链路的空响应**（2026-09-25 已连续复现 3 次） | `npm run smoke:ai -- --attempts=3` 三次都为 `failureClass=model_unavailable`、`retryable=true`、`detail=模型返回内容为空（OpenAI 兼容格式）`，耗时 3272/3347/3815ms，文本安全检测均通过；模型标识 `deepseek/deepseek-v4.1-flash`。本轮先查中转配置/服务端响应记录，不再重复消耗调用；修复或确认原因后再跑三次。历史 2026-09-24 那次 5201ms 空响应与此前 `ok=true` 记录仍保留 | `artifacts/verify/ai-smoke.jsonl`（被 gitignore，只在执行机上）；[云端复测](../evidence/cloud-recheck/README.md) |
 
 ## 三、代码与文档收尾（不需要等人）
 
 | # | 事项 | 判据 | 依据 |
 | --- | --- | --- | --- |
-| I1 | 导入页缺少 `wx.chooseMessageFile` 的存在性兜底 | 模拟器上该 API 的值为 `undefined`，点「选择文件」直接抛 `not a function`；真机若遇缺该 API 的微信版本同理，应给可读提示而不是抛出原始错误 | [云端复测](../evidence/cloud-recheck/README.md)；`miniprogram/pages/timetable/import/index.ts` |
-| I2 | 维护者白名单拒绝被归类为 `invalid_request` | 用户文案变成「请求参数不正确，请重试」，而重试永远不会成功；真实原因只在 `detail` 里。`scripts/probe-wechat.cjs` 又把「返回里没有 probe 记录」解释为「函数版本不对或 action 未被识别」，把排障方向带偏。**改动涉及失败分类契约，需先定口径再改** | 同上；`cloudfunctions/ai/access.ts`、`scripts/probe-wechat.cjs` |
-| I3 | `npm run verify:wechat` 在导入一步中断 | 模拟器里 `wx.chooseMessageFile` 值为 `undefined` 而 `wx.canIUse` 误报 `true`；同一环境的 09-20 那次能跑通 24 项，变化不在本仓库代码，原因未查明。候选路径按代价从小到大：清编译缓存后重跑；真机执行 Excel 导入；确认工具侧支持状态后改注入方式 | [云端复测](../evidence/cloud-recheck/README.md) |
+| I1 | 导入页缺少 `wx.chooseMessageFile` 的存在性兜底 | 本地存在性检查与页面回归测试通过；本轮开发者工具实际 API 可用，因此“API 缺失”原生弹窗分支未在该模拟器触发，真机兼容性仍待验 | [云端复测](../evidence/cloud-recheck/README.md)；`miniprogram/pages/timetable/import/index.ts` |
+| I2 | 维护者白名单拒绝仍沿用 `invalid_request` 分类 | 2026-09-25 `npm run probe:wechat` 实测识别 `maintainer_not_allowlisted` 并提示核对 `AI_ADMIN_OPENIDS`；云函数分类与用户文案未改，是否新增独立权限分类仍待定口径 | 同上；`cloudfunctions/ai/access.ts`、`scripts/probe-wechat.cjs` |
+| I3 | `npm run verify:wechat` 的选文件 API 缺失分支 | 本轮 API 实际可用，Excel 错误文件、仓库样本放弃、无学分合成版式均已走过；脚本后续在资讯阶段遇到 automator timeout，未生成新 `verification.json`。缺失 API 时的 `partial` 分支仍未在模拟器实测 | [云端复测](../evidence/cloud-recheck/README.md) |
 | I4 | 删除云端遗留探针函数 `xlsx-cdn-probe` | 云开发控制台删除并保存结果。它不属于 SEC-01 至 SEC-05 的业务入口 | [项目状态](../status.md)；[安全整改证据](../evidence/security-remediation/README.md) |
 | I5 | Ticket 10 每日增量在 10 栏目下每批约 3 批但每日只触发 1 次 | **这条不改代码就不算完成**：减少 `INCREMENTAL_PAGES`、增加一次每日触发、或栏目轮转，三选一 | [Ticket 10](tickets/10-campus-rag-qa.md) |
 | I6 | `date + id` 组合索引未建 | 按 Ticket 04 的索引建议建立 | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md) |
