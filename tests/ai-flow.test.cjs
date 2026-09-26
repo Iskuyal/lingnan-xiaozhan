@@ -190,6 +190,23 @@ test('中转不可用（网络错误）时调用方拿到可处理的错误，�
   assert.ok(result.detail.includes('ECONNREFUSED'));
 });
 
+test('模型返回空内容时给出可重试失败，并记录模型失败以便排查', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse(''),
+  });
+  const result = await harness.main(chatEvent());
+
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'model_unavailable');
+  assert.match(result.message, /稍后|重试/u, '用户文案应说明稍后可以再试');
+  assert.match(result.detail, /内容为空/u, '细节应保留空响应原因');
+  const failed = harness.records.filter((record) => record.kind === 'model' && record.ok === false);
+  assert.equal(failed.length, 1, '空响应应留下一条模型失败记录');
+  assert.equal(failed[0].failureClass, 'model_unavailable');
+  assert.equal(harness.monthly[currentMonth()].failures, 1, '失败计数应进入月度用量汇总');
+});
+
 test('中转不响应时在超时边界内返回「模型不可用或超时」，不无限挂起', async () => {
   const harness = createHarness({
     env: { AI_TIMEOUT_MS: '1000' },
