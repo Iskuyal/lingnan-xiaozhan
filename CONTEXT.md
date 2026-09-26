@@ -64,6 +64,7 @@
 - 主题与用户：AI 赋能校园生活，覆盖普通学生与学生组织。
 - **发布路径（2026-09-19 负责人决定）**：**本次参赛不做认证、备案与体验版**，放弃官方「体验版或上线凭证」这一加分项；P6 用「预览」做真机演示，材料中**如实标注未发布**。因此 [Ticket 08](docs/tasks/tickets/08-post-publish-single-page-mode.md)（未登录单页模式补测）转为 **`wontfix`**，材料里不得把它写成已通过。
 - 校园通知与办事指引问答（RAG）已作为国赛版方向立项，入口拟与部门问答合并；语料 PoC 发现可用正文不足，因此先推进[OCR / 文档解析 Ticket 11](docs/tasks/tickets/11-ocr-document-parsing.md)。这两项均未形成可对学生开放的已验收能力，详见[Ticket 10](docs/tasks/tickets/10-campus-rag-qa.md)与[项目状态](docs/status.md)。
+- **部门动态 RAG（2026-09-26，feat/department-activity-rag）**：部门问答的「活动动态」从全量携带改成**云函数内 bigram 检索注入**（top-3），命中条目随回答返回并在界面渲染「参考来源 · 部门动态」来源条（点击复制原文链接）。语料仍是随包已核实动态，构建时从 departments.ts 单一数据源注入 ai 云函数；无命中或语料缺失时不注入、问答退回原行为。动态题召回 recall@1 = 4/5、recall@3/5 = 5/5；达标线重测（10 题题集）脚本已交付、待云端密钥执行。设计决策见 [ADR-0002](docs/adr/0002-department-activity-rag.md)，证据见 [department-rag](docs/evidence/department-rag/README.md)。这是 Ticket 10 的先行落地，**不改变其关卡 1（校园通知语料可行性）重开的结论**。
 
 另有一组**审查阶段提出、尚未逐条确认**的事项，独立记录在 [P2/P3 审查的已知限制](docs/review/p2-p3/known-gaps.md)：数据来源是否可接受（A1 名录来自图片、A3 校区缺失、A4 联系方式缺失）、三个技术判断是否认可（B2 更新时间语义、B3 删除随包快照、B5 自定义安全规则）。其中 B3、B5 已经过线上实测验证有效，但「是否认可这个取舍」仍是负责人的判断。
 

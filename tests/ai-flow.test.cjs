@@ -961,3 +961,92 @@ test('失败的模型调用也记账，便于排查与成本核对', async () =>
   assert.equal(failed[0].kind, 'model');
   assert.equal(harness.monthly[currentMonth()].failures, 1, '失败计数进月度汇总');
 });
+
+// ---------- 部门动态检索注入（Ticket 10 先行落地，department-qa） ----------
+
+/** 构建注入的真实语料（与云函数 require 的是同一份文件）。 */
+function loadDepartmentCorpusForTest() {
+  const fs = require('node:fs');
+  const vm = require('node:vm');
+  const path = require('node:path');
+  const file = path.resolve('dist/cloudfunctions/ai/department-corpus.js');
+  const sandbox = { module: { exports: {} }, exports: {} };
+  vm.runInNewContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
+  return sandbox.module.exports;
+}
+
+test('department-qa：查询命中部门动态时，system 注入检索结果且返回 citations', async () => {
+  const corpus = loadDepartmentCorpusForTest();
+  const first = corpus.departments[0];
+  const activity = first.activities[0];
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse(`最近有「${activity.title}」。`),
+  });
+  const result = await harness.main(chatEvent({
+    feature: 'department-qa',
+    system: '你是校园学生部门问答助手',
+    messages: [{ role: 'user', text: `${first.name}最近有什么动态` }],
+  }));
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  assert.ok(result.citations.length >= 1, '命中时应返回 citations');
+  assert.equal(result.citations[0].departmentId, first.id);
+  assert.ok(
+    result.warnings.some((warning) => warning.includes('部门动态检索命中')),
+    '命中应带检索说明告警',
+  );
+  const body = JSON.parse(harness.http[0].body);
+  const systemMessage = body.messages.find((message) => message.role === 'system');
+  assert.ok(systemMessage.content.includes('【部门动态检索结果】'), '注入文本要进模型请求的 system');
+  assert.ok(systemMessage.content.includes(activity.title), '注入内容要包含命中的动态标题');
+});
+
+test('department-qa：查询与动态无关时，不注入、citations 为空', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse('官网未公布。'),
+  });
+  const result = await harness.main(chatEvent({
+    feature: 'department-qa',
+    system: '你是校园学生部门问答助手',
+    messages: [{ role: 'user', text: '傅里叶变换的推导过程' }],
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.citations), true, "citations 应为数组");
+  assert.equal(result.citations.length, 0);
+  const body = JSON.parse(harness.http[0].body);
+  const systemMessage = body.messages.find((message) => message.role === 'system');
+  assert.ok(!systemMessage.content.includes('【部门动态检索结果】'), '无关查询不得注入检索段');
+});
+
+test('非 department-qa 的 chat：不做检索注入，citations 恒为空数组', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse('第三节没有课。'),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.citations), true, "citations 应为数组");
+  assert.equal(result.citations.length, 0);
+  const body = JSON.parse(harness.http[0].body);
+  const systemMessage = body.messages.find((message) => message.role === 'system');
+  assert.ok(!systemMessage.content.includes('【部门动态检索结果】'));
+});
+
+test('department-qa：基础问题（联系方式）不做动态检索注入，citations 为空', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse('官网未公布。'),
+  });
+  const result = await harness.main(chatEvent({
+    feature: 'department-qa',
+    system: '你是校园学生部门问答助手',
+    messages: [{ role: 'user', text: '校学生团委的联系方式是什么？' }],
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.citations), true);
+  assert.equal(result.citations.length, 0, '基础问题不得返回动态引用');
+  const body = JSON.parse(harness.http[0].body);
+  const systemMessage = body.messages.find((message) => message.role === 'system');
+  assert.ok(!systemMessage.content.includes('【部门动态检索结果】'), '基础问题不得注入检索段');
+});

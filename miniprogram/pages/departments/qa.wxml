@@ -52,6 +52,23 @@
             <view class="qa-bubble {{item.role === 'user' ? 'qa-bubble-user' : 'qa-bubble-assistant'}}">
               <view class="qa-bubble-text">{{item.text}}</view>
               <view wx:if="{{item.warning}}" class="qa-flag">{{item.warning}}</view>
+              <view wx:if="{{item.citations && item.citations.length > 0}}" class="qa-citations">
+                <view class="qa-citations-head">参考来源 · 部门动态</view>
+                <view
+                  wx:for="{{item.citations}}"
+                  wx:for-item="citation"
+                  wx:key="sourceUrl"
+                  class="qa-citation"
+                  hover-class="pressed"
+                  data-url="{{citation.sourceUrl}}"
+                  bindtap="copyActivitySource"
+                  aria-role="button"
+                  aria-label="复制原文链接"
+                >
+                  <view class="qa-citation-title">{{citation.title}}</view>
+                  <view class="qa-citation-meta">{{citation.publishedAt}} · 点击复制原文链接</view>
+                </view>
+              </view>
             </view>
           </view>
         </block>

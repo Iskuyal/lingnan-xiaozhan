@@ -18,6 +18,12 @@ import { requireCloud, transportMessage as sharedTransportMessage } from './clou
 export const AI_FUNCTION = 'ai';
 
 /**
+ * 部门问答的 feature 名。服务端 `cloudfunctions/ai/index.ts` 有同名常量（跨包有意复制，
+ * 项目惯例同 FAILURE_CLASSES：小程序不引用云函数目录）；两个部门页面组装 chat 事件时用它。
+ */
+export const DEPARTMENT_QA_FEATURE = 'department-qa';
+
+/**
  * 失败分类，与服务端 `cloudfunctions/ai/types.ts` 的 `FailureClass` 一一对应。
  *
  * 小程序**不引用云函数目录**（构建布局有断言），因此在这里同步一份联合类型：
@@ -96,6 +102,25 @@ export interface AiCallResult {
   safety: AiSafetyReport | null;
   /** 服务端非致命告警（如记账失败、`checked=false`）。 */
   warnings: string[];
+  /**
+   * 部门动态检索注入的来源清单（仅部门问答可能有值）。
+   *
+   * 形状与服务端 `cloudfunctions/ai/types.ts` 的 DepartmentActivityCitation 一致；
+   * 小程序不引用云函数目录，这里同步一份（服务端改字段名时由云函数侧的集成测试与
+   * 本文件的解析断言共同拦住，注意保持两份同步）。
+   */
+  citations: DepartmentActivityCitation[];
+}
+
+/** 一条部门动态来源（服务端检索注入的引用清单元素，形状与服务端契约一致）。 */
+export interface DepartmentActivityCitation {
+  departmentId: string;
+  departmentName: string;
+  title: string;
+  /** 官网文章发布日期，格式 YYYY-MM-DD。 */
+  publishedAt: string;
+  sourceUrl: string;
+  score: number;
 }
 
 /**
@@ -190,6 +215,33 @@ function safetyOf(value: unknown): AiSafetyReport | null {
   };
 }
 
+/** 服务端返回的引用清单：逐条收敛形状，非法条目丢弃（多一条噪音不如少一条来源）。 */
+function citationsOf(value: unknown): DepartmentActivityCitation[] {
+  if (!Array.isArray(value)) return [];
+  const citations: DepartmentActivityCitation[] = [];
+  for (const item of value) {
+    if (item === null || item === undefined || typeof item !== 'object') continue;
+    const source = item as Record<string, unknown>;
+    if (
+      typeof source.departmentId !== 'string'
+      || typeof source.departmentName !== 'string'
+      || typeof source.title !== 'string'
+      || typeof source.publishedAt !== 'string'
+      || typeof source.sourceUrl !== 'string'
+      || typeof source.score !== 'number'
+    ) continue;
+    citations.push({
+      departmentId: source.departmentId,
+      departmentName: source.departmentName,
+      title: source.title,
+      publishedAt: source.publishedAt,
+      sourceUrl: source.sourceUrl,
+      score: source.score,
+    });
+  }
+  return citations;
+}
+
 /** 调用 ai 云函数；调用本身失败（未部署/超时/权限）时抛错，由 transportMessage 转文案。 */
 export async function callAi(data: Record<string, unknown>): Promise<AiCallResult> {
   requireCloud();
@@ -209,6 +261,7 @@ export async function callAi(data: Record<string, unknown>): Promise<AiCallResul
     warnings: Array.isArray(source.warnings)
       ? source.warnings.filter((item): item is string => typeof item === 'string')
       : [],
+    citations: citationsOf(source.citations),
   };
 }
 
