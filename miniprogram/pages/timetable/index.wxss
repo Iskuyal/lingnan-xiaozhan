@@ -59,8 +59,8 @@
 .grid-instruction { margin:4rpx 0 12rpx; color:var(--text-2, #6b5d57); font-size:22rpx; line-height:1.5; }
 
 /* Course-grid geometry stays aligned to SECTION_ROW_RPX (84rpx) in services/timetable/view.ts.
-   网格留在页面边距内，与上下文字同一条边线；只画本周有课的天（模板按 column.narrow 跳过空白天），
-   省下来的宽度全给有课的天——宽列从约 110rpx 提到 130rpx 以上。 */
+   网格留在页面边距内，与上下文字同一条边线。七天都在表里：没课的天收成 32rpx 细列（原 48rpx）
+   只写单字星期，省下的宽度给有课的天。整列消失会分不清「那天没课」和「表被截了」。 */
 .grid { margin:8rpx 0 0; overflow:hidden; border:1rpx solid rgba(43,36,34,0.2); }
 .grid-row { display:flex; }
 .grid-head { min-height:80rpx; background:var(--paper-shade, #faeee9); }
@@ -71,14 +71,19 @@
   align-items:center; justify-content:center; border-left:1rpx solid rgba(43,36,34,0.13);
   color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.2; text-align:center;
 }
+.grid-th-narrow { flex:0 0 32rpx; }
 .grid-th-today { background:var(--brand, #c41c23); color:#fff; }
 .grid-th-day { color:inherit; font-size:22rpx; }
+.grid-th-narrow .grid-th-day { font-size:24rpx; }
 .grid-th-date { margin-top:2rpx; color:inherit; font-size:20rpx; }
+/* 32rpx 放不下日期数字，写上会挤成两行；日期区间在上方「第 N 周」下面已经给了。 */
+.grid-th-narrow .grid-th-date { display:none; }
 .grid-body { display:flex; background:rgba(255,255,255,0.42); }
 .grid-body > .grid-rail { display:flex; flex-direction:column; }
 .grid-no { height:84rpx; flex:none; display:flex; align-items:flex-start; justify-content:center; padding-top:8rpx; border-top:1rpx solid rgba(43,36,34,0.13); color:var(--text-2, #6b5d57); font-size:22rpx; }
 .grid-cols { flex:1; min-width:0; display:flex; }
 .grid-col { flex:1 1 0; min-width:0; height:1008rpx; position:relative; border-left:1rpx solid rgba(43,36,34,0.13); }
+.grid-col-narrow { flex:0 0 32rpx; }
 .grid-col-today { background:rgba(198,154,40,0.08); }
 .grid-line { height:84rpx; border-bottom:1rpx solid rgba(43,36,34,0.13); }
 /* 课块只留色条与浅底：再叠一圈外框，几列密排时整张表会糊成网格纸。

@@ -85,13 +85,12 @@
         <view class="grid-row grid-head">
           <view class="grid-rail"></view>
           <view
-            class="grid-th {{column.today ? 'grid-th-today' : ''}}"
+            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}} {{column.today ? 'grid-th-today' : ''}}"
             wx:for="{{grid.columns}}"
             wx:for-item="column"
             wx:key="weekday"
-            wx:if="{{!column.narrow}}"
           >
-            <view class="grid-th-day">{{column.label}}</view>
+            <view class="grid-th-day">{{column.narrow ? column.shortLabel : column.label}}</view>
             <view class="grid-th-date" wx:if="{{column.dateLabel !== ''}}">{{column.dateLabel}}</view>
           </view>
         </view>
@@ -101,11 +100,10 @@
           </view>
           <view class="grid-cols">
             <view
-              class="grid-col {{column.today ? 'grid-col-today' : ''}}"
+              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}} {{column.today ? 'grid-col-today' : ''}}"
               wx:for="{{grid.columns}}"
               wx:for-item="column"
               wx:key="weekday"
-              wx:if="{{!column.narrow}}"
             >
               <view class="grid-line" wx:for="{{grid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
               <view

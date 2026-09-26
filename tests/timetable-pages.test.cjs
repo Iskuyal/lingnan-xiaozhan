@@ -493,19 +493,24 @@ test('课表主页：品牌红底上的主按钮写明白字，「手工新增�
   assert.match(manual[0], /class="[^"]*\bsecondary\b[^"]*"/u, '次级动作要用 .secondary（.tt-secondary 没有定义）');
 });
 
-// 空白天原先渲染成「窄列」：一直空着还各占约 25px，负责人 2026-09-26 反馈「全空还占宽」。
-// 现在改成整列不渲染，宽度全部让给有课的天。
-test('周网格只画有课的天：空白天整列跳过，不再保留窄列', () => {
+// 空白天曾经被整列去掉（2026-09-26 为了省宽度），负责人当天就报了 BUG：
+// 「当天没课的话直接不显示天数了」——整列消失会分不清「那天没课」和「表被截了」。
+// 所以七天都留在表里，没课的天只收窄（32rpx）并写单字星期。
+test('周网格七天都在表里：没课的天收窄不消失', () => {
   const templates = [
     'miniprogram/pages/timetable/index.wxml',
     'miniprogram/pages/timetable/import/index.wxml',
   ];
   for (const file of templates) {
     const wxml = fs.readFileSync(path.resolve(file), 'utf8');
-    const skipped = wxml.match(/wx:if="\{\{!column\.narrow\}\}"/gu) ?? [];
-    assert.equal(skipped.length, 2, `${file}: 表头与网格体都应跳过没有课的天`);
-    assert.ok(!/grid-th-narrow|grid-col-narrow/u.test(wxml), `${file}: 不应再引用窄列样式`);
+    assert.ok(!/wx:if="\{\{!column\.narrow\}\}"/u.test(wxml), `${file}: 不应按有没有课跳过整列`);
+    const narrow = wxml.match(/column\.narrow \?/gu) ?? [];
+    assert.equal(narrow.length, 3, `${file}: 表头与网格体都要按 narrow 加细列样式与单字星期`);
+    assert.match(wxml, /grid-th-narrow/u, `${file}: 表头要有细列样式`);
+    assert.match(wxml, /grid-col-narrow/u, `${file}: 网格体要有细列样式`);
   }
+  const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
+  assert.match(wxss, /\.grid-col-narrow \{ flex:0 0 32rpx; \}/u, '细列宽度写在样式里');
 });
 
 test('周课表主页：填了开学日与作息后，日期、今日列、速查条与详情弹层都到位', async () => {

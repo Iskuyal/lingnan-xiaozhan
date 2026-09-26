@@ -311,9 +311,11 @@ export interface GridBlock {
 export interface GridColumn {
   weekday: number;
   label: string;
+  /** 细列的单字星期：17px 的列放不下「星期六」，只写一个字。 */
+  shortLabel: string;
   /** 表头日期数字（没设开学日时为空字符串）。 */
   dateLabel: string;
-  /** 本周没课的天：模板据此跳过整列，把宽度让给有课的天。 */
+  /** 本周没课的天收成细列，把宽度让给有课的天；七天都留在表里，整列消失会分不清「那天没课」和「表被截了」。 */
   narrow: boolean;
   today: boolean;
   blocks: GridBlock[];
@@ -459,6 +461,7 @@ export function buildGrid(courses: Course[], week: number, options: GridOptions 
     return {
       weekday,
       label,
+      shortLabel: WEEKDAY_SHORT[index] ?? '',
       dateLabel: dateLabels[index] ?? '',
       narrow: blocks.length === 0,
       today: options.todayWeekday === weekday,
