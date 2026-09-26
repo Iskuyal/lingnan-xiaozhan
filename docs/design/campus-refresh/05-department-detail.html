@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>部门详情</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .dept-banner { margin:-22px -18px 0; padding:18px 15px; border-left:4px solid var(--gold); background:var(--paper-shade); color:var(--text); }
+    .dept-banner .eyebrow { color:var(--text-3); }
+    .dept-banner h1 { margin:5px 0 0; color:var(--brand-deep); font-size:25px; line-height:1.35; }
+    .dept-location { margin-top:9px; color:var(--text-2); font-size:11px; }
+    .qa-entry { min-height:50px; margin:12px 0 14px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid rgba(43,36,34,.14); border-left:3px solid var(--gold); background:var(--paper-shade); }
+    .qa-entry strong { color:var(--brand-deep); font-size:13px; }
+    .qa-entry span { display:block; margin-top:2px; color:var(--text-2); font-size:10px; }
+    .qa-entry-arrow { margin-top:0 !important; color:var(--gold-deep); font-size:19px; }
+    .detail-qa { margin:0 -18px; padding:12px 18px; border-bottom:1px solid rgba(43,36,34,.15); background:rgba(255,255,255,.48); }
+    .detail-qa-head { display:flex; align-items:center; justify-content:space-between; padding:9px 11px; background:var(--brand-deep); color:#fff; }
+    .detail-qa-head strong { color:#fff; font-size:12px; }
+    .detail-qa-head span { min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.75); font-size:10px; }
+    .detail-qa-copy { margin-top:8px; padding:9px 10px; border-left:3px solid var(--gold); background:var(--paper-shade); font-size:10px; line-height:1.65; }
+    .detail-qa-choice { min-height:44px; margin-top:7px; display:inline-flex; align-items:center; padding:6px 9px; border:1px solid rgba(43,36,34,.16); color:var(--text-2); font-size:9px; }
+    .detail-section { padding:15px 0 14px; border-bottom:1px solid rgba(43,36,34,.15); }
+    .detail-section h2 { margin:0 0 8px; font-size:14px; line-height:1.45; color:var(--brand-deep); }
+    .unit-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .activity { padding:10px 0 2px; }
+    .activity-title { font-size:12px; line-height:1.6; font-weight:600; }
+    .activity-date { margin-top:3px; color:var(--text-3); font-size:10px; }
+    .missing { color:var(--text-3); font-size:11px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">部门详情</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="dept-banner">
+      <div class="eyebrow">学校官网 · 团委 · 学生组织</div>
+      <h1>校学生会</h1>
+      <div class="dept-location">所属校区：官网未标注</div>
+    </header>
+    <div class="qa-entry"><div><strong>问问校学生会</strong><span>查看已核实资料，或继续提问</span></div><span class="qa-entry-arrow">↓</span></div>
+    <section class="detail-section">
+      <h2>组织介绍</h2>
+      <p class="copy">校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织。组织架构为“主席团+工作部门”模式，围绕服务同学发挥桥梁和纽带作用。</p>
+    </section>
+    <section class="detail-section">
+      <h2>下设部门</h2>
+      <p class="copy">组织架构为“主席团+工作部门”模式，设 5 大部门。</p>
+      <div class="unit-list"><span class="chip chip-gold">权益部</span><span class="chip chip-gold">文娱部</span><span class="chip chip-gold">器材部</span><span class="chip chip-gold">体育部</span><span class="chip chip-gold">学创部</span></div>
+    </section>
+    <section class="detail-section">
+      <h2>联系方式</h2>
+      <div class="warn-block">官网暂无公开联系方式。页面不展示未经核实的账号或电话。</div>
+    </section>
+    <section class="detail-section">
+      <h2>组织动态</h2>
+      <div class="activity"><div class="activity-title">广东岭南职业技术学院第十四次学生代表大会顺利召开</div><div class="activity-date">2026-03-09 · 团委官网</div></div>
+    </section>
+    <section class="detail-qa">
+      <header class="detail-qa-head"><strong>部门答疑</strong><span>收起 ×</span></header>
+      <div class="detail-qa-copy">关于校学生会，你想了解什么？回答只依据官网已核实资料；未公布的信息会明确说明。</div>
+      <span class="detail-qa-choice">下设部门有哪些？</span>
+    </section>
+    <div class="source-block"><div class="quiet">资料来源：学校官网 · 团委 · 学生组织</div><div class="quiet">核查于 2026-09-18</div><button class="secondary" style="width:100%;margin-top:10px">复制来源链接</button></div>
+    <div class="back-link">返回部门列表</div>
+  </main>
+</body>
+</html>

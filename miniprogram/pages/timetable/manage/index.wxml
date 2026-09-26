@@ -31,17 +31,19 @@
   </block>
 
   <block wx:else>
-    <!-- 顶部玻璃统计卡：三个数字都随数据变，不写死。 -->
+    <!-- 顶部统计区：三个数字都随数据变，不写死。 -->
     <view class="mg-head">
-      <view class="eyebrow">{{semesterText}}</view>
+      <view class="mg-main-stat">
+        <view class="mg-total-num">{{total}}</view>
+        <view class="mg-total-copy">
+          <view class="mg-total-label">门课程已保存</view>
+          <view class="mg-total-term">{{semesterText}}</view>
+        </view>
+      </view>
       <view class="mg-stat">
         <view class="mg-stat-item">
-          <view class="mg-stat-num">{{total}}</view>
-          <view class="mg-stat-label">共 {{total}} 门课程</view>
-        </view>
-        <view class="mg-stat-item">
           <view class="mg-stat-num">{{weekInCount}}</view>
-          <view class="mg-stat-label">本周在读</view>
+          <view class="mg-stat-label">本周开课</view>
         </view>
         <view class="mg-stat-item">
           <view class="mg-stat-num">{{reviewCount}}</view>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课程编辑</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .edit-intro { margin:2px 0 14px; display:flex; align-items:center; gap:10px; }
+    .edit-intro::before { content:""; width:4px; height:30px; flex:none; background:var(--gold); }
+    .edit-intro .page-title { margin:0; font-size:21px; }
+    .edit-group { margin-top:15px; padding:13px; background:rgba(255,255,255,.5); border:1px solid rgba(43,36,34,.15); }
+    .edit-group h2 { margin:0 0 10px; color:var(--brand-deep); font-size:14px; }
+    .field { margin-top:9px; }
+    .field-label { margin-bottom:4px; color:var(--text-2); font-size:12px; }
+    .field-value { min-height:44px; padding:8px 9px; border:1px solid rgba(43,36,34,.2); background:var(--paper); color:var(--text); font-size:12px; }
+    .weekdays { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .weekdays span { min-height:44px; display:grid; place-items:center; text-align:center; border:1px solid rgba(43,36,34,.17); color:var(--text-2); font-size:12px; }
+    .weekdays .on { background:var(--brand); border-color:var(--brand); color:#fff; }
+    .range { display:flex; align-items:center; gap:5px; }
+    .range .field-value { width:42px; text-align:center; }
+    .week-grid { margin-top:7px; display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .week-grid span { display:grid; place-items:center; min-height:44px; border:1px solid rgba(43,36,34,.14); color:var(--text-2); font-size:11px; }
+    .week-grid .on { background:rgba(198,154,40,.22); border-color:rgba(198,154,40,.55); color:var(--brand-ink); }
+    .swatches { margin-top:9px; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .swatches i { width:100%; height:44px; border-radius:2px; background:var(--course); }
+    .save-fixed { margin:14px -18px -40px; padding:12px 18px 20px; background:var(--paper); border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课程信息</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="edit-intro"><h1 class="page-title">修改课程</h1></header>
+    <section class="edit-group">
+      <h2>基本信息</h2>
+      <div class="field"><div class="field-label">课程名</div><div class="field-value">高等数学</div></div>
+      <div class="field"><div class="field-label">教师</div><div class="field-value">林加燕</div></div>
+      <div class="field"><div class="field-label">地点</div><div class="field-value">崇礼楼 306</div></div>
+      <div class="field"><div class="field-label">学分 / 备注</div><div class="field-value">选填</div></div>
+    </section>
+    <section class="edit-group">
+      <h2>上课时间</h2>
+      <div class="field"><div class="field-label">星期</div><div class="weekdays"><span class="on">一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div></div>
+      <div class="field"><div class="field-label">节次</div><div class="range"><span>第</span><div class="field-value">5</div><span>节　到　第</span><div class="field-value">6</div><span>节</span></div></div>
+      <div class="quiet">学校作息与时刻尚未核实，按节次填写即可。</div>
+      <div class="field"><div class="field-label">起止周</div><div class="range"><span>第</span><div class="field-value">4</div><span>周　到　第</span><div class="field-value">16</div><span>周</span></div></div>
+      <div class="field"><div class="field-label">自选周次 · 第 4-5、7-16 周</div><div class="week-grid"><span>1</span><span>2</span><span>3</span><span class="on">4</span><span class="on">5</span><span>6</span><span class="on">7</span><span class="on">8</span><span class="on">9</span><span class="on">10</span><span class="on">11</span><span class="on">12</span><span class="on">13</span><span class="on">14</span><span class="on">15</span><span class="on">16</span></div></div>
+    </section>
+    <section class="edit-group">
+      <h2>颜色</h2><div class="copy">按课程名自动配色　·　手动指定</div>
+      <div class="swatches"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="c5"></i><i class="c6"></i><i class="c7"></i><i class="c8"></i></div>
+      <div class="quiet" style="margin-top:8px">自动配色保证同名课程永远同色。</div>
+    </section>
+    <section class="edit-group"><h2>迷你课表预览</h2><div class="copy">星期一 · 第 5-6 节</div><div class="quiet">预览只画正在编辑的这节课。</div></section>
+    <div class="save-fixed"><button class="primary" style="width:100%;justify-content:center">保存课程</button><div class="back-link">取消</div></div>
+  </main>
+</body>
+</html>

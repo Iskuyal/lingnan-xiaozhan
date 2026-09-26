@@ -1,36 +1,55 @@
 <view class="home">
-  <view class="hero">
-    <view class="hero-inner">
-      <view class="hero-eyebrow">你的校园，随手可达</view>
-      <view class="school-name">{{school.name}}</view>
-      <view class="campuses"><view class="campus-dot"></view>{{school.campuses}}</view>
-    </view>
-    <view class="hero-rule"></view>
+  <view class="home-hero">
+    <view class="home-kicker">校园信息与日常服务</view>
+    <view class="home-name school-name">{{school.name}}</view>
+    <view class="home-campus">{{school.campuses}}</view>
+    <view class="home-hero-copy">读资讯、找组织、查课表。</view>
+    <view class="hero-foot"><view class="gold-square"></view>校园里的事，从这里进入</view>
+    <image class="hero-art" src="/assets/lingnan-gate.svg" mode="aspectFit" />
   </view>
 
-  <view class="page">
-    <view class="tools-section">
-      <view class="section-head"><view class="section-bar"></view><view class="section-title">校园服务</view></view>
-      <view class="tools">
-        <button id="departments-entry" class="tool tool-departments" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看学生组织名单">
-          <image class="tool-icon" src="/assets/departments.svg" mode="aspectFit" />
-          <view class="tool-title">学生部门</view>
-          <view class="tool-description">认识组织，找到联系</view>
-          <view class="tool-bottom"><text class="tool-status">已可查看</text><text class="chevron">›</text></view>
-        </button>
-        <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，可导入课表文件或手工添加">
-          <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
-          <view class="tool-title">我的课表</view>
-          <view class="tool-description">导入课表，按周查看</view>
-          <view class="tool-bottom"><text class="tool-status">可导入</text><text class="chevron">›</text></view>
-        </button>
-      </view>
+  <view class="page home-content">
+    <button
+      id="timetable-entry"
+      class="home-primary"
+      style="display:block;width:100%;max-width:none"
+      hover-class="pressed"
+      bindtap="openTimetable"
+      aria-label="打开我的课表，可导入课程并按周查看"
+    >
+      <view class="entry-label">我的安排</view>
+      <view class="entry-title">打开课表</view>
+      <view class="entry-description">导入课程，按周查看</view>
+      <text class="entry-arrow">›</text>
+    </button>
+
+    <view class="entry-pair">
+      <button
+        id="departments-entry"
+        class="home-entry home-entry-departments"
+        hover-class="pressed"
+        bindtap="openDepartments"
+        aria-label="学生部门，查看已核实的组织名录"
+      >
+        <view class="entry-title">学生部门</view>
+        <view class="entry-description">查看组织名录</view>
+      </button>
+      <button
+        id="news-entry"
+        class="home-entry home-entry-news"
+        hover-class="pressed"
+        bindtap="openNews"
+        aria-label="校园资讯，阅读官网动态与通知"
+      >
+        <view class="entry-title">校园资讯</view>
+        <view class="entry-description">阅读官网动态与通知</view>
+      </button>
     </view>
 
     <view class="news-section">
       <view class="news-section-head">
-        <view class="section-head"><view class="section-bar"></view><view class="section-title">校园资讯</view></view>
-        <button id="news-entry" class="news-entry-link" hover-class="pressed" bindtap="openNews" aria-label="查看全部校园资讯">查看全部 ›</button>
+        <view class="section-title">最近动态</view>
+        <view class="section-note">校园资讯</view>
       </view>
       <view wx:if="{{newsStatus === 'loading'}}" class="news-hint">正在读取最近资讯…</view>
       <view wx:elif="{{newsStatus === 'error'}}" class="news-hint news-hint-error">
@@ -38,24 +57,37 @@
         <button id="news-retry" class="news-retry" hover-class="pressed" bindtap="retryNews">重试</button>
       </view>
       <block wx:else>
-        <view wx:if="{{recentNews.length === 0}}" class="news-hint">云端还没有已同步的资讯，稍后再来看看。</view>
-        <view
-          class="news-recent-item"
-          wx:for="{{recentNews}}"
-          wx:key="id"
-          hover-class="pressed"
-          data-id="{{item.id}}"
-          bindtap="openNewsDetail"
-        >
-          <view class="news-recent-title">{{item.title}}</view>
-          <view class="news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
+        <view wx:if="{{recentNews.length === 0}}" class="news-hint">
+          云端还没有已同步的资讯，稍后再来看看。
         </view>
-        <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
+        <view wx:else class="recent-news-list">
+          <view
+            class="recent-news-item news-recent-item {{index === 0 ? 'recent-news-item-feature' : ''}}"
+            wx:for="{{recentNews}}"
+            wx:key="id"
+            wx:for-index="index"
+            hover-class="pressed"
+            data-id="{{item.id}}"
+            bindtap="openNewsDetail"
+          >
+            <view class="recent-date news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view>
+            <view class="recent-title news-recent-title">{{item.title}}</view>
+            <view class="recent-item-arrow">›</view>
+          </view>
+        </view>
+        <view class="news-source">
+          来源：{{newsMeta.label}}
+          <block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block>
+        </view>
+        <button id="news-view-all" class="news-view-all" hover-class="pressed" bindtap="openNews">查看全部校园资讯 ›</button>
       </block>
     </view>
 
     <view class="school-about">
-      <view class="section-head"><view class="section-bar"></view><view class="section-title">认识岭南</view></view>
+      <view class="section-head">
+        <view class="section-title">认识岭南</view>
+        <view class="section-note">学校简介</view>
+      </view>
       <view class="introduction">{{school.introduction}}</view>
       <view class="source-area">
         <view class="source-label">资料来源：{{school.sourceLabel}}</view>
@@ -63,6 +95,7 @@
         <button id="copy-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
       </view>
     </view>
-    <view class="footer">从了解校园，到安排每一天</view>
+
+    <view class="home-footer">从了解校园，到安排每一天</view>
   </view>
 </view>

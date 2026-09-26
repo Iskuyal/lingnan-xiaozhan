@@ -122,6 +122,19 @@ export function formatWeekRange(config: SemesterConfig, week: number): string {
   return `${short(dates.start)} – ${short(dates.end)}`;
 }
 
+/** 列表视图用的 7 个完整日期（'2026-09-21'）：表头只有「几号」，列表里的某一天要能单独读懂。 */
+export function weekDateFullLabels(config: SemesterConfig, week: number): string[] {
+  const dates = weekDates(config, week);
+  if (dates === null) return [];
+  const labels: string[] = [];
+  for (let index = 0; index < 7; index += 1) {
+    const day = addDays(dates.start, index);
+    if (day === '') return [];
+    labels.push(day);
+  }
+  return labels;
+}
+
 /**
  * 与课程数据一起决定翻周范围：数据里最大的教学周、总周数与默认跨度取大者。
  * 比 `view.weekSpan` 多考虑了学期设置：设了 20 周就不必为 19 周的样本缩到 19。

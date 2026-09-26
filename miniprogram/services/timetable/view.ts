@@ -94,9 +94,12 @@ export interface CourseCard {
   source: 'excel' | 'manual' | 'photo';
   /** 网格底色：按整周课程顺序交替分配，同一门连排课跨大节行保持同色。 */
   tint: 'red' | 'gold';
+  /** 课程色（与课块、详情弹层同一套色板）：列表行左侧色条用它。 */
+  colorSolid: string;
 }
 
 export function toCard(course: Course): CourseCard {
+  const color = colorAt(colorIndexOf(course));
   return {
     id: course.id,
     name: course.name,
@@ -113,7 +116,22 @@ export function toCard(course: Course): CourseCard {
     warningText: course.warnings.join('；'),
     source: course.source,
     tint: 'red',
+    colorSolid: color.solid,
   };
+}
+
+/**
+ * 网格课块里的地点缩写：真实地点是「楼栋-房间-房间名」三段（`博雅楼-B604-前端H5创新应用中心`），
+ * 而课块一行只放得下约 6 个字，整串写进去只会截成「博雅楼-B6…」这种读不出来的片段。
+ * 这里只留前两段（楼栋与房间），完整地点仍留在列表与详情弹层。
+ * 段数不足两段时原样返回——不猜结构，也不删学生的原文。
+ */
+export function shortLocation(location: string): string {
+  const text = location.trim();
+  if (text === '') return '';
+  const parts = text.split('-').map((part) => part.trim()).filter((part) => part !== '');
+  if (parts.length <= 2) return parts.join('-');
+  return `${parts[0]}-${parts[1]}`;
 }
 
 export interface WeekCell {
@@ -128,12 +146,31 @@ export interface WeekRow {
   cells: WeekCell[];
 }
 
+/** 列表视图的一天：只保留有课的天，空白天不进列表（列表是「读全」，不是日历）。 */
+export interface WeekDay {
+  weekday: number;
+  label: string;
+  /** 该天的日期文案，没设开学日时为空串。 */
+  dateLabel: string;
+  today: boolean;
+  items: CourseCard[];
+}
+
 export interface WeekView {
   week: number;
   weekLabel: string;
   rows: WeekRow[];
+  /** 按星期分组的课程，供列表视图渲染；没有课的天不出现。 */
+  days: WeekDay[];
   /** 本周课程数（同一门课只算一次）。 */
   total: number;
+}
+
+export interface WeekViewOptions {
+  /** 本周 7 天的日期文案，由学期设置算出；缺省或缺项时不显示日期。 */
+  dateLabels?: string[];
+  /** 今天对应的星期（1-7）；缺省时不高亮任何一天。 */
+  todayWeekday?: number;
 }
 
 /** 本周课程：按星期、首个节次、课程名排序，同一门课只出现一次。 */
@@ -145,8 +182,8 @@ export function coursesForWeek(courses: Course[], week: number): Course[] {
       || a.name.localeCompare(b.name, 'zh-Hans-CN'));
 }
 
-/** 组装某一教学周的网格；课程按节次落进对应的大节行。 */
-export function buildWeekView(courses: Course[], week: number): WeekView {
+/** 组装某一教学周的网格与列表：课程按节次落进对应的大节行，同时按星期分好列表分组。 */
+export function buildWeekView(courses: Course[], week: number, options: WeekViewOptions = {}): WeekView {
   const rows: WeekRow[] = BIG_SECTION_LABELS.map((sectionLabel, index) => ({
     index: index + 1,
     sectionLabel,
@@ -174,10 +211,21 @@ export function buildWeekView(courses: Course[], week: number): WeekView {
       cell.items.sort((a, b) => a.sectionLabel.localeCompare(b.sectionLabel, 'zh-Hans-CN') || a.name.localeCompare(b.name, 'zh-Hans-CN'));
     }
   }
+  const dateLabels = options.dateLabels ?? [];
+  // inWeek 已按「星期 → 首个节次 → 课程名」排好，按星期取子集即可保持同一顺序。
+  const days: WeekDay[] = WEEKDAY_LABELS.map((label, index) => ({
+    weekday: index + 1,
+    label,
+    dateLabel: dateLabels[index] ?? '',
+    today: options.todayWeekday === index + 1,
+    items: inWeek.filter((course) => course.weekday === index + 1)
+      .map((course) => ({ ...toCard(course), tint: tintOf.get(course.id) ?? 'red' })),
+  })).filter((day) => day.items.length > 0);
   return {
     week,
     weekLabel: `第 ${week} 周`,
     rows,
+    days,
     total: inWeek.length,
   };
 }
@@ -265,7 +313,7 @@ export interface GridColumn {
   label: string;
   /** 表头日期数字（没设开学日时为空字符串）。 */
   dateLabel: string;
-  /** 本周没课的天收窄，把宽度让给有课的天。 */
+  /** 本周没课的天：模板据此跳过整列，把宽度让给有课的天。 */
   narrow: boolean;
   today: boolean;
   blocks: GridBlock[];
@@ -394,7 +442,8 @@ export function buildGrid(courses: Course[], week: number, options: GridOptions 
         end,
         span,
         tier,
-        meta: tier === 'name' ? '' : primary.location,
+        // 课块只有一两行给地点，写不下「楼栋-房间-房间名」，缩写规则见 shortLocation。
+        meta: tier === 'name' ? '' : shortLocation(primary.location),
         teacher: tier === 'full' ? primary.teacher : '',
         needsReview: candidate.members.some((member) => member.warnings.length > 0),
         count: candidate.members.length,

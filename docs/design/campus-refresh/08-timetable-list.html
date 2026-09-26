@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表列表</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .week-head { padding-bottom:12px; border-bottom:2px solid var(--brand); }
+    .week-name { margin-top:6px; color:var(--brand-deep); font-size:24px; font-weight:700; }
+    .day-group { margin-top:16px; }
+    .day-title { margin-bottom:7px; display:flex; align-items:center; gap:8px; color:var(--brand-deep); font-size:13px; font-weight:700; }
+    .day-dot { width:8px; height:8px; background:var(--gold); }
+    .course-row { margin-top:7px; padding:10px 10px 9px; display:grid; grid-template-columns:4px 1fr auto; gap:10px; background:rgba(255,255,255,.55); border:1px solid rgba(43,36,34,.13); }
+    .course-stripe { width:4px; background:var(--course); }
+    .course-name { color:var(--course); font-size:13px; font-weight:700; line-height:1.45; }
+    .course-stripe { background:var(--gold); }
+    .course-name { color:var(--text); }
+    .course-line { color:var(--text-2); font-size:10px; line-height:1.65; }
+    .course-ops { display:flex; flex-direction:column; gap:4px; }
+    .course-ops button { padding:3px 5px; border:1px solid rgba(43,36,34,.16); color:var(--text-2); background:transparent; font-size:9px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="week-head"><div class="eyebrow">2026-2027 学年第一学期 · 45 门课程</div><div class="week-name">第 4 周</div><div class="copy">2026.09.21 — 09.27</div><div class="switch" style="margin-top:10px;width:112px"><span>课表</span><span class="on">列表</span></div></header>
+    <section class="day-group"><div class="day-title"><i class="day-dot"></i>星期一 · 2026-09-21</div>
+      <article class="course-row"><i class="course-stripe c1"></i><div><div class="course-name c1">劳动教育（一）</div><div class="course-line">第 1-4 节 · 40号楼-B310</div><div class="course-line">第 4 周 · 夏舜丽</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+      <article class="course-row"><i class="course-stripe c2"></i><div><div class="course-name c2">高等数学</div><div class="course-line">第 5-6 节 · 崇礼楼 306</div><div class="course-line">第 4-5、7-16 周 · 林加燕</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+      <article class="course-row"><i class="course-stripe c3"></i><div><div class="course-name c3">中华传统文化精粹（一）</div><div class="course-line">第 7-8 节 · 第 4-12 周 · 易定军</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+      <article class="course-row"><i class="course-stripe c5"></i><div><div class="course-name c5">大学美育</div><div class="course-line">第 9-10 节 · 崇礼楼 306</div><div class="course-line">第 4-5、7-16 周 · 程晓明</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+    </section>
+    <section class="day-group"><div class="day-title"><i class="day-dot"></i>星期二 · 2026-09-22</div>
+      <article class="course-row"><i class="course-stripe c7"></i><div><div class="course-name c7">低代码平台应用开发</div><div class="course-line">第 1-4 节 · 崇礼楼 602</div><div class="course-line">第 4-16 周</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+      <article class="course-row"><i class="course-stripe c6"></i><div><div class="course-name c6">习近平新时代中国特色社会主义思想概论</div><div class="course-line">第 5-6 节 · 第 4-16 周</div><div class="course-line">与形势与政策同格</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+      <article class="course-row"><i class="course-stripe c4"></i><div><div class="course-name c4">网页设计与制作技术</div><div class="course-line">第 9-12 节 · 崇礼楼 208 · 第 4-16 周</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+    </section>
+    <section class="day-group"><div class="day-title"><i class="day-dot"></i>星期三 · 2026-09-23</div>
+      <article class="course-row"><i class="course-stripe c8"></i><div><div class="course-name c8">我的大学生活我做主 <span class="chip">手工</span></div><div class="course-line">第 3-4 节 · 第 1-16 周</div></div><div class="course-ops"><button>修改</button><button>删除</button></div></article>
+    </section>
+    <div class="quiet" style="margin-top:15px">点课程可查看完整信息。学校作息尚未核实，不臆造上课时刻。</div>
+  </main>
+</body>
+</html>

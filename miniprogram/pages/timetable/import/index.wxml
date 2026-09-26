@@ -1,5 +1,5 @@
-<view class="page">
-  <!-- 确认页自带头部卡（设计图 09）：eyebrow + 一句话结论都在卡里，因此引导/解析/失败态才显示页面标题。 -->
+<view class="page {{step === 'review' ? 'imp-review-page' : ''}}">
+  <!-- 确认页摘要（设计图 13）在页面内；引导/解析/失败态显示页面标题。 -->
   <block wx:if="{{step !== 'review'}}">
     <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
     <view class="section-title">导入课表文件</view>
@@ -116,10 +116,11 @@
         <view class="grid-row grid-head">
           <view class="grid-rail"></view>
           <view
-            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}}"
+            class="grid-th"
             wx:for="{{draftGrid.columns}}"
             wx:for-item="column"
             wx:key="weekday"
+            wx:if="{{!column.narrow}}"
           >
             <view class="grid-th-day">{{column.label}}</view>
           </view>
@@ -130,10 +131,11 @@
           </view>
           <view class="grid-cols">
             <view
-              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}}"
+              class="grid-col"
               wx:for="{{draftGrid.columns}}"
               wx:for-item="column"
               wx:key="weekday"
+              wx:if="{{!column.narrow}}"
             >
               <view class="grid-line" wx:for="{{draftGrid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
               <view

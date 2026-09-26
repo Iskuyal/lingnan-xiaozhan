@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表周网格</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .tt-top { display:flex; align-items:center; justify-content:space-between; }
+    .tt-settings { color:var(--brand-ink); font-size:11px; }
+    .week-switch { margin-top:6px; display:flex; align-items:center; gap:10px; }
+    .week-switch button { width:44px; height:44px; border:1px solid rgba(43,36,34,.18); background:transparent; color:var(--brand-deep); font-size:18px; }
+    .week-label { color:var(--brand-deep); font-size:25px; line-height:1.25; font-weight:700; }
+    .tt-meta { margin-top:6px; color:var(--text-3); font-size:11px; }
+    .today-line { margin-top:14px; padding:9px 10px; display:flex; align-items:center; gap:9px; border-left:3px solid var(--gold); background:var(--paper-shade); }
+    .today-mark { width:8px; height:8px; background:var(--brand); }
+    .today-line strong { font-size:12px; color:var(--brand-deep); }
+    .today-line span { display:block; color:var(--text-2); font-size:10px; }
+    .grid-title { margin-top:18px; display:flex; align-items:center; justify-content:space-between; }
+    .grid-instruction { margin:6px 0 10px; color:var(--text-2); font-size:12px; line-height:1.5; }
+    .switch { display:flex; border:1px solid rgba(43,36,34,.17); }
+    .switch span { min-height:44px; padding:4px 9px; display:flex; align-items:center; color:var(--text-2); font-size:10px; }
+    .switch .on { background:var(--brand); color:#fff; }
+    .schedule { margin-top:8px; width:354px; border:1px solid rgba(43,36,34,.2); overflow:hidden; }
+    .schedule-head,.schedule-body { display:flex; }
+    .rail { width:43.7px; flex:none; background:var(--paper-shade); }
+    .day-cols { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 29px 29px 29px; }
+    .day-h { height:42px; display:grid; place-content:center; text-align:center; border-left:1px solid rgba(43,36,34,.12); color:var(--text-2); font-size:11px; line-height:1.35; }
+    .day-h-narrow { font-size:12px; }
+    .day-h.today { background:var(--brand); color:#fff; }
+    .day-h small { display:block; font-size:9px; }
+    .grid-rail { width:43.7px; display:grid; grid-template-rows:repeat(12,43.68px); background:var(--paper-shade); }
+    .grid-rail span { display:grid; place-items:center; border-top:1px solid rgba(43,36,34,.12); color:var(--text-3); font-size:10px; }
+    .day-col { height:524.16px; position:relative; border-left:1px solid rgba(43,36,34,.12); background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 42.68px, rgba(43,36,34,.12) 42.68px, rgba(43,36,34,.12) 43.68px); }
+    .day-col.today { background-color:rgba(198,154,40,.09); }
+    .course { position:absolute; left:2px; right:2px; padding:3px 3px; border-left:3px solid var(--course); background:var(--course-bg); color:var(--course); overflow:hidden; font-size:10px; line-height:1.3; }
+    .course b { display:block; font-size:10px; }
+    .course small { display:block; margin-top:2px; font-size:9px; }
+    .course.review { border:1px dashed var(--warn); color:var(--warn); background:var(--warn-soft); }
+    .tt-actions { position:sticky; margin:17px -18px 0; padding:10px 18px; display:grid; grid-template-columns:repeat(3,1fr); gap:7px; background:var(--paper); border-top:1px solid rgba(43,36,34,.15); }
+    .tt-actions button { min-height:40px; border:1px solid rgba(43,36,34,.2); background:transparent; color:var(--brand-ink); font-size:10px; }
+    .tt-assistant { margin-top:11px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="tt-top"><span class="eyebrow">2026-2027 学年第一学期</span><span class="tt-settings">课表设置</span></div>
+    <div class="week-switch"><button>‹</button><div><div class="week-label">第 4 周　⌄</div><div class="tt-meta">2026.09.21 — 09.27</div></div><button>›</button></div>
+    <div class="tt-meta">本周 14 门 · 共 45 门课程</div>
+    <div class="today-line"><i class="today-mark"></i><div><strong>今天 · 星期一</strong><span>劳动教育（一） · 第 1-4 节</span></div></div>
+    <div class="grid-title"><span class="section-title">本周课表</span><span class="switch"><span class="on">课表</span><span>列表</span></span></div>
+    <div class="grid-instruction">长课程名如有省略，点课程块看完整信息；切换列表可读全。</div>
+    <div class="schedule">
+      <div class="schedule-head"><div class="rail"></div><div class="day-cols">
+        <div class="day-h today">星期一<small>21</small></div><div class="day-h">星期二<small>22</small></div><div class="day-h">星期三<small>23</small></div><div class="day-h">星期四<small>24</small></div><div class="day-h day-h-narrow">五</div><div class="day-h day-h-narrow">六</div><div class="day-h day-h-narrow">日</div>
+      </div></div>
+      <div class="schedule-body"><div class="grid-rail"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
+        <div class="day-cols">
+          <div class="day-col today"><div class="course c1" style="top:2px;height:174px"><b>劳动教育（一）</b><small>40号楼-B310</small></div><div class="course c2" style="top:176px;height:86px"><b>高等数学</b><small>崇礼楼 306</small></div><div class="course c3" style="top:264px;height:86px"><b>中华传统文化</b></div><div class="course c5" style="top:352px;height:86px"><b>大学美育</b></div><div class="course c4" style="top:440px;height:82px"><b>信息技术与 AI</b></div></div>
+          <div class="day-col"><div class="course c7" style="top:2px;height:174px"><b>低代码平台</b><small>崇礼楼 602</small></div><div class="course c6" style="top:176px;height:86px"><b>习概 · 形势与政策</b></div><div class="course c8" style="top:352px;height:170px"><b>网页设计与制作</b><small>崇礼楼 208</small></div></div>
+          <div class="day-col"><div class="course c1" style="top:2px;height:86px"><b>公共外语</b></div><div class="course c8" style="top:90px;height:86px"><b>我的大学生活我做主</b></div><div class="course c2" style="top:176px;height:86px"><b>信息技术与 AI</b></div></div>
+          <div class="day-col"><div class="course c5" style="top:2px;height:86px"><b>毛概</b></div><div class="course review" style="top:90px;height:86px"><b>体育（三）</b><small>周次待核对</small></div><div class="course c6" style="top:440px;height:82px"><b>思想道德与法治</b></div></div>
+          <div class="day-col"></div><div class="day-col"></div><div class="day-col"></div>
+        </div>
+      </div>
+    </div>
+    <div class="quiet" style="margin-top:10px">周课表按节次展示；学校作息未核实，不显示具体时刻。</div>
+    <div class="tt-actions"><button>导入课表</button><button>手工新增</button><button>课程管理</button></div>
+    <button class="primary tt-assistant" style="width:100%;justify-content:center">问问课表助手</button>
+    <div class="back-link">返回首页</div>
+  </main>
+</body>
+</html>

@@ -88,6 +88,11 @@ Page({
   refreshQa() {
     this.setData(qaPanelPatch({ departmentId: this.data.qaDepartmentId }));
   },
+  /** 详情页的首屏入口保留上下文，点击后滚到下方的部门问答面板。 */
+  scrollToQa() {
+    if (!this.data.qaOpen) this.openQa();
+    setTimeout(() => wx.pageScrollTo({ selector: '#department-qa-panel', duration: 250 }), 40);
+  },
   /** 打开面板。与列表页不同：这里不清空对话（用户要清空可以点「重新开始对话」）。 */
   openQa() {
     if (this.data.qaOpen || this.data.detail === null) return;

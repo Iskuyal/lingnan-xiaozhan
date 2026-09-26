@@ -96,6 +96,48 @@ test('周课表按大节落格，连排课程同时出现在两个大节行', ()
   assert.deepEqual(week5.rows[0].cells[4].items.map((item) => item.name), ['只在第 5 周的课']);
 });
 
+// 列表视图曾经是空的：模板一直在渲染 view.days，但 buildWeekView() 从不产出这个字段，
+// 点「列表」只会得到一页空白。这条锁住列表真的有数据、且空白天不进列表。
+test('列表视图：按星期分组给出行数据，空白天不进列表', () => {
+  const courses = [
+    course({ id: 'tc_1', name: '高等数学', weekday: 1, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6 }),
+    course({ id: 'tc_2', name: '低代码平台应用开发', weekday: 1, sectionRanges: [{ start: 1, end: 4 }], startSection: 1, endSection: 4 }),
+    course({ id: 'tc_3', name: '体育三', weekday: 3, sectionRanges: [{ start: 7, end: 8 }], startSection: 7, endSection: 8 }),
+    course({ id: 'tc_4', name: '只在第 9 周的课', weekday: 5, weeks: [9] }),
+  ];
+  const dates = ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-26', '2026-09-27'];
+  const week2 = view.buildWeekView(courses, 2, { dateLabels: dates, todayWeekday: 1 });
+
+  assert.deepEqual(week2.days.map((day) => day.weekday), [1, 3], '只列出有课的天，并按星期排序');
+  assert.equal(week2.total, 3, '第 9 周的课不算进本周');
+  assert.deepEqual(week2.days[0].items.map((item) => item.name), ['低代码平台应用开发', '高等数学'], '同一天内按首个节次排');
+  assert.equal(week2.days[0].label, '星期一');
+  assert.equal(week2.days[0].dateLabel, '2026-09-21');
+  assert.equal(week2.days[0].today, true);
+  assert.equal(week2.days[1].dateLabel, '2026-09-23');
+  assert.equal(week2.days[1].today, false);
+  const first = week2.days[0].items[0];
+  assert.equal(first.location, '崇礼楼-306-计算机十九室', '列表要读到完整地点，缩写只发生在网格里');
+  assert.equal(first.teacher, '林加燕');
+  assert.equal(typeof first.colorSolid, 'string', '列表行色条要有课程色');
+  assert.notEqual(first.colorSolid, '', '课程色不能是空串');
+  assert.deepEqual(view.buildWeekView([], 2).days, [], '空周不给分组');
+});
+
+// 真实地点是「楼栋-房间-房间名」三段，课块一行只放得下约 6 个字。
+test('网格里的地点缩成「楼栋-房间」，完整地点留给列表与详情', () => {
+  assert.equal(view.shortLocation('博雅楼-B604-前端H5创新应用中心'), '博雅楼-B604');
+  assert.equal(view.shortLocation('40号楼-B310-服装工艺室（2）'), '40号楼-B310');
+  assert.equal(view.shortLocation('崇礼楼-306'), '崇礼楼-306', '两段原样返回');
+  assert.equal(view.shortLocation('篮球1号场'), '篮球1号场', '没有连字符原样返回');
+  assert.equal(view.shortLocation('博雅楼 - B604 '), '博雅楼-B604', '顺带去掉分段周围空格');
+  assert.equal(view.shortLocation(''), '');
+  const grid = view.buildGrid([course({ sectionRanges: [{ start: 1, end: 4 }], startSection: 1, endSection: 4 })], 2);
+  assert.equal(grid.columns[0].blocks[0].tier, 'full');
+  assert.equal(grid.columns[0].blocks[0].meta, '崇礼楼-306', '网格课块显示缩写');
+  assert.equal(view.toCard(course({})).location, '崇礼楼-306-计算机十九室', '卡片本身不缩写');
+});
+
 test('手工表单校验：必填项、节次顺序与周次写法', () => {
   const extras = { campus: '', siteNumber: '', note: '', rawText: '', warnings: [], source: 'manual' };
   const base = { ...form.EMPTY_FORM, name: '大学美育', weekdayIndex: 2, startIndex: 4, endIndex: 5, weeksText: '1-16' };

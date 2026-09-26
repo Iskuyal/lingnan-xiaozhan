@@ -445,8 +445,9 @@ test('课程管理页：模板与样式的硬规则（id、文案、不出现具
   assert.match(wxml, /取消全选/u);
   assert.match(wxml, /全选/u);
   assert.match(wxml, /删除会连同这些课的全部分段一起删掉，无法撤销/u);
-  assert.match(wxml, /共 \{\{total\}\} 门课程/u);
-  assert.match(wxml, /本周在读/u);
+  assert.match(wxml, /class="mg-total-num">\{\{total\}\}/u);
+  assert.match(wxml, /class="mg-total-label">门课程已保存/u);
+  assert.match(wxml, /本周开课/u);
   assert.match(wxml, /待核对 \{\{reviewCount\}\}/u);
   assert.match(wxml, /手工 \{\{manualCount\}\}/u);
   assert.match(wxml, /导入 \{\{importedCount\}\}/u);

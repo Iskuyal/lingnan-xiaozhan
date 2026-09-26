@@ -115,7 +115,8 @@ test('课块按高度分级给信息：≥3 节含教师、2 节含地点、1 �
 
   const mid = view.buildGrid([course({ sectionRanges: [{ start: 5, end: 6 }] })], 4);
   assert.equal(mid.columns[0].blocks[0].tier, 'medium');
-  assert.equal(mid.columns[0].blocks[0].meta, '崇礼楼-306-计算机十九室');
+  // 课块一行只放得下约 6 个字，地点在网格里缩成「楼栋-房间」；完整地点见列表与详情弹层。
+  assert.equal(mid.columns[0].blocks[0].meta, '崇礼楼-306');
 
   const tiny = view.buildGrid([course({ sectionRanges: [{ start: 7, end: 7 }] })], 4);
   assert.equal(tiny.columns[0].blocks[0].tier, 'name');

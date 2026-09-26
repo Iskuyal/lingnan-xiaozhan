@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>导入失败</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .error-head { margin-top:14px; padding-bottom:13px; border-bottom:2px solid var(--gold); }
+    .error-title { margin-top:5px; color:var(--text); font-size:22px; line-height:1.4; font-weight:700; }
+    .error-details { margin-top:14px; }
+    .error-actions { display:flex; flex-direction:column; gap:8px; margin-top:15px; }
+    .error-actions button { width:100%; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">导入课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="error-head"><div class="eyebrow">Excel 导入结果</div><h1 class="error-title">文件没有解析成功</h1></header>
+    <div class="warn-block error-details">没有识别出完整的星期表头和课程单元格。请确认文件是教务系统导出的 .xls 或 .xlsx 课表。</div>
+    <p class="copy" style="margin-top:13px">没有写入或替换任何已保存课程。可以重新选一个文件，也可以先返回查看现有课表。</p>
+    <div class="error-actions"><button class="primary" style="justify-content:center">重新选择文件</button><button class="secondary">返回课表</button></div>
+    <div class="quiet" style="margin-top:13px">如果文件选择能力不可用，页面会说明原因；截图识别和手工录入从引导页进入。</div>
+  </main>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /**
  * 课程信息：手工新增、修改已保存课程、修正导入草稿里的条目，共用这一个表单。
  *
- * 版式照 `docs/design/timetable/06-course-edit.html`（1rpx = 0.52px）：金杠小标题分四组 ——
+ * 版式照 `docs/design/campus-refresh/14-course-edit.html`（1rpx = 0.52px）：分组表单 ——
  * 基本信息 / 上课时间 / 颜色 / 迷你课表预览，底部「保存 · 删除这节课 · 取消」。
  *
  * 三条贯穿全页的纪律：

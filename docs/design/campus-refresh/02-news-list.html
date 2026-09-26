@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>校园资讯</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .news-source { display:flex; justify-content:space-between; align-items:center; margin-top:7px; }
+    .news-notice { margin-top:17px; padding:10px 11px; border:1px solid rgba(43,36,34,.15); border-left:3px solid var(--gold); color:var(--text-2); font-size:11px; line-height:1.7; }
+    .feature-news { margin-top:19px; padding:16px; min-height:172px; position:relative; border:1px solid rgba(43,36,34,.14); border-left:4px solid var(--brand); background:var(--paper-shade); color:var(--text); display:flex; flex-direction:column; justify-content:flex-end; }
+    .feature-stamp { position:absolute; top:15px; right:15px; min-width:46px; height:28px; padding:0 7px; display:grid; place-items:center; background:var(--gold); color:var(--brand-deep); font-size:11px; font-weight:700; text-align:center; }
+    .feature-label { color:var(--brand-ink); font-size:10px; }
+    .feature-title { margin-top:6px; max-width:280px; color:var(--text); font-size:19px; line-height:1.5; font-weight:600; }
+    .feature-date { margin-top:9px; color:var(--text-3); font-size:10px; }
+    .news-list-head { margin-top:23px; display:flex; align-items:baseline; justify-content:space-between; }
+    .news-row { padding:13px 0 12px; border-bottom:1px solid rgba(43,36,34,.15); }
+    .news-row-title { font-size:13px; line-height:1.65; font-weight:600; }
+    .news-row-date { margin-top:4px; color:var(--text-3); font-size:10px; }
+    .news-more { margin-top:18px; color:var(--brand-ink); font-size:12px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">校园动态</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">官网内容 · 原文可核对</div>
+    <h1 class="page-title">校园资讯</h1>
+    <div class="news-source"><span class="quiet">来源：学校官网</span><span class="quiet">动态与通知</span></div>
+    <div class="news-notice">内容由云函数从官网同步，并非实时更新，也不代表整批同步都成功。详情页可复制原文链接到浏览器核对。</div>
+
+    <article class="feature-news">
+      <div class="feature-stamp">动态</div>
+      <div class="feature-label">最近发布 · 2026-09-12</div>
+      <div class="feature-title display">向“新”而行，逐梦岭南——我校开展2026级新生入学教育</div>
+      <div class="feature-date">打开文章查看正文与官网来源</div>
+    </article>
+
+    <div class="news-list-head"><span class="section-title">更多资讯</span><span class="section-note">按发布时间排列</span></div>
+    <article class="news-row">
+      <div class="news-row-title">以志为炬，温暖迎新——我校召开2026年迎新志愿者动员大会</div>
+      <div class="news-row-date">2026-09-04</div>
+    </article>
+    <article class="news-row">
+      <div class="news-row-title">长沙文创艺术职业学院领导一行到我校参观交流</div>
+      <div class="news-row-date">2026-08-14</div>
+    </article>
+    <div class="news-more">上滑或点此加载更早的资讯</div>
+    <button class="secondary" style="width:100%;margin-top:20px">返回首页</button>
+  </main>
+</body>
+</html>

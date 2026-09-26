@@ -1,21 +1,7 @@
 /**
  * 全局样式与设计令牌。
- *
- * 品牌为「岭南红 + 金」：主色 #c41c23 取自学校官网样式表的「配置按钮色」，
- * 金 #c69a28 取自同站用色并与校徽金边一致（来源记录见 docs/school-sources.md）。
- *
- * 材质为「液态玻璃」：半透明面层 + **高斯模糊** + 白色高光描边 + 内阴影 + 圆角。
- * 具体的构成见下方「玻璃面的构成」，各页面按自己的圆角档次与不透明度实现。
- *
- * 高斯模糊用 backdrop-filter 实现，同时写 -webkit- 前缀。**它在支持情况上有落差**：
- * iOS 基本可用，部分安卓机型会忽略该属性；开发者工具一般显示正常，所以模拟器里
- * 看到的磨砂不一定等于真机。为此面层仍保留分层的 rgba 半透明底：属性生效时叠加出
- * 磨砂玻璃，被忽略时退回分层玻璃，两种情况下观感与可读性都成立，不会出现烂掉的状态。
- * 模糊半径统一在 --glass-blur 调整；透明度调低后模糊才看得出来，两者要一起改。
- *
- * 约定：页面与全局样式引用令牌一律写回退值 var(--token, 字面值)，且回退值与上面的定义
- * 严格一致——tests/wxss.test.cjs 会逐条核对。令牌生效时它仍是单一来源，令牌失效时
- * 每处退回字面值，两种情况渲染结果都正确。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
  */
 page {
   --brand: #c41c23;
@@ -23,11 +9,14 @@ page {
   --brand-ink: #7a1a12;
   --gold: #c69a28;
   --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
 
   --text: #2b2422;
   --text-2: #6b5d57;
-  --text-3: #94867f;
+  --text-3: #746760;
 
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
   --glass: rgba(255,255,255,0.52);
   --glass-strong: rgba(255,255,255,0.72);
   --glass-edge: rgba(255,255,255,0.92);
@@ -35,15 +24,7 @@ page {
   --glass-divide: rgba(255,255,255,0.70);
   --glass-drop: rgba(92,28,26,0.13);
   --glass-drop-strong: rgba(140,22,20,0.26);
-  /* 高斯模糊半径。调低透明度后模糊才看得出来，两者要一起改。 */
   --glass-blur: 16px;
-
-  /* 圆角刻度。
-     Apple 的圆角是**连续曲率**（squircle / 超椭圆），CSS 的 border-radius 画的是正圆弧。
-     同样半径下正圆看起来更饱满、更「圆润」，所以要在 Apple 的取值上再下调一档，用小一点的
-     正圆半径逼近那种更利的观感。真 squircle 需要 corner-shape: squircle，只有 Chrome 139+
-     支持、iOS 的 WKWebView 不支持，小程序里用不了。
-     1rpx = 0.5pt（750rpx 屏宽），因此 24rpx ≈ 12pt。 */
   --r-chip: 12rpx;
   --r-control: 20rpx;
   --r-card: 24rpx;
@@ -54,60 +35,43 @@ page {
   --warn-soft: rgba(255,244,228,0.86);
   --warn-line: rgba(214,160,90,0.55);
 
-  /* 课块颜色槽：课块的颜色是**数据驱动的**（按课程名取色，见 services/timetable/palette.ts），
-     WXSS 里写不出具体值，所以这里给的是兜底面——每块在内联样式里覆盖 --blk-* 三个槽。
-     内联样式失效时课块退回统一的浅色，版面仍然成立，不会烂掉。 */
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
   --blk-tint: rgba(255,255,255,0.72);
   --blk-line: rgba(255,255,255,0.62);
   --blk-solid: rgba(148,134,127,0.55);
 
-  /* 背景：红金光晕 + 暖白渐变。半透明面层需要有「背后有东西」的光，否则玻璃会读成
-     一块浅色方块；高斯模糊也需要背景有对比才看得出来，太平滑的底色会让模糊几乎无感。 */
-  background:
-    radial-gradient(78% 40% at 4% -4%, rgba(196,28,35,0.42), rgba(196,28,35,0) 58%),
-    radial-gradient(66% 34% at 104% 1%, rgba(198,154,40,0.46), rgba(198,154,40,0) 56%),
-    radial-gradient(60% 28% at 96% 34%, rgba(196,28,35,0.20), rgba(196,28,35,0) 60%),
-    radial-gradient(88% 38% at 44% 106%, rgba(140,22,20,0.28), rgba(140,22,20,0) 62%),
-    linear-gradient(180deg, #fdf7f5 0%, #faeee9 50%, #f5e9e2 100%);
-  background-attachment: fixed;
+  background: var(--paper, #fdf7f5);
   color: var(--text, #2b2422);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
 }
 view, button { box-sizing: border-box; }
-button { font: inherit; }
+button { margin: 0; padding: 0; font: inherit; color: inherit; background: transparent; }
 button::after { border: 0; }
-.page { padding: 40rpx 36rpx 64rpx; padding-bottom: calc(64rpx + env(safe-area-inset-bottom)); }
-.eyebrow { color: var(--text-3, #94867f); font-size: 24rpx; }
-.section-title { font-size: 34rpx; font-weight: 600; }
+.page { padding: 42rpx 36rpx 70rpx; padding-bottom: calc(70rpx + env(safe-area-inset-bottom)); }
+.eyebrow { color: var(--text-3, #746760); font-size: 23rpx; line-height: 1.45; }
+.section-title { font-size: 32rpx; line-height: 1.4; font-weight: 700; color: var(--brand-deep, #8c1614); }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: 30rpx 0 14rpx; }
+.section-bar { width: 6rpx; height: 30rpx; flex:none; background: var(--gold, #c69a28); margin-right: 16rpx; }
+.section-head .section-title { flex: 1; }
 .pressed { opacity: 0.72; }
 
-/**
- * 玻璃面的构成（各页面按需自行实现，配方如下，参数取自上面的令牌）：
- *
- *   background: var(--glass, rgba(255,255,255,0.52)) 或 var(--glass-strong, rgba(255,255,255,0.72))   面层；承载长文本用 strong
- *   backdrop-filter: blur(var(--glass-blur, 16px))          高斯模糊，同时写 -webkit- 前缀
- *   border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62))                 高光描边
- *   box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 … var(--glass-drop, rgba(92,28,26,0.13))
- *                                                           内高光 + 投影
- *   border-radius: var(--r-panel | --r-card | --r-control, …)
- *
- * 不在这里收成一个 .glass 类，是因为各处的圆角档次、不透明度与模糊开关本就不同
- * （列表条目为了滚动性能不加伪元素高光），统一类会把差异塞进一堆覆盖规则里。
- * 曾有一版把配方抽成 .glass / .glass-solid / .glass-sheen，但页面的 wxml 从未引用，
- * 属于死代码，已移除。
- */
-
 .status-page { padding-top: 100rpx; }
-.status-icon { width: 100rpx; height: 100rpx; border-radius: var(--r-control, 20rpx); background: var(--glass, rgba(255,255,255,0.52)); display: flex; align-items: center; justify-content: center; margin-bottom: 40rpx; box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)); }
+.status-icon {
+  width: 100rpx; height: 100rpx; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 36rpx; border-radius: 10rpx; background: var(--paper-shade, #faeee9);
+}
 .status-icon image { width: 52rpx; height: 52rpx; }
-.status-title { font-size: 44rpx; font-weight: 600; margin-bottom: 22rpx; }
-.status-copy { color: var(--text-2, #6b5d57); font-size: 29rpx; line-height: 1.9; }
-.status-note { border-left: 4rpx solid var(--gold, #c69a28); padding-left: 24rpx; margin-top: 44rpx; color: var(--text-2, #6b5d57); }
-.home-button { margin: 64rpx 0 0; background: linear-gradient(150deg, rgba(196,28,35,0.95) 0%, rgba(140,22,20,0.92) 100%); color: #fff; border-radius: var(--r-pill, 999rpx); padding: 24rpx; line-height: 1.5; font-weight: 600; border: 1rpx solid rgba(255,255,255,0.30); box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.42), 0 16rpx 40rpx var(--glass-drop-strong, rgba(140,22,20,0.26)); }
-.home-button.secondary { background: var(--glass, rgba(255,255,255,0.52)); color: var(--brand-ink, #7a1a12); border-color: var(--glass-line, rgba(255,255,255,0.62)); box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)); }
-
-/** 栏目标题：左侧金杠 + 深色文字。 */
-.section-head { display: flex; align-items: center; }
-.section-bar { width: 6rpx; height: 30rpx; background: var(--gold, #c69a28); border-radius: 3rpx; margin-right: 16rpx; box-shadow: 0 0 12rpx rgba(198,154,40,0.5); }
+.status-title { margin-bottom: 18rpx; color: var(--brand-deep, #8c1614); font-size: 42rpx; line-height: 1.35; font-weight: 700; }
+.status-copy { color: var(--text-2, #6b5d57); font-size: 28rpx; line-height: 1.8; }
+.status-note { margin-top: 40rpx; padding-left: 24rpx; border-left: 6rpx solid var(--gold, #c69a28); color: var(--text-2, #6b5d57); }
+.home-button {
+  width: 100%; min-height: 88rpx; margin: 28rpx 0 0; padding: 20rpx 24rpx;
+  border-radius: 10rpx; background: var(--brand, #c41c23);
+  color: #fff; line-height: 1.5; font-weight: 700;
+}
+.home-button.secondary {
+  border: 1rpx solid rgba(122,26,18,0.38); background: transparent;
+  color: var(--brand-ink, #7a1a12); font-weight: 600;
+}

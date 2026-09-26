@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>导入课表</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .import-route { margin-top:16px; padding:14px; border:1px solid rgba(43,36,34,.17); background:rgba(255,255,255,.58); }
+    .route-top { display:flex; align-items:center; gap:10px; }
+    .route-icon { width:36px; height:36px; display:grid; place-items:center; background:var(--paper-shade); color:var(--brand-ink); font-size:16px; font-weight:700; }
+    .route-top strong { font-size:14px; color:var(--brand-deep); }
+    .route-copy { margin-top:9px; color:var(--text-2); font-size:11px; line-height:1.7; }
+    .route-steps { margin:11px 0 12px; padding-left:18px; color:var(--text-2); font-size:10px; line-height:1.9; }
+    .route-action { width:100%; min-height:43px; border:0; background:var(--brand); color:#fff; font-size:11px; font-weight:700; }
+    .photo-route { border-top:3px solid var(--gold); }
+    .compat { margin-top:14px; padding:10px 11px; color:var(--text-3); background:var(--paper-shade); font-size:10px; line-height:1.65; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">导入课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">导入课表 · 保存前先核对</div>
+    <h1 class="page-title">导入课表文件</h1>
+    <p class="copy">选择学校导出的 Excel，或用课表截图识别。导入结果会先给你校对，不会直接写入。</p>
+    <section class="import-route">
+      <div class="route-top"><span class="route-icon">表</span><strong>Excel 文件</strong></div>
+      <div class="route-copy">先在教务系统下载 .xls 或 .xlsx 文件，再从微信聊天记录里选择。</div>
+      <ol class="route-steps"><li>下载课表文件</li><li>发到微信聊天，例如文件传输助手</li><li>回到这里选择文件</li></ol>
+      <button class="route-action">从微信聊天记录选择文件</button>
+    </section>
+    <section class="import-route photo-route">
+      <div class="route-top"><span class="route-icon">图</span><strong>课表截图</strong></div>
+      <div class="route-copy">拍照或从相册选择截图。识别后可逐项修改；无法确认的内容会单独标出。</div>
+      <button class="secondary" style="width:100%;margin-top:12px">拍照或从相册选择截图</button>
+    </section>
+    <div class="compat">部分微信环境不提供聊天文件选择能力。遇到此情况会说明原因；你仍可选择截图识别，或返回课表手工录入。</div>
+    <div class="quiet" style="margin-top:12px">课表按微信身份隔离；这里不需要也不会读取教务账号。</div>
+    <button class="secondary" style="width:100%;margin-top:19px">返回课表</button>
+  </main>
+</body>
+</html>

@@ -1,11 +1,18 @@
 <!--
-  课表设置（设计图 07）：学期与作息时间。
+  课表设置（设计图 16）：学期与作息时间。
   作息时刻**一个都不预置**：没填的节就是空框，不画「--:--」这类占位；填一半也合法。
 -->
-<view class="page">
+<view class="page settings-page">
   <view wx:if="{{status === 'loading'}}" class="settings-loading">正在读取设置…</view>
 
   <block wx:else>
+    <view class="settings-heading">
+      <view class="settings-heading-copy">
+        <view class="settings-lead">先定学期，再补作息</view>
+        <view class="settings-intro">日期和时刻只显示你亲自确认的内容。</view>
+      </view>
+      <view id="settings-back" class="settings-back" hover-class="pressed" bindtap="goBack">返回课表</view>
+    </view>
     <view wx:if="{{loadNote !== ''}}" class="settings-note">{{loadNote}}</view>
 
     <!-- 学期 -->
@@ -50,20 +57,38 @@
 
       <view class="settings-callout settings-callout-warn">学校作息表尚未核实，这里不预置任何默认时刻——你按自己的课表填写，填了才会在课表上显示时刻与「正在上/下一节」</view>
 
-      <block wx:for="{{groups}}" wx:key="label" wx:for-item="group">
-        <view class="settings-group">{{group.label}}</view>
-        <view class="settings-time-row {{row.last ? 'settings-time-row-last' : ''}}" wx:for="{{group.rows}}" wx:key="section" wx:for-item="row">
-          <view class="settings-time-no">{{row.label}}</view>
-          <view class="settings-time-fields">
-            <picker id="settings-section-time-{{row.section}}" mode="time" value="{{row.start}}" data-section="{{row.section}}" data-field="start" bindchange="onSectionTimeChange">
-              <view class="settings-input settings-input-narrow settings-input-center">{{row.start}}</view>
-            </picker>
-            <view class="settings-time-sep">—</view>
-            <picker id="settings-section-time-{{row.section}}-end" mode="time" value="{{row.end}}" data-section="{{row.section}}" data-field="end" bindchange="onSectionTimeChange">
-              <view class="settings-input settings-input-narrow settings-input-center">{{row.end}}</view>
-            </picker>
+      <block wx:for="{{groups}}" wx:key="label" wx:for-item="group" wx:for-index="groupIndex">
+        <view
+          id="settings-group-{{groupIndex}}"
+          class="settings-group-toggle {{group.open ? 'settings-group-toggle-open' : ''}}"
+          data-index="{{groupIndex}}"
+          hover-class="pressed"
+          aria-role="button"
+          aria-label="{{group.label}}，{{group.toggleLabel}}"
+          bindtap="toggleGroup"
+        >
+          <view class="settings-group-copy">
+            <view class="settings-group-title">{{group.label}}</view>
+            <view class="settings-group-state">{{group.toggleLabel}}</view>
           </view>
+          <text class="settings-group-chevron">{{group.open ? '−' : '+'}}</text>
         </view>
+        <block wx:if="{{group.open}}">
+          <view class="settings-time-rows">
+            <view class="settings-time-row {{row.last ? 'settings-time-row-last' : ''}}" wx:for="{{group.rows}}" wx:key="section" wx:for-item="row">
+              <view class="settings-time-no">{{row.label}}</view>
+              <view class="settings-time-fields">
+                <picker id="settings-section-time-{{row.section}}" mode="time" value="{{row.start}}" data-section="{{row.section}}" data-field="start" bindchange="onSectionTimeChange">
+                  <view class="settings-input settings-input-narrow settings-input-center">{{row.start}}</view>
+                </picker>
+                <view class="settings-time-sep">—</view>
+                <picker id="settings-section-time-{{row.section}}-end" mode="time" value="{{row.end}}" data-section="{{row.section}}" data-field="end" bindchange="onSectionTimeChange">
+                  <view class="settings-input settings-input-narrow settings-input-center">{{row.end}}</view>
+                </picker>
+              </view>
+            </view>
+          </view>
+        </block>
       </block>
 
       <view class="settings-hint settings-hint-top">填一半只会影响到那一节；清空某一节不会删除课表数据</view>
@@ -72,7 +97,8 @@
 
     <view class="settings-gap"></view>
     <view wx:if="{{saveError !== ''}}" class="settings-error">{{saveError}}</view>
-    <button id="settings-save" class="home-button" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存设置</button>
-    <view id="settings-back" class="settings-link" bindtap="goBack">返回课表</view>
+    <view class="settings-actions">
+      <button id="settings-save" class="home-button settings-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存设置</button>
+    </view>
   </block>
 </view>

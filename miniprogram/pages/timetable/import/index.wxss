@@ -1,182 +1,61 @@
-/**
- * 导入确认页样式：液态玻璃——玻璃卡与金色薄层引导条，待核对与未识别的行一律琥珀色。
- * 失败与阻断项一律琥珀色 + 文字说明，不用品牌红，避免误读成「重点」；品牌红只留给
- * 主要动作（确认保存）与选中态（列表 / 课表切换）。
- * 尺寸取自设计图 09（按 390px 宽绘制，1rpx = 0.52px）。
- */
-.imp-block { margin-top: 32rpx; }
-.imp-copy { color: var(--text-2, #6b5d57); font-size: 28rpx; margin: 12rpx 0; line-height: 1.8; }
+@import "../index.wxss";
+
+.imp-block { margin-top:20rpx; }
+.imp-review-page { padding-bottom:calc(280rpx + env(safe-area-inset-bottom)); }
+.imp-copy { margin:12rpx 0; color:var(--text-2, #6b5d57); font-size:24rpx; line-height:1.75; }
 .imp-guide {
-  padding: 20rpx 24rpx; margin-top: 24rpx; font-size: 28rpx; line-height: 1.8;
-  color: var(--brand-ink, #7a1a12);
-  background: linear-gradient(150deg, rgba(198,154,40,0.22), rgba(198,154,40,0.10));
-  border: 1rpx solid rgba(198,154,40,0.30);
-  border-radius: var(--r-control, 20rpx);
+  margin-top:16rpx; padding:16rpx 18rpx; border-left:6rpx solid var(--gold, #c69a28);
+  background:var(--paper-shade, #faeee9); color:var(--text-2, #6b5d57); font-size:23rpx; line-height:1.7;
 }
-.imp-guide-note { background: var(--warn-soft, rgba(255,244,228,0.86)); border-color: var(--warn-line, rgba(214,160,90,0.55)); color: var(--warn, #9a5b1e); font-size: 25rpx; }
-.imp-steps { margin: 28rpx 0 8rpx; }
-.imp-step { color: var(--text-2, #6b5d57); font-size: 27rpx; line-height: 1.9; }
-.imp-file { color: var(--text-2, #6b5d57); font-size: 26rpx; margin-top: 8rpx; }
-.imp-progress { color: var(--brand-deep, #8c1614); font-size: 26rpx; margin-top: 8rpx; font-weight: 600; }
-.imp-error { background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); border-radius: var(--r-control, 20rpx); padding: 20rpx 24rpx; font-size: 27rpx; line-height: 1.7; margin: 20rpx 0; }
-.imp-cap { color: var(--warn, #9a5b1e); font-size: 24rpx; margin-top: -8rpx; }
-.imp-secondary { background: var(--glass, rgba(255,255,255,0.52)); color: var(--brand-ink, #7a1a12); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
+.imp-guide-note { margin-top:16rpx; }
+.imp-steps { margin:14rpx 0 18rpx; padding-left:28rpx; color:var(--text-2, #6b5d57); font-size:21rpx; line-height:1.85; }
+.imp-step { margin-top:4rpx; }
+.imp-secondary { background:transparent; color:var(--brand-ink, #7a1a12); border:1rpx solid rgba(122,26,18,0.36); }
+.imp-file,.imp-progress { margin-top:12rpx; padding:13rpx 15rpx; border:1rpx solid rgba(43,36,34,0.15); color:var(--text-2, #6b5d57); font-size:21rpx; }
+.imp-error { margin-top:12rpx; padding:16rpx; border-left:6rpx solid var(--warn, #9a5b1e); border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); border-left-width:6rpx; background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:23rpx; line-height:1.7; }
+.imp-cap { margin-top:12rpx; padding:13rpx 15rpx; background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:21rpx; }
 
-/* 元信息卡：学期 / 班级 / 来源文件 / 解析结果 + 一行结论。 */
-.imp-summary {
-  padding: 28rpx 30rpx; margin-top: 24rpx;
-  background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-panel, 32rpx);
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
-}
-.imp-title { color: var(--brand-deep, #8c1614); font-size: 37rpx; font-weight: 700; letter-spacing: 1rpx; margin-top: 8rpx; }
-.imp-rows { margin-top: 16rpx; }
-.imp-sheet-row { display: flex; gap: 24rpx; padding: 14rpx 0; border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.imp-sheet-key { flex: 0 0 120rpx; color: var(--text-3, #94867f); font-size: 24rpx; }
-.imp-sheet-val { flex: 1; font-size: 26rpx; }
-.imp-summary-line { color: var(--text-2, #6b5d57); font-size: 25rpx; line-height: 1.8; margin-top: 8rpx; }
-.imp-head-meta { color: var(--text-3, #94867f); font-size: 24rpx; margin-top: 10rpx; }
-.imp-problem { color: var(--warn, #9a5b1e); }
-
-/* 替换说明（金边说明条）与课表视图的琥珀说明。 */
-.imp-notice {
-  color: var(--text-2, #6b5d57); border-radius: var(--r-control, 20rpx); padding: 20rpx 24rpx; font-size: 26rpx; line-height: 1.75; margin: 24rpx 0;
-  background: linear-gradient(150deg, rgba(198,154,40,0.20), rgba(198,154,40,0.09));
-  border: 1rpx solid rgba(198,154,40,0.30);
-}
-.imp-callout-warn {
-  color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86));
-  border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55));
-  border-radius: var(--r-control, 20rpx); padding: 20rpx 24rpx; margin: 16rpx 0;
-  font-size: 26rpx; line-height: 1.75;
-}
-.imp-quiet { color: var(--text-3, #94867f); font-size: 23rpx; line-height: 1.7; }
-.imp-view-hint { margin-top: 20rpx; }
-
-/* 金杠小标题 + 右侧「列表 / 课表」切换（与主页 .seg 同一套写法）。 */
-.imp-result-head { margin: 8rpx 0 16rpx; }
-.seg {
-  margin-left: auto; width: 235rpx; display: flex; padding: 4rpx;
-  background: rgba(255,255,255,0.42);
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-pill, 999rpx);
-}
-.seg-item { flex: 1; padding: 6rpx 0; text-align: center; font-size: 23rpx; color: var(--text-2, #6b5d57); border-radius: var(--r-pill, 999rpx); }
-.seg-item-on { background: rgba(196,28,35,0.90); color: #fff; font-weight: 600; box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.36); }
-
-/* 列表视图：一门课一张卡——课程色条 + 课程名 + 星期 / 节次 / 周次 / 地点 + 原文 + 修正 / 删除。 */
-.imp-list { margin-bottom: 24rpx; }
+.imp-summary { margin:-42rpx -36rpx 0; padding:30rpx 36rpx 22rpx; border-top:3rpx solid var(--brand, #c41c23); border-bottom:1rpx solid rgba(43,36,34,0.16); background:var(--paper-shade, #faeee9); color:var(--text, #2b2422); }
+.imp-summary .eyebrow { color:var(--text-3, #746760); }
+.imp-title { margin:6rpx 0 12rpx; color:var(--brand-deep, #8c1614); font-size:36rpx; line-height:1.4; font-weight:700; }
+.imp-rows { border-top:1rpx solid rgba(43,36,34,0.14); }
+.imp-sheet-row { display:flex; justify-content:space-between; gap:12rpx; padding:9rpx 0; border-bottom:1rpx solid rgba(43,36,34,0.12); color:var(--text-2, #6b5d57); font-size:20rpx; }
+.imp-sheet-key { color:var(--text-3, #746760); }
+.imp-sheet-val { text-align:right; }
+.imp-summary-line { margin-top:8rpx; color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.6; }
+.imp-head-meta { margin-top:5rpx; color:var(--text-3, #746760); font-size:19rpx; }
+.imp-problem { padding:10rpx 12rpx; background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); }
+.imp-notice { margin:16rpx 0; padding:13rpx 15rpx; border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); border-left:6rpx solid var(--warn, #9a5b1e); background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:21rpx; line-height:1.65; }
+.imp-result-head { margin-top:18rpx; }
+.imp-list { margin-bottom:20rpx; }
 .imp-card {
-  padding: 24rpx 28rpx; margin-bottom: 16rpx; display: flex; gap: 24rpx; align-items: stretch;
-  background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-card, 24rpx);
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
+  display:flex; align-items:stretch; gap:14rpx; padding:15rpx 0; border-bottom:1rpx solid rgba(43,36,34,0.15);
 }
-/* 待核对卡：琥珀虚线边框 + 琥珀警示行（只标记不猜，与课块同一套语义）。 */
-.imp-card-review { border: 1rpx dashed var(--warn-line, rgba(214,160,90,0.55)); background: var(--warn-soft, rgba(255,244,228,0.86)); }
-.imp-card-bar { flex: 0 0 6rpx; border-radius: var(--r-pill, 999rpx); background: var(--blk-solid, rgba(148,134,127,0.55)); }
-.imp-card-main { flex: 1; min-width: 0; }
-.imp-card-name { font-size: 30rpx; font-weight: 600; }
-.imp-card-line { color: var(--text-2, #6b5d57); font-size: 24rpx; margin-top: 6rpx; }
-.imp-card-warn { color: var(--warn, #9a5b1e); font-size: 23rpx; margin-top: 8rpx; }
-.imp-card-raw { color: var(--text-3, #94867f); font-size: 23rpx; margin-top: 8rpx; word-break: break-all; }
-.imp-chip { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); border-radius: var(--r-pill, 999rpx); padding: 2rpx 12rpx; font-size: 20rpx; margin-left: 10rpx; }
-.imp-card-ops { display: flex; flex-direction: column; justify-content: center; gap: 10rpx; flex: 0 0 auto; }
-.imp-op { padding: 7rpx 20rpx; font-size: 23rpx; line-height: 1.5; border-radius: var(--r-pill, 999rpx); text-align: center; margin: 0; }
-.imp-op-edit { color: var(--brand-ink, #7a1a12); background: rgba(255,255,255,0.82); border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62)); }
-.imp-op-del { color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86)); border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55)); }
-
-/* 未识别的行：还不是一门课（缺课程名 / 星期 / 节次），只列原文，补录或跳过。 */
-.imp-unrecognized {
-  padding: 20rpx 24rpx; border-radius: var(--r-control, 20rpx);
-  color: var(--warn, #9a5b1e); background: var(--warn-soft, rgba(255,244,228,0.86));
-  border: 1rpx solid var(--warn-line, rgba(214,160,90,0.55));
-  font-size: 26rpx; line-height: 1.75;
-}
-.imp-unrecognized-head { color: var(--warn, #9a5b1e); }
-.imp-unrecognized-row { margin-top: 16rpx; padding-top: 16rpx; border-top: 1rpx dashed var(--warn-line, rgba(214,160,90,0.55)); }
-.imp-unrecognized-hint { color: var(--warn, #9a5b1e); font-size: 24rpx; font-weight: 600; margin-top: 8rpx; }
-.imp-unrecognized-ops { display: flex; gap: 16rpx; margin-top: 12rpx; }
-
-/**
- * 课表视图（设计图 09 的迷你网格，按版式规则 1 的自适应列宽落地）。
- * 几何与主页一致：单节行高 84rpx、节次栏 84rpx、没课的天收窄到 44rpx；
- * 块的位置 / 高度 / 泳道由 view 层算好后写在内联样式里，这里只管长什么样。
- * **草稿一律虚线框**：这张网格里的每一块都还没保存，待核对的换成琥珀虚线框。
- */
-.grid {
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-control, 20rpx); overflow: hidden;
-  background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
-}
-.grid-row { display: flex; align-items: center; }
-.grid-head { height: 64rpx; background: linear-gradient(150deg, rgba(198,154,40,0.24), rgba(198,154,40,0.12)); border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.grid-rail { flex: 0 0 84rpx; }
-.grid-th { flex: 1 1 0; min-width: 0; text-align: center; color: var(--brand-deep, #8c1614); font-size: 24rpx; font-weight: 700; line-height: 1.15; }
-.grid-th-narrow { flex: 0 0 44rpx; }
-.grid-body { display: flex; background: rgba(255,255,255,0.30); }
-.grid-no {
-  height: 84rpx; display: flex; align-items: center; justify-content: center;
-  color: var(--text-3, #94867f); font-size: 22rpx; font-weight: 600;
-  border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70));
-}
-.grid-cols { flex: 1 1 0; min-width: 0; display: flex; }
-.grid-col { flex: 1 1 0; min-width: 0; position: relative; border-left: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.grid-col:first-child { border-left: 0; }
-.grid-col-narrow { flex: 0 0 44rpx; background: rgba(255,255,255,0.14); }
-.grid-line { height: 84rpx; border-bottom: 1rpx solid var(--glass-divide, rgba(255,255,255,0.70)); }
-.grid-block {
-  position: absolute; box-sizing: border-box; padding: 6rpx 8rpx 6rpx 14rpx; overflow: hidden;
-  border: 1rpx dashed var(--blk-line, rgba(255,255,255,0.62));
-  border-left-width: 6rpx; border-left-style: solid;
-  border-left-color: var(--blk-solid, rgba(148,134,127,0.55));
-  background: var(--blk-tint, rgba(255,255,255,0.72));
-  border-radius: var(--r-chip, 12rpx);
-}
-.grid-block-name {
-  font-size: 20rpx; font-weight: 600; line-height: 1.28; color: var(--text, #2b2422);
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
-}
-.grid-block-meta {
-  font-size: 18rpx; color: var(--text-2, #6b5d57); line-height: 1.3; margin-top: 2rpx;
-  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-}
-.grid-block-badge {
-  position: absolute; top: 4rpx; right: 4rpx; min-width: 28rpx; height: 28rpx; padding: 0 6rpx;
-  border-radius: var(--r-pill, 999rpx); background: #fff; color: var(--brand-ink, #7a1a12);
-  border: 1rpx solid var(--gold, #c69a28); font-size: 18rpx; font-weight: 700; text-align: center; line-height: 28rpx;
-}
-.grid-block-review { background: var(--warn-soft, rgba(255,244,228,0.86)); border-color: var(--warn-line, rgba(214,160,90,0.55)); border-left-color: var(--warn, #9a5b1e); }
-.grid-block-review .grid-block-name { color: var(--warn, #9a5b1e); }
-
-/* 底部动作：主按钮是这一页唯一用品牌红的地方，quiet 一行紧贴按钮。 */
-.imp-actions {
-  padding: 28rpx 30rpx; margin-top: 32rpx;
-  background: var(--glass-strong, rgba(255,255,255,0.72));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  border: 1rpx solid var(--glass-line, rgba(255,255,255,0.62));
-  border-radius: var(--r-card, 24rpx);
-  box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)), 0 16rpx 40rpx var(--glass-drop, rgba(92,28,26,0.13));
-}
-.imp-btn-row { display: flex; gap: 20rpx; margin-top: 16rpx; }
-.imp-btn {
-  flex: 1; padding: 24rpx 0; font-size: 28rpx; font-weight: 600; line-height: 1.5; margin: 0;
-  color: #fff; border-radius: var(--r-pill, 999rpx);
-  border: 1rpx solid rgba(255,255,255,0.30);
-  background: linear-gradient(150deg, rgba(196,28,35,0.95) 0%, rgba(140,22,20,0.92) 100%);
-  box-shadow: inset 0 2rpx 0 rgba(255,255,255,0.42), 0 16rpx 40rpx var(--glass-drop-strong, rgba(140,22,20,0.26));
-}
-/* 保存中的禁用态：写成 button.imp-btn 的复合选择器，压过基础样式里的 button[disabled]。 */
-button.imp-btn[disabled] { color: #fff; background: rgba(196,28,35,0.35); box-shadow: none; }
-.imp-btn-secondary { color: var(--brand-ink, #7a1a12); background: var(--glass, rgba(255,255,255,0.52)); border-color: var(--glass-line, rgba(255,255,255,0.62)); box-shadow: inset 0 2rpx 0 var(--glass-edge, rgba(255,255,255,0.92)); }
-.imp-privacy { color: var(--text-3, #94867f); font-size: 23rpx; margin-top: 24rpx; line-height: 1.7; }
+.imp-card-review { border-bottom-color:var(--warn-line, rgba(214,160,90,0.55)); background:rgba(255,244,228,0.35); }
+.imp-card-bar { flex:0 0 6rpx; background:var(--blk-solid, rgba(148,134,127,0.55)); }
+.imp-card-main { flex:1; min-width:0; }
+.imp-card-name { color:var(--text, #2b2422); font-size:23rpx; line-height:1.5; font-weight:700; }
+.imp-card-line { margin-top:4rpx; color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.5; }
+.imp-card-warn,.imp-card-raw { margin-top:6rpx; color:var(--warn, #9a5b1e); font-size:19rpx; line-height:1.5; }
+.imp-card-raw { color:var(--text-3, #746760); word-break:break-all; }
+.imp-chip { margin-left:8rpx; padding:2rpx 7rpx; border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); color:var(--warn, #9a5b1e); font-size:17rpx; font-weight:500; }
+.imp-card-ops { flex:none; display:flex; flex-direction:column; justify-content:center; gap:6rpx; }
+.imp-op { min-width:68rpx; min-height:84rpx; padding:7rpx 8rpx; color:var(--brand-ink, #7a1a12); border:1rpx solid rgba(43,36,34,0.17); font-size:18rpx; }
+.imp-op-del { color:var(--warn, #9a5b1e); border-color:var(--warn-line, rgba(214,160,90,0.55)); }
+.imp-quiet { margin-top:12rpx; color:var(--text-3, #746760); font-size:20rpx; line-height:1.6; }
+.imp-view-hint { margin:10rpx 0; }
+.imp-unrecognized { margin-top:16rpx; padding:14rpx; border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:21rpx; line-height:1.65; }
+.imp-unrecognized-head { font-weight:700; }
+.imp-unrecognized-row { margin-top:12rpx; padding-top:12rpx; border-top:1rpx dashed var(--warn-line, rgba(214,160,90,0.55)); }
+.imp-unrecognized-hint { margin-top:6rpx; font-size:19rpx; }
+.imp-unrecognized-ops { display:flex; gap:8rpx; margin-top:9rpx; }
+.imp-callout-warn { margin:10rpx 0; padding:12rpx; border-left:6rpx solid var(--warn, #9a5b1e); background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:20rpx; }
+#draft-grid .grid-block { border-style:dashed; background:transparent; }
+#draft-grid .grid-block-review { background:var(--warn-soft, rgba(255,244,228,0.86)); }
+.imp-actions { position:fixed; left:0; right:0; bottom:0; z-index:10; margin:0; padding:13rpx 36rpx calc(16rpx + env(safe-area-inset-bottom)); background:var(--paper, #fdf7f5); border-top:1rpx solid rgba(43,36,34,0.16); }
+.imp-actions .imp-quiet { margin:0 0 10rpx; text-align:center; }
+.imp-btn-row { display:flex; gap:10rpx; }
+.imp-btn { flex:1; min-height:84rpx; padding:14rpx; border:1rpx solid rgba(43,36,34,0.2); background:transparent; color:var(--brand-ink, #7a1a12); font-size:22rpx; font-weight:700; }
+.imp-btn:first-child { border:0; background:var(--brand, #c41c23); color:#fff; }
+.imp-btn-secondary { background:transparent; }
+.imp-privacy { margin-top:16rpx; color:var(--text-3, #746760); font-size:20rpx; line-height:1.6; }

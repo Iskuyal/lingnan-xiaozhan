@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>核对导入结果</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    body { min-height:100vh; }
+    .review-page { padding-bottom:112px; }
+    .review-head { margin:-22px -18px 0; padding:17px 18px 15px; border-top:3px solid var(--brand); border-bottom:1px solid rgba(43,36,34,.16); background:var(--paper-shade); color:var(--text); }
+    .review-head .eyebrow { color:var(--text-3); }
+    .review-title { margin:5px 0 9px; font-size:20px; color:var(--brand-deep); line-height:1.35; }
+    .meta-row { display:flex; justify-content:space-between; padding:5px 0; border-top:1px solid rgba(43,36,34,.12); color:var(--text-2); font-size:10px; }
+    .replace-note { margin:13px 0; padding:9px 10px; color:var(--warn); background:var(--warn-soft); border:1px solid var(--warn-line); font-size:10px; line-height:1.65; }
+    .review-tabs { margin:12px 0 8px; display:flex; border:1px solid rgba(43,36,34,.18); width:max-content; }
+    .review-tabs span { padding:5px 13px; font-size:10px; color:var(--text-2); }
+    .review-tabs .active { background:var(--brand); color:#fff; }
+    .draft-row { margin-top:6px; padding:8px 8px 8px 0; display:grid; grid-template-columns:4px 1fr auto; gap:8px; border-bottom:1px solid rgba(43,36,34,.13); }
+    .draft-bar { width:4px; background:var(--course); }
+    .draft-name { color:var(--course); font-size:11px; font-weight:700; line-height:1.5; }
+    .draft-copy { color:var(--text-2); font-size:9px; line-height:1.6; }
+    .draft-ops { display:flex; flex-direction:column; gap:3px; }
+    .draft-ops button { min-height:44px; padding:3px 5px; border:1px solid rgba(43,36,34,.16); background:transparent; color:var(--brand-ink); font-size:9px; }
+    .draft-row.review .draft-bar { background:var(--warn); }
+    .draft-row.review .draft-name { color:var(--warn); }
+    .review-actions { position:fixed; left:0; right:0; bottom:0; margin:0; padding:10px 18px calc(12px + env(safe-area-inset-bottom, 0px)); display:grid; grid-template-columns:1fr 1fr; gap:8px; border-top:1px solid rgba(43,36,34,.16); background:var(--paper); }
+    .review-actions button { min-height:43px; border:1px solid rgba(43,36,34,.2); color:var(--brand-ink); background:transparent; font-size:11px; }
+    .review-actions .save { border:0; background:var(--brand); color:#fff; font-weight:700; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">导入课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page review-page">
+    <header class="review-head">
+      <div class="eyebrow">Excel 文件 · 导入草稿</div>
+      <h1 class="review-title">解析完成，请核对</h1>
+      <div class="meta-row"><span>2026-2027 学年第一学期</span><span>星期一至星期日</span></div>
+      <div class="meta-row"><span>识别出课程</span><span>44 门 · 1 行待核对</span></div>
+      <div class="meta-row"><span>草稿不会自动保存</span><span>可随时放弃</span></div>
+    </header>
+    <div class="replace-note">确认保存会替换当前已保存的课表（包含手工添加的课程）。请先核对下方内容。</div>
+    <div class="section-head" style="margin-top:14px"><span class="section-title">解析结果</span><span class="section-note">列表　|　课表</span></div>
+    <div class="draft-row c1"><span class="draft-bar"></span><div><div class="draft-name">劳动教育（一）</div><div class="draft-copy">星期一 · 第 1-4 节 · 第 4 周</div><div class="draft-copy">40号楼-B310 · 夏舜丽</div></div><div class="draft-ops"><button>修正</button><button>删除</button></div></div>
+    <div class="draft-row c2"><span class="draft-bar"></span><div><div class="draft-name">高等数学</div><div class="draft-copy">星期二 · 第 5-6 节 · 第 4-5、7-16 周</div><div class="draft-copy">崇礼楼 306 · 林加燕</div></div><div class="draft-ops"><button>修正</button><button>删除</button></div></div>
+    <div class="draft-row review"><span class="draft-bar"></span><div><div class="draft-name">体育（三） · 待核对</div><div class="draft-copy">原文已保留 · 第 3-4 节</div><div class="draft-copy" style="color:var(--warn)">周次无法确认，保存前请核对。</div></div><div class="draft-ops"><button>修正</button><button>删除</button></div></div>
+    <div class="quiet" style="margin-top:9px">可切换到课表视图，检查课程落在哪一天和哪几节。具体上课时刻未设置。</div>
+    <div class="review-actions"><button class="save">确认保存</button><button>放弃导入</button></div>
+    <div class="quiet" style="margin-top:10px">确认前不会写入任何数据。</div>
+  </main>
+</body>
+</html>

@@ -5,16 +5,17 @@
       <view id="timetable-settings-entry" class="head-link" hover-class="pressed" bindtap="openSettings">课表设置</view>
     </view>
     <view class="week-row">
-      <button id="week-prev" class="week-nav" hover-class="pressed" bindtap="previousWeek">‹</button>
+      <view id="week-prev" class="week-nav" hover-class="pressed" bindtap="previousWeek">‹</view>
       <picker id="week-picker" class="week-pick" mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="selectWeek">
         <view class="week-now">{{view.weekLabel}} ▾</view>
+        <view class="week-range" wx:if="{{weekRange !== ''}}">{{weekRange}}</view>
       </picker>
-      <button id="week-next" class="week-nav" hover-class="pressed" bindtap="nextWeek">›</button>
+      <view id="week-next" class="week-nav" hover-class="pressed" bindtap="nextWeek">›</view>
     </view>
-    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程<block wx:if="{{weekRange !== ''}}"> · {{weekRange}}</block><block wx:if="{{updatedAtText !== ''}}"> · 最近保存于 {{updatedAtText}}</block></view>
+    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程</view>
   </view>
 
-  <!-- 今日速查：只在「用户填了作息」且「正在看的就是本周」时出现；没填作息时整条不出现（设计图 03）。 -->
+  <!-- 今日速查：只在「用户填了作息」且「正在看的就是本周」时出现；没填作息时整条不出现（设计图 07）。 -->
   <view
     wx:if="{{todayBar !== null}}"
     id="today-summary"
@@ -32,7 +33,7 @@
     <view class="today-pill" wx:if="{{todayBar.timeLabel !== ''}}">{{todayBar.timeLabel}}</view>
   </view>
 
-  <!-- 退化态说明（设计图 03）：缺开学日或作息时讲清缺什么、点哪里补。
+  <!-- 退化态说明（设计图 19）：缺开学日或作息时讲清缺什么、点哪里补。
        设置齐了这条就不出现，位置让给速查条。 -->
   <view wx:if="{{setupHint !== ''}}" class="setup-hint">
     <view class="setup-hint-text">{{setupHint}}</view>
@@ -57,13 +58,12 @@
     <view id="file-guide" class="tt-guide">{{fileGuide}}</view>
     <view class="tt-guide tt-guide-note">{{offlineNote}}</view>
     <button id="import-entry" class="home-button" hover-class="pressed" bindtap="openImport">导入课表文件</button>
-    <button id="manual-add" class="home-button tt-secondary" hover-class="pressed" bindtap="openCreate">手工新增课程</button>
+    <button id="manual-add" class="home-button secondary" hover-class="pressed" bindtap="openCreate">手工新增课程</button>
     <view class="tt-privacy">课表只存你自己的内容，按微信身份隔离，不涉及教务账号。</view>
   </view>
 
   <block wx:else>
     <view class="section-head">
-      <view class="section-bar"></view>
       <view class="section-title">本周课表</view>
       <view id="view-switch" class="seg">
         <view class="seg-item {{viewMode === 'grid' ? 'seg-item-on' : ''}}" data-mode="grid" bindtap="switchView">课表</view>
@@ -71,19 +71,25 @@
       </view>
     </view>
 
-    <view wx:if="{{view.total === 0}}" class="tt-hint-copy tt-empty-week">本周没有安排课程，可以左右翻周查看其他周次。</view>
+    <view wx:if="{{view.total > 0 && viewMode === 'grid'}}" class="grid-instruction">长课程名如有省略，点课程块看完整信息；切换列表可读全。</view>
+
+    <view wx:if="{{view.total === 0}}" class="tt-empty-week">
+      <view class="tt-empty-title">本周没有安排课程</view>
+      <view class="tt-empty-copy">可以左右翻周查看其他周次。</view>
+    </view>
 
     <block wx:else>
-      <!-- 周网格：12 节行，有课的天宽、没课的天窄（样式里的 -narrow）。
+      <!-- 周网格：12 节行，只画本周有课的天（空白天不进表，省下的宽度给有课的天）。
            块的位置与高度由 view 层算好（topRpx/heightRpx/lane*Percent），模板只负责画。 -->
       <view wx:if="{{viewMode === 'grid'}}" id="week-grid" class="grid">
         <view class="grid-row grid-head">
           <view class="grid-rail"></view>
           <view
-            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}} {{column.today ? 'grid-th-today' : ''}}"
+            class="grid-th {{column.today ? 'grid-th-today' : ''}}"
             wx:for="{{grid.columns}}"
             wx:for-item="column"
             wx:key="weekday"
+            wx:if="{{!column.narrow}}"
           >
             <view class="grid-th-day">{{column.label}}</view>
             <view class="grid-th-date" wx:if="{{column.dateLabel !== ''}}">{{column.dateLabel}}</view>
@@ -95,10 +101,11 @@
           </view>
           <view class="grid-cols">
             <view
-              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}} {{column.today ? 'grid-col-today' : ''}}"
+              class="grid-col {{column.today ? 'grid-col-today' : ''}}"
               wx:for="{{grid.columns}}"
               wx:for-item="column"
               wx:key="weekday"
+              wx:if="{{!column.narrow}}"
             >
               <view class="grid-line" wx:for="{{grid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
               <view
@@ -111,7 +118,7 @@
                 data-id="{{block.primaryId}}"
                 bindtap="openSheet"
               >
-                <view class="grid-block-name">{{block.name}}</view>
+                <view class="grid-block-name grid-block-name-{{block.tier}}">{{block.name}}</view>
                 <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
                 <view class="grid-block-meta" wx:if="{{block.teacher !== ''}}">{{block.teacher}}</view>
                 <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
@@ -121,11 +128,17 @@
         </view>
       </view>
 
-      <!-- 列表视图：同一份数据的另一种读法，信息更全（周次、教师、修改/删除都在这里）。 -->
+      <!-- 列表视图：同一份数据的另一种读法，信息更全（周次、教师、修改/删除都在这里）。
+           空白天不进列表——列表是「读全」，不是日历。 -->
       <view wx:else class="day-list">
         <view wx:for="{{view.days}}" wx:for-item="day" wx:key="weekday" class="day-block">
-          <view class="day-title">{{day.label}}</view>
-          <view class="course-item" wx:for="{{day.items}}" wx:for-item="course" wx:key="id">
+          <view class="day-title">
+            <view class="day-dot"></view>
+            {{day.label}}
+            <view class="day-date" wx:if="{{day.dateLabel !== ''}}">{{day.dateLabel}}</view>
+            <view class="day-today" wx:if="{{day.today}}">今天</view>
+          </view>
+          <view class="course-item {{course.needsReview ? 'course-item-review' : ''}}" style="--blk-solid:{{course.colorSolid}}" wx:for="{{day.items}}" wx:for-item="course" wx:key="id">
             <view class="course-main">
               <view class="course-name">{{course.name}}<text wx:if="{{course.source === 'manual'}}" class="course-tag">手工</text><text wx:if="{{course.needsReview}}" class="course-tag course-tag-review">待核对</text></view>
               <view class="course-line">{{course.sectionLabel}}<block wx:if="{{course.location !== ''}}"> · {{course.location}}</block></view>
@@ -142,7 +155,7 @@
     </block>
   </block>
 
-  <view class="tt-footer">周课表按节次展示；学校作息与具体时刻尚未核实，不臆造上课时间。点课程块可以修改或删除。</view>
+  <view class="tt-footer">周课表按节次展示；学校作息未核实，不显示具体时刻。<block wx:if="{{updatedAtText !== ''}}">课表保存于 {{updatedAtText}}。</block></view>
 
   <!-- 动作条只在已就绪时出现：空态自己有导入/手工两个大按钮，避免同页出现两个 #import-entry。 -->
   <view wx:if="{{status === 'ready'}}" class="actionbar">
@@ -152,7 +165,7 @@
   </view>
 
   <block wx:if="{{status !== 'loading' && status !== 'error'}}">
-    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+    <button wx:if="{{!assistantOpen}}" id="assistant-open" class="home-button tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
     <view wx:else class="qa-panel tt-qa" id="assistant-panel">
       <view class="qa-head">
         <view class="qa-title">课表助手</view>
@@ -175,7 +188,7 @@
 
   <button wx:if="{{status !== 'error'}}" id="back-home" class="tt-back-home" hover-class="pressed" bindtap="goHome">返回首页</button>
 
-  <!-- 课程详情弹层（设计图 05）：点课块或速查条打开；同格多门时在这里列出全部成员。
+  <!-- 课程详情弹层（设计图 09）：点课块或速查条打开；同格多门时在这里列出全部成员。
        课程色走与课块同一个令牌槽 --blk-solid，不为弹层新增令牌。 -->
   <view wx:if="{{sheetOpen}}" class="sheet-mask" bindtap="closeSheet"></view>
   <view wx:if="{{sheetOpen && sheetCourse !== null}}" id="course-sheet" class="sheet">

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表助手</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .context { margin-top:12px; padding:9px 10px; background:var(--paper-shade); color:var(--text-2); font-size:10px; line-height:1.6; }
+    .assistant-card { margin-top:14px; border:1px solid rgba(43,36,34,.18); background:rgba(255,255,255,.64); }
+    .assistant-head { padding:11px 13px; display:flex; justify-content:space-between; align-items:center; background:var(--brand-deep); color:#fff; }
+    .assistant-head strong { color:#fff; font-size:14px; }
+    .assistant-head span { color:rgba(255,255,255,.76); font-size:10px; }
+    .chat { padding:13px; }
+    .bubble { max-width:88%; padding:10px 11px; font-size:12px; line-height:1.65; }
+    .bubble-user { margin:10px 0 9px auto; color:#fff; background:var(--brand); }
+    .bubble-ai { border-left:3px solid var(--gold); background:var(--paper-shade); }
+    .suggestions { margin-top:12px; display:flex; flex-direction:column; gap:5px; }
+    .suggestions span { padding:7px 9px; border:1px solid rgba(43,36,34,.15); color:var(--text-2); font-size:10px; }
+    .chat-input { margin-top:13px; display:flex; gap:7px; }
+    .chat-input .fake-input { flex:1; min-height:41px; padding:10px; border:1px solid rgba(43,36,34,.22); color:var(--text-3); font-size:11px; }
+    .chat-input button { width:56px; border:0; background:var(--brand); color:#fff; font-size:11px; }
+    .privacy { margin-top:10px; color:var(--text-3); font-size:10px; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">我的课表</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">第 4 周 · 已保存课表</div>
+    <h1 class="page-title">课表助手</h1>
+    <div class="context">助手只按你已保存的课程查询或提出修改建议；修改需由你确认后保存。</div>
+    <section class="assistant-card">
+      <header class="assistant-head"><strong>问问你的课表</strong><span>收起 ×</span></header>
+      <div class="chat">
+        <div class="bubble bubble-ai">你好，可以查课程安排，也可以提出增改要求。修改会先展示确认内容。</div>
+        <div class="bubble bubble-user">第 4 周星期一第 1-4 节是什么课？</div>
+        <div class="bubble bubble-ai">劳动教育（一），地点是 40 号楼-B310，教师夏舜丽。<div class="quiet" style="margin-top:6px">依据：当前已保存课表</div></div>
+        <div class="suggestions"><span>星期三有哪几节课？</span><span>帮我新增一节课程</span></div>
+        <div class="chat-input"><div class="fake-input">继续提问…</div><button>发送</button></div>
+      </div>
+    </section>
+    <div class="privacy">AI 回答仅依据当前课表；课程变更会先请求确认，不会直接修改。</div>
+  </main>
+</body>
+</html>

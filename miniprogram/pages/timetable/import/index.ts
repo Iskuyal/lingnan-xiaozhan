@@ -52,7 +52,7 @@ import {
 
 type Step = 'guide' | 'parsing' | 'review' | 'error';
 type ImportKind = '' | 'file' | 'photo';
-/** 确认页的两种读法：列表看细节，课表看落位（设计图 09）。两者是同一份内存草稿。 */
+/** 确认页的两种读法：列表看细节，课表看落位（设计图 13）。两者是同一份内存草稿。 */
 type DraftView = 'list' | 'grid';
 
 interface ChosenFile {
@@ -61,7 +61,7 @@ interface ChosenFile {
   size?: number;
 }
 
-/** 元信息卡的一行：左键右值（设计图 09 的 sheet-row）。 */
+/** 元信息卡的一行：左键右值（设计图 13 的 sheet-row）。 */
 interface MetaRow {
   key: string;
   value: string;
@@ -74,7 +74,7 @@ interface DraftItemView {
   sectionText: string;
   weekText: string;
   teacherText: string;
-  /** 列表卡的第二行：星期 · 节次 · 周次 · 地点（设计图 09 的 card-line）。 */
+  /** 列表卡的第二行：星期 · 节次 · 周次 · 地点（设计图 13 的 card-line）。 */
   cardLine: string;
   /** 列表卡的第三行：教师与校区 / 场地编号 / 备注。 */
   cardNote: string;
@@ -90,7 +90,7 @@ interface DatasetEvent {
   currentTarget: { dataset: { index?: number; mode?: string } };
 }
 
-/** 确认页默认视图：列表（设计图 09 的默认选中项）。 */
+/** 确认页默认视图：列表（设计图 13 的默认选中项）。 */
 const DEFAULT_DRAFT_VIEW: DraftView = 'list';
 /** 初始网格：草稿还没来之前也要有个合法形状可渲染。 */
 const EMPTY_GRID: GridLayout = buildGrid([], 1);
@@ -117,7 +117,7 @@ function parseResultText(draft: TimetableDraft): string {
   return `${draft.stats.courses} 门课程（文件里 ${draft.stats.entries} 条课条目，按大节去重后 ${draft.stats.courses} 门）`;
 }
 
-/** 元信息卡最后一行：待核对 / 待补全的条数与「现在能不能保存」写在同一句里（设计图 09 的 head-meta）。 */
+/** 元信息卡最后一行：待核对 / 待补全的条数与「现在能不能保存」写在同一句里（设计图 13 的 head-meta）。 */
 function metaLineOf(warningCount: number, blockedCount: number): string {
   const counts = `其中 ${warningCount} 门待核对、${blockedCount} 门需要补全`;
   return blockedCount > 0 ? `${counts}，补全后才能保存` : `${counts}，可以保存`;
@@ -171,6 +171,15 @@ Page({
     if (this.data.step === 'review') this.refresh();
   },
   chooseFile() {
+    if (typeof wx.chooseMessageFile !== 'function') {
+      wx.showModal({
+        title: '暂不支持文件导入',
+        content: '当前微信环境不支持从聊天记录选择课表文件。你可以改用课表截图识别，或返回课表后手工录入。',
+        showCancel: false,
+        confirmText: '知道了',
+      });
+      return;
+    }
     wx.chooseMessageFile({
       count: 1,
       type: 'file',
@@ -469,7 +478,7 @@ Page({
         sectionText,
         weekText,
         teacherText: textOr(course.teacher, '教师未识别'),
-        // 列表卡按「星期 · 节次 · 周次 · 地点」一行读完（设计图 09 的 card-line），
+        // 列表卡按「星期 · 节次 · 周次 · 地点」一行读完（设计图 13 的 card-line），
         // 教师与校区 / 场地编号 / 备注跟在下一行；原文单独一行，永不省略。
         cardLine: [weekdayText, sectionText, weekText, locationText].filter((part) => part !== '').join(' · '),
         cardNote: [`教师：${textOr(course.teacher, '教师未识别')}`, noteText].filter((part) => part !== '').join(' · '),
