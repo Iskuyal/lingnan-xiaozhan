@@ -373,6 +373,9 @@ test('有调用记录未进入月度汇总时，下一次 AI 请求在模型调�
   assert.equal(harness.monthly[month].calls, 0);
   const requestsBeforeRetry = harness.http.length;
 
+  // 即使维护操作误删了故障闸门，明细与汇总的数量核对仍须挡住下一笔。
+  await harness.db.collection('ai_usage_monthly').doc(`accounting-gate:${month}`).remove();
+
   const second = await harness.main(chatEvent());
   assert.equal(second.ok, false, '用量账目不一致时必须暂停后续调用');
   assert.match(second.detail, /调用记录|月度汇总/u);
@@ -393,6 +396,41 @@ test('调用记录本身写入失败后，后续 AI 请求也不能继续花费'
   const second = await harness.main(chatEvent());
   assert.equal(second.ok, false, '上一笔费用无法记录时，新请求必须暂停');
   assert.equal(harness.http.length, requestsBeforeRetry, '第二次不得再请求模型');
+});
+
+test('并发请求取得闸门后必须重新判断月度上限', async () => {
+  let notifySecondGate;
+  const secondGateReached = new Promise((resolve) => { notifySecondGate = resolve; });
+  let allowSecondGate;
+  const secondGateAllowed = new Promise((resolve) => { allowSecondGate = resolve; });
+  let gateAttempts = 0;
+  const month = currentMonth();
+  const harness = createHarness({
+    monthly: { [month]: { month, calls: 0, failures: 0, costYuan: 49.5 } },
+    env: { AI_PRICE_OUTPUT_PER_MILLION: '1000000' },
+    security: {
+      msgSecCheck: async () => { await secondGateReached; return { errCode: 0 }; },
+      imgSecCheck: async () => ({ errCode: 0 }),
+    },
+    onGateAttempt: async () => {
+      gateAttempts += 1;
+      if (gateAttempts === 2) {
+        notifySecondGate();
+        await secondGateAllowed;
+      }
+    },
+    respond: () => openAiTextResponse('好', { prompt_tokens: 0, completion_tokens: 2, total_tokens: 2 }),
+  });
+
+  const firstPromise = harness.main(chatEvent());
+  const secondPromise = harness.main(chatEvent());
+  const first = await firstPromise;
+  assert.equal(first.ok, true);
+  assert.ok(harness.monthly[month].costYuan >= 50, '第一笔已达到月度上限');
+  allowSecondGate();
+  const second = await secondPromise;
+  assert.equal(second.ok, false, '第二笔拿到闸门后必须看到最新余额');
+  assert.equal(harness.http.length, 1, '第二笔不得再请求模型');
 });
 
 test('月度累加：确认文档不存在时才首次插入，用固定 _id 建文档', async () => {

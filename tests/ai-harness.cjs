@@ -134,6 +134,7 @@ function createDbStub(options = {}) {
         return {
           async add({ data }) {
             const id = typeof data._id === 'string' ? data._id : `auto-${Object.keys(monthly).length}`;
+            if (id.startsWith('accounting-gate:') && options.onGateAttempt) await options.onGateAttempt();
             if (/^\d{4}-\d{2}$/.test(id) && options.monthlyAddError !== undefined) throw options.monthlyAddError;
             if (monthly[id] !== undefined) {
               const error = new Error(`document.add:fail _id already exists: ${id}`);

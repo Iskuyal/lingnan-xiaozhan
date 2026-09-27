@@ -47,6 +47,7 @@ import {
   readUsageSummary,
   releaseAccountingGate,
   recordSubCall,
+  shanghaiMonth,
   sumCallUsage,
   toCallUsage,
   unknownUsage,
@@ -796,6 +797,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
 
   let log: RunLog | null = null;
   let gateHeld = false;
+  let gateMonth = '';
   try {
     if (action === null) fail('invalid_request', `未知动作「${safeString(event.action)}」，可用动作：${ALLOWED_ACTIONS.join('、')}`);
     if (action === 'usage' || action === 'moderateText' || action === 'moderateImage') {
@@ -806,6 +808,12 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     }
     const config = loadConfig();
     secrets.push(...secretsOf(config));
+    // 成本读取与上限判断也必须串行；否则等闸门时拿着旧汇总的请求会越过上限。
+    if (action !== 'usage') {
+      gateMonth = shanghaiMonth(now);
+      await acquireAccountingGate(db, gateMonth, requestId, now);
+      gateHeld = true;
+    }
     const summary = await readSummary(config, now);
     log = {
       requestId,
@@ -836,8 +844,6 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     await assertNoUnaccountedRecords(db, summary);
     // 上限判定：达到上限直接拒绝，接近阈值只告警（告警随返回值带出）。
     assertWithinCap(summary);
-    await acquireAccountingGate(db, summary.month, requestId, now);
-    gateHeld = true;
 
     if (action === 'moderateText') {
       const raw = safeString(event.text);
@@ -881,8 +887,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     return failureResponse(error, { log, action: action ?? '', feature, startedAt, secrets });
   } finally {
     // 未能确认所有子调用记账成功时保留闸门；下一笔请求必须等维护者核账。
-    if (gateHeld && log !== null && !log.accountingFailed) {
-      await releaseAccountingGate(db, log.summary.month).catch(() => undefined);
+    if (gateHeld && (log === null || !log.accountingFailed)) {
+      await releaseAccountingGate(db, gateMonth).catch(() => undefined);
     }
   }
 }

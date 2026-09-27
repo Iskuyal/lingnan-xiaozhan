@@ -173,11 +173,14 @@ async function removeWhere(condition: Record<string, unknown>): Promise<void> {
 async function finishOldBatchCleanup(openid: string, head: CourseHead): Promise<boolean> {
   try {
     const condition = head.cleanupLegacy
-      ? { owner: openid, staged: command.neq(true), batch: command.neq(head.activeBatch) }
+      ? { owner: openid, staged: command.neq(true), headBound: command.neq(true) }
       : { owner: openid, batch: head.cleanupBatch };
     await removeWhere(condition);
-    await db.collection(COLLECTION).doc(headId(openid)).update({ data: { cleanupPending: false } });
-    return true;
+    // 旧请求不能清除后续导入的待清理标记。
+    const result = await db.collection(COLLECTION)
+      .where({ _id: headId(openid), activeBatch: head.activeBatch })
+      .update({ data: { cleanupPending: false } });
+    return (result as { stats?: { updated?: number } }).stats?.updated !== 0;
   } catch {
     return false;
   }
@@ -408,7 +411,10 @@ async function handleCreateCourse(event: CloudEvent, openid: string) {
   const semester = sanitizeSemester(event.semester) !== '' ? sanitizeSemester(event.semester) : summarizeSemester(existing);
   const now = new Date().toISOString();
   // 手工入口写入的记录一律标记为 manual（来源由服务端决定，不接受客户端传入）。
-  const record = buildRecord({ ...normalized.value, source: 'manual' }, openid, semester, makeCourseId(), '', now, head?.activeBatch ?? '');
+  const record = {
+    ...buildRecord({ ...normalized.value, source: 'manual' }, openid, semester, makeCourseId(), '', now, head?.activeBatch ?? ''),
+    ...(head === null ? {} : { headBound: true }),
+  };
   await db.collection(COLLECTION).add({ data: record });
   if (!sameActiveBatch(head, await readHead(openid))) {
     await removeWhere({ owner: openid, id: record.id, batch: record.batch }).catch(() => undefined);

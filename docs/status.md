@@ -9,7 +9,7 @@
 | 对象 | 已核实状态 | 证据与边界 |
 | --- | --- | --- |
 | GitHub `main` | 2026-09-26 为 `d1a2591`，PR [#65](https://github.com/Iskuyal/wx-match/pull/65) 与 [#66](https://github.com/Iskuyal/wx-match/pull/66) 已合并；本轮修复在本地 `codex/review-fixes` 分支，尚未合入 | 代码合入与云端生效分别核对 |
-| 本地代码 | 2026-09-27 `codex/review-fixes`：`npm run typecheck` 与 `npm test`（468/468）通过；新增课表批次可见性、旧批次失败清理和手工操作并发核对、AI 记账闸门与漏记阻断、空模型响应的脱敏结构诊断。2026-09-26 的 `npm run verify:wechat` 24 项全过属于改动前的模拟器记录 | 本轮云函数改动只经本地桩验证；尚未部署或在模拟器、真机复测 |
+| 本地代码 | 2026-09-27 `codex/review-fixes`：`npm run typecheck` 与 `npm test`（471/471）通过；新增课表批次可见性、旧批次失败清理和手工操作并发核对、AI 记账闸门与漏记阻断、空模型响应的脱敏结构诊断。2026-09-26 的 `npm run verify:wechat` 24 项全过属于改动前的模拟器记录 | 本轮云函数改动只经本地桩验证；尚未部署或在模拟器、真机复测 |
 | 云端 | 2026-09-24 从当时的 `main` 合并提交 `0f184cd` 部署 `ai`、`newsSync`、`timetable`，三条均 Active；当时远端入口文件与锁文件哈希读回一致，`timetable` 的 SheetJS 为 0.20.3。**该核对不适用于本轮本地改动。**2026-09-25 开发者工具中维护者探测按预期拒绝；文字冒烟 3/3 返回空模型响应 | [云端证据](evidence/security-remediation/README.md)、[复测记录](evidence/cloud-recheck/README.md)；本轮代码部署、真实定时器、两账号、合法维护者仍待验 |
 | 发布 | 本次参赛采用微信开发者工具「预览」做真机演示；认证、备案、体验版及正式发布不在已完成范围 | [Ticket 08](tasks/tickets/08-post-publish-single-page-mode.md) 为 `wontfix`，未登录单页模式未实测 |
 
