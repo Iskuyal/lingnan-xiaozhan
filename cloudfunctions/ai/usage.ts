@@ -4,8 +4,8 @@
  * 落两处：
  * - `ai_usage_records`：每次子调用（模型调用、第三方内容安全检测）一条，记录耗时、
  *   token、金额与失败分类——「每次调用记录耗时与用量」的落点；
- * - `ai_usage_monthly`：每月一条文档（`_id` 为东八区月份，如 `2026-09`），用原子自增累加，
- *   是累计用量查询与成本上限判断的唯一来源。
+ * - `ai_usage_monthly`：每月一条汇总文档（`_id` 为东八区月份，如 `2026-09`），用原子自增累加；
+ *   同集合还有 `accounting-gate:<月份>` 闸门文档，阻止记账失败后继续产生费用。
  *
  * 单价与上限都来自环境变量：默认值是 AI 资讯实测的 **DeepSeek 官方**单价（中转实际单价未实测）
  * 与规格定下的 50 元上限，换中转、换模型、调整上限都只改配置，不动代码。
@@ -42,6 +42,7 @@ export interface UsageDb {
     doc(id: string): {
       get(): Promise<{ data?: unknown }>;
       update(options: { data: Record<string, unknown> }): Promise<unknown>;
+      remove(): Promise<unknown>;
     };
   };
 }
@@ -253,6 +254,29 @@ export async function assertNoUnaccountedRecords(db: UsageDb, summary: UsageSumm
   if ((result.total as number) > summary.calls) {
     fail('internal', '本月 AI 调用记录多于月度汇总，存在漏记；已暂停调用，请维护者核对并修复账目');
   }
+}
+
+/**
+ * 一个月只允许一笔收费请求进入外部调用：先占住固定 _id，再发模型请求。
+ * 若任何子调用记账失败，闸门保留，后续请求停下等待维护者核账；
+ * 这也覆盖“明细记录 add 自身失败，汇总与明细都没有痕迹”的路径。
+ */
+function accountingGateId(month: string): string {
+  return `accounting-gate:${month}`;
+}
+
+export async function acquireAccountingGate(db: UsageDb, month: string, requestId: string, now: Date): Promise<void> {
+  try {
+    await db.collection(USAGE_MONTH_COLLECTION).add({
+      data: { _id: accountingGateId(month), requestId, createdAt: now.toISOString() },
+    });
+  } catch {
+    fail('internal', 'AI 记账闸门正在使用或待核对，已暂停新调用；维护者须确认上笔用量后处理');
+  }
+}
+
+export async function releaseAccountingGate(db: UsageDb, month: string): Promise<void> {
+  await db.collection(USAGE_MONTH_COLLECTION).doc(accountingGateId(month)).remove();
 }
 
 /** 把一条子调用记录累加进汇总（纯函数，返回新的汇总对象）。 */

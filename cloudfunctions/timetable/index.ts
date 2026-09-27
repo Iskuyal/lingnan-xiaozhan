@@ -88,6 +88,18 @@ async function readHead(openid: string): Promise<CourseHead | null> {
   }
 }
 
+function visibleCourseCondition(openid: string, head: CourseHead | null, id?: string): Record<string, unknown> {
+  const condition: Record<string, unknown> = head === null
+    ? { owner: openid, staged: command.neq(true) }
+    : { owner: openid, batch: head.activeBatch };
+  if (id !== undefined) condition.id = id;
+  return condition;
+}
+
+function sameActiveBatch(left: CourseHead | null, right: CourseHead | null): boolean {
+  return left?.activeBatch === right?.activeBatch;
+}
+
 /** 取扩展名（小写，含点）；没有扩展名时返回空字符串。 */
 function extensionOf(name: string): string {
   const match = /\.[A-Za-z0-9]+$/u.exec(name);
@@ -138,11 +150,9 @@ async function queryData<T>(query: { get(): unknown }): Promise<T[]> {
 }
 
 /** 读本人全部课程：云函数端单次最多 100 条，按页读取后由调用方排序。 */
-async function readOwnCourses(openid: string): Promise<StoredCourse[]> {
-  const head = await readHead(openid);
-  const condition = head === null
-    ? { owner: openid, staged: command.neq(true) }
-    : { owner: openid, batch: head.activeBatch };
+async function readOwnCourses(openid: string, selectedHead?: CourseHead | null): Promise<StoredCourse[]> {
+  const head = selectedHead === undefined ? await readHead(openid) : selectedHead;
+  const condition = visibleCourseCondition(openid, head);
   const rows: StoredCourse[] = [];
   for (let skip = 0; skip < MAX_COURSES; skip += PAGE_SIZE) {
     const page = await queryData<StoredCourse>(
@@ -171,6 +181,18 @@ async function finishOldBatchCleanup(openid: string, head: CourseHead): Promise<
   } catch {
     return false;
   }
+}
+
+/** 只清理超过一次云函数最长运行时间的隐藏批次，避免误删正在写入的导入。 */
+async function cleanupAbandonedStages(openid: string, head: CourseHead | null): Promise<void> {
+  const olderThan = new Date(Date.now() - 60_000).toISOString();
+  const condition: Record<string, unknown> = {
+    owner: openid,
+    staged: true,
+    createdAt: command.lt(olderThan),
+  };
+  if (head !== null) condition.batch = command.neq(head.activeBatch);
+  await removeWhere(condition);
 }
 
 /** 客户端只需要业务字段与 id，不回传 owner。 */
@@ -298,6 +320,7 @@ async function handleDiscardUpload(event: CloudEvent, openid: string) {
 async function handleList(openid: string) {
   const head = await readHead(openid);
   if (head?.cleanupPending) await finishOldBatchCleanup(openid, head);
+  await cleanupAbandonedStages(openid, head).catch(() => undefined);
   const rows = await readOwnCourses(openid);
   const courses = sortedCourses(rows);
   const updatedAt = rows.reduce((latest, row) => (row.updatedAt > latest ? row.updatedAt : latest), '');
@@ -379,14 +402,18 @@ async function handleSaveDraft(event: CloudEvent, openid: string) {
 async function handleCreateCourse(event: CloudEvent, openid: string) {
   const normalized = normalizeCourseFields(event.course);
   if (!normalized.ok) return { ok: false, error: normalized.error };
-  const existing = await readOwnCourses(openid);
+  const head = await readHead(openid);
+  const existing = await readOwnCourses(openid, head);
   if (existing.length >= MAX_COURSES) return { ok: false, error: `课表最多保存 ${MAX_COURSES} 条课程` };
   const semester = sanitizeSemester(event.semester) !== '' ? sanitizeSemester(event.semester) : summarizeSemester(existing);
   const now = new Date().toISOString();
   // 手工入口写入的记录一律标记为 manual（来源由服务端决定，不接受客户端传入）。
-  const head = await readHead(openid);
   const record = buildRecord({ ...normalized.value, source: 'manual' }, openid, semester, makeCourseId(), '', now, head?.activeBatch ?? '');
   await db.collection(COLLECTION).add({ data: record });
+  if (!sameActiveBatch(head, await readHead(openid))) {
+    await removeWhere({ owner: openid, id: record.id, batch: record.batch }).catch(() => undefined);
+    return { ok: false, error: '课表同时被重新导入，本次新增未确认保存；请刷新课表后重试' };
+  }
   return { ok: true, course: toClientCourse(record), count: existing.length + 1 };
 }
 
@@ -425,9 +452,7 @@ async function handleUpdateCourse(event: CloudEvent, openid: string) {
   }
   const patch = event.course as Record<string, unknown>;
   const head = await readHead(openid);
-  const condition = head === null
-    ? { owner: openid, id, staged: command.neq(true) }
-    : { owner: openid, id, batch: head.activeBatch };
+  const condition = visibleCourseCondition(openid, head, id);
   const rows = await queryData<StoredCourse & { _id: string }>(
     db.collection(COLLECTION).where(condition).limit(1),
   );
@@ -446,6 +471,9 @@ async function handleUpdateCourse(event: CloudEvent, openid: string) {
   const now = new Date().toISOString();
   // semester 由服务端保留，不受客户端影响；只写规范化后的课程字段与更新时间。
   await db.collection(COLLECTION).doc(rows[0]._id).update({ data: { ...normalized.value, updatedAt: now } });
+  if (!sameActiveBatch(head, await readHead(openid))) {
+    return { ok: false, error: '课表同时被重新导入，本次修改可能已被覆盖；请刷新课表后重试' };
+  }
   return { ok: true, id, updatedAt: now };
 }
 
@@ -453,12 +481,13 @@ async function handleDeleteCourse(event: CloudEvent, openid: string) {
   const id = typeof event.id === 'string' ? event.id : '';
   if (id === '') return { ok: false, error: '缺少要删除的课程标识' };
   const head = await readHead(openid);
-  const condition = head === null
-    ? { owner: openid, id, staged: command.neq(true) }
-    : { owner: openid, id, batch: head.activeBatch };
+  const condition = visibleCourseCondition(openid, head, id);
   const rows = await queryData<{ _id: string }>(db.collection(COLLECTION).where(condition).limit(1));
   if (rows.length === 0) return { ok: false, error: '未找到要删除的课程，可能已被删除' };
   await db.collection(COLLECTION).doc(rows[0]._id).remove();
+  if (!sameActiveBatch(head, await readHead(openid))) {
+    return { ok: false, error: '课表同时被重新导入，本次删除可能已被覆盖；请刷新课表后重试' };
+  }
   const remaining = await readOwnCourses(openid);
   return { ok: true, id, count: remaining.length };
 }

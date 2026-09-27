@@ -118,6 +118,7 @@ function createDbStub(options = {}) {
       if (name === 'ai_usage_records') {
         return {
           async add({ data }) {
+            if (options.recordAddError !== undefined) throw options.recordAddError;
             records.push({ _id: `record-${records.length}`, ...data });
           },
           where(condition) {
@@ -148,6 +149,11 @@ function createDbStub(options = {}) {
                 if (/^\d{4}-\d{2}$/.test(id) && options.monthlyReadError !== undefined) throw options.monthlyReadError;
                 if (monthly[id] === undefined) throw new DocumentNotFound(id);
                 return { data: monthly[id] };
+              },
+              async remove() {
+                if (monthly[id] === undefined) throw new DocumentNotFound(id);
+                delete monthly[id];
+                return { stats: { removed: 1 } };
               },
               // 保留 set 只是镜像 SDK 的能力：被测代码刻意不用覆盖式写入（会冲掉当月累计）。
               async set({ data }) {

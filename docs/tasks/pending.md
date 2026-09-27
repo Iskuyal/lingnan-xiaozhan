@@ -85,7 +85,7 @@
 | V4 | `newsSync` 首次全量入库 | 按 D6 选定的口径跑完分批导入（Ticket 04 口径约 155 批；Ticket 10 口径为团委 171 次 + 8 个新栏目 122 次 ≈ 30 批——两者范围不同） | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md)、[Ticket 10](tickets/10-campus-rag-qa.md) |
 | V5 | 本机之外的记录格式 | 每项另存私有测试记录：`编号、日期时间、Git SHA、设备/微信版本、云函数版本、输入样本代号、预期、实际、耗时、成本、截图或录屏路径、问题链接`；截图遮掉姓名、班级、课表原文及个人信息 | [人工验收清单](../testing/manual-acceptance.md) |
 | V6 | **文字链路的空响应**（2026-09-25 已连续复现 3 次） | `npm run smoke:ai -- --attempts=3` 三次都为 `failureClass=model_unavailable`、`retryable=true`、`detail=模型返回内容为空（OpenAI 兼容格式）`，耗时 3272/3347/3815ms，文本安全检测均通过；模型标识 `deepseek/deepseek-v4.1-flash`。本轮先查中转配置/服务端响应记录，不再重复消耗调用；修复或确认原因后再跑三次。历史 2026-09-24 那次 5201ms 空响应与此前 `ok=true` 记录仍保留 | `artifacts/verify/ai-smoke.jsonl`（被 gitignore，只在执行机上）；[云端复测](../evidence/cloud-recheck/README.md) |
-| V7 | **本地修复部署与旧数据兼容**（2026-09-27） | `codex/review-fixes` 的 `ai`、`timetable` 云函数尚未部署。部署前先核对当月 `ai_usage_records` 数量与 `ai_usage_monthly.calls`，避免既有漏记让新代码立即拦截；部署后验证旧课表无批次标记时可读、首次整份替换只显示新课、手工新增仍可读，并回读云函数版本。空响应诊断只记录 `choices`、`finish_reason` 等结构，不记录正文；取得中转原始响应或结构诊断后再判断 V6 根因 | [数据模型与部署说明](../cloud-development.md)；本轮本地回归不等于云端验收 |
+| V7 | **本地修复部署与旧数据兼容**（2026-09-27） | `codex/review-fixes` 的 `ai`、`timetable` 云函数尚未部署。部署前先核对当月 `ai_usage_records` 数量与 `ai_usage_monthly.calls`，避免既有漏记让新代码立即拦截；也须确认 `ai_usage_monthly` 不存在遗留 `accounting-gate:<月份>`，不得未核账就删闸门。部署后验证旧课表无批次标记时可读、首次整份替换只显示新课、手工新增仍可读，并回读云函数版本。空响应诊断只记录 `choices`、`finish_reason` 等结构，不记录正文；取得中转原始响应或结构诊断后再判断 V6 根因 | [数据模型与部署说明](../cloud-development.md)；本轮本地回归不等于云端验收 |
 
 ## 三、代码与文档收尾（不需要等人）
 

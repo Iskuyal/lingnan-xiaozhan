@@ -379,6 +379,22 @@ test('有调用记录未进入月度汇总时，下一次 AI 请求在模型调�
   assert.equal(harness.http.length, requestsBeforeRetry, '不得再发模型请求');
 });
 
+test('调用记录本身写入失败后，后续 AI 请求也不能继续花费', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    recordAddError: new Error('记录集合暂时不可写'),
+    respond: () => openAiTextResponse('正常回答'),
+  });
+  const first = await harness.main(chatEvent());
+  assert.equal(first.ok, true, '已经发生的模型调用结果可返回，但必须保留记账告警');
+  assert.ok(first.warnings.some((warning) => warning.includes('用量记账失败')));
+  const requestsBeforeRetry = harness.http.length;
+
+  const second = await harness.main(chatEvent());
+  assert.equal(second.ok, false, '上一笔费用无法记录时，新请求必须暂停');
+  assert.equal(harness.http.length, requestsBeforeRetry, '第二次不得再请求模型');
+});
+
 test('月度累加：确认文档不存在时才首次插入，用固定 _id 建文档', async () => {
   const month = currentMonth();
   const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('好') });

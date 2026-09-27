@@ -20,12 +20,13 @@ function harness(options = {}) {
   function match(doc, condition) {
     return Object.entries(condition).every(([key, expected]) => {
       if (expected !== null && typeof expected === 'object' && '__neq' in expected) return doc[key] !== expected.__neq;
+      if (expected !== null && typeof expected === 'object' && '__lt' in expected) return doc[key] < expected.__lt;
       return doc[key] === expected;
     });
   }
 
   const db = {
-    command: { neq: (value) => ({ __neq: value }) },
+    command: { neq: (value) => ({ __neq: value }), lt: (value) => ({ __lt: value }) },
     collection() {
       const state = { condition: null, skip: 0, limit: 100 };
       const api = {
@@ -55,6 +56,11 @@ function harness(options = {}) {
             stagedAdds += 1;
             if (stagedAdds === options.failStagedAddAt) throw new Error('课程写入暂时失败');
           }
+          if (data.name === '并发新增' && options.beforeConcurrentManualAdd) {
+            const hook = options.beforeConcurrentManualAdd;
+            options.beforeConcurrentManualAdd = null;
+            await hook();
+          }
           const doc = { _id: `doc-${docs.length + 1}`, ...data };
           docs.push(doc);
           return { _id: doc._id };
@@ -76,6 +82,11 @@ function harness(options = {}) {
               return { stats: { updated: 1 } };
             },
             async update({ data }) {
+              if (data.name === '并发修改' && options.beforeConcurrentUpdate) {
+                const hook = options.beforeConcurrentUpdate;
+                options.beforeConcurrentUpdate = null;
+                await hook();
+              }
               const doc = docs.find((item) => item._id === id);
               if (doc === undefined) throw new Error('document not exists');
               Object.assign(doc, data);
@@ -315,6 +326,48 @@ test('旧批次清理不会删掉切换后新增到当前批次的手工课程',
   assert.ok(visible.courses.some((course) => course.name === '并发手工课'));
 });
 
+test('导入切换与手工新增交错时，不能报告成功却把课程写进旧批次', async () => {
+  const options = {};
+  const h = harness(options);
+  await h.run(STUDENT_A, { action: 'createCourse', course: { name: '旧课程', weekday: 1, sectionRanges: [{ start: 1, end: 2 }] } });
+  options.beforeConcurrentManualAdd = async () => {
+    const saved = await h.run(STUDENT_A, {
+      action: 'saveDraft', courses: [{ name: '新课表课程', weekday: 2, sectionRanges: [{ start: 3, end: 4 }] }],
+    });
+    assert.equal(saved.ok, true);
+  };
+  const created = await h.run(STUDENT_A, {
+    action: 'createCourse', course: { name: '并发新增', weekday: 4, sectionRanges: [{ start: 5, end: 6 }] },
+  });
+  assert.equal(created.ok, false, '如果并发导入覆盖了新增，应明确返回冲突而非成功');
+  assert.match(created.error, /重新导入|冲突/u);
+  const visible = await h.run(STUDENT_A, { action: 'list' });
+  assert.equal(visible.count, 1);
+  assert.equal(visible.courses[0].name, '新课表课程');
+});
+
+test('导入切换与手工修改交错时，不把已失效课程的修改报告为成功', async () => {
+  const options = { failOldBatchDelete: true };
+  const h = harness(options);
+  const original = await h.run(STUDENT_A, {
+    action: 'createCourse', course: { name: '旧课程', weekday: 1, sectionRanges: [{ start: 1, end: 2 }] },
+  });
+  options.beforeConcurrentUpdate = async () => {
+    const saved = await h.run(STUDENT_A, {
+      action: 'saveDraft', courses: [{ name: '新课表课程', weekday: 2, sectionRanges: [{ start: 3, end: 4 }] }],
+    });
+    assert.equal(saved.ok, true);
+  };
+  const changed = await h.run(STUDENT_A, {
+    action: 'updateCourse', id: original.course.id, course: { name: '并发修改' },
+  });
+  assert.equal(changed.ok, false);
+  assert.match(changed.error, /重新导入/u);
+  const visible = await h.run(STUDENT_A, { action: 'list' });
+  assert.equal(visible.count, 1);
+  assert.equal(visible.courses[0].name, '新课表课程');
+});
+
 test('批次提交响应丢失后，读取提交状态，不删除已经生效的新课表', async () => {
   const h = harness({ failHeadSetAfterWrite: true });
   await h.run(STUDENT_A, { action: 'createCourse', course: { name: '旧课程', weekday: 1, sectionRanges: [{ start: 1, end: 2 }] } });
@@ -328,7 +381,8 @@ test('批次提交响应丢失后，读取提交状态，不删除已经生效�
 });
 
 test('暂存写入与清理同时失败时，旧课表仍可见且错误不谎称已回滚', async () => {
-  const h = harness({ failStagedAddAt: 2, failStagedDelete: true });
+  const options = { failStagedAddAt: 2, failStagedDelete: true };
+  const h = harness(options);
   await h.run(STUDENT_A, { action: 'createCourse', course: { name: '旧课程', weekday: 1, sectionRanges: [{ start: 1, end: 2 }] } });
   const result = await h.run(STUDENT_A, {
     action: 'saveDraft',
@@ -343,6 +397,12 @@ test('暂存写入与清理同时失败时，旧课表仍可见且错误不谎�
   const visible = await h.run(STUDENT_A, { action: 'list' });
   assert.equal(visible.count, 1);
   assert.equal(visible.courses[0].name, '旧课程');
+
+  // 云存储清理恢复后，过期的隐藏批次应在下次读取时得到补清。
+  options.failStagedDelete = false;
+  for (const row of h.docs.filter((doc) => doc.staged === true)) row.createdAt = '2020-01-01T00:00:00.000Z';
+  await h.run(STUDENT_A, { action: 'list' });
+  assert.equal(h.docs.filter((doc) => doc.staged === true).length, 0);
 });
 
 test('保存时整批校验：有一条不合规就整批不写', async () => {
