@@ -212,7 +212,25 @@ export function parseModelResponse(target: ModelTarget, payload: unknown): { tex
   const text = message === null ? '' : openAiContentText(message.content);
   const legacyText = text === '' && first !== null && typeof first.text === 'string' ? first.text : '';
   const finalText = text === '' ? legacyText : text;
-  if (finalText.trim() === '') fail('model_unavailable', '模型返回内容为空（OpenAI 兼容格式）');
+  if (finalText.trim() === '') {
+    // 只报告结构，不记录上游正文、推理内容或错误消息；下次冒烟可据此区分截断与非标准响应。
+    const finishReason = first?.finish_reason;
+    const safeFinishReason = typeof finishReason === 'string'
+      && ['stop', 'length', 'content_filter', 'tool_calls', 'function_call'].includes(finishReason)
+      ? finishReason
+      : 'missing_or_other';
+    const content = message?.content;
+    const contentShape = content === undefined ? 'missing'
+      : content === null ? 'null'
+        : Array.isArray(content) ? 'blocks'
+          : typeof content === 'string' ? 'string'
+            : typeof content;
+    fail('model_unavailable', '模型返回内容为空（OpenAI 兼容格式）'
+      + `；choices=${choices.length}；finish_reason=${safeFinishReason}；content=${contentShape}`
+      + `；reasoning_content=${message?.reasoning_content === undefined ? 'missing' : 'present'}`
+      + `；error=${source.error === undefined ? 'missing' : 'present'}`
+      + `；usage=${source.usage === undefined ? 'missing' : 'present'}`);
+  }
   return {
     text: finalText,
     usage: parseOpenAiUsage(source.usage),

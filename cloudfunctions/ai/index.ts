@@ -40,6 +40,7 @@ import {
   UsageDb,
   applyRecord,
   assertWithinCap,
+  assertNoUnaccountedRecords,
   capWarningFor,
   newRequestId,
   readUsageSummary,
@@ -825,6 +826,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       return response;
     }
 
+    // 先核对调用记录与汇总：记账写入失败时不能靠过时汇总继续放行。
+    await assertNoUnaccountedRecords(db, summary);
     // 上限判定：达到上限直接拒绝，接近阈值只告警（告警随返回值带出）。
     assertWithinCap(summary);
 

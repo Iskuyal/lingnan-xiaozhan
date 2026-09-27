@@ -120,6 +120,13 @@ function createDbStub(options = {}) {
           async add({ data }) {
             records.push({ _id: `record-${records.length}`, ...data });
           },
+          where(condition) {
+            return {
+              async count() {
+                return { total: records.filter((record) => record.month === condition.month).length };
+              },
+            };
+          },
         };
       }
       if (name === 'ai_usage_monthly') {

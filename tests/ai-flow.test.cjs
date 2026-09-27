@@ -360,6 +360,25 @@ test('月度累加：update 失败不覆盖累计，只记为「可处理的记�
   assert.ok(result.usage !== null, '本次主调用的用量仍然如实返回');
 });
 
+test('有调用记录未进入月度汇总时，下一次 AI 请求在模型调用前被挡住', async () => {
+  const month = currentMonth();
+  const harness = createHarness({
+    security: wechatOk(),
+    monthly: { [month]: { month, calls: 0, failures: 0, costYuan: 0 } },
+    monthlyUpdateError: new Error('collection.update:fail network timeout'),
+    respond: () => openAiTextResponse('正常回答'),
+  });
+  const first = await harness.main(chatEvent());
+  assert.equal(first.ok, true, '第一次模型调用已发生，不能把它撤销');
+  assert.equal(harness.monthly[month].calls, 0);
+  const requestsBeforeRetry = harness.http.length;
+
+  const second = await harness.main(chatEvent());
+  assert.equal(second.ok, false, '用量账目不一致时必须暂停后续调用');
+  assert.match(second.detail, /调用记录|月度汇总/u);
+  assert.equal(harness.http.length, requestsBeforeRetry, '不得再发模型请求');
+});
+
 test('月度累加：确认文档不存在时才首次插入，用固定 _id 建文档', async () => {
   const month = currentMonth();
   const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('好') });

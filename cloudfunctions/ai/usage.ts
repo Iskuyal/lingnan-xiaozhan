@@ -237,6 +237,24 @@ export async function readUsageSummary(db: UsageDb, config: Config, now: Date): 
   }
 }
 
+/**
+ * 月度汇总写入失败时，调用记录已经落库。下次收费调用必须先发现这笔漏记，
+ * 否则只读汇总会继续放行，让成本上限失去约束。
+ * 只检查“记录多于汇总”：历史记录清理后，汇总较大仍是保守的上限口径。
+ */
+export async function assertNoUnaccountedRecords(db: UsageDb, summary: UsageSummary): Promise<void> {
+  const records = db.collection(USAGE_RECORD_COLLECTION) as unknown as {
+    where(condition: { month: string }): { count(): Promise<{ total?: unknown }> };
+  };
+  const result = await records.where({ month: summary.month }).count();
+  if (!Number.isSafeInteger(result.total) || (result.total as number) < 0) {
+    fail('internal', '无法核对本月 AI 调用记录数，已暂停调用');
+  }
+  if ((result.total as number) > summary.calls) {
+    fail('internal', '本月 AI 调用记录多于月度汇总，存在漏记；已暂停调用，请维护者核对并修复账目');
+  }
+}
+
 /** 把一条子调用记录累加进汇总（纯函数，返回新的汇总对象）。 */
 export function applyRecord(summary: UsageSummary, record: SubCallRecord): UsageSummary {
   const next: UsageSummary = {
