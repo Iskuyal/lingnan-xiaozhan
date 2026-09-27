@@ -38,12 +38,16 @@ import {
 } from './types';
 import {
   UsageDb,
+  acquireAccountingGate,
   applyRecord,
   assertWithinCap,
+  assertNoUnaccountedRecords,
   capWarningFor,
   newRequestId,
   readUsageSummary,
+  releaseAccountingGate,
   recordSubCall,
+  shanghaiMonth,
   sumCallUsage,
   toCallUsage,
   unknownUsage,
@@ -103,6 +107,7 @@ interface RunLog {
   model: string;
   safety: SafetyReport | null;
   warnings: string[];
+  accountingFailed: boolean;
 }
 
 const ZERO_USAGE: TokenUsage = {
@@ -344,6 +349,7 @@ async function record(log: RunLog, entry: Omit<SubCallRecord, 'userKey'>): Promi
     await recordSubCall(db, recordWithUser, log.config, new Date());
     log.summary = applyRecord(log.summary, recordWithUser);
   } catch (error) {
+    log.accountingFailed = true;
     pushWarning(log, `用量记账失败，本次成本未计入月度累计：${describeError(error)}`);
   }
 }
@@ -790,6 +796,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
   }
 
   let log: RunLog | null = null;
+  let gateHeld = false;
+  let gateMonth = '';
   try {
     if (action === null) fail('invalid_request', `未知动作「${safeString(event.action)}」，可用动作：${ALLOWED_ACTIONS.join('、')}`);
     if (action === 'usage' || action === 'moderateText' || action === 'moderateImage') {
@@ -800,6 +808,12 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     }
     const config = loadConfig();
     secrets.push(...secretsOf(config));
+    // 成本读取与上限判断也必须串行；否则等闸门时拿着旧汇总的请求会越过上限。
+    if (action !== 'usage') {
+      gateMonth = shanghaiMonth(now);
+      await acquireAccountingGate(db, gateMonth, requestId, now);
+      gateHeld = true;
+    }
     const summary = await readSummary(config, now);
     log = {
       requestId,
@@ -814,6 +828,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       model: '',
       safety: null,
       warnings: [],
+      accountingFailed: false,
     };
 
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。
@@ -825,6 +840,8 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       return response;
     }
 
+    // 先核对调用记录与汇总：记账写入失败时不能靠过时汇总继续放行。
+    await assertNoUnaccountedRecords(db, summary);
     // 上限判定：达到上限直接拒绝，接近阈值只告警（告警随返回值带出）。
     assertWithinCap(summary);
 
@@ -868,6 +885,11 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
   } catch (error) {
     // catch 里 action 仍可能是 null（未知动作/在读配置前就失败），统一收敛成空字符串。
     return failureResponse(error, { log, action: action ?? '', feature, startedAt, secrets });
+  } finally {
+    // 未能确认所有子调用记账成功时保留闸门；下一笔请求必须等维护者核账。
+    if (gateHeld && (log === null || !log.accountingFailed)) {
+      await releaseAccountingGate(db, gateMonth).catch(() => undefined);
+    }
   }
 }
 

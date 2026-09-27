@@ -141,6 +141,29 @@ test('返回空内容按「模型不可用」处理，不让调用方以为成�
   assert.equal(failure.failureClass, 'model_unavailable');
 });
 
+test('空模型响应只报告结构诊断，不泄露中转正文或推理内容', () => {
+  const providers = createHarness().load('providers.js');
+  let failure = null;
+  try {
+    providers.parseModelResponse(target('openai'), {
+      error: { message: 'PRIVATE_RESPONSE_BODY' },
+      choices: [{
+        message: { content: '', reasoning_content: 'PRIVATE_REASONING' },
+        finish_reason: 'length',
+      }],
+    });
+  } catch (error) {
+    failure = error;
+  }
+  assert.ok(failure !== null);
+  assert.equal(failure.failureClass, 'model_unavailable');
+  assert.match(failure.detail, /choices=1/u);
+  assert.match(failure.detail, /finish_reason=length/u);
+  assert.match(failure.detail, /reasoning_content=present/u);
+  assert.match(failure.detail, /error=present/u);
+  assert.doesNotMatch(failure.detail, /PRIVATE_/u);
+});
+
 test('状态码分类：402 归「额度用尽」，429 属瞬时限流归「模型不可用」，401/403/5xx 同理', () => {
   const providers = createHarness().load('providers.js');
   const limited = providers.classifyHttpStatus(target('openai'), 429, 'rate limited');
