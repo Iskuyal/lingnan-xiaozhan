@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 发布向导 · 表单与无效输入</title>
+<link rel="stylesheet" href="_tokens.css"><link rel="stylesheet" href="_mockup.css"></head>
+<body><div class="mock">
+  <p class="doc-title">03 发布向导 · 表单 / 无效输入 / 草稿</p>
+  <p class="doc-caption">类别、时间范围（模糊到时段）、区域、公开描述、图片（≤3 张）与私密核验特征分两段；私密特征仅发布者可见、用于核验，不出现在候选解释。底部为图片和文本的授权同意。红框为无效输入样例（时间倒置、描述为空、描述含手机号被服务端拒绝）。</p>
+  <div class="nav"><div class="nav-title">发布信息</div><div class="nav-sub">丢失或拾获都从这里开始</div></div>
+  <div class="form">
+    <div class="field"><div class="field-label">类型</div>
+      <div class="seg" style="margin:0"><div class="seg-item on">拾获</div><div class="seg-item">丢失</div></div></div>
+    <div class="field"><div class="field-label"><span class="req">*</span> 物品类别</div>
+      <div class="filters" style="margin:0"><span class="chip on">校园卡</span><span class="chip">证件</span><span class="chip">电子设备</span><span class="chip">钥匙</span><span class="chip">其他</span></div></div>
+    <div class="field"><div class="field-label"><span class="req">*</span> 时间范围</div>
+      <input class="input err" value="09-27 晚 → 09-26 早"><div class="field-error">时间倒置：开始时间不能晚于结束时间</div></div>
+    <div class="field"><div class="field-label"><span class="req">*</span> 地点区域</div>
+      <input class="input" value="清远校区 · 图书馆"></div>
+    <div class="field"><div class="field-label"><span class="req">*</span> 公开描述</div>
+      <textarea class="input textarea"></textarea><div class="field-error">描述不能为空</div>
+      <div class="field-hint">请勿填写手机号、微信号、精确宿舍；联系方式会在发布前被拦截</div></div>
+    <div class="field"><div class="field-label">图片（≤3 张）</div>
+      <div class="note-info">图片区：点击添加，支持相册/拍照；发布前过内容安全检测</div></div>
+    <div class="field"><div class="field-label">私密核验特征（仅你可见，用于核验认领人）</div>
+      <textarea class="input textarea" style="min-height:56px" placeholder="例如：卡套背面有蓝色贴纸，编号后三位 217"></textarea>
+      <div class="field-hint">建议保留至少一个不公开的特征，避免被冒领</div></div>
+  </div>
+  <div class="note-info">☑ 我确认图片与文字仅用于失物匹配，并同意按平台规则处理与删除。</div>
+  <div class="btn-row"><div class="btn btn-plain">存草稿</div><div class="btn btn-primary">发布</div></div>
+</div></body></html>

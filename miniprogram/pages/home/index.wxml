@@ -8,6 +8,7 @@
     <image class="hero-art" src="/assets/lingnan-gate.svg" mode="aspectFit" />
   </view>
 
+<<<<<<< Updated upstream
   <view class="page home-content">
     <button
       id="timetable-entry"
@@ -44,6 +45,31 @@
         <view class="entry-title">校园资讯</view>
         <view class="entry-description">阅读官网动态与通知</view>
       </button>
+=======
+  <view class="page">
+    <view class="tools-section">
+      <view class="section-head"><view class="section-bar"></view><view class="section-title">校园服务</view></view>
+      <view class="tools">
+        <button id="departments-entry" class="tool tool-departments" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看学生组织名单">
+          <image class="tool-icon" src="/assets/departments.svg" mode="aspectFit" />
+          <view class="tool-title">学生部门</view>
+          <view class="tool-description">认识组织，找到联系</view>
+          <view class="tool-bottom"><text class="tool-status">已可查看</text><text class="chevron">›</text></view>
+        </button>
+        <button id="timetable-entry" class="tool tool-timetable" hover-class="pressed" bindtap="openTimetable" aria-label="我的课表，可导入课表文件或手工添加">
+          <image class="tool-icon" src="/assets/timetable.svg" mode="aspectFit" />
+          <view class="tool-title">我的课表</view>
+          <view class="tool-description">导入课表，按周查看</view>
+          <view class="tool-bottom"><text class="tool-status">可导入</text><text class="chevron">›</text></view>
+        </button>
+        <button id="lost-found-entry" class="tool tool-lostfound tool-third" hover-class="pressed" bindtap="openLostFound" aria-label="失物招领，发布或寻找丢失物品">
+          <image class="tool-icon" src="/assets/lost-found.svg" mode="aspectFit" />
+          <view class="tool-title">失物招领</view>
+          <view class="tool-description">发布丢失与拾获，找候选线索</view>
+          <view class="tool-bottom"><text class="tool-status">原型验证中</text><text class="chevron">›</text></view>
+        </button>
+      </view>
+>>>>>>> Stashed changes
     </view>
 
     <view class="news-section">

@@ -52,6 +52,9 @@ Page({
   openDepartments() {
     wx.navigateTo({ url: '/pages/departments/index' });
   },
+  openLostFound() {
+    wx.navigateTo({ url: '/pages/lost-found/index' });
+  },
   openTimetable() {
     wx.navigateTo({ url: '/pages/timetable/index' });
   },

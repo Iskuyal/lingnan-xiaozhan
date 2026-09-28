@@ -1,0 +1,79 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-title">发布信息</view>
+    <view class="nav-sub">丢失或拾获都从这里开始</view>
+  </view>
+
+  <view class="form">
+    <view class="field">
+      <view class="field-label">类型</view>
+      <view class="seg" style="margin:0">
+        <view class="seg-item {{type === 'found' ? 'on' : ''}}" data-type="found" bindtap="switchType">拾获</view>
+        <view class="seg-item {{type === 'lost' ? 'on' : ''}}" data-type="lost" bindtap="switchType">丢失</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label"><text class="req">*</text> 物品类别</view>
+      <view class="filters" style="margin:0">
+        <button
+          wx:for="{{categories}}"
+          wx:key="*this"
+          class="chip {{category === item ? 'on' : ''}}"
+          hover-class="pressed"
+          data-category="{{item}}"
+          bindtap="pickCategory"
+        >{{item}}</button>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label"><text class="req">*</text> 标题</view>
+      <input class="input" value="{{title}}" bindinput="onTitle" maxlength="30" placeholder="例如：丢失一副白色蓝牙耳机" />
+    </view>
+
+    <view class="field">
+      <view class="field-label"><text class="req">*</text> 时间范围</view>
+      <view style="display:flex;gap:16rpx">
+        <picker mode="date" value="{{timeStart}}" end="{{today}}" bindchange="onTimeStart">
+          <view class="input">{{timeStart || '开始日期'}}</view>
+        </picker>
+        <picker mode="date" value="{{timeEnd}}" end="{{today}}" bindchange="onTimeEnd">
+          <view class="input">{{timeEnd || '结束日期'}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label"><text class="req">*</text> 地点区域</view>
+      <input class="input" value="{{locationArea}}" bindinput="onLocation" maxlength="60" placeholder="例如：清远校区 · 图书馆" />
+    </view>
+
+    <view class="field">
+      <view class="field-label"><text class="req">*</text> 公开描述</view>
+      <textarea class="input textarea" value="{{description}}" bindinput="onDescription" maxlength="500" placeholder="外观、发现/丢失的经过等（不要写联系方式）"></textarea>
+      <view class="field-hint">请勿填写手机号、微信号、精确宿舍；联系方式会在发布前被拦截</view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">私密核验特征（仅你可见，用于核验认领人）</view>
+      <textarea class="input textarea" style="min-height:112rpx" value="{{verificationTraits}}" bindinput="onTraits" maxlength="200" placeholder="例如：卡套背面有蓝色贴纸，编号后三位 217"></textarea>
+      <view class="field-hint">建议保留至少一个不公开的特征，避免被冒领</view>
+    </view>
+
+    <view class="note-info">图片上传在原型验证阶段暂未开放；当前发布仅文字信息。</view>
+
+    <view class="field" style="margin-top:24rpx">
+      <view style="display:flex;align-items:center;gap:12rpx" bindtap="onAgree">
+        <text style="font-size:40rpx;line-height:1">{{agree ? '☑' : '☐'}}</text>
+        <text style="font-size:23rpx;color:var(--text-2,#6b5d57);flex:1">我确认图片与文字仅用于失物匹配，并同意按平台规则处理与删除。</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="note" wx:if="{{error !== ''}}">{{error}}</view>
+
+  <view class="btn-row">
+    <button class="btn btn-primary {{submitting ? 'btn-disabled' : ''}}" bindtap="submit">发布</button>
+  </view>
+</view>

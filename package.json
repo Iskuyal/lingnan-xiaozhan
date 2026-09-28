@@ -11,7 +11,8 @@
     "probe:wechat": "node scripts/probe-wechat.cjs",
     "smoke:ai": "node scripts/smoke-ai.cjs",
     "smoke:settings": "node scripts/smoke-settings.cjs",
-    "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs"
+    "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs",
+    "eval:lost-found": "node scripts/eval-lost-found.cjs"
   },
   "engines": {
     "node": ">=22"

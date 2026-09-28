@@ -1,0 +1,27 @@
+/* 设计令牌：与 miniprogram/app.wxss 同名同值（失物招领设计只用这些）。 */
+:root {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #94867f;
+
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+
+  --r-chip: 12rpx;
+  --r-control: 20rpx;
+  --r-card: 24rpx;
+  --r-panel: 32rpx;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+}
