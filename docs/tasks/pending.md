@@ -97,8 +97,8 @@
 | I4 | 删除云端遗留探针函数 `xlsx-cdn-probe` | 云开发控制台删除并保存结果。它不属于 SEC-01 至 SEC-05 的业务入口 | [项目状态](../status.md)；[安全整改证据](../evidence/security-remediation/README.md) |
 | I5 | Ticket 10 每日增量在 10 栏目下每批约 3 批但每日只触发 1 次 | **这条不改代码就不算完成**：减少 `INCREMENTAL_PAGES`、增加一次每日触发、或栏目轮转，三选一 | [Ticket 10](tickets/10-campus-rag-qa.md) |
 | I6 | `date + id` 组合索引未建 | 按 Ticket 04 的索引建议建立 | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md) |
-| I7 | AI 资讯实测报告尚未进 `main` | 报告在 `docs/ai-news-poc` 分支，结论为「AI 资讯不建议进首版」（8 篇真实文章、43 次真实调用，行动项抽取 8/8 为「无」，防幻觉 8/8）。采纳后应落进仓库并关闭 Issue #16，避免重复讨论 | [Issue #16](https://github.com/Iskuyal/wx-match/issues/16) |
-| I8 | 已合并分支未清理 | 与 `main` 已无内容差异、可删的远端分支共 10 条：`chore/dependency-pin`、`codex/data-usage-and-status`、`codex/security-audit-fixes`、`codex/security-deploy-evidence`、`docs/cloud-recheck-2026-09-24`、`docs/pending-work-list`、`feat/department-qa-guard-hardening`、`feat/glass-theme`、`feat/timetable-ui-rework`、`test/cloud-retest-nocredits`。`docs/ai-news-poc` 是**唯一**仍带未合并内容的分支（见 I7）。`test/cloud-retest-nocredits` 的两条提交已由 PR #48 / #49 进入 `main`，`ahead_by` 非 0 是重放出来的旧提交，内容无差异 | `gh api repos/Iskuyal/wx-match/compare/main...<分支>` 逐个核对；删远端分支前再确认一次 |
+| I7 | AI 资讯 PoC 报告合入（已完成） | 实测报告已由 PR #19 合入 `main`；脚本与原始数据按原作者要求只留在 `docs/ai-news-poc` 分支，报告第七节明确要求引用期间保留该分支。是否采纳「AI 资讯不进首版」及 Issue #16 的收口是独立的人为决定，不影响报告归档已完成的事实 | [实测报告](../reference/ai-news-poc.md)；[Issue #16](https://github.com/Iskuyal/wx-match/issues/16) |
+| I8 | 已合并旧分支清理（2026-09-28 完成） | 逐支确认主线祖先关系；`test/cloud-retest-nocredits` 的两条重放提交经 `git cherry` 确认为补丁等价。旧远端分支 15 条已删除；安全审计 PR #68 与部门动态 RAG PR #69 均已合入，相关远端分支也已删除。远端仅保留 `main` 与有独立原始证据的 `docs/ai-news-poc`。原工作区仍在 `codex/review-fixes` 本地分支上，因有未提交文档改动而保留，不计为待清理远端分支 | [PR #68](https://github.com/Iskuyal/wx-match/pull/68)；[PR #69](https://github.com/Iskuyal/wx-match/pull/69) |
 
 ## 四、明确不在本次范围
 
