@@ -78,6 +78,7 @@ function asPost(item: Record<string, unknown>): PostView | null {
   if (typeof item.postId !== 'string' || typeof item.title !== 'string') return null;
   return {
     postId: item.postId,
+    version: typeof item.version === 'number' ? item.version : 1,
     type: item.type === 'lost' || item.type === 'found' ? item.type : 'lost',
     category: typeof item.category === 'string' ? item.category : '',
     title: item.title,
@@ -153,14 +154,30 @@ export interface PostInput {
   images: string[];
   verificationTraits: string;
   agree: boolean;
+  /** 发布(open)或存草稿(draft);默认发布。 */
+  status?: 'open' | 'draft';
 }
 
 export async function createPost(input: PostInput): Promise<LostFoundResult> {
-  return call('createPost', { input });
+  return call('createPost', { input, status: input.status ?? 'open' });
 }
 
-export async function updatePost(postId: string, input: { title: string; description: string; version: number }): Promise<LostFoundResult> {
+export interface PostUpdateInput {
+  title: string;
+  description: string;
+  timeRange: TimeRange;
+  locationArea: string;
+  version: number;
+  /** 草稿转发布时传 open。 */
+  status?: 'open';
+}
+
+export async function updatePost(postId: string, input: PostUpdateInput): Promise<LostFoundResult> {
   return call('updatePost', { postId, input });
+}
+
+export async function feedbackMatch(matchId: string, feedback: 'helpful' | 'irrelevant' | 'misleading'): Promise<LostFoundResult> {
+  return call('feedbackMatch', { matchId, feedback });
 }
 
 export async function closePost(postId: string, reason: string): Promise<LostFoundResult> {

@@ -6,6 +6,7 @@
  */
 import { MatchRecord, PostRecord, LostFoundResponse } from './types';
 import { isPostActive } from './state';
+import { record } from './audit';
 import { fail, ok } from './posts';
 
 const POSTS = 'lost_found_posts';
@@ -101,9 +102,15 @@ export async function listMatches(
     return fail('not_found', '帖子不存在');
   }
   const result = await db.collection(MATCHES).where({ sourcePostId: postId }).get();
-  const rows = (result.data as MatchRecord[])
+  let rows = (result.data as MatchRecord[])
     .filter((match) => match.expiresAt > ctx.now)
     .sort((a, b) => a.rank - b.rank);
+  // 生产路径接线:没有有效候选时先跑一次规则召回(幂等——召回结果落库带版本与失效时间)。
+  if (rows.length === 0) {
+    const recall = await ruleRecall(db, postId, ctx, ownerOpenId);
+    if (!recall.ok) return recall;
+    rows = (recall.data.matches as MatchRecord[]).slice();
+  }
   return ok({ matches: rows });
 }
 
@@ -112,14 +119,29 @@ export async function feedbackMatch(
   matchId: string,
   feedback: 'helpful' | 'irrelevant' | 'misleading',
   ctx: { now: number },
+  openid?: string,
 ): Promise<LostFoundResponse> {
   if (feedback !== 'helpful' && feedback !== 'irrelevant' && feedback !== 'misleading') {
     return fail('invalid_request', '反馈类型非法');
   }
+  let match: (MatchRecord & { _id: string }) | null = null;
   try {
-    await db.collection(MATCHES).doc(matchId).update({ data: { feedback } });
+    const doc = await db.collection(MATCHES).doc(matchId).get();
+    match = doc.data as MatchRecord & { _id: string };
   } catch {
     return fail('not_found', '候选不存在');
   }
+  // 归属校验:只有候选所属帖子的发布者可以给反馈(领域权限矩阵)。
+  if (openid !== undefined) {
+    try {
+      const sourceDoc = await db.collection(POSTS).doc(match.sourcePostId).get();
+      const source = sourceDoc.data as PostRecord;
+      if (source.ownerOpenId !== openid) return fail('forbidden', '只能反馈自己帖子的候选');
+    } catch {
+      return fail('not_found', '候选来源帖子不存在');
+    }
+  }
+  await db.collection(MATCHES).doc(matchId).update({ data: { feedback } });
+  await record(db, { actorOpenId: openid ?? '', action: 'feedbackMatch', postId: match.sourcePostId, summary: '候选反馈:' + feedback });
   return ok({ matchId, feedback });
 }

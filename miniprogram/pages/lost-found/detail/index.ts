@@ -88,7 +88,7 @@ Page({
   goPublishEdit() {
     const post = this.data.post;
     if (post === null) return;
-    wx.navigateTo({ url: '/pages/lost-found/publish/index' });
+    wx.navigateTo({ url: `/pages/lost-found/publish/index?postId=${encodeURIComponent(post.postId)}` });
   },
 
   closeCurrent() {

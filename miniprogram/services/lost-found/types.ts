@@ -23,6 +23,8 @@ export interface TimeRange {
 /** 公开帖子视图(服务端 publicView 的形状)。 */
 export interface PostView {
   postId: string;
+  /** 乐观锁版本,编辑时回传。 */
+  version: number;
   type: PostType;
   category: string;
   title: string;

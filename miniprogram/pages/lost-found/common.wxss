@@ -36,7 +36,7 @@
 .badge-warn { background: var(--warn-soft, rgba(255,244,228,0.86)); color: var(--warn, #9a5b1e); }
 .card-title { font-size: 29rpx; font-weight: 600; margin-top: 12rpx; }
 .card-desc { font-size: 24rpx; color: var(--text-2, #6b5d57); margin-top: 8rpx; line-height: 1.5; }
-.card-meta { font-size: 22rpx; color: var(--text-3, #94867f); margin-top: 16rpx; display: flex; gap: 20rpx; flex-wrap: wrap; }
+.card-meta { font-size: 22rpx; color: var(--text-3, #746760); margin-top: 16rpx; display: flex; gap: 20rpx; flex-wrap: wrap; }
 
 .form { margin: 24rpx 32rpx 0; }
 .field { margin-bottom: 24rpx; }
@@ -48,7 +48,7 @@
   font-size: 26rpx; min-height: 44rpx;
 }
 .textarea { min-height: 176rpx; }
-.field-hint { font-size: 22rpx; color: var(--text-3, #94867f); margin-top: 8rpx; }
+.field-hint { font-size: 22rpx; color: var(--text-3, #746760); margin-top: 8rpx; }
 .field-error { font-size: 22rpx; color: var(--warn, #9a5b1e); margin-top: 8rpx; }
 
 .btn-row { margin: 32rpx 32rpx 0; display: flex; gap: 20rpx; }
@@ -65,14 +65,14 @@
 
 .empty { text-align: center; padding: 96rpx 32rpx; }
 .empty-icon { font-size: 80rpx; opacity: 0.4; }
-.empty-text { font-size: 26rpx; color: var(--text-3, #94867f); margin-top: 16rpx; }
+.empty-text { font-size: 26rpx; color: var(--text-3, #746760); margin-top: 16rpx; }
 
 .evidence { margin-top: 16rpx; font-size: 24rpx; line-height: 1.6; }
 .evidence-line { margin-top: 6rpx; }
 .evidence-tag { font-weight: 700; margin-right: 8rpx; }
 .evidence-sim { color: #2e6b3e; }
 .evidence-con { color: var(--brand, #c41c23); }
-.evidence-unc { color: var(--text-3, #94867f); }
+.evidence-unc { color: var(--text-3, #746760); }
 
 .claim-row { display: flex; align-items: center; gap: 16rpx; }
 .claim-body { flex: 1; }

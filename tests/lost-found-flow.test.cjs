@@ -118,13 +118,27 @@ test('认领：不能认领自己的帖子;重复申请被拒(同帖同人仅一
   assert.equal(duplicate.failureClass, 'conflict');
 });
 
-test('认领：核验回答与私密特征做受控比较,匹配提示但不下定论', async () => {
-  const { db, post } = await createPost();
+test('认领：受控比较只在服务端发生,不下定论也不回传特征原文', async () => {
+  const { db, stores, post } = await createPost();
   const hit = await claims.submitClaim(db, OTHER, post.postId, { relation: '本人遗失', evidence: '充电仓背面贴蓝色圆形贴纸' }, { now: NOW });
   assert.equal(hit.ok, true);
-  // 受控比较结果只提示「与发布者的未公开特征相符」,不回传特征原文。
-  assert.equal(hit.data.traitsMatched, true);
-  assert.equal(JSON.stringify(hit.data).includes('蓝色圆形贴纸'), false, '比较结果不得回传私密原文');
+  // 受控比较结果不进响应(否则等于给认领人穷举探测隐藏特征的 oracle),只写审计。
+  assert.equal(hit.data.traitsMatched, undefined, '比较结果不得回传');
+  assert.equal(JSON.stringify(hit.data).includes('蓝色圆形贴纸'), false, '特征原文不得回传');
+  const events = allRows(stores, 'lost_found_audit_events').map((event) => event.summary);
+  assert.ok(events.some((summary) => summary.includes('特征相符')), '比较结果写审计留痕');
+});
+
+test('认领：发布者要求补充后,认领人可补充并回到待核验(补充闭环)', async () => {
+  const { db, post } = await createPost();
+  const submitted = await claims.submitClaim(db, OTHER, post.postId, { relation: '本人遗失', evidence: '耳机是白色的' }, { now: NOW });
+  const claimId = submitted.data.claimId;
+  await claims.reviewClaim(db, OWNER, claimId, 'needs_more_info', '请补充独有特征', { now: NOW });
+  const again = await claims.submitClaim(db, OTHER, post.postId, { relation: '本人遗失', evidence: '充电仓背面贴蓝色圆形贴纸' }, { now: NOW });
+  assert.equal(again.ok, true, '需补充状态允许本人补充');
+  assert.equal(again.data.claimId, claimId, '补充复用同一条申请');
+  const after = (await claims.reviewClaim(db, OWNER, claimId, 'pending', '', { now: NOW }));
+  assert.equal(after.ok, false, '补充后已是 pending,不能再从 pending 拨 pending');
 });
 
 test('认领处理：非发布者越权拒绝;状态非法迁移拒绝;通过后双方确认交接才结案', async () => {

@@ -74,6 +74,7 @@
   <view class="note" wx:if="{{error !== ''}}">{{error}}</view>
 
   <view class="btn-row">
-    <button class="btn btn-primary {{submitting ? 'btn-disabled' : ''}}" bindtap="submit">发布</button>
+    <button class="btn btn-plain" bindtap="saveDraft">存草稿</button>
+    <button class="btn btn-primary {{submitting ? 'btn-disabled' : ''}}" bindtap="submit">{{editIsDraft ? '发布草稿' : '发布'}}</button>
   </view>
 </view>

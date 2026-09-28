@@ -47,7 +47,7 @@ export function todayString(now: Date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-function validTimeRange(value: unknown): value is TimeRange {
+export function validTimeRange(value: unknown): value is TimeRange {
   if (value === null || typeof value !== 'object') return false;
   const range = value as Record<string, unknown>;
   if (!isDateString(range.start) || !isDateString(range.end)) return false;
