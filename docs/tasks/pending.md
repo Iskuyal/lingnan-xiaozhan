@@ -92,7 +92,7 @@
 
 | # | 事项 | 判据 | 依据 |
 | --- | --- | --- | --- |
-| I1 | 导入页缺少 `wx.chooseMessageFile` 的存在性兜底 | 本地存在性检查与页面回归测试通过；本轮开发者工具实际 API 可用，因此“API 缺失”原生弹窗分支未在该模拟器触发，真机兼容性仍待验 | [云端复测](../evidence/cloud-recheck/README.md)；`miniprogram/pages/timetable/import/index.ts` |
+| I1 | 导入页的 `wx.chooseMessageFile` 存在性兜底（代码已完成，只剩真机分支） | 兜底已实现（`miniprogram/pages/timetable/import/index.ts` 的 `chooseFile()`：API 缺失时弹「暂不支持文件导入」并给出截图 / 手工录入两个出口，不调用云函数），`tests/timetable-pages.test.cjs` 的「缺少聊天记录选文件 API 时说明替代方案并留在引导页」覆盖该分支并通过。**模拟器里 API 实际可用，所以这条只在真机上才可能触发**——真机兼容性仍待验，不能用单测替代 | `miniprogram/pages/timetable/import/index.ts`、`tests/timetable-pages.test.cjs` |
 | I2 | 维护者白名单拒绝仍沿用 `invalid_request` 分类 | 2026-09-25 `npm run probe:wechat` 实测识别 `maintainer_not_allowlisted` 并提示核对 `AI_ADMIN_OPENIDS`；云函数分类与用户文案未改，是否新增独立权限分类仍待定口径 | 同上；`cloudfunctions/ai/access.ts`、`scripts/probe-wechat.cjs` |
 | I3 | `npm run verify:wechat` 的选文件 API 缺失分支 | 本轮 API 实际可用，Excel 错误文件、仓库样本放弃、无学分合成版式均已走过。**2026-09-26 复跑 24 项全过**、`verification.json` 重新生成（`result=passed`，`realDevice=false`）；09-25 那次「资讯阶段 automator timeout」是开发者工具长跑后退化，重开工具即恢复，不是脚本缺陷。缺失 API 时的 `partial` 分支仍未在模拟器实测 | [云端复测](../evidence/cloud-recheck/README.md) |
 | I4 | 删除云端遗留探针函数 `xlsx-cdn-probe` | 云开发控制台删除并保存结果。它不属于 SEC-01 至 SEC-05 的业务入口 | [项目状态](../status.md)；[安全整改证据](../evidence/security-remediation/README.md) |
