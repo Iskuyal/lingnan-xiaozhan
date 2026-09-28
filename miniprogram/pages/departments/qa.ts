@@ -13,9 +13,11 @@
  */
 import {
   ChatMessage,
+  DEPARTMENT_QA_FEATURE,
   DepartmentActivityCitation,
   MAX_HISTORY,
   UNCHECKED_SAFETY_NOTE,
+  chatEvent,
   chatMessages,
   safetyChecked,
   safetyNoteFor,
@@ -626,12 +628,26 @@ export function guardTurn(answer: string, departmentId: string, question = ''): 
  *
  * 守卫替换的是展示给学生的回答，不能改写送进模型的上下文——否则模型会以为
  * 自己说过「官网未公布」，下一轮追问就容易顺着这句假上下文走。
+ *
+ * `system` 必传并参与输入预算：历史累计到超过检测窗口时，最旧的一条先被剪掉
+ * （见 `chatMessages`）。故意不给默认值——漏传会把「装不下」留给服务端拒绝。
  */
-export function historyMessages(history: ChatTurn[]): ChatMessage[] {
+export function historyMessages(history: ChatTurn[], system: string): ChatMessage[] {
   return chatMessages(history.map((turn) => ({
     role: turn.role,
     text: turn.modelText === undefined ? turn.text : turn.modelText,
-  })));
+  })), system);
+}
+
+/**
+ * 07 部门问答的一次请求事件。
+ *
+ * 两个部门页面（列表页与详情页）都从这里取事件：`system` 与按预算剪过的历史必须配对，
+ * 这个不变量只留一处，页面里不再各拼一次（漏配的后果是长对话被服务端整次拒绝）。
+ */
+export function qaChatEvent(history: ChatTurn[]): Record<string, unknown> {
+  const system = buildSystemPrompt();
+  return chatEvent(DEPARTMENT_QA_FEATURE, system, historyMessages(history, system));
 }
 
 // ---------------------------------------------------------------------------

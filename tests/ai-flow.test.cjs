@@ -808,18 +808,152 @@ test('长文本按窗口逐段送检：违规出现在第二段同样被拒', as
   assert.equal(harness.cloud.msgSecCheck.length, 2, '两段都要送检，不能只检第一段');
 });
 
-test('超过分片上限的长文本：检查过的部分通过，但标 checked=false 并写明范围', async () => {
+// ---------- 检测窗口：输入与输出都不能超过「一次能检完」的范围 ----------
+// 内容安全审计 CT-01 / CT-02：窗口外的文字既不能送模型，也不能上屏。
+
+test('输入超过检测窗口：按参数错误拒绝，窗口外的文字不送模型、不消耗检测配额', async () => {
   const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
   const long = '好'.repeat(8000);
   const result = await harness.main(chatEvent({
-    messages: [0, 1, 2, 3].map(() => ({ role: 'user', text: long })),
+    messages: [0, 1, 2, 3, 4].map(() => ({ role: 'user', text: long })),
   }));
-  assert.equal(result.ok, true, '前 2 万字没发现问题就不拦，但不能说「全检过了」');
+  assert.equal(result.ok, false, '输入超出检测窗口时不能带着「前 2 万字检过」的结论继续');
+  assert.equal(result.failureClass, 'invalid_request');
+  const expected = '你是课表助手'.length + 8000 * 5 + 5;
+  assert.ok(result.detail.includes(String(expected)), `要写明实际字数 ${expected}：${result.detail}`);
+  assert.ok(result.message.includes('精简'), `要给用户可执行的下一步：${result.message}`);
+  assert.equal(harness.cloud.msgSecCheck.length, 0, '必然被拒的请求不该消耗每日检测配额');
+  assert.equal(harness.http.length, 0, '有文字没检过就不能进模型请求');
+  assert.equal(result.usage, null, '没有发生任何子调用，用量必须为空（这是「没花配额」的直接证据）');
+  assert.equal(result.safety, null, '拒绝发生在检测之前，不该有检测结论');
+});
+
+test('窗口内的输入逐段检完：最新一轮提问的最后一个字也要送检', async () => {
+  const seen = [];
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: (params) => {
+        seen.push(params.content);
+        return Promise.resolve({ errCode: 0 });
+      },
+    }),
+    respond: () => openAiTextResponse('回答'),
+  });
+  const marker = '【尾部标记】';
+  const body = '好'.repeat(6000);
+  const result = await harness.main(chatEvent({
+    messages: [
+      { role: 'assistant', text: body },
+      { role: 'user', text: body + marker },
+    ],
+  }));
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  assert.equal(result.safety.checked, true, '窗口内的输入必须全检');
+  assert.ok(seen.some((content) => content.includes(marker)), '最新一轮提问在末尾，必须落在检测范围内');
+});
+
+test('输出超过 2 万字：分片检到最后一个字才返回，不再「只检前一段」', async () => {
+  const seen = [];
+  const marker = '【尾部标记】';
+  const harness = createHarness({
+    security: wechatOk({
+      msgSecCheck: (params) => {
+        seen.push(params.content);
+        return Promise.resolve({ errCode: 0 });
+      },
+    }),
+    respond: () => openAiTextResponse('好'.repeat(25000) + marker),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, true, `应成功：${result.message}`);
+  assert.ok(seen.some((content) => content.includes(marker)), '输出的尾部也要送检');
+  assert.equal(result.safety.checked, true, '检全了才能报 checked=true');
+  assert.ok(
+    !result.warnings.some((warning) => warning.includes('checked=false')),
+    `不该再有「只检了前一段」的告警：${result.warnings.join(' / ')}`,
+  );
+});
+
+test('输出超过输出侧分片上限：不返回未经检测的内容', async () => {
+  const harness = createHarness({
+    security: wechatOk(),
+    respond: () => openAiTextResponse('好'.repeat(45000)),
+  });
+  const result = await harness.main(chatEvent());
+  assert.equal(result.ok, false, '超出检测上限的输出不能上屏');
+  assert.equal(result.text, '', '一个字都不返回');
+  // 模型这次是成功返回的，失败的是「本地没把这段输出检完」——与「内容安全检测不可用」同族，
+  // 记成 model_unavailable 会把这类事件混进模型/中转的失败统计。
+  assert.equal(result.failureClass, 'internal');
+});
+
+test('部门动态注入不会挤破客户端留出的余量', async () => {
+  // 客户端按 MAX_INPUT_CHARS - 4000 自剪；服务端命中动态时还会往 system 注入检索结果，
+  // 这段文字同样占检测窗口。这里用真实语料把「注入 < 4000」钉住：
+  // 语料变长而客户端留白不变时，这条会先失败，而不是等用户在长对话里撞上服务端拒绝。
+  const aiService = require('node:fs').readFileSync('miniprogram/services/ai.ts', 'utf8');
+  const clientMax = Number(/export const MAX_INPUT_CHARS = (\d+);/u.exec(aiService)[1]);
+  const headroom = Number(/export const HISTORY_INPUT_BUDGET = MAX_INPUT_CHARS - (\d+);/u.exec(aiService)[1]);
+  assert.equal(clientMax, 20000, '客户端上限要与服务端 2000×10 的窗口一致');
+  assert.ok(headroom >= 1000, `客户端留白太小：${headroom}`);
+
+  const corpus = loadDepartmentCorpusForTest();
+  const base = '你是校园学生部门问答助手';
+  let worst = 0;
+  let worstDepartment = '';
+  for (const department of corpus.departments) {
+    const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
+    await harness.main(chatEvent({
+      feature: 'department-qa',
+      system: base,
+      messages: [{ role: 'user', text: `${department.name}最近有什么动态` }],
+    }));
+    if (harness.http.length === 0) continue; // 没有注入时不会调用模型
+    const body = JSON.parse(harness.http[0].body);
+    const injected = body.messages.find((message) => message.role === 'system').content;
+    const extra = injected.length - base.length;
+    if (extra > worst) {
+      worst = extra;
+      worstDepartment = department.name;
+    }
+  }
+  assert.ok(worst > 0, '至少要有一个组织命中注入，否则这条守不住任何东西');
+  assert.ok(worst < headroom, `注入最长 ${worst} 字（${worstDepartment}），超过客户端留白 ${headroom}`);
+});
+
+test('输入上限的边界：刚好 2 万字通过且全检，多一个字就拒绝', async () => {
+  // 客户端 `miniprogram/services/ai.ts` 的 MAX_INPUT_CHARS 与这里同源，边界改变要两边一起改。
+  // 单条消息另有 8000 字上限，所以把 19991 字摊在三条消息里：
+  // system '你是课表助手'(6) + 3 个分隔符(3) + 19991 = 20000。
+  const messages = [
+    { role: 'assistant', text: '好'.repeat(8000) },
+    { role: 'user', text: '好'.repeat(8000) },
+    { role: 'user', text: '好'.repeat(3991) },
+  ];
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
+  const result = await harness.main(chatEvent({ messages }));
+  assert.equal(result.ok, true, `刚好 20000 字应通过：${result.message}`);
+  assert.equal(result.safety.checked, true, '整段都在窗口内，必须全检');
+
+  const overHarness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
+  const overMessages = messages.map((message, index) => (
+    index === messages.length - 1 ? { ...message, text: `${message.text}多` } : message
+  ));
+  const overResult = await overHarness.main(chatEvent({ messages: overMessages }));
+  assert.equal(overResult.ok, false, '多一个字就要拒绝，不能靠「检一部分」放行');
+  assert.equal(overResult.failureClass, 'invalid_request');
+  assert.equal(overHarness.http.length, 0, '被拒的输入不进模型');
+});
+
+test('moderateText 动作：超窗口文本仍返回部分检测报告（诊断入口，不面向模型与屏幕）', async () => {
+  const harness = createHarness({ security: wechatOk() });
+  const result = await harness.main({ action: 'moderateText', text: `${'好'.repeat(21000)}违规词` });
+  assert.equal(result.ok, true);
   assert.equal(result.safety.checked, false, '没检全必须标记');
   assert.ok(result.safety.detail.includes('仅检测了前 20000 字'), `要写明检测范围：${result.safety.detail}`);
   assert.ok(result.safety.detail.includes('未检测'), '要写明未检测的部分');
   assert.ok(result.warnings.some((warning) => warning.includes('checked=false')), '要进 warnings');
-  assert.equal(harness.cloud.msgSecCheck.length, 11, '10 段输入 + 1 段输出');
+  assert.equal(harness.cloud.msgSecCheck.length, 10, '按分片上限检满 10 段');
 });
 
 // ---------- 用量未知的审核调用 ----------

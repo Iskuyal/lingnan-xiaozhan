@@ -4,7 +4,7 @@ import {
   NOT_FOUND_TITLE,
   type DepartmentDetailView,
 } from '../../../services/departments';
-import { callAi, chatEvent, DEPARTMENT_QA_FEATURE, transportMessage, userMessage } from '../../../services/ai';
+import { callAi, transportMessage, userMessage } from '../../../services/ai';
 import {
   ChatTurn,
   QA_OFFLINE_NOTE,
@@ -12,12 +12,11 @@ import {
   QaOption,
   WELCOME_TEXT,
   appendTurn,
-  buildSystemPrompt,
   conversationOf,
   copyActivitySourceUrl,
   guardTurn,
-  historyMessages,
   markQaDismissed,
+  qaChatEvent,
   qaDismissed,
   qaPanelPatch,
   resetConversation,
@@ -134,7 +133,7 @@ Page({
     appendTurn(departmentId, { role: 'user', text });
     const history = conversationOf(departmentId);
     this.setData({ qaMessages: history, qaInput: '', qaSending: true, qaError: '' });
-    return callAi(chatEvent(DEPARTMENT_QA_FEATURE, buildSystemPrompt(), historyMessages(history)))
+    return callAi(qaChatEvent(history))
       .then((result) => {
         if (!result.ok) {
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
