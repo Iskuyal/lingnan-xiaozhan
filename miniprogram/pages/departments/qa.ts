@@ -626,12 +626,14 @@ export function guardTurn(answer: string, departmentId: string, question = ''): 
  *
  * 守卫替换的是展示给学生的回答，不能改写送进模型的上下文——否则模型会以为
  * 自己说过「官网未公布」，下一轮追问就容易顺着这句假上下文走。
+ *
+ * `system` 参与输入预算：历史累计到超过检测窗口时，最旧的一条先被剪掉（见 `chatMessages`）。
  */
-export function historyMessages(history: ChatTurn[]): ChatMessage[] {
+export function historyMessages(history: ChatTurn[], system = ''): ChatMessage[] {
   return chatMessages(history.map((turn) => ({
     role: turn.role,
     text: turn.modelText === undefined ? turn.text : turn.modelText,
-  })));
+  })), system);
 }
 
 // ---------------------------------------------------------------------------

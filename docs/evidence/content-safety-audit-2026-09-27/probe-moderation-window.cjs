@@ -7,9 +7,15 @@
  *   npm run build && node docs/evidence/content-safety-audit-2026-09-27/probe-moderation-window.cjs
  *
  * 三个探针的结论都写在 docs/review/content-safety-audit-2026-09-27.md：
- * - 探针 1：输入侧——4 万字请求只有前 2 万字过检，末尾标记从未送检却进了模型请求体；
- * - 探针 2：输出侧（chat）——模型输出 2.5 万字时尾部 5001 字未过检即返回给客户端；
- * - 探针 3：输出侧（vision 分带）——6 带合并 30737 字，尾部 10731 字未过检即返回。
+ * - 探针 1：输入侧——标记落在最后一条消息末尾，超出检测窗口；
+ * - 探针 2：输出侧（chat）——模型输出 2.5 万字，标记落在末尾；
+ * - 探针 3：输出侧（vision 分带）——6 带合并约 3 万字，标记落在末尾。
+ *
+ * **两个口径分别对应修复前后**（2026-09-28 修复 CT-01/CT-02 后重跑）：
+ * - 修复前：超窗口的输入带着 `checked=false` 继续进模型；超窗口的输出尾部未过检就返回客户端；
+ * - 修复后：输入超窗口按 `invalid_request` 拒绝（不进模型、不花检测配额）；
+ *   输出超窗口的分片全检（`checked=true`、无 `checked=false` 告警），超过 4 万字才失败且不返回内容。
+ * 判定看三行：请求 ok / 模型调用次数 / 未检测字符数，以及标记是否出现。
  */
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -18,7 +24,7 @@ const REPO = path.resolve(__dirname, '../../..');
 const { createHarness, openAiTextResponse } = require(path.join(REPO, 'tests/ai-harness.cjs'));
 
 const MARKER = '【违规标记】';
-/** 单条消息上限 8000 字（ai/index.ts:68），用 5 条拼出 4 万字。 */
+/** 单条消息上限 8000 字（ai/index.ts），探针 1 用 5 条拼出 4 万字。 */
 const MSG_CHARS = 8000;
 
 /** 记录每次送检的文本，用于判断标记有没有真的被检过。 */
@@ -38,6 +44,23 @@ function report(title, lines) {
   console.log('');
 }
 
+/** 送进模型的请求体（审核接口的请求不算）。 */
+function modelBodies(harness) {
+  return harness.http.filter((row) => !row.url.includes('/moderations')).map((row) => row.body);
+}
+
+/**
+ * 上屏文本里**没被任何一次送检覆盖**的字符数。
+ * 按「送检片段是否为上屏文本的子串」判定，而不是拿总字符数相减——
+ * 相减会把输入检测的字符算进来，得出负数这类看不出问题的数字。
+ */
+function uncheckedChars(seen, text) {
+  const covered = seen
+    .filter((chunk) => chunk !== '' && text.includes(chunk))
+    .reduce((total, chunk) => total + chunk.length, 0);
+  return Math.max(0, text.length - covered);
+}
+
 /** 探针 1：输入侧。标记落在最后一条消息末尾，远超 2 万字检测窗口。 */
 async function probeInput() {
   const seen = [];
@@ -53,17 +76,17 @@ async function probeInput() {
     { role: 'user', text: '好'.repeat(MSG_CHARS - MARKER.length) + MARKER },
   ];
   const result = await harness.main({ action: 'chat', feature: 'audit', messages });
-  const modelBody = harness.http.map((row) => row.body).join('\n');
+  const bodies = modelBodies(harness);
   const carried = messages.reduce((total, message) => total + message.text.length, 0);
   const checkedChars = seen.reduce((total, text) => total + text.length, 0);
 
   report('探针 1：输入侧', [
     `请求 ok = ${result.ok} ｜failureClass = ${JSON.stringify(result.failureClass)}`,
-    `safety.checked = ${result.safety && result.safety.checked}`,
-    `msgSecCheck 调用次数 = ${seen.length} ｜累计送检字符 = ${checkedChars}`,
+    `模型调用次数 = ${bodies.length} ｜msgSecCheck 次数 = ${seen.length} ｜累计送检字符 = ${checkedChars}`,
+    `请求携带字符数 = ${carried}`,
     `  检测过的文本里出现标记 = ${seen.some((text) => text.includes(MARKER))}`,
-    `  送模型的请求体里出现标记 = ${modelBody.includes(MARKER)}`,
-    `  请求携带字符数 = ${carried} ｜未检测却进了模型的字符数 = ${carried - checkedChars}`,
+    `  送模型的请求体里出现标记 = ${bodies.some((body) => body.includes(MARKER))}`,
+    `  safety.checked = ${result.safety === null ? null : result.safety.checked}`,
   ]);
 }
 
@@ -75,20 +98,19 @@ async function probeOutput() {
     respond: () => openAiTextResponse('好'.repeat(25000) + MARKER),
   });
   const result = await harness.main({ action: 'chat', feature: 'audit', messages: [{ role: 'user', text: '随便问一句' }] });
-  const checkedChars = seen.reduce((total, text) => total + text.length, 0);
 
   report('探针 2：输出侧（chat）', [
     `请求 ok = ${result.ok} ｜failureClass = ${JSON.stringify(result.failureClass)}`,
-    `safety.checked = ${result.safety && result.safety.checked}`,
-    `msgSecCheck 调用次数 = ${seen.length}（含输入的 1 次）`,
+    `safety.checked = ${result.safety === null ? null : result.safety.checked}`,
+    `msgSecCheck 次数 = ${seen.length}（含输入的 1 次）`,
     `  检测过的文本里出现标记 = ${seen.some((text) => text.includes(MARKER))}`,
     `  返回给客户端的 text 里出现标记 = ${result.text.includes(MARKER)}`,
-    `  返回给客户端的 text 长度 = ${result.text.length} ｜未检测字符数 = ${result.text.length - checkedChars}`,
+    `  返回给客户端的 text 长度 = ${result.text.length} ｜未检测字符数 = ${uncheckedChars(seen, result.text)}`,
     `  warnings = ${JSON.stringify(result.warnings)}`,
   ]);
 }
 
-/** 探针 3：输出侧（vision 分带）。6 带各返回 20 门课，合并后超窗口。 */
+/** 探针 3：输出侧（vision 分带）。6 带各返回 20 门课，合并后超输入窗口。 */
 async function probeVision() {
   const openid = 'test-admin-openid';
   const hash = crypto.createHash('sha256').update(openid).digest('hex').slice(0, 16);
@@ -132,14 +154,13 @@ async function probeVision() {
     messages: [{ role: 'user', text: '识别这张课表' }],
   });
   const checkedChars = seen.reduce((total, text) => total + text.length, 0);
-  const modelCalls = harness.http.filter((row) => !row.url.includes('/moderations')).length;
 
   report('探针 3：输出侧（vision 分带）', [
     `请求 ok = ${result.ok} ｜failureClass = ${JSON.stringify(result.failureClass)}`,
-    `模型调用次数 = ${modelCalls} ｜msgSecCheck 次数 = ${seen.length} ｜累计送检字符 = ${checkedChars}`,
-    `合并输出长度 = ${result.text.length} ｜未检测字符数 = ${result.text.length - checkedChars}`,
+    `模型调用次数 = ${modelBodies(harness).length} ｜msgSecCheck 次数 = ${seen.length} ｜累计送检字符 = ${checkedChars}`,
+    `合并输出长度 = ${result.text.length} ｜未检测字符数 = ${uncheckedChars(seen, result.text)}`,
     `  合并输出里出现标记 = ${result.text.includes(MARKER)}`,
-    `  safety.checked = ${result.safety && result.safety.checked}`,
+    `  safety.checked = ${result.safety === null ? null : result.safety.checked}`,
   ]);
 }
 

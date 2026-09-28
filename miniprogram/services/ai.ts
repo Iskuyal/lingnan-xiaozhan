@@ -158,13 +158,46 @@ export interface ChatMessage {
 export const MAX_HISTORY = 20;
 
 /**
- * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后。
+ * 服务端一次调用能过检的输入上限（字符），与 ai 云函数 `MAX_INPUT_CHARS` 对齐。
+ *
+ * 服务端只检测前这么多字，超出窗口的输入按参数错误拒绝（未过检的文字不能送模型）。
+ * 两边都要用到这个数：客户端据此自剪历史，服务端据此判定。
+ */
+export const MAX_INPUT_CHARS = 20000;
+
+/**
+ * 客户端自剪预算：比 {@link MAX_INPUT_CHARS} 留出余量——服务端还会把部门动态语料
+ * 注入 `system`，注入文本同样占检测窗口。
+ *
+ * 为什么要客户端剪而不是交给服务端拒：历史累积到超窗口时，服务端只能整次拒绝，
+ * 用户会在对话中途突然收不到回答。剪掉最旧的历史不影响本轮提问，对话还能继续。
+ */
+export const HISTORY_INPUT_BUDGET = 16000;
+
+/** 服务端拼接后的输入长度（`system` 与各条消息用 `\n` 连起来送检）。 */
+function assembledLength(system: string, messages: ChatMessage[]): number {
+  const parts: string[] = [];
+  if (system.trim() !== '') parts.push(system);
+  for (const message of messages) {
+    if (message.text !== '') parts.push(message.text);
+  }
+  return parts.join('\n').length;
+}
+
+/**
+ * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后；
+ * 传了 `system` 时再按 {@link HISTORY_INPUT_BUDGET} 从最旧的一条开始剪，
+ * 保证拼起来不超过服务端的检测窗口（最后一条是本轮提问，永远保留）。
  *
  * 展示用的轮次可能比 `ChatMessage` 多带标记字段（如 07 的 `warning`），
  * 这里只取服务端认识的 `role` / `text` 两个字段，标记不混进送给模型的历史。
  */
-export function chatMessages(history: ChatMessage[]): ChatMessage[] {
-  return history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
+export function chatMessages(history: ChatMessage[], system = ''): ChatMessage[] {
+  let kept = history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
+  while (kept.length > 1 && assembledLength(system, kept) > HISTORY_INPUT_BUDGET) {
+    kept = kept.slice(1);
+  }
+  return kept;
 }
 
 /**

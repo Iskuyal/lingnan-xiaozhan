@@ -129,7 +129,8 @@ Page({
     appendTurn(departmentId, { role: 'user', text });
     const history = conversationOf(departmentId);
     this.setData({ qaMessages: history, qaInput: '', qaSending: true, qaError: '' });
-    return callAi(chatEvent(DEPARTMENT_QA_FEATURE, buildSystemPrompt(), historyMessages(history)))
+    const system = buildSystemPrompt();
+    return callAi(chatEvent(DEPARTMENT_QA_FEATURE, system, historyMessages(history, system)))
       .then((result) => {
         if (!result.ok) {
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
