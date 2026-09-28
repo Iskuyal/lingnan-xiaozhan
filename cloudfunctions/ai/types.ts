@@ -191,6 +191,22 @@ export interface ProbeResult {
 }
 
 /** 统一返回结构。任何动作都返回它，调用方只看 `ok` / `failureClass` / `message`。 */
+/**
+ * 部门动态检索命中的来源条目（chat 动作 department-qa 的检索注入结果）。
+ *
+ * 形状与 cloudfunctions/ai/rag.ts 的 ActivityHit 一致，这里独立声明：
+ * 类型契约层不反向依赖实现模块，rag.ts 的返回直接赋值给本类型。
+ */
+export interface DepartmentActivityCitation {
+  departmentId: string;
+  departmentName: string;
+  title: string;
+  /** 官网文章发布日期，格式 YYYY-MM-DD。 */
+  publishedAt: string;
+  sourceUrl: string;
+  score: number;
+}
+
 export interface AiResponse {
   ok: boolean;
   action: ActionName | '';
@@ -215,6 +231,8 @@ export interface AiResponse {
   capWarning: string;
   /** 非致命问题（如用量记账失败）：调用本身成功，但维护者需要知道。 */
   warnings: string[];
+  /** 部门动态检索注入的引用清单；仅 department-qa 的 chat 动作可能有值，其余恒为空数组。 */
+  citations: DepartmentActivityCitation[];
   /** probe 动作的完整记录；其它动作恒为空。 */
   probe: ProbeRecord | null;
   elapsedMs: number;

@@ -11,7 +11,8 @@
     "probe:wechat": "node scripts/probe-wechat.cjs",
     "smoke:ai": "node scripts/smoke-ai.cjs",
     "smoke:settings": "node scripts/smoke-settings.cjs",
-    "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs"
+    "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs",
+    "eval:department-rag": "node scripts/eval-department-rag.cjs"
   },
   "engines": {
     "node": ">=22"

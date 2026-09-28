@@ -1,5 +1,5 @@
 import { buildDepartmentList, findDepartmentById } from '../../services/departments';
-import { callAi, chatEvent, transportMessage, userMessage } from '../../services/ai';
+import { callAi, chatEvent, DEPARTMENT_QA_FEATURE, transportMessage, userMessage } from '../../services/ai';
 import {
   ChatTurn,
   QA_OFFLINE_NOTE,
@@ -9,6 +9,7 @@ import {
   appendTurn,
   buildSystemPrompt,
   conversationOf,
+  copyActivitySourceUrl,
   guardTurn,
   historyMessages,
   markQaDismissed,
@@ -24,7 +25,7 @@ interface InputEvent {
 }
 
 interface DatasetEvent {
-  currentTarget: { dataset: { id?: string } };
+  currentTarget: { dataset: { id?: string; url?: string } };
 }
 
 /**
@@ -106,6 +107,10 @@ Page({
     if (findDepartmentById(id) !== null) this.setData({ qaDepartmentId: id });
     wx.navigateTo({ url: `/pages/departments/detail/index?id=${id}` });
   },
+  /** 点检索来源条：复制官网原文链接（交互实现收在 qa.ts，见 qa.wxml）。 */
+  copyActivitySource(event: DatasetEvent) {
+    copyActivitySourceUrl(event.currentTarget.dataset.url ?? '');
+  },
   onQaInput(event: InputEvent) {
     const raw = event.detail === undefined ? '' : event.detail.value;
     this.setData({ qaInput: typeof raw === 'string' ? raw : '' });
@@ -124,13 +129,16 @@ Page({
     appendTurn(departmentId, { role: 'user', text });
     const history = conversationOf(departmentId);
     this.setData({ qaMessages: history, qaInput: '', qaSending: true, qaError: '' });
-    return callAi(chatEvent('department-qa', buildSystemPrompt(), historyMessages(history)))
+    return callAi(chatEvent(DEPARTMENT_QA_FEATURE, buildSystemPrompt(), historyMessages(history)))
       .then((result) => {
         if (!result.ok) {
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
           return;
         }
-        appendTurn(departmentId, guardTurn(result.text, departmentId, text));
+        const turn = guardTurn(result.text, departmentId, text);
+        // 检索命中的动态来源挂到这条回答上，模板据此渲染来源条（无命中时不出现）。
+        if (result.citations.length > 0) turn.citations = result.citations;
+        appendTurn(departmentId, turn);
         this.setData({
           qaMessages: conversationOf(departmentId),
           qaSending: false,
