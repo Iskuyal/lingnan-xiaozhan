@@ -202,8 +202,8 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | --- | --- | --- |
 | `action` | `chat` / `vision` / `moderateText` / `moderateImage` / `usage` / `probe` | 必填 |
 | `feature` | 如 `department-qa`、`timetable-screenshot`、`timetable-assistant` | 只用于记账与统计，未知值不影响调用 |
-| `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本） |
-| `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
+| `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本）。没有单独的字符上限，但被下面的**输入总量上限**覆盖：`system` 自己超窗同样按 `invalid_request` 拒绝 |
+| `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字；**与 `system` 拼起来 ≤20000 字**（一次内容安全检测的覆盖上限，超出即 `invalid_request`） |
 | `text` | string | `moderateText` 用（管理员限定的诊断动作）；按 2000 字窗口逐段检测（最多 10 片 = 2 万字），超出部分在报告里写明并置 `checked: false`——**只有这个动作允许不完整检测**，`chat` / `vision` 的输入超窗直接拒绝、输出超窗不返回内容 |
 | `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request`。客户端走 fileID：`wx.cloud.uploadFile` 返回的 `cloud://…` 才叫 fileID，`prepareUpload` 给的裸 cloudPath 不是（传裸路径会被 `downloadFile` 拒绝） |
 | `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束。**分带时 `maxTokens` 会被服务端按本带课程数抬高**（见下一行的 `bands`）：按整张表设的上限装不下较大的带，沿用会把那一带截断，而截断的 JSON 看起来像模型失败 |
@@ -288,10 +288,11 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `model_unavailable` | AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。 | 连接失败、超时（模型 / 内容安全 / 云存储下载都算）、5xx、鉴权失败、返回非 JSON 或空内容、**429 瞬时限流** |
 | `content_rejected` | 文字：内容未通过安全检测，请修改后重试。／图片（`vision` / `moderateImage` 的输入图被拒）：这张图片没有通过内容安全检测，请换一张再试。 | 输入或输出被内容安全适配器判为违规（`risky` / `87014` / `flagged` / `allowed=false`）。**文案按输入类型区分**：文字有「改一改再试」的余地，图片只能换一张；两句话各自独立，可分别用 `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` 覆盖 |
 | `quota_exhausted` | 本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。 | 当月累计成本 ≥ `AI_MONTHLY_CAP_YUAN`，或模型服务返回 **402**（服务商额度/余额不足） |
-| `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断） |
-| `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等 |
+| `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断）；**`system` 与全部消息拼起来超过 `MAX_INPUT_CHARS`（2 万字）**——窗口外的文字测不到，直接拒绝，不消耗检测配额也不进模型 |
+| `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等；**模型输出超过 `MAX_OUTPUT_CHARS`（4 万字）**——本地检不完全部输出，丢弃该回答而不是上屏未检测内容（模型这次是成功返回的，故不归 `model_unavailable`） |
 
 **默认文案是可供负责人修改的默认值**，改法见上一节的环境变量；三者不得合并成一句（有测试锁定）。
+**两处例外**：输入超窗与输出超限这两条在 `fail(..., { message })` 里带了固定文案（「对话或材料太长，请精简后重试」／「回答过长已丢弃」），它们**优先于 `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL`**——默认文案对这两种情况给不出可执行的下一步。改措辞要改代码（同 `access.ts` 的维护者拒绝文案）。
 **429 与 402 必须分开**：429 是瞬时限流（可重试），说成「本月额度已用尽，请下月再试」会让用户白等一个月；只有 402 才归「额度或配额用尽」。
 
 ### 内容安全适配层

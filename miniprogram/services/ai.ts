@@ -158,21 +158,24 @@ export interface ChatMessage {
 export const MAX_HISTORY = 20;
 
 /**
- * 服务端一次调用能过检的输入上限（字符），与 ai 云函数 `MAX_INPUT_CHARS` 对齐。
+ * 服务端一次调用能过检的输入上限（字符），与 ai 云函数 `MAX_INPUT_CHARS` 对齐（2000 字 × 10 片）。
  *
- * 服务端只检测前这么多字，超出窗口的输入按参数错误拒绝（未过检的文字不能送模型）。
- * 两边都要用到这个数：客户端据此自剪历史，服务端据此判定。
+ * 服务端的口径是：`system` 与全部消息拼起来超过这个数就**按参数错误拒绝**（窗口外的文字没法过检，
+ * 不能送模型）。因此客户端必须在发之前把输入收敛到窗口内，见 {@link HISTORY_INPUT_BUDGET}。
  */
 export const MAX_INPUT_CHARS = 20000;
 
 /**
- * 客户端自剪预算：比 {@link MAX_INPUT_CHARS} 留出余量——服务端还会把部门动态语料
- * 注入 `system`，注入文本同样占检测窗口。
+ * 客户端自剪预算：`MAX_INPUT_CHARS` 减掉留白。
  *
- * 为什么要客户端剪而不是交给服务端拒：历史累积到超窗口时，服务端只能整次拒绝，
- * 用户会在对话中途突然收不到回答。剪掉最旧的历史不影响本轮提问，对话还能继续。
+ * 留白有两个用途：服务端把 `system` 与消息用 `\n` 拼起来要占分隔符，命中部门动态时还会
+ * 再往 `system` 注入检索结果（实测各组织最长约 380 字）。留够之后，客户端发出的输入
+ * 不会撞上服务端的拒绝路径。
+ *
+ * 为什么要客户端剪而不是交给服务端拒：历史累积到超窗口时服务端只能整次拒绝，
+ * 用户会在对话中途突然收不到回答；剪掉最旧的历史不影响本轮提问，对话还能继续。
  */
-export const HISTORY_INPUT_BUDGET = 16000;
+export const HISTORY_INPUT_BUDGET = MAX_INPUT_CHARS - 4000;
 
 /** 服务端拼接后的输入长度（`system` 与各条消息用 `\n` 连起来送检）。 */
 function assembledLength(system: string, messages: ChatMessage[]): number {
@@ -186,13 +189,16 @@ function assembledLength(system: string, messages: ChatMessage[]): number {
 
 /**
  * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后；
- * 传了 `system` 时再按 {@link HISTORY_INPUT_BUDGET} 从最旧的一条开始剪，
- * 保证拼起来不超过服务端的检测窗口（最后一条是本轮提问，永远保留）。
+ * 再按 {@link HISTORY_INPUT_BUDGET} 从最旧的一条开始剪，保证拼起来不超服务端检测窗口
+ * （最后一条是本轮提问，永远保留）。
+ *
+ * `system` 必传：它就是本轮要发的系统提示词，剪枝要把它算进去。故意不给默认值——
+ * 漏传会静默跳过预算判断，把「装不下」留给服务端拒绝。
  *
  * 展示用的轮次可能比 `ChatMessage` 多带标记字段（如 07 的 `warning`），
  * 这里只取服务端认识的 `role` / `text` 两个字段，标记不混进送给模型的历史。
  */
-export function chatMessages(history: ChatMessage[], system = ''): ChatMessage[] {
+export function chatMessages(history: ChatMessage[], system: string): ChatMessage[] {
   let kept = history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
   while (kept.length > 1 && assembledLength(system, kept) > HISTORY_INPUT_BUDGET) {
     kept = kept.slice(1);

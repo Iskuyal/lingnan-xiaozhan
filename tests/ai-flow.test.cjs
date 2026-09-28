@@ -880,7 +880,43 @@ test('输出超过输出侧分片上限：不返回未经检测的内容', async
   const result = await harness.main(chatEvent());
   assert.equal(result.ok, false, '超出检测上限的输出不能上屏');
   assert.equal(result.text, '', '一个字都不返回');
-  assert.equal(result.failureClass, 'model_unavailable', '可重试，且不能报成成功');
+  // 模型这次是成功返回的，失败的是「本地没把这段输出检完」——与「内容安全检测不可用」同族，
+  // 记成 model_unavailable 会把这类事件混进模型/中转的失败统计。
+  assert.equal(result.failureClass, 'internal');
+});
+
+test('部门动态注入不会挤破客户端留出的余量', async () => {
+  // 客户端按 MAX_INPUT_CHARS - 4000 自剪；服务端命中动态时还会往 system 注入检索结果，
+  // 这段文字同样占检测窗口。这里用真实语料把「注入 < 4000」钉住：
+  // 语料变长而客户端留白不变时，这条会先失败，而不是等用户在长对话里撞上服务端拒绝。
+  const aiService = require('node:fs').readFileSync('miniprogram/services/ai.ts', 'utf8');
+  const clientMax = Number(/export const MAX_INPUT_CHARS = (\d+);/u.exec(aiService)[1]);
+  const headroom = Number(/export const HISTORY_INPUT_BUDGET = MAX_INPUT_CHARS - (\d+);/u.exec(aiService)[1]);
+  assert.equal(clientMax, 20000, '客户端上限要与服务端 2000×10 的窗口一致');
+  assert.ok(headroom >= 1000, `客户端留白太小：${headroom}`);
+
+  const corpus = loadDepartmentCorpusForTest();
+  const base = '你是校园学生部门问答助手';
+  let worst = 0;
+  let worstDepartment = '';
+  for (const department of corpus.departments) {
+    const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('回答') });
+    await harness.main(chatEvent({
+      feature: 'department-qa',
+      system: base,
+      messages: [{ role: 'user', text: `${department.name}最近有什么动态` }],
+    }));
+    if (harness.http.length === 0) continue; // 没有注入时不会调用模型
+    const body = JSON.parse(harness.http[0].body);
+    const injected = body.messages.find((message) => message.role === 'system').content;
+    const extra = injected.length - base.length;
+    if (extra > worst) {
+      worst = extra;
+      worstDepartment = department.name;
+    }
+  }
+  assert.ok(worst > 0, '至少要有一个组织命中注入，否则这条守不住任何东西');
+  assert.ok(worst < headroom, `注入最长 ${worst} 字（${worstDepartment}），超过客户端留白 ${headroom}`);
 });
 
 test('输入上限的边界：刚好 2 万字通过且全检，多一个字就拒绝', async () => {

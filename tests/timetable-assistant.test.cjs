@@ -649,7 +649,7 @@ test('AI 服务:未检测提示与判定对 06/07 是同一份(共用 services/a
   assert.equal(ai.MAX_HISTORY, 20);
   const history = [];
   for (let index = 0; index < 21; index += 1) history.push({ role: index % 2 === 0 ? 'user' : 'assistant', text: `消息${index}` });
-  const messages = ai.chatMessages(history);
+  const messages = ai.chatMessages(history, '');
   assert.equal(messages.length, 20);
   assert.deepEqual(plain(messages[0]), { role: 'assistant', text: '消息1' });
 });
@@ -657,10 +657,11 @@ test('AI 服务:未检测提示与判定对 06/07 是同一份(共用 services/a
 test('AI 服务:历史按检测窗口自剪,最后一条提问永远不会被剪掉', () => {
   const ai = aiService();
   // 两个数必须与服务端一致：服务端按 MAX_INPUT_CHARS 拒绝超窗输入，客户端按更小的预算自剪。
-  assert.equal(ai.MAX_INPUT_CHARS, 20000, '要与 ai 云函数 MAX_INPUT_CHARS 对齐');
-  assert.ok(
-    ai.HISTORY_INPUT_BUDGET < ai.MAX_INPUT_CHARS,
-    '客户端预算要比服务端上限小，留出服务端注入部门动态语料的余量',
+  assert.equal(ai.MAX_INPUT_CHARS, 20000, '要与 ai 云函数 MAX_INPUT_CHARS（2000 字 × 10 片）对齐');
+  assert.equal(
+    ai.HISTORY_INPUT_BUDGET,
+    ai.MAX_INPUT_CHARS - 4000,
+    '客户端预算由服务端上限推导，留白给分隔符与服务端注入的部门动态语料',
   );
   const history = [];
   for (let index = 0; index < 20; index += 1) {

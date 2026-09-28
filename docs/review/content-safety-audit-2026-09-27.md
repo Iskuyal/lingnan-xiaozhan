@@ -125,12 +125,17 @@ node docs/evidence/content-safety-audit-2026-09-27/probe-moderation-window.cjs
 
 | 侧 | 改动 | 位置 |
 | --- | --- | --- |
-| 输入 | 新增 `MAX_INPUT_CHARS = MODERATION_CHUNK_CHARS × MAX_INPUT_CHUNKS = 20000`：`system` 与全部消息拼起来超窗口即 `invalid_request`，**在花检测配额与下载图片之前**拒绝；错误 detail 写明 system / 消息各占多少字，用户文案指向「精简或清空对话」 | `cloudfunctions/ai/index.ts`（`runModelAction`） |
-| 输出 | 新增 `MAX_OUTPUT_CHUNKS = 20`（4 万字）：输出先判长度，再**分片全检**，超 4 万字按 `model_unavailable` 失败且不返回任何文字——宁可这次没有结果，也不上屏未检测内容 | 同文件 `moderateOutput` |
+| 输入 | 新增 `MAX_INPUT_CHARS = MODERATION_CHUNK_CHARS × MAX_INPUT_CHUNKS = 20000`：`system` 与全部消息拼起来超窗口即 `invalid_request`，**在花检测配额与下载图片之前**拒绝；错误 detail 写明总字数与 system 字数，用户文案指向「精简或清空对话」 | `cloudfunctions/ai/index.ts`（`runModelAction`） |
+| 输出 | 新增 `MAX_OUTPUT_CHUNKS = 20`（4 万字）：输出先判长度，再**分片全检**，超 4 万字按 `internal` 失败且不返回任何文字——宁可这次没有结果，也不上屏未检测内容 | 同文件 `moderateOutput` |
 | 诊断入口 | 管理员限定的 `moderateText` 动作保留「部分报告 + `checked=false`」；它不喂模型也不上屏，报告本身就是结论 | 同文件动作分发 |
-| 客户端 | `MAX_INPUT_CHARS = 20000` 与服务端同源；`HISTORY_INPUT_BUDGET = 16000`，`chatMessages(history, system)` 从最旧一条开始剪到预算内（最后一条提问永不被剪）。留出余量给服务端注入的部门动态语料（实测各组织最长约 380 字），否则长对话会以「参数错误」告终 | `miniprogram/services/ai.ts`、`03/06/07` 四个调用点 |
+| 客户端 | `MAX_INPUT_CHARS = 20000` 与服务端同源，`HISTORY_INPUT_BUDGET = MAX_INPUT_CHARS - 4000`，`chatMessages(history, system)` 从最旧一条开始剪到预算内（最后一条提问永不被剪）；`system` 是必传参数，漏传编译期就报错，不会静默跳过预算判断。`system` 不再单独设长度上限（见下），拼接规则在服务端只留 `inputText()` 一处 | `miniprogram/services/ai.ts`、07 两个页面统一走 `qa.ts` 的 `qaChatEvent()`、06 在 `pages/timetable/index.ts` |
 
-回归测试（`tests/ai-flow.test.cjs`）：输入超窗拒绝且 0 次检测 / 0 次模型调用、窗口内尾部标记必须送检、输出 2.5 万字分片全检（`checked=true`、无 `checked=false` 告警）、输出 4.5 万字不返回内容、2 万字边界内通过且多 1 字被拒。`tests/timetable-assistant.test.cjs` 补客户端自剪口径。原先固化「截断放行」的那条测试已改写为诊断动作的部分报告用例。
+对上面「建议的修复方向」的两处偏离，理由记在这里：
+
+- **`system` 没有单独的长度上限**：推荐里写「给 `system` 补长度上限」，实现改成让 `system` 参与**聚合上限**（`system` 单独超窗同样被拒）。理由是项目里几个系统提示词本身就不短——课表助手在真实规模（50 门课）下 system 约 5094 字，单设一个「比如 2000 字」的上限会直接打断 06；聚合上限才是安全真正需要的那个不变量。
+- **输出超限归 `internal` 而不是 `content_rejected` / `model_unavailable`**：模型这次是成功返回的，失败的是「本地没能把这段输出检完」，与既有的「内容安全检测不可用（fail closed）」同族；记成 `model_unavailable` 会把这类事件混进模型/中转的失败统计里。用户文案单独写（「回答过长已丢弃该回答」），优先于 `AI_MSG_INTERNAL`。
+
+回归测试（`tests/ai-flow.test.cjs`）：输入超窗拒绝且 0 次检测 / 0 次模型调用、窗口内尾部标记必须送检、输出 2.5 万字分片全检（`checked=true`、无 `checked=false` 告警）、输出 4.5 万字不返回内容且归 `internal`、2 万字边界内通过且多 1 字被拒、**部门动态注入的最长文本 < 客户端留白**（用真实语料，防止语料变长后留白失效）。`tests/timetable-assistant.test.cjs` 补客户端自剪口径（含「预算由服务端上限推导」的断言）。原先固化「截断放行」的那条测试已改写为诊断动作的部分报告用例。
 
 修复后复跑三个探针（输出见[证据](../evidence/content-safety-audit-2026-09-27/README.md)）：
 
@@ -140,7 +145,7 @@ node docs/evidence/content-safety-audit-2026-09-27/probe-moderation-window.cjs
 探针 3：ok = true ｜safety.checked = true ｜合并输出 30737 字 ｜未检测字符数 = 0
 ```
 
-本地完整回归：`npm test` **496 项全通过**（先按[审计基线](#审计基线状态)的办法同步过 `node_modules`）。
+本地完整回归：`npm test` **497 项全通过**（先按[审计基线](#审计基线状态)的办法同步过 `node_modules`）。
 
 **仍未完成**：新版 `ai` 云函数尚未部署，线上行为仍是修复前；`AI_MODERATE_OUTPUT` 与 `AI_SAFETY_FAIL_MODE` 的云端实际值仍待人工确认；CT-03 / CT-04 / CT-05 未修。
 
