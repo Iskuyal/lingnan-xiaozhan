@@ -9,7 +9,12 @@
     "pages/timetable/settings/index",
     "pages/timetable/manage/index",
     "pages/news/index",
-    "pages/news/detail/index"
+    "pages/news/detail/index",
+    "pages/lost-found/index",
+    "pages/lost-found/publish/index",
+    "pages/lost-found/detail/index",
+    "pages/lost-found/claim/index",
+    "pages/lost-found/mine/index"
   ],
   "window": {
     "navigationBarTitleText": "校园工具",
