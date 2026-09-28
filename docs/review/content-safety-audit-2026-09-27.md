@@ -145,9 +145,9 @@ node docs/evidence/content-safety-audit-2026-09-27/probe-moderation-window.cjs
 探针 3：ok = true ｜safety.checked = true ｜合并输出 30737 字 ｜未检测字符数 = 0
 ```
 
-本地完整回归：`npm test` **497 项全通过**（先按[审计基线](#审计基线状态)的办法同步过 `node_modules`）。
+本地完整回归：`npm test` **504 项全通过**（先按[审计基线](#审计基线状态)的办法同步过 `node_modules`）。
 
-**仍未完成**：新版 `ai` 云函数尚未部署，线上行为仍是修复前；`AI_MODERATE_OUTPUT` 与 `AI_SAFETY_FAIL_MODE` 的云端实际值仍待人工确认；CT-03 / CT-04 / CT-05 未修。
+**仍未完成**：新版 `ai` 云函数尚未部署，线上行为仍是修复前；`AI_MODERATE_OUTPUT` 与 `AI_SAFETY_FAIL_MODE` 的云端实际值仍待人工确认；CT-03 / CT-04 / CT-05 未修。云端复验已写成可执行探针 `npm run probe:ai-window`（超长输入拒绝 + 长输出全检两档，判定逻辑见 `scripts/lib/ai-window-judge.cjs`，有单测覆盖修复前后的两种返回值形状）。**探针脚本本身尚未在开发者工具与云端跑过**——本地没有自动化端口与云环境，需要部署时一并执行，判据见[待办总表 V8](../tasks/pending.md)。
 
 实测输出摘要：
 

@@ -824,6 +824,8 @@ test('输入超过检测窗口：按参数错误拒绝，窗口外的文字不�
   assert.ok(result.message.includes('精简'), `要给用户可执行的下一步：${result.message}`);
   assert.equal(harness.cloud.msgSecCheck.length, 0, '必然被拒的请求不该消耗每日检测配额');
   assert.equal(harness.http.length, 0, '有文字没检过就不能进模型请求');
+  assert.equal(result.usage, null, '没有发生任何子调用，用量必须为空（这是「没花配额」的直接证据）');
+  assert.equal(result.safety, null, '拒绝发生在检测之前，不该有检测结论');
 });
 
 test('窗口内的输入逐段检完：最新一轮提问的最后一个字也要送检', async () => {

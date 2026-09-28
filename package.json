@@ -9,6 +9,7 @@
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs",
     "probe:wechat": "node scripts/probe-wechat.cjs",
+    "probe:ai-window": "node scripts/probe-ai-window.cjs",
     "smoke:ai": "node scripts/smoke-ai.cjs",
     "smoke:settings": "node scripts/smoke-settings.cjs",
     "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs",
