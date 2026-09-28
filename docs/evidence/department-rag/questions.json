@@ -1,0 +1,87 @@
+{
+  "generatedAt": "2026-09-26",
+  "scope": "部门问答达标线题集（10 题）。基础题由随包全量语料保证（不评测检索）；动态题评测 bigram 检索命中（expectedUrl 必须在 top-k 里）。",
+  "judging": "answer 模式不自动打分：有据 / 没查到 / 编造 与引用是否支持答案由人工逐题判定（与 rag-poc 同一口径）。",
+  "questions": [
+    {
+      "id": "base-01",
+      "kind": "base",
+      "q": "校学生会下设哪些部门？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "按语料列出下设部门，不编造。"
+    },
+    {
+      "id": "base-02",
+      "kind": "base",
+      "q": "青年志愿者联合会属于哪个校区？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "广州校区、清远校区。"
+    },
+    {
+      "id": "base-03",
+      "kind": "base",
+      "q": "校学生团委的联系方式是什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "明确回答「官网未公布」（语料未公布联系方式）。"
+    },
+    {
+      "id": "base-04",
+      "kind": "base",
+      "q": "校学生社团管理部的简介是什么？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "按语料简介转述。"
+    },
+    {
+      "id": "base-05",
+      "kind": "base",
+      "q": "退役军人事务服务部成立于哪一年？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "2022 年 5 月（语料简介写明）。"
+    },
+    {
+      "id": "activity-01",
+      "kind": "activity",
+      "q": "校学生会最近有什么动态？",
+      "expectedDepartmentId": "student-union",
+      "expectedUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27001",
+      "expectedTitle": "广东岭南职业技术学院第十四次学生代表大会顺利召开",
+      "expectedAnswer": "提及第十四次学生代表大会等检索命中的动态，注明来源。"
+    },
+    {
+      "id": "activity-02",
+      "kind": "activity",
+      "q": "校学生团委的青马工程培训班公示讲的是什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedUrl": "https://lnc.edu.cn/tw/djxf/tqsd/content_29791",
+      "expectedTitle": "关于2026年广东大学生“青马工程” 培训班学员推荐名单的公示",
+      "expectedAnswer": "只依据注入的公示条目回答（标题级信息），细节不足时说官网未公布。"
+    },
+    {
+      "id": "activity-03",
+      "kind": "activity",
+      "q": "学生社团进社区活动办到第几期了？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27005",
+      "expectedTitle": "学生社团进社区 第三期圆满落幕，下期未完待续！",
+      "expectedAnswer": "依据注入条目回答「第三期圆满落幕」，可提下一期待续。"
+    },
+    {
+      "id": "activity-04",
+      "kind": "activity",
+      "q": "2026 清远马拉松赛志愿服务总结大会是哪个组织办的？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27865",
+      "expectedTitle": "2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行",
+      "expectedAnswer": "青年志愿者联合会（依据注入条目）。"
+    },
+    {
+      "id": "activity-05",
+      "kind": "activity",
+      "q": "校学生会办过校园提案大赛吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27004",
+      "expectedTitle": "第四届校园提案大赛圆满结束",
+      "expectedAnswer": "办过（第四届校园提案大赛圆满结束），依据注入条目回答。"
+    }
+  ]
+}

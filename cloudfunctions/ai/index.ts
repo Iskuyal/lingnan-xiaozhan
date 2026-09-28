@@ -23,11 +23,13 @@ import { isTimeoutError, withTimeout } from './http';
 import { ModelCallResult, ModelInvocation, callModel } from './providers';
 import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
 import { runProbe } from './probe';
+import { buildActivityContext, DepartmentActivityCorpus, isActivityQuestion, isDepartmentActivityCorpus } from './rag';
 import {
   ActionName,
   AiResponse,
   CallUsage,
   ConversationMessage,
+  DepartmentActivityCitation,
   FailureClass,
   MessageRole,
   NormalizedImage,
@@ -79,6 +81,57 @@ const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg'];
 /** 消息角色只认这三种；调用方写别的值按参数错误处理，不做猜测。 */
 const MESSAGE_ROLES: MessageRole[] = ['system', 'user', 'assistant'];
 
+/**
+ * 部门问答的 feature 名（客户端 `miniprogram/services/ai.ts` 导出同名常量、两个部门页面使用；
+ * 跨包有意复制一份，项目惯例同 FAILURE_CLASSES）。
+ * 只有这个 feature 的 chat 动作会做部门动态检索注入，其余动作与功能不受影响。
+ */
+const DEPARTMENT_QA_FEATURE = 'department-qa';
+/** 部门动态检索注入的 top-k：动态条目只有标题级信息，三条足够覆盖且不挤占提示词预算。 */
+const ACTIVITY_RETRIEVAL_K = 3;
+
+/**
+ * 构建注入的部门动态语料（scripts/build.mjs → dist/cloudfunctions/ai/department-corpus.js）。
+ *
+ * 缺失或读坏时返回 null：检索注入整体禁用、问答退回纯语料模式（fail-open）——
+ * 检索是增强不是前提，语料出问题不能把原有的部门问答链路一起拖垮。
+ */
+function loadDepartmentCorpus(): DepartmentActivityCorpus | null {
+  try {
+    const loaded: unknown = require('./department-corpus');
+    return isDepartmentActivityCorpus(loaded) ? loaded : null;
+  } catch {
+    return null;
+  }
+}
+const departmentCorpus = loadDepartmentCorpus();
+
+/** 指代上一轮动态的短追问，须连同上一轮问题和回答检索，才能保留事实依据。 */
+function activitySearchQuestion(messages: ConversationMessage[]): string {
+  let currentIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === 'user' && messages[i].text.trim() !== '') {
+      currentIndex = i;
+      break;
+    }
+  }
+  if (currentIndex < 0) return '';
+  const current = messages[currentIndex].text.trim();
+  const followUp = /^(那|它|这个|这项|该|上面|刚才|前面|其中|第[一二三1-3]个)/u.test(current);
+  if (followUp) {
+    for (let i = currentIndex - 1; i >= 0; i -= 1) {
+      if (messages[i].role !== 'user') continue;
+      if (isActivityQuestion(messages[i].text)) {
+        const answer = messages.slice(i + 1, currentIndex)
+          .filter((message) => message.role === 'assistant').at(-1)?.text.slice(0, 500) ?? '';
+        return `${messages[i].text} ${answer} ${current}`;
+      }
+      break;
+    }
+  }
+  return isActivityQuestion(current) ? current : '';
+}
+
 /** 云函数事件（都是 unknown，逐个收敛；调用方传错只影响本次调用）。 */
 export interface AiEvent {
   action?: unknown;
@@ -108,6 +161,8 @@ interface RunLog {
   safety: SafetyReport | null;
   warnings: string[];
   accountingFailed: boolean;
+  /** 部门动态检索注入的引用清单（chat 动作才可能有值）。 */
+  activityCitations: DepartmentActivityCitation[];
 }
 
 const ZERO_USAGE: TokenUsage = {
@@ -654,8 +709,22 @@ async function runVision(
 async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, openid: string): Promise<string> {
   const vision = log.action === 'vision';
   const messages = parseMessages(event.messages);
-  const system = safeString(event.system);
+  let system = safeString(event.system);
   const wechat = wechatSecurity();
+
+  // 部门动态检索注入：在输入检测之前拼进 system，注入文本与消息一起过内容安全。
+  // 只对动态类问题检索（意图词表见 rag.ts），无命中 / 非动态类 / 语料缺失时不注入（system 原样）。
+  if (!vision && log.feature === DEPARTMENT_QA_FEATURE) {
+    const query = activitySearchQuestion(messages);
+    if (query !== '' && departmentCorpus !== null) {
+      const context = buildActivityContext(departmentCorpus, query, ACTIVITY_RETRIEVAL_K);
+      if (context.injectedText !== '') {
+        system = `${system}\n\n${context.injectedText}`;
+        log.activityCitations = context.citations;
+        pushWarning(log, `部门动态检索命中 ${context.citations.length} 条（top-${ACTIVITY_RETRIEVAL_K}）`);
+      }
+    }
+  }
 
   if (!vision && event.image !== undefined && event.image !== null) {
     fail('invalid_request', '图片请走 vision 动作；chat 动作只处理文字');
@@ -722,6 +791,7 @@ function baseResponse(options: {
     usageSummary: log === null || !log.isAdmin ? null : log.summary,
     capWarning: log === null || !log.isAdmin ? '' : capWarningFor(log.summary),
     warnings: log === null ? [] : log.warnings.slice(),
+    citations: log === null ? [] : log.activityCitations.slice(),
     probe: null,
     elapsedMs: Date.now() - options.startedAt,
   };
@@ -787,6 +857,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
         usageSummary: null,
         capWarning: '',
         warnings: [],
+        citations: [],
         probe: result.record,
         elapsedMs: Date.now() - startedAt,
       };
@@ -829,6 +900,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       safety: null,
       warnings: [],
       accountingFailed: false,
+      activityCitations: [],
     };
 
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。

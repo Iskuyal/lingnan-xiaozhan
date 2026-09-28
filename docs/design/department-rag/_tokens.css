@@ -1,0 +1,20 @@
+/* 设计令牌：与 miniprogram/app.wxss 同名同值（本次设计只用到这些）。 */
+:root {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+
+  --glass: rgba(255,255,255,0.52);
+  --paper-shade: #faeee9;
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+
+  --r-control: 20rpx;
+
+  --warn: #9a5b1e;
+}

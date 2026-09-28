@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01 动态类问题：回答带来源条</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+</head>
+<body>
+  <div class="mock">
+    <p class="title">部门问答 · 动态类问题（检索命中）</p>
+    <p class="caption">问动态类问题时，云函数检索命中的动态随回答注入，回答下方出现「参考来源 · 部门动态」来源条；条目显示标题与发布日期，点击整条复制官网原文链接。来源由检索结果决定，模型不输出链接。</p>
+
+    <div class="qa-head">
+      <span class="qa-badge">AI 助手</span>
+      <span class="qa-head-note">只依据官网已核实资料回答</span>
+    </div>
+
+    <div class="qa-row qa-row-user">
+      <div class="qa-bubble qa-bubble-user">校学生会办过校园提案大赛吗？</div>
+    </div>
+    <div class="qa-row">
+      <div class="qa-bubble qa-bubble-assistant">
+        办过。2026-03-09 的官网动态显示「第四届校园提案大赛圆满结束」。
+        <div class="qa-citations">
+          <div class="qa-citations-head">参考来源 · 部门动态</div>
+          <div class="qa-citation">
+            <div class="qa-citation-title">第四届校园提案大赛圆满结束</div>
+            <div class="qa-citation-meta">2026-03-09 · 点击复制原文链接</div>
+          </div>
+          <div class="qa-citation">
+            <div class="qa-citation-title">广东岭南职业技术学院第十四次学生代表大会顺利召开</div>
+            <div class="qa-citation-meta">2026-03-09 · 点击复制原文链接</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
