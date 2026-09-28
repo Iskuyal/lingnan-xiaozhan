@@ -18,6 +18,12 @@ import { requireCloud, transportMessage as sharedTransportMessage } from './clou
 export const AI_FUNCTION = 'ai';
 
 /**
+ * 部门问答的 feature 名。服务端 `cloudfunctions/ai/index.ts` 有同名常量（跨包有意复制，
+ * 项目惯例同 FAILURE_CLASSES：小程序不引用云函数目录）；两个部门页面组装 chat 事件时用它。
+ */
+export const DEPARTMENT_QA_FEATURE = 'department-qa';
+
+/**
  * 失败分类，与服务端 `cloudfunctions/ai/types.ts` 的 `FailureClass` 一一对应。
  *
  * 小程序**不引用云函数目录**（构建布局有断言），因此在这里同步一份联合类型：
@@ -96,6 +102,25 @@ export interface AiCallResult {
   safety: AiSafetyReport | null;
   /** 服务端非致命告警（如记账失败、`checked=false`）。 */
   warnings: string[];
+  /**
+   * 部门动态检索注入的来源清单（仅部门问答可能有值）。
+   *
+   * 形状与服务端 `cloudfunctions/ai/types.ts` 的 DepartmentActivityCitation 一致；
+   * 小程序不引用云函数目录，这里同步一份（服务端改字段名时由云函数侧的集成测试与
+   * 本文件的解析断言共同拦住，注意保持两份同步）。
+   */
+  citations: DepartmentActivityCitation[];
+}
+
+/** 一条部门动态来源（服务端检索注入的引用清单元素，形状与服务端契约一致）。 */
+export interface DepartmentActivityCitation {
+  departmentId: string;
+  departmentName: string;
+  title: string;
+  /** 官网文章发布日期，格式 YYYY-MM-DD。 */
+  publishedAt: string;
+  sourceUrl: string;
+  score: number;
 }
 
 /**
@@ -133,13 +158,52 @@ export interface ChatMessage {
 export const MAX_HISTORY = 20;
 
 /**
- * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后。
+ * 服务端一次调用能过检的输入上限（字符），与 ai 云函数 `MAX_INPUT_CHARS` 对齐（2000 字 × 10 片）。
+ *
+ * 服务端的口径是：`system` 与全部消息拼起来超过这个数就**按参数错误拒绝**（窗口外的文字没法过检，
+ * 不能送模型）。因此客户端必须在发之前把输入收敛到窗口内，见 {@link HISTORY_INPUT_BUDGET}。
+ */
+export const MAX_INPUT_CHARS = 20000;
+
+/**
+ * 客户端自剪预算：`MAX_INPUT_CHARS` 减掉留白。
+ *
+ * 留白有两个用途：服务端把 `system` 与消息用 `\n` 拼起来要占分隔符，命中部门动态时还会
+ * 再往 `system` 注入检索结果（实测各组织最长约 380 字）。留够之后，客户端发出的输入
+ * 不会撞上服务端的拒绝路径。
+ *
+ * 为什么要客户端剪而不是交给服务端拒：历史累积到超窗口时服务端只能整次拒绝，
+ * 用户会在对话中途突然收不到回答；剪掉最旧的历史不影响本轮提问，对话还能继续。
+ */
+export const HISTORY_INPUT_BUDGET = MAX_INPUT_CHARS - 4000;
+
+/** 服务端拼接后的输入长度（`system` 与各条消息用 `\n` 连起来送检）。 */
+function assembledLength(system: string, messages: ChatMessage[]): number {
+  const parts: string[] = [];
+  if (system.trim() !== '') parts.push(system);
+  for (const message of messages) {
+    if (message.text !== '') parts.push(message.text);
+  }
+  return parts.join('\n').length;
+}
+
+/**
+ * 页面上的多轮历史 → ai 云函数消息数组，只保留最近 `MAX_HISTORY` 条且不改变先后；
+ * 再按 {@link HISTORY_INPUT_BUDGET} 从最旧的一条开始剪，保证拼起来不超服务端检测窗口
+ * （最后一条是本轮提问，永远保留）。
+ *
+ * `system` 必传：它就是本轮要发的系统提示词，剪枝要把它算进去。故意不给默认值——
+ * 漏传会静默跳过预算判断，把「装不下」留给服务端拒绝。
  *
  * 展示用的轮次可能比 `ChatMessage` 多带标记字段（如 07 的 `warning`），
  * 这里只取服务端认识的 `role` / `text` 两个字段，标记不混进送给模型的历史。
  */
-export function chatMessages(history: ChatMessage[]): ChatMessage[] {
-  return history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
+export function chatMessages(history: ChatMessage[], system: string): ChatMessage[] {
+  let kept = history.slice(-MAX_HISTORY).map((turn) => ({ role: turn.role, text: turn.text }));
+  while (kept.length > 1 && assembledLength(system, kept) > HISTORY_INPUT_BUDGET) {
+    kept = kept.slice(1);
+  }
+  return kept;
 }
 
 /**
@@ -190,6 +254,33 @@ function safetyOf(value: unknown): AiSafetyReport | null {
   };
 }
 
+/** 服务端返回的引用清单：逐条收敛形状，非法条目丢弃（多一条噪音不如少一条来源）。 */
+function citationsOf(value: unknown): DepartmentActivityCitation[] {
+  if (!Array.isArray(value)) return [];
+  const citations: DepartmentActivityCitation[] = [];
+  for (const item of value) {
+    if (item === null || item === undefined || typeof item !== 'object') continue;
+    const source = item as Record<string, unknown>;
+    if (
+      typeof source.departmentId !== 'string'
+      || typeof source.departmentName !== 'string'
+      || typeof source.title !== 'string'
+      || typeof source.publishedAt !== 'string'
+      || typeof source.sourceUrl !== 'string'
+      || typeof source.score !== 'number'
+    ) continue;
+    citations.push({
+      departmentId: source.departmentId,
+      departmentName: source.departmentName,
+      title: source.title,
+      publishedAt: source.publishedAt,
+      sourceUrl: source.sourceUrl,
+      score: source.score,
+    });
+  }
+  return citations;
+}
+
 /** 调用 ai 云函数；调用本身失败（未部署/超时/权限）时抛错，由 transportMessage 转文案。 */
 export async function callAi(data: Record<string, unknown>): Promise<AiCallResult> {
   requireCloud();
@@ -209,6 +300,7 @@ export async function callAi(data: Record<string, unknown>): Promise<AiCallResul
     warnings: Array.isArray(source.warnings)
       ? source.warnings.filter((item): item is string => typeof item === 'string')
       : [],
+    citations: citationsOf(source.citations),
   };
 }
 

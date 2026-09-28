@@ -2,6 +2,8 @@
 
 2026-09-24 安全整改说明：新增代码与部署核对见[整改记录](review/security-remediation-2026-09-24.md)。新版 `newsSync` 仅接受平台定时触发，本文历史“控制台手动测试/同步”步骤在新版部署后不再适用；`ai` 运维动作需先在云端配置维护者白名单。云函数是否已部署该版，以控制台读回为准。
 
+**2026-09-28 新增待部署项**：内容安全检测窗口修复（CT-01/CT-02，见[审计报告](review/content-safety-audit-2026-09-27.md)的修复一节）只改了 `ai` 云函数的编译产物与客户端，**线上仍是修复前行为**。部署后需复验：超长输入（>2 万字）被拒且不消耗检测配额、超长输出分片全检后才返回。判据已写成可执行探针 `npm run probe:ai-window`（两个探针：3.2 万字输入期望 `invalid_request` 且 `usage`/`safety` 为空；长输出期望 `checked=true` 且无 `checked=false` 告警，模型没写够 2 万字时如实标「未覆盖」）。**探针 1 不消耗检测配额，探针 2 会按片消耗（约 10~16 次）**。`timetable` 与 `newsSync` 不受本次改动影响。客户端与云函数要一起更新：新客户端自剪历史、旧服务端仍按旧口径放行；新服务端 + 旧客户端在长对话里会收到「输入过长」拒绝而不能继续（见待办总表 V8）。
+
 ## 安全整改部署关卡（2026-09-24）
 
 1. 从已通过 CI 的提交构建 `dist/`；确认 `dist/cloudfunctions/{ai,newsSync,timetable}/package-lock.json` 存在。部署前把旧云函数版本或控制台配置记下，便于出错时回退。
@@ -200,9 +202,9 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | --- | --- | --- |
 | `action` | `chat` / `vision` / `moderateText` / `moderateImage` / `usage` / `probe` | 必填 |
 | `feature` | 如 `department-qa`、`timetable-screenshot`、`timetable-assistant` | 只用于记账与统计，未知值不影响调用 |
-| `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本） |
-| `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字 |
-| `text` | string | `moderateText` 用；按 2000 字窗口逐段检测（最多 2 万字），超出部分在报告里写明并置 `checked: false` |
+| `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本）。没有单独的字符上限，但被下面的**输入总量上限**覆盖：`system` 自己超窗同样按 `invalid_request` 拒绝 |
+| `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字；**与 `system` 拼起来 ≤20000 字**（一次内容安全检测的覆盖上限，超出即 `invalid_request`） |
+| `text` | string | `moderateText` 用（管理员限定的诊断动作）；按 2000 字窗口逐段检测（最多 10 片 = 2 万字），超出部分在报告里写明并置 `checked: false`——**只有这个动作允许不完整检测**，`chat` / `vision` 的输入超窗直接拒绝、输出超窗不返回内容 |
 | `image` | `{"fileID":"cloud://..."}` 或 `{"base64":"...","mimeType":"image/png"}` | `vision` / `moderateImage` 用；只接受 PNG / JPG，默认上限 1MB。**格式不再靠猜**：fileID 的扩展名认不出、base64 没给 `mimeType` 都返回 `invalid_request`。客户端走 fileID：`wx.cloud.uploadFile` 返回的 `cloud://…` 才叫 fileID，`prepareUpload` 给的裸 cloudPath 不是（传裸路径会被 `downloadFile` 拒绝） |
 | `maxTokens` / `timeoutMs` | number | 可选覆盖；`timeoutMs` 仍受环境变量上限约束。**分带时 `maxTokens` 会被服务端按本带课程数抬高**（见下一行的 `bands`）：按整张表设的上限装不下较大的带，沿用会把那一带截断，而截断的 JSON 看起来像模型失败 |
 | `bands` | `'auto'` 或 ≥2 的整数 | 仅 `vision` 用，可选。按**节次**把整张课表切成若干带、**并行**调用模型，解决「一次调用识别整张表要 170 秒 > 云函数 60 秒上限」：`'auto'` 让服务端按自己的超时预算与实测画像算带数（客户端固定下发它）；数字指定带数，上限 6。**缺省、1、负数与非数字一律退回单次调用的原路径**（数字字符串不接受，不猜）；预算连一次调用的固定开销都装不下时也退回单带——切多了只是同样的失败乘以带数。**带数越多，模型调用次数与成本按倍数增长**（一次 `vision` 会记 N 条模型账，见「成本」一节），**内容安全检测次数不变** |
@@ -286,20 +288,24 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | `model_unavailable` | AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。 | 连接失败、超时（模型 / 内容安全 / 云存储下载都算）、5xx、鉴权失败、返回非 JSON 或空内容、**429 瞬时限流** |
 | `content_rejected` | 文字：内容未通过安全检测，请修改后重试。／图片（`vision` / `moderateImage` 的输入图被拒）：这张图片没有通过内容安全检测，请换一张再试。 | 输入或输出被内容安全适配器判为违规（`risky` / `87014` / `flagged` / `allowed=false`）。**文案按输入类型区分**：文字有「改一改再试」的余地，图片只能换一张；两句话各自独立，可分别用 `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` 覆盖 |
 | `quota_exhausted` | 本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。 | 当月累计成本 ≥ `AI_MONTHLY_CAP_YUAN`，或模型服务返回 **402**（服务商额度/余额不足） |
-| `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断） |
-| `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等 |
+| `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断）；**`system` 与全部消息拼起来超过 `MAX_INPUT_CHARS`（2 万字）**——窗口外的文字测不到，直接拒绝，不消耗检测配额也不进模型 |
+| `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等；**模型输出超过 `MAX_OUTPUT_CHARS`（4 万字）**——本地检不完全部输出，丢弃该回答而不是上屏未检测内容（模型这次是成功返回的，故不归 `model_unavailable`） |
 
 **默认文案是可供负责人修改的默认值**，改法见上一节的环境变量；三者不得合并成一句（有测试锁定）。
+**两处例外**：输入超窗与输出超限这两条在 `fail(..., { message })` 里带了固定文案（「对话或材料太长，请精简后重试」／「回答过长已丢弃」），它们**优先于 `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL`**——默认文案对这两种情况给不出可执行的下一步。改措辞要改代码（同 `access.ts` 的维护者拒绝文案）。
 **429 与 402 必须分开**：429 是瞬时限流（可重试），说成「本月额度已用尽，请下月再试」会让用户白等一个月；只有 402 才归「额度或配额用尽」。
 
 ### 内容安全适配层
 
 - **文字与图片是两个独立入口**（`checkText` / `checkImage`）：微信侧本就是 `security.msgSecCheck` 与 `security.imgSecCheck` 两个云调用，第三方侧的请求体也不同。
-- **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。长文本按 2000 字窗口逐段送检（最多 10 段 = 2 万字）；仍超出时**只检前 2 万字并在报告里写明范围、置 `checked: false`**，不静默放过。
+- **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。文字按 2000 字一片送检，**窗口 = 一次能检完的字数**，两侧处置不同（2026-09-28 修复，[内容安全审计 CT-01/CT-02](../review/content-safety-audit-2026-09-27.md)）：
+  - **输入侧**：`MAX_INPUT_CHARS = 2000 × 10 = 2 万字`（`system` 与全部消息拼起来算）。超出即 `invalid_request` 拒绝，**不消耗检测配额、不进模型、不下载图片**；返回值 `detail` 写明总字数与 system 字数，用户文案指向「精简或清空对话」。客户端 `miniprogram/services/ai.ts` 同源声明 `MAX_INPUT_CHARS`，并留更大余量按 `HISTORY_INPUT_BUDGET = 16000` 自剪最旧历史（服务端还会注入部门动态语料，实测最长约 380 字）。
+  - **输出侧**：`MAX_OUTPUT_CHUNKS = 20`（4 万字）。输出先判长度，再分片**全检**；超过 4 万字按 `model_unavailable` 失败且**一个字都不返回**。输出长度不受调用方控制，所以这里不能像输入那样「提前拒绝」，只能是「检完才给」或「不给」。
+  - 只有管理员限定的诊断动作 `moderateText` 保留「部分报告 + `checked: false`」：它不喂模型也不上屏。**两条通路都不再产生「窗口外文字照常流通」的行为**——修复前它们会带着 `checked=false` 放行。
 - **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
 - **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid 退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**2026-09-19 从小程序端实测：v2 形态下两条接口都返回 `errcode 0`**（记录见探测记录表）。
-- **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（文本端到端）、`npm run smoke:ai:vision`（图片路径端到端）。
-- **内容安全接口有每日调用配额，未上架期间只有 100 次/天（2026-09-19 查官方口径并实测撞到上限）**：官方文档写「单个 appId 调用上限为 4000 次/分钟、2,000,000 次/天；**若为未上架小程序，调用上限为 100 次/天**」（[security.msgSecCheck](https://developers.weixin.qq.com/miniprogram/dev/server/API/sec-center/sec-check/api_msgseccheck.html)）。**本项目当前未认证、未备案、未发布 ⇒ 日上限是 100 次**，一次 AI 调用至少消耗 1 次文本检测，开启输出检测时还要再加（长文本按 2000 字分片、最多 10 片）；`msgSecCheck` 与 `imgSecCheck` 的配额**各自计算**（实测：文本报 45009 时图片仍 `errcode 0`）。默认 `AI_SAFETY_FAIL_MODE=closed` 下配额用尽会**直接拒绝当天所有 AI 调用**（问答 / 助手 / 识图全挂，次日恢复）——**排障时先看有没有 45009，不要往模型或密钥方向找**。**上线前的应对手段（按官方文档口径整理，2026-09-19 查证）**：① 等次日恢复（默认，零成本）；② **`clear_quota`（重置 API 调用次数）**——`POST https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=ACCESS_TOKEN`，body `{"appid":"<小程序 appid>"}`，官方声明**适用账号类型含小程序**，用小程序自己的 access_token 清空每日次数（[接口文档](https://developers.weixin.qq.com/miniprogram/dev/server/API/openApi-mgnt/api_clearquota.html)）；**每个账号每月共 10 次清零机会**（后台页面清零与 API 清零共用这 10 次，超限返回 48006），**本项目未实测**——前置是要能拿到小程序 access_token（AppID + AppSecret 换），未认证小程序能否换取**待验证**，验证步骤：换到 token 后先跑 `getApiQuota` 查一次剩余额度；③ `getApiQuota` 可查询任一接口当天的 `daily_limit` / `used` / `remain`（同样适用小程序），**演示前用它确认还剩多少次**；④ 排障期临时 `AI_SAFETY_FAIL_MODE=open`（仅开发排障、生产不得使用，测完立刻改回 `closed`）。**不要**为省配额去关 `AI_MODERATE_OUTPUT`——「AI 输出也要过内容安全」是硬约束。发布上线后配额自动放大到 4000/分钟、200 万/天，**所以这条只在上架前影响我们：演示当天要按 100 次倒排脚本**。
+- **云调用必须由小程序端触发（2026-09-19 实测到反例）**：云调用要求调用方带上小程序侧的票据；控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，**必然**返回 `-501001`（CloudBase `INVALID_WX_ACCESS_TOKEN`，官方口径原文「云调用鉴权失败，未从小程序端触发使用云调用的云函数」）。因此**凡是要过内容安全的动作（`probe` / `chat` / `vision` / `moderateText` / `moderateImage`）都不能用控制台「测试」页验证**——那样测出的是触发方式不对，不是接口不可用；`usage` 不碰内容安全，控制台与小程序端都可测。小程序端的执行入口：`npm run probe:wechat`（探测）、`npm run smoke:ai`（文本端到端）、`npm run smoke:ai:vision`（图片路径端到端）、`npm run probe:ai-window`（检测窗口：超长输入拒绝与长输出全检，见下节）。
+- **内容安全接口有每日调用配额，未上架期间只有 100 次/天（2026-09-19 查官方口径并实测撞到上限）**：官方文档写「单个 appId 调用上限为 4000 次/分钟、2,000,000 次/天；**若为未上架小程序，调用上限为 100 次/天**」（[security.msgSecCheck](https://developers.weixin.qq.com/miniprogram/dev/server/API/sec-center/sec-check/api_msgseccheck.html)）。**本项目当前未认证、未备案、未发布 ⇒ 日上限是 100 次**，一次 AI 调用至少消耗 1 次文本检测，开启输出检测时还要再加（输入按 2000 字分片、最多 10 片；输出最多 20 片——**输出分片数就是配额暴露上限**，长回答会成倍消耗当日额度）；`msgSecCheck` 与 `imgSecCheck` 的配额**各自计算**（实测：文本报 45009 时图片仍 `errcode 0`）。默认 `AI_SAFETY_FAIL_MODE=closed` 下配额用尽会**直接拒绝当天所有 AI 调用**（问答 / 助手 / 识图全挂，次日恢复）——**排障时先看有没有 45009，不要往模型或密钥方向找**。**上线前的应对手段（按官方文档口径整理，2026-09-19 查证）**：① 等次日恢复（默认，零成本）；② **`clear_quota`（重置 API 调用次数）**——`POST https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=ACCESS_TOKEN`，body `{"appid":"<小程序 appid>"}`，官方声明**适用账号类型含小程序**，用小程序自己的 access_token 清空每日次数（[接口文档](https://developers.weixin.qq.com/miniprogram/dev/server/API/openApi-mgnt/api_clearquota.html)）；**每个账号每月共 10 次清零机会**（后台页面清零与 API 清零共用这 10 次，超限返回 48006），**本项目未实测**——前置是要能拿到小程序 access_token（AppID + AppSecret 换），未认证小程序能否换取**待验证**，验证步骤：换到 token 后先跑 `getApiQuota` 查一次剩余额度；③ `getApiQuota` 可查询任一接口当天的 `daily_limit` / `used` / `remain`（同样适用小程序），**演示前用它确认还剩多少次**；④ 排障期临时 `AI_SAFETY_FAIL_MODE=open`（仅开发排障、生产不得使用，测完立刻改回 `closed`）。**不要**为省配额去关 `AI_MODERATE_OUTPUT`——「AI 输出也要过内容安全」是硬约束。发布上线后配额自动放大到 4000/分钟、200 万/天，**所以这条只在上架前影响我们：演示当天要按 100 次倒排脚本**。
 - **云调用权限**：函数目录 `config.json` 声明了 `permissions.openapi`（`security.msgSecCheck`、`security.imgSecCheck`），随函数上传；官方文档口径是缺声明会返回 48001。**2026-09-19 间接实测**：小程序端探测拿到 `errcode 0`，说明随函数上传的声明已生效（否则按官方口径会返回 48001）。
 - **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
 - **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：

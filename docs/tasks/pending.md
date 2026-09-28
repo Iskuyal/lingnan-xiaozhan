@@ -1,8 +1,8 @@
 # 待办总表
 
-核对日期：2026-09-26。基线为 `main` 合并提交 `44d3ca9`（PR #65 界面改版合入后，`npm run typecheck` 与 `npm test` 459/459 通过）。
+核对日期：2026-09-28。原技术基线为 `main` 合并提交 `44d3ca9`（PR #65 界面改版合入后，`npm run typecheck` 与 `npm test` 459/459 通过）；人工验收 A1–C1 于 2026-09-27 由负责人确认全部通过，详细版本与结果待归档。**2026-09-28 新增**：内容安全审计的 CT-01 / CT-02 已在代码中修复并带回归测试（`npm test` 504/504），**云函数未部署、线上仍是修复前行为**，见 V8。
 
-本页把散在各 Ticket、人工验收清单与证据记录里的**未完成项**集中成一张可执行清单，按「谁能做、卡在什么上」分组。**代码合入、云端部署、模拟器验证、真机验证是四个不同状态**——本页只登记尚未取得的证据，不代表代码还没写。各票的完整过程与早期数字仍以票内为准，跨票版本边界见[项目状态](../status.md)。
+本页把散在各 Ticket、人工验收清单与证据记录里的**未完成项及待归档证据**集中成一张清单，按「谁能做、卡在什么上」分组。**代码合入、云端部署、模拟器验证、真机验证是四个不同状态**。第二节的 A1–C1 已由负责人确认通过，保留操作索引仅为补齐证据，不代表代码还没写或需要重做。各票的完整过程与早期数字仍以票内为准，跨票版本边界见[项目状态](../status.md)。
 
 ## 一、需要负责人决定
 
@@ -46,11 +46,11 @@
 | D15 | **演示配额与测试夹具** | 演示脚本按「未上线小程序内容安全日上限 100 次」倒排，录屏与现场演示前用 `getApiQuota` 查额度；`tests/fixtures/timetable/`（含教师姓名与班级人数）是否随包提交 | 演示可用性；包内隐私 | [Ticket 09](tickets/09-p6-submission.md) |
 | D16 | **界面改版的定稿与两条设计取舍** | `docs/design/campus-refresh/` 已定稿（2026-09-25，20 屏）；`docs/design/timetable-readability/` 状态仍是「待评审」，两条待拍板：网格里地点缩成「楼栋-房间」（原文留在列表与详情）是否接受、课名行数上限（高块 4 行 / 2 节块 3 行 / 1 节块 2 行）是否再收紧 | 设计说明的定稿状态；后续界面按哪一版对齐 | [课表返工设计说明](../design/timetable-readability/README.md) 待拍板项 |
 
-## 二、必须人工在真实条件下做的验证
+## 二、负责人确认通过的人工验收：待归档原始证据
 
-[人工验收清单](../testing/manual-acceptance.md)中，A1 已由负责人反馈实测，历史记录见 Ticket 03 验证记录；A1 本次字段对照结果尚未补入本表，其余项目仍有未完成判据。不能把代码测试或模拟器截图当成真机证据。以下按前置条件分组——**建议集中约一次时间做完**，因为多数项共用「第二微信号」「当天配额未用尽」「次日 06:00」这些一次性条件。
+[人工验收清单](../testing/manual-acceptance.md)的 A1–C1 已由负责人确认全部按判据通过，本节以下操作表保留为验收内容索引，不再表示“待执行”。**仍缺**本轮 Git/云函数版本、设备、样本、B1 逐字段准确率、B2/B3 逐题结果及 C1 第二页与定时运行的原始记录；V1–V7 是验收之外的独立项目，不能因 A1–C1 的确认自动销项。
 
-### 只需要人、不需要额外条件
+### 已确认通过：常规操作
 
 | 编号 | 操作 | 通过判据 |
 | --- | --- | --- |
@@ -59,14 +59,14 @@
 | A3 | 手工新增、修改、删除一门测试课；填写开学日和一节作息，退出重进 | 每步只改变指定字段；本周/今日提示按设定变化；设置可读回 |
 | B4 | 断网后打开已保存课表再恢复网络；遇模型超时/额度不足时检查提示 | 已有课表可查看或明确提示读取失败；AI 失败按「模型/内容/额度」分开，手工编辑入口可达 |
 
-### 需要第二微信号或真机
+### 已确认通过：双账号与真机
 
 | 编号 | 操作 | 通过判据 | 前置 |
 | --- | --- | --- | --- |
 | A4 | A、B 分别打开课表；仅 A 保存测试课，再让 B 查看并导入 B 自己的课表 | B 看不到 A 的课；B 的导入不影响 A。**此项只验证界面隔离**，服务端越权需另做技术测试 | 第二个已同意参与的微信号（[Ticket 03](tickets/03-timetable-excel-import.md) 唯一未验证项） |
 | A5 | 至少一台真机走首页→部门→资讯→课表；有条件时安卓和 iOS 各一次 | 文字可读、按钮可点、弹层能关闭、返回路径正确；资讯有来源和日期；空态/失败态可理解 | 真机。现有证据全部来自开发者工具模拟器（`realDevice: false`） |
 
-### 需要真实样本、真实模型或云控制台
+### 已确认通过：真实样本、模型与资讯
 
 | 编号 | 操作 | 通过判据 | 前置 |
 | --- | --- | --- | --- |
@@ -85,20 +85,21 @@
 | V4 | `newsSync` 首次全量入库 | 按 D6 选定的口径跑完分批导入（Ticket 04 口径约 155 批；Ticket 10 口径为团委 171 次 + 8 个新栏目 122 次 ≈ 30 批——两者范围不同） | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md)、[Ticket 10](tickets/10-campus-rag-qa.md) |
 | V5 | 本机之外的记录格式 | 每项另存私有测试记录：`编号、日期时间、Git SHA、设备/微信版本、云函数版本、输入样本代号、预期、实际、耗时、成本、截图或录屏路径、问题链接`；截图遮掉姓名、班级、课表原文及个人信息 | [人工验收清单](../testing/manual-acceptance.md) |
 | V6 | **文字链路的空响应**（2026-09-25 已连续复现 3 次） | `npm run smoke:ai -- --attempts=3` 三次都为 `failureClass=model_unavailable`、`retryable=true`、`detail=模型返回内容为空（OpenAI 兼容格式）`，耗时 3272/3347/3815ms，文本安全检测均通过；模型标识 `deepseek/deepseek-v4.1-flash`。本轮先查中转配置/服务端响应记录，不再重复消耗调用；修复或确认原因后再跑三次。历史 2026-09-24 那次 5201ms 空响应与此前 `ok=true` 记录仍保留 | `artifacts/verify/ai-smoke.jsonl`（被 gitignore，只在执行机上）；[云端复测](../evidence/cloud-recheck/README.md) |
-| V7 | **本地修复部署与旧数据兼容**（2026-09-27） | `codex/review-fixes` 的 `ai`、`timetable` 云函数尚未部署。部署前先核对当月 `ai_usage_records` 数量与 `ai_usage_monthly.calls`，避免既有漏记让新代码立即拦截；也须确认 `ai_usage_monthly` 不存在遗留 `accounting-gate:<月份>`，不得未核账就删闸门。部署后验证旧课表无批次标记时可读、首次整份替换只显示新课、手工新增仍可读，并回读云函数版本。空响应诊断只记录 `choices`、`finish_reason` 等结构，不记录正文；取得中转原始响应或结构诊断后再判断 V6 根因 | [数据模型与部署说明](../cloud-development.md)；本轮本地回归不等于云端验收 |
+| V7 | **本地修复部署与旧数据兼容**（2026-09-27） | 审查修复已由 PR #67 合入 `main`；新版 `ai`、`timetable` 云函数仍缺部署与版本回读证据。部署前先核对当月 `ai_usage_records` 数量与 `ai_usage_monthly.calls`，避免既有漏记让新代码立即拦截；也须确认 `ai_usage_monthly` 不存在遗留 `accounting-gate:<月份>`，不得未核账就删闸门。部署后验证旧课表无批次标记时可读、首次整份替换只显示新课、手工新增仍可读，并回读云函数版本。空响应诊断只记录 `choices`、`finish_reason` 等结构，不记录正文；取得中转原始响应或结构诊断后再判断 V6 根因 | [数据模型与部署说明](../cloud-development.md)；本轮本地回归不等于云端验收 |
+| V8 | **内容安全检测窗口修复的部署与云端复验**（2026-09-28） | 代码已修：输入超 2 万字按 `invalid_request` 拒绝（不花检测配额、不进模型）、输出分片全检且超 4 万字按 `internal` 失败、不返回内容；本地 `npm test` 504/504 与审计探针复跑见[审计修复一节](../review/content-safety-audit-2026-09-27.md#修复2026-09-28)。**新版 `ai` 与新版客户端要一起发**（新服务端 + 旧客户端在长对话里会被「输入过长」拒绝）。云端判据已写成可执行探针：`npm run probe:ai-window`（前置：开发者工具已开自动化端口、`ai` 已部署修复版）——探针 1 的 3.2 万字输入应被拒且 `usage`/`safety` 为空（**不消耗检测配额**），探针 2 的长输出应 `safety.checked=true` 且无 `checked=false` 告警（**按片消耗配额，约 10~16 次**；模型没写够 2 万字时脚本如实标「未覆盖」，不算通过）。结果落在 `artifacts/verify/ai-window.json`。**本地桩证据与本地探针都不替代这一步** | [审计报告](../review/content-safety-audit-2026-09-27.md)、[复现证据](../evidence/content-safety-audit-2026-09-27/README.md)、[云端说明](../cloud-development.md) |
 
 ## 三、代码与文档收尾（不需要等人）
 
 | # | 事项 | 判据 | 依据 |
 | --- | --- | --- | --- |
-| I1 | 导入页缺少 `wx.chooseMessageFile` 的存在性兜底 | 本地存在性检查与页面回归测试通过；本轮开发者工具实际 API 可用，因此“API 缺失”原生弹窗分支未在该模拟器触发，真机兼容性仍待验 | [云端复测](../evidence/cloud-recheck/README.md)；`miniprogram/pages/timetable/import/index.ts` |
+| I1 | 导入页的 `wx.chooseMessageFile` 存在性兜底（代码已完成，只剩真机分支） | 兜底已实现（`miniprogram/pages/timetable/import/index.ts` 的 `chooseFile()`：API 缺失时弹「暂不支持文件导入」并给出截图 / 手工录入两个出口，不调用云函数），`tests/timetable-pages.test.cjs` 的「缺少聊天记录选文件 API 时说明替代方案并留在引导页」覆盖该分支并通过。**模拟器里 API 实际可用，所以这条只在真机上才可能触发**——真机兼容性仍待验，不能用单测替代 | `miniprogram/pages/timetable/import/index.ts`、`tests/timetable-pages.test.cjs` |
 | I2 | 维护者白名单拒绝仍沿用 `invalid_request` 分类 | 2026-09-25 `npm run probe:wechat` 实测识别 `maintainer_not_allowlisted` 并提示核对 `AI_ADMIN_OPENIDS`；云函数分类与用户文案未改，是否新增独立权限分类仍待定口径 | 同上；`cloudfunctions/ai/access.ts`、`scripts/probe-wechat.cjs` |
 | I3 | `npm run verify:wechat` 的选文件 API 缺失分支 | 本轮 API 实际可用，Excel 错误文件、仓库样本放弃、无学分合成版式均已走过。**2026-09-26 复跑 24 项全过**、`verification.json` 重新生成（`result=passed`，`realDevice=false`）；09-25 那次「资讯阶段 automator timeout」是开发者工具长跑后退化，重开工具即恢复，不是脚本缺陷。缺失 API 时的 `partial` 分支仍未在模拟器实测 | [云端复测](../evidence/cloud-recheck/README.md) |
 | I4 | 删除云端遗留探针函数 `xlsx-cdn-probe` | 云开发控制台删除并保存结果。它不属于 SEC-01 至 SEC-05 的业务入口 | [项目状态](../status.md)；[安全整改证据](../evidence/security-remediation/README.md) |
 | I5 | Ticket 10 每日增量在 10 栏目下每批约 3 批但每日只触发 1 次 | **这条不改代码就不算完成**：减少 `INCREMENTAL_PAGES`、增加一次每日触发、或栏目轮转，三选一 | [Ticket 10](tickets/10-campus-rag-qa.md) |
 | I6 | `date + id` 组合索引未建 | 按 Ticket 04 的索引建议建立 | [Ticket 04](tickets/04-expand-sync-and-daily-schedule.md) |
-| I7 | AI 资讯实测报告尚未进 `main` | 报告在 `docs/ai-news-poc` 分支，结论为「AI 资讯不建议进首版」（8 篇真实文章、43 次真实调用，行动项抽取 8/8 为「无」，防幻觉 8/8）。采纳后应落进仓库并关闭 Issue #16，避免重复讨论 | [Issue #16](https://github.com/Iskuyal/wx-match/issues/16) |
-| I8 | 已合并分支未清理 | 与 `main` 已无内容差异、可删的远端分支共 10 条：`chore/dependency-pin`、`codex/data-usage-and-status`、`codex/security-audit-fixes`、`codex/security-deploy-evidence`、`docs/cloud-recheck-2026-09-24`、`docs/pending-work-list`、`feat/department-qa-guard-hardening`、`feat/glass-theme`、`feat/timetable-ui-rework`、`test/cloud-retest-nocredits`。`docs/ai-news-poc` 是**唯一**仍带未合并内容的分支（见 I7）。`test/cloud-retest-nocredits` 的两条提交已由 PR #48 / #49 进入 `main`，`ahead_by` 非 0 是重放出来的旧提交，内容无差异 | `gh api repos/Iskuyal/wx-match/compare/main...<分支>` 逐个核对；删远端分支前再确认一次 |
+| I7 | AI 资讯 PoC 报告合入（已完成） | 实测报告已由 PR #19 合入 `main`；脚本与原始数据按原作者要求只留在 `docs/ai-news-poc` 分支，报告第七节明确要求引用期间保留该分支。是否采纳「AI 资讯不进首版」及 Issue #16 的收口是独立的人为决定，不影响报告归档已完成的事实 | [实测报告](../reference/ai-news-poc.md)；[Issue #16](https://github.com/Iskuyal/wx-match/issues/16) |
+| I8 | 已合并旧分支清理（2026-09-28 完成） | 逐支确认主线祖先关系；`test/cloud-retest-nocredits` 的两条重放提交经 `git cherry` 确认为补丁等价。旧远端分支 15 条已删除；安全审计 PR #68 与部门动态 RAG PR #69 均已合入，相关远端分支也已删除。该次清理后，远端仅保留 `main` 与有独立原始证据的 `docs/ai-news-poc`；后续新建分支另计。原工作区仍在 `codex/review-fixes` 本地分支上，因有未提交文档改动而保留，不计为待清理远端分支 | [PR #68](https://github.com/Iskuyal/wx-match/pull/68)；[PR #69](https://github.com/Iskuyal/wx-match/pull/69) |
 
 ## 四、明确不在本次范围
 
@@ -112,5 +113,5 @@
 
 1. **内容安全配额**：未上线小程序的内容安全检测有**日上限 100 次**，用尽后当天 fail-closed，问答、助手与识图全部不可用。演练、录屏、现场演示与验收在抢同一份额度，需按 D15 倒排。
 2. **两个截止日期**：省赛报名与提交截止 2026-11-18，但**学校统一上报**，校内收口更早且尚未确认（D3）；国赛报名 2026-12-10 至 12-21、提交截止 2026-12-27。
-3. **不能并行的部分**：V1 要等下一个 06:00，B1/B2/B3 要真实样本与真实模型，A4 要第二微信号——这些一次性条件建议集中安排，不要分散到多天。
-4. **真实结果的边界**：本轮所有 UI 与交互证据均来自开发者工具模拟器，`realDevice: false`；合成小图只证明链路通，不能替代真实课表成绩。
+3. **独立云端项**：V1 的实际触发、V2 的服务端归属与额度、V3 的合法维护者路径、V4 的全量入库及 V7 的新版部署，仍按各自判据核对；A1–C1 通过不自动覆盖它们。
+4. **真实结果的边界**：2026-09-25/26 仓库中的 UI 与交互证据来自开发者工具模拟器，`realDevice: false`；2026-09-27 负责人另行确认 A1–C1 全部通过，但本轮真实设备、模型与版本记录尚未归档，不能把旧模拟器截图当作本轮证据。

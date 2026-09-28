@@ -144,11 +144,11 @@ test('多轮历史:映射成消息数组,只保留最近 20 条且不改变先�
   for (let index = 0; index < 21; index += 1) {
     history.push({ role: index % 2 === 0 ? 'user' : 'assistant', text: `消息${index}` });
   }
-  const messages = chatMessages(history);
+  const messages = chatMessages(history, '');
   assert.equal(messages.length, 20);
   assert.deepEqual(plain(messages[0]), { role: 'assistant', text: '消息1' });
   assert.deepEqual(plain(messages[19]), { role: 'user', text: '消息20' });
-  assert.deepEqual(plain(chatMessages([])), []);
+  assert.deepEqual(plain(chatMessages([], '')), []);
 });
 
 test('AI 服务:五类失败文案各自独立,不合并成一句', () => {
@@ -851,7 +851,7 @@ test('历史映射:被替换的回答用模型原话,裁剪与字段收窄仍由
     { role: 'user', text: '问题' },
     { role: 'assistant', text: '替换后的如实回答', modelText: '模型原话（编造的号码 020-22305555）', replaced: true, warning: '提示行' },
   ];
-  assert.deepEqual(plain(historyMessages(history)), [
+  assert.deepEqual(plain(historyMessages(history, '')), [
     { role: 'assistant', text: '开场' },
     { role: 'user', text: '问题' },
     { role: 'assistant', text: '模型原话（编造的号码 020-22305555）' },
@@ -860,5 +860,5 @@ test('历史映射:被替换的回答用模型原话,裁剪与字段收窄仍由
   for (let index = 0; index < MAX_HISTORY + 4; index += 1) {
     many.push({ role: index % 2 === 0 ? 'user' : 'assistant', text: `消息${index}` });
   }
-  assert.equal(historyMessages(many).length, MAX_HISTORY);
+  assert.equal(historyMessages(many, '').length, MAX_HISTORY);
 });

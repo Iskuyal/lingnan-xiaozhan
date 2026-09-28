@@ -3,5 +3,6 @@
 为有实际取舍的架构决策创建 `NNNN-简短主题.md`。
 
 - [ADR-0001：微信原生小程序与按需引入云开发](0001-native-wechat-typescript.md)
+- [ADR-0002：部门动态 RAG——随包语料 + bigram 检索 + 云函数注入](0002-department-activity-rag.md)
 
 每份记录包含：标题、日期、状态、背景、考虑的方案、决策、理由、影响、验证方式，以及关联 Issue。改变已有决策时，新建记录并链接被替代的 ADR。

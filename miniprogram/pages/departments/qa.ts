@@ -13,8 +13,11 @@
  */
 import {
   ChatMessage,
+  DEPARTMENT_QA_FEATURE,
+  DepartmentActivityCitation,
   MAX_HISTORY,
   UNCHECKED_SAFETY_NOTE,
+  chatEvent,
   chatMessages,
   safetyChecked,
   safetyNoteFor,
@@ -98,6 +101,8 @@ export type ChatTurn = ChatMessage & {
   modelText?: string;
   /** 被守卫替换过（只有替换过才出现这个字段）。 */
   replaced?: boolean;
+  /** 这条回答检索注入的动态来源清单（服务端命中部门动态时才有，页面据此渲染来源条）。 */
+  citations?: DepartmentActivityCitation[];
 };
 
 /** 单个组织的语料段落：缺失字段如实标注「官网未公布」，不写任何推测值。 */
@@ -116,9 +121,9 @@ function corpusSection(department: Department): string {
   if (department.activities.length === 0) {
     lines.push('活动动态：官网暂未收录该组织的活动动态');
   } else {
-    lines.push('活动动态：' + department.activities
-      .map((activity) => activity.title + '（' + activity.publishedAt + '）')
-      .join('；'));
+    // 动态不在这里全量列出：每次提问由云函数检索注入【部门动态检索结果】
+    // （feat/department-activity-rag，Ticket 10 先行落地），这里只说明动态存在、以检索为准。
+    lines.push('活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准');
   }
   return lines.join('\n');
 }
@@ -130,7 +135,7 @@ export function buildCorpusText(): string {
   return [head].concat(departments.map(corpusSection)).join('\n\n');
 }
 
-/** 系统提示词：角色约束 + 「不编造」纪律 + 完整语料。语料约两千字，每次追问都带全量。 */
+/** 系统提示词：角色约束 + 「不编造」纪律 + 完整语料。动态类信息由服务端检索注入，这里只给纪律。 */
 export function buildSystemPrompt(): string {
   return [
     '你是校园学生部门问答助手，只能依据下面「已核实资料」回答。',
@@ -138,6 +143,7 @@ export function buildSystemPrompt(): string {
     '1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；',
     '2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；',
     '3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。',
+    '4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。',
     '',
     buildCorpusText(),
   ].join('\n');
@@ -622,12 +628,26 @@ export function guardTurn(answer: string, departmentId: string, question = ''): 
  *
  * 守卫替换的是展示给学生的回答，不能改写送进模型的上下文——否则模型会以为
  * 自己说过「官网未公布」，下一轮追问就容易顺着这句假上下文走。
+ *
+ * `system` 必传并参与输入预算：历史累计到超过检测窗口时，最旧的一条先被剪掉
+ * （见 `chatMessages`）。故意不给默认值——漏传会把「装不下」留给服务端拒绝。
  */
-export function historyMessages(history: ChatTurn[]): ChatMessage[] {
+export function historyMessages(history: ChatTurn[], system: string): ChatMessage[] {
   return chatMessages(history.map((turn) => ({
     role: turn.role,
     text: turn.modelText === undefined ? turn.text : turn.modelText,
-  })));
+  })), system);
+}
+
+/**
+ * 07 部门问答的一次请求事件。
+ *
+ * 两个部门页面（列表页与详情页）都从这里取事件：`system` 与按预算剪过的历史必须配对，
+ * 这个不变量只留一处，页面里不再各拼一次（漏配的后果是长对话被服务端整次拒绝）。
+ */
+export function qaChatEvent(history: ChatTurn[]): Record<string, unknown> {
+  const system = buildSystemPrompt();
+  return chatEvent(DEPARTMENT_QA_FEATURE, system, historyMessages(history, system));
 }
 
 // ---------------------------------------------------------------------------
@@ -709,6 +729,26 @@ export function qaPanelPatch(input: {
  * 标记写在本地存储里，之后（含下次进入、含部门详情页）由用户主动点开。
  */
 export const QA_DISMISS_KEY = 'departments-qa-dismissed';
+
+/**
+ * 复制来源条里的官网原文链接（两个部门页面共用同一交互，见 qa.wxml 的 bindtap）。
+ *
+ * 写在纯逻辑里而不是两页各写一份 wx 调用（与 qaDismissed 同一理由）；
+ * 复制失败只影响「拿到链接」这一便利，toast 文案在回调里给出，不打断对话。
+ */
+export function copyActivitySourceUrl(url: string): void {
+  if (typeof url !== 'string' || url === '') return;
+  try {
+    if (typeof wx === 'undefined' || typeof wx.setClipboardData !== 'function') return;
+    wx.setClipboardData({
+      data: url,
+      success: () => wx.showToast({ title: '原文链接已复制', icon: 'none' }),
+      fail: () => wx.showToast({ title: '复制失败，请重试', icon: 'none' }),
+    });
+  } catch {
+    // 复制异常时静默：来源条只是辅助信息，不应因它报错。
+  }
+}
 
 export function qaDismissed(): boolean {
   try {

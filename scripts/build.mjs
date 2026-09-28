@@ -1,7 +1,9 @@
-import { cpSync, mkdirSync, readdirSync, copyFileSync, rmSync, lstatSync, existsSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, copyFileSync, rmSync, lstatSync, existsSync, writeFileSync } from 'node:fs';
 import { resolve, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
+import { buildCorpusPayload, renderCorpusModule } from './lib/generate-department-corpus.cjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = resolve(root, 'dist');
@@ -51,6 +53,22 @@ if (existsSync(functionsRoot)) {
       if (!file.isFile() || file.name.endsWith('.ts') || file.name === 'tsconfig.json') continue;
       copyFileSync(join(source, file.name), join(target, file.name));
     }
+  }
+}
+
+// 部门动态语料注入：从 miniprogram 编译产物导出检索语料，写进 ai 云函数部署目录。
+// 生成失败不阻断构建——语料缺失时 ai 函数检索注入自动禁用，问答退回纯语料模式（fail-open）。
+{
+  const require = createRequire(import.meta.url);
+  try {
+    const departmentsModule = require(resolve(output, 'services/departments.js'));
+    const corpus = buildCorpusPayload(departmentsModule);
+    const corpusTarget = join(output, 'cloudfunctions', 'ai', 'department-corpus.js');
+    mkdirSync(join(output, 'cloudfunctions', 'ai'), { recursive: true });
+    writeFileSync(corpusTarget, renderCorpusModule(corpus), 'utf8');
+    console.log(`部门动态语料已注入 ai 云函数（${corpus.departments.length} 个组织，核查日期 ${corpus.source.verifiedAt}）`);
+  } catch (error) {
+    console.warn(`部门动态语料生成失败，检索注入将禁用：${error && error.message ? error.message : error}`);
   }
 }
 
