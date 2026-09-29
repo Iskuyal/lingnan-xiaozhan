@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>体测估算 · 输入</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .fit-field { margin-top:14px; padding:12px; border:1px solid rgba(43,36,34,.14); background:rgba(255,255,255,.62); }
+    .fit-label { color:var(--text-3); font-size:11px; }
+    .fit-pills { margin-top:7px; display:flex; gap:7px; }
+    .fit-pill { flex:1; min-height:44px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(43,36,34,.2); color:var(--text-2); font-size:12px; }
+    .fit-pill-on { border-color:var(--brand); background:var(--brand); color:#fff; font-weight:700; }
+    .fit-input { margin-top:7px; min-height:44px; padding:10px 11px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.18); background:#fff; font-size:15px; }
+    .fit-unit { flex:none; margin-left:8px; color:var(--text-3); font-size:11px; }
+    .fit-hint { margin-top:6px; color:var(--text-3); font-size:11px; line-height:1.7; }
+    .fit-row { display:flex; gap:9px; }
+    .fit-row .fit-field { flex:1; min-width:0; }
+    .fit-calc { margin-top:20px; width:100%; justify-content:center; font-size:15px; }
+    .fit-note-block { margin-top:16px; padding:11px 12px; border-left:3px solid var(--gold); background:var(--paper-shade); color:var(--text-2); font-size:12px; line-height:1.75; }
+    .fit-foot { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">体测估算</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">国家学生体质健康标准（2014年修订）· 大学组</div>
+    <h1 class="page-title">体测估算</h1>
+    <p class="copy">按国家标准评分表算一次估算分。只在你手机上计算，不上传、不保存；不确定的项目留空即可。</p>
+
+    <section class="fit-field">
+      <div class="fit-label">性别</div>
+      <div class="fit-pills">
+        <div class="fit-pill fit-pill-on">男</div>
+        <div class="fit-pill">女</div>
+      </div>
+    </section>
+
+    <section class="fit-field">
+      <div class="fit-label">年级组</div>
+      <div class="fit-pills">
+        <div class="fit-pill fit-pill-on">大一 / 大二</div>
+        <div class="fit-pill">大三 / 大四</div>
+      </div>
+      <div class="fit-hint">标准把大学一二年级与三四年级分成两组，同一成绩的分数不同。</div>
+    </section>
+
+    <div class="fit-row">
+      <section class="fit-field">
+        <div class="fit-label">身高</div>
+        <div class="fit-input">175<span class="fit-unit">厘米</span></div>
+      </section>
+      <section class="fit-field">
+        <div class="fit-label">体重</div>
+        <div class="fit-input">61.3<span class="fit-unit">千克</span></div>
+      </section>
+    </div>
+
+    <section class="fit-field">
+      <div class="fit-label">肺活量</div>
+      <div class="fit-input">4300<span class="fit-unit">毫升</span></div>
+    </section>
+    <section class="fit-field">
+      <div class="fit-label">50 米跑</div>
+      <div class="fit-input">7.0<span class="fit-unit">秒</span></div>
+    </section>
+    <section class="fit-field">
+      <div class="fit-label">坐位体前屈</div>
+      <div class="fit-input">17.7<span class="fit-unit">厘米</span></div>
+    </section>
+    <section class="fit-field">
+      <div class="fit-label">立定跳远</div>
+      <div class="fit-input">248<span class="fit-unit">厘米</span></div>
+    </section>
+    <section class="fit-field">
+      <div class="fit-label">引体向上</div>
+      <div class="fit-input">15<span class="fit-unit">次</span></div>
+    </section>
+    <section class="fit-field">
+      <div class="fit-label">1000 米跑</div>
+      <div class="fit-input">3′42″<span class="fit-unit">分′秒″</span></div>
+    </section>
+
+    <button class="primary fit-calc">估算</button>
+
+    <div class="fit-note-block">
+      结果是「按所选国家标准的估算分」，不是学校体测的正式成绩，也不代表体检或医学建议。
+      学校实际采用的测试与计分规则尚未核实，最终成绩以学校公布为准。
+    </div>
+    <div class="quiet fit-foot">填了的项目才参与计算；留空的项目不会按 0 分算，也不会替你猜。</div>
+  </main>
+</body>
+</html>

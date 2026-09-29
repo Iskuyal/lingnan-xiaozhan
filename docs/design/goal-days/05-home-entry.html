@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>首页 · 目标日入口</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    /* 其余版式沿用 docs/design/campus-refresh/01-home.html，只加一条目标日入口带。 */
+    .home-hero { margin: -22px -18px 0; padding: 25px 18px 18px; min-height: 220px; position: relative; overflow: hidden; background: var(--brand-deep); color: #fff; }
+    .home-kicker { color: rgba(255,255,255,.76); font-size: 11px; }
+    .home-name { max-width: 230px; margin-top: 8px; color: #fff; font-size: 21px; line-height: 1.4; font-weight: 700; }
+    .home-campus { margin-top: 5px; color: rgba(255,255,255,.79); font-size: 11px; }
+    .home-hero-copy { max-width: 210px; margin-top: 15px; color: #fff; font-size: 13px; line-height: 1.75; }
+    .hero-art { position: absolute; right: 14px; bottom: 4px; }
+    .hero-foot { margin-top: 13px; display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,.7); font-size: 10px; }
+    .gold-square { width: 7px; height: 7px; background: var(--gold); }
+    .entry-main { display:flex; width:100%; margin-top: 16px; padding: 15px 16px 13px; min-height: 91px; background: var(--brand); color: #fff; position: relative; }
+    .entry-main .entry-label { color: rgba(255,255,255,.76); font-size: 10px; }
+    .entry-main .entry-title { display:block; margin-top: 3px; font-size: 20px; line-height: 1.35; font-weight: 700; }
+    .entry-main .entry-desc { display:block; margin-top: 3px; color: rgba(255,255,255,.82); font-size: 11px; }
+    .entry-main .action-arrow { position: absolute; right: 16px; top: 32px; }
+    .entry-pair { display: grid; grid-template-columns: 1fr 1.18fr; gap: 10px; margin-top: 10px; }
+    .entry-mini { min-height: 75px; padding: 12px; background: rgba(255,255,255,.62); border: 1px solid rgba(43,36,34,.14); }
+    .entry-mini:first-child { border-top: 3px solid var(--gold); }
+    .entry-mini:last-child { border-top: 3px solid var(--brand-deep); }
+    .entry-mini strong { display: block; color: var(--brand-deep); font-size: 15px; }
+    .entry-mini span { color: var(--text-3); font-size: 10px; }
+
+    /* 目标日入口带：一条横带，左侧最近一条目标日，右侧剩余天数。没有数据时右侧是「去添加」。 */
+    .goal-strip { margin-top:10px; width:100%; padding:13px 14px; display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.62); border:1px solid rgba(43,36,34,.14); border-left:3px solid var(--gold); text-align:left; }
+    .goal-strip-main { flex:1; min-width:0; display:block; }
+    /* 三行都是块级：入口带是按钮，span 默认 inline 会把标签与名称挤在同一行。 */
+    .goal-strip-label { display:block; color:var(--text-3); font-size:10px; }
+    .goal-strip-name { display:block; margin-top:3px; color:var(--text); font-size:14px; font-weight:600; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .goal-strip-meta { display:block; margin-top:3px; color:var(--text-3); font-size:10px; }
+    .goal-strip-days { flex:none; color:var(--brand-deep); font-size:17px; font-weight:700; line-height:1.2; text-align:right; }
+    .goal-strip-days small { display:block; color:var(--text-3); font-size:10px; font-weight:400; }
+    .goal-strip-empty { border-left-color:rgba(43,36,34,.18); }
+    .goal-strip-empty .goal-strip-name { color:var(--brand-ink); }
+
+    .latest { padding: 0 0 11px; border-bottom: 1px solid rgba(43,36,34,.16); }
+    .latest-date { color: var(--gold-deep); font-size: 10px; font-weight: 700; }
+    .latest-title { margin-top: 5px; font-size: 14px; line-height: 1.6; font-weight: 700; }
+    .about { padding: 13px 14px; background: rgba(255,255,255,.56); border-left: 3px solid var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back"></span><span class="nav-title">校园工具</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <section class="home-hero">
+      <div class="home-kicker">校园信息与日常服务</div>
+      <div class="home-name">广东岭南职业技术学院</div>
+      <div class="home-campus">广州校区 / 清远校区</div>
+      <div class="home-hero-copy">读资讯、找组织、查课表。</div>
+      <div class="hero-foot"><i class="gold-square"></i>校园里的事，从这里进入</div>
+    </section>
+
+    <button class="primary entry-main"><span><small class="entry-label">我的安排</small><strong class="entry-title">打开课表</strong><span class="entry-desc">导入课程，按周查看</span></span><span class="action-arrow">›</span></button>
+    <div class="entry-pair">
+      <button class="entry-mini"><strong>学生部门</strong><span>查看组织名录</span></button>
+      <button class="entry-mini"><strong>校园资讯</strong><span>阅读官网动态与通知</span></button>
+    </div>
+
+    <button class="goal-strip">
+      <span class="goal-strip-main">
+        <span class="goal-strip-label">最近的目标日</span>
+        <span class="goal-strip-name">计算机二级考试</span>
+        <span class="goal-strip-meta">2026-12-05 · 不计入当天</span>
+      </span>
+      <span class="goal-strip-days">67<small>天后</small></span>
+    </button>
+
+    <!-- 后加的两个功能入口（Issue #91 校历与考试、Issue #92 体测估算）与上面同一套 2×2 版式。 -->
+    <div class="entry-pair">
+      <button class="entry-mini"><strong>校历与考试</strong><span>官方日期与来源</span></button>
+      <button class="entry-mini"><strong>体测估算</strong><span>按国家标准估算</span></button>
+    </div>
+
+    <div class="section-head"><span class="section-title">最近动态</span><span class="section-note">校园资讯</span></div>
+    <article class="latest">
+      <div class="latest-date">2026-09-12</div>
+      <div class="latest-title">向“新”而行，逐梦岭南——我校开展2026级新生入学教育</div>
+    </article>
+    <div class="quiet" style="margin-top:8px">内容由学校官网同步，查看时可复制原文链接核对。</div>
+
+    <div class="section-head"><span class="section-title">认识岭南</span><span class="section-note">学校简介</span></div>
+    <section class="about">
+      <div class="copy">学校设有广州、清远两个校区，以大健康类专业为主体，同时开设电子信息、智能制造、财经商贸与文化艺术等领域专业。</div>
+      <div class="source-block">
+        <div class="quiet">资料来源：学校官网 · 学院简介</div>
+        <div class="quiet">核查于 2026-09-17</div>
+      </div>
+    </section>
+    <div class="quiet" style="margin-top:20px;text-align:center">从了解校园，到安排每一天</div>
+  </main>
+</body>
+</html>
