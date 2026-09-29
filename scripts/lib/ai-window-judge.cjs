@@ -36,10 +36,20 @@ function judgeOversizeInput(result, limit) {
   }
   if (response.usage !== null && response.usage !== undefined) reasons.push('用量不为空：说明发生了子调用（可能花了检测配额）');
   if (response.safety !== null && response.safety !== undefined) reasons.push('带回了检测结论：说明检测已经跑过，拒绝来得太晚');
+  if (Array.isArray(response.warnings) && response.warnings.length > 0) {
+    reasons.push('提前拒绝却带有告警：无法确认没有发生检测或模型子调用');
+  }
   if (!String(response.detail || '').includes(String(limit))) {
     reasons.push(`detail 应写明上限 ${limit}，实际 ${JSON.stringify(response.detail || '')}`);
   }
   return { pass: reasons.length === 0, reasons };
+}
+
+/** 整轮复验：0 两档通过，2 判据不符，3 长输出未覆盖（须换提示重跑）。 */
+function probeRunExitCode(oversizeVerdict, longVerdict) {
+  if (!oversizeVerdict.pass || (longVerdict.covered && !longVerdict.pass)) return 2;
+  if (!longVerdict.covered) return 3;
+  return 0;
 }
 
 /**
@@ -85,4 +95,4 @@ function judgeLongOutput(result, inputLimit, outputLimit, textLength) {
   return { pass: reasons.length === 0, covered: true, reasons };
 }
 
-module.exports = { judgeLongOutput, judgeOversizeInput };
+module.exports = { judgeLongOutput, judgeOversizeInput, probeRunExitCode };

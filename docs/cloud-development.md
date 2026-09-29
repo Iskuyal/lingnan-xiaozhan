@@ -298,9 +298,9 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 ### 内容安全适配层
 
 - **文字与图片是两个独立入口**（`checkText` / `checkImage`）：微信侧本就是 `security.msgSecCheck` 与 `security.imgSecCheck` 两个云调用，第三方侧的请求体也不同。
-- **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。文字按 2000 字一片送检，**窗口 = 一次能检完的字数**，两侧处置不同（2026-09-28 修复，[内容安全审计 CT-01/CT-02](../review/content-safety-audit-2026-09-27.md)）：
+- **检查范围**：`chat` / `vision` 会检**调用方送进来的全部文字**——事件顶层 `system`、每条消息（user / assistant / **system**）以及 `vision` 的图片，外加模型输出（`AI_MODERATE_OUTPUT`）。文字按 2000 字一片送检，**窗口 = 一次能检完的字数**，两侧处置不同（2026-09-28 修复，[内容安全审计 CT-01/CT-02](review/content-safety-audit-2026-09-27.md)）：
   - **输入侧**：`MAX_INPUT_CHARS = 2000 × 10 = 2 万字`（`system` 与全部消息拼起来算）。超出即 `invalid_request` 拒绝，**不消耗检测配额、不进模型、不下载图片**；返回值 `detail` 写明总字数与 system 字数，用户文案指向「精简或清空对话」。客户端 `miniprogram/services/ai.ts` 同源声明 `MAX_INPUT_CHARS`，并留更大余量按 `HISTORY_INPUT_BUDGET = 16000` 自剪最旧历史（服务端还会注入部门动态语料，实测最长约 380 字）。
-  - **输出侧**：`MAX_OUTPUT_CHUNKS = 20`（4 万字）。输出先判长度，再分片**全检**；超过 4 万字按 `model_unavailable` 失败且**一个字都不返回**。输出长度不受调用方控制，所以这里不能像输入那样「提前拒绝」，只能是「检完才给」或「不给」。
+  - **输出侧**：`MAX_OUTPUT_CHUNKS = 20`（4 万字）。输出先判长度，再分片**全检**；超过 4 万字按 `internal` 失败且**一个字都不返回**。输出长度不受调用方控制，所以这里不能像输入那样「提前拒绝」，只能是「检完才给」或「不给」。
   - 只有管理员限定的诊断动作 `moderateText` 保留「部分报告 + `checked: false`」：它不喂模型也不上屏。**两条通路都不再产生「窗口外文字照常流通」的行为**——修复前它们会带着 `checked=false` 放行。
 - **`checked` 与 `passed` 是两件事**：`passed: true` 只表示「检过的范围内没发现问题」，`checked: false` 表示这次**没有真正检测**（`AI_SAFETY_PROVIDER=off`、`AI_SAFETY_FAIL_MODE=open` 放行未检内容、或长文本只检了前一段）。`checked: false` 时返回值同时会带一条 `warnings`，调用方与日志都不得把「跳过」读成「干净」。
 - **微信为主**：拿到调用上下文 openid 时用 `msgSecCheck` v2（带 `version: 2`、`scene`、`openid`，判 `result.suggest`）；没有 openid 退回 v1 形态，判 `errcode`。违规可能以 `errcode 87014` 返回或抛出，两者都按违规处理。**2026-09-19 从小程序端实测：v2 形态下两条接口都返回 `errcode 0`**（记录见探测记录表）。

@@ -1,0 +1,67 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="empty"><view class="empty-text">正在读取…</view></view>
+
+  <view wx:elif="{{error !== ''}}" class="empty">
+    <view class="empty-icon">⚠️</view>
+    <view class="empty-text">{{error}}</view>
+  </view>
+
+  <block wx:elif="{{post !== null}}">
+    <view class="nav">
+      <view class="nav-title">帖子详情</view>
+      <view class="nav-sub">公开信息 · 归属以人工核验为准</view>
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <text class="badge {{post.type === 'lost' ? 'badge-lost' : 'badge-found'}}">{{typeLabel}}</text>
+        <text class="badge">{{post.category}}</text>
+        <text class="badge badge-status">{{statusLabel}}</text>
+      </view>
+      <view class="card-title">{{post.title}}</view>
+      <view class="card-desc">{{post.description}}</view>
+      <view class="card-meta">
+        <text>{{post.timeRange.start}} ~ {{post.timeRange.end}}</text>
+        <text>{{post.locationArea}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{post.isOwner}}" class="card">
+      <view class="card-head"><text class="badge badge-warn">仅你可见</text></view>
+      <view class="card-desc">核验特征：{{post.verificationTraits || '（未填写）'}}</view>
+    </view>
+
+    <block wx:if="{{post.isOwner}}">
+      <view wx:if="{{post.status === 'open' || post.status === 'verifying' || post.status === 'matching'}}">
+        <view class="note-info" wx:if="{{matches.length === 0 && matchesError === ''}}">暂无候选线索；发布或完善类别/时间/地点可提高命中。</view>
+        <view class="note" wx:if="{{matchesError !== ''}}">{{matchesError}}</view>
+        <view wx:for="{{matches}}" wx:key="matchId" class="card">
+          <view class="card-head">
+            <text class="badge badge-warn">候选 {{item.rank}}</text>
+            <text class="badge badge-status">{{item.modelVersion === '' ? '规则召回' : 'AI 比对'}}</text>
+          </view>
+          <view class="evidence">
+            <view wx:for="{{item.similarities}}" wx:key="*this" class="evidence-line"><text class="evidence-tag evidence-sim">相符</text>{{item}}</view>
+            <view wx:for="{{item.conflicts}}" wx:key="*this" class="evidence-line"><text class="evidence-tag evidence-con">冲突</text>{{item}}</view>
+            <view wx:for="{{item.uncertainties}}" wx:key="*this" class="evidence-line"><text class="evidence-tag evidence-unc">不确定</text>{{item}}</view>
+          </view>
+          <view class="btn-row" style="margin-top:20rpx">
+            <button class="btn btn-ghost" data-id="{{item.candidatePostId}}" bindtap="openCandidate">查看对方帖子</button>
+          </view>
+        </view>
+      </view>
+      <view class="btn-row">
+        <button class="btn btn-plain" bindtap="closeCurrent">关闭帖子</button>
+        <button class="btn btn-plain" bindtap="deleteCurrent">删除</button>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="note-info">发布者未公开联系方式；请通过认领申请核验身份，由发布者确认后再交接。</view>
+      <view class="btn-row" wx:if="{{post.status === 'open' || post.status === 'verifying' || post.status === 'matching'}}">
+        <button id="lost-found-claim-entry" class="btn btn-primary" bindtap="goClaim">我要认领</button>
+      </view>
+      <view class="note">贵重物品请在线下公共场所交接，必要时联系校方保卫处；本平台不承诺担保，也不自动判定归属。</view>
+    </block>
+  </block>
+</view>

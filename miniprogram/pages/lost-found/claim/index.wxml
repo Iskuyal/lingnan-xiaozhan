@@ -1,0 +1,60 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-title">认领核验</view>
+    <view class="nav-sub">{{isOwner ? '你是发布者 · 请人工核对' : '请提供能证明物品属于你的信息'}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty"><view class="empty-text">正在读取…</view></view>
+
+  <view wx:elif="{{error !== ''}}" class="empty">
+    <view class="empty-icon">⚠️</view>
+    <view class="empty-text">{{error}}</view>
+  </view>
+
+  <block wx:elif="{{isOwner}}">
+    <view wx:if="{{claims.length === 0}}" class="empty">
+      <view class="empty-icon">📥</view>
+      <view class="empty-text">还没有认领申请</view>
+    </view>
+    <view wx:for="{{claims}}" wx:key="claimId" class="card">
+      <view class="card-head">
+        <text class="badge badge-warn">{{item.status === 'pending' ? '待核验' : item.status === 'needs_more_info' ? '需补充' : item.status === 'accepted' ? '已通过' : item.status}}</text>
+        <text class="badge badge-status">申请</text>
+      </view>
+      <view class="card-title" style="font-size:24rpx;font-weight:400">{{item.relation}}</view>
+      <view class="card-desc">核验回答：{{item.evidence}}</view>
+      <view class="card-meta"><text>提交于 {{item.createdAt}}</text></view>
+      <view wx:if="{{item.reviewerNote !== ''}}" class="note" style="margin:16rpx 0 0">{{item.reviewerNote}}</view>
+      <view class="btn-row" style="margin-top:20rpx" wx:if="{{item.status === 'pending' || item.status === 'needs_more_info'}}">
+        <button class="btn btn-ghost" data-claim-id="{{item.claimId}}" data-to-status="needs_more_info" bindtap="review">需补充</button>
+        <button class="btn btn-primary" data-claim-id="{{item.claimId}}" data-to-status="accepted" bindtap="review">通过</button>
+      </view>
+      <view class="btn-row" style="margin-top:12rpx" wx:if="{{item.status === 'pending' || item.status === 'needs_more_info'}}">
+        <button class="btn btn-plain" data-claim-id="{{item.claimId}}" data-to-status="rejected" bindtap="review">拒绝</button>
+      </view>
+      <view class="btn-row" style="margin-top:20rpx" wx:if="{{item.status === 'accepted'}}">
+        <button class="btn btn-primary" data-claim-id="{{item.claimId}}" bindtap="confirm">确认交接</button>
+      </view>
+    </view>
+    <view class="note-info">归属判断只由你作出：请核对核验回答与你的未公开特征，不要仅凭公开描述通过申请。</view>
+  </block>
+
+  <block wx:else>
+    <view class="form">
+      <view class="field">
+        <view class="field-label"><text class="req">*</text> 你与该物品的关系</view>
+        <input class="input" value="{{relation}}" bindinput="onRelation" maxlength="100" placeholder="例如：本人遗失 / 代同学认领（需说明）" />
+      </view>
+      <view class="field">
+        <view class="field-label"><text class="req">*</text> 未公开的核验信息</view>
+        <textarea class="input textarea" value="{{evidence}}" bindinput="onEvidence" maxlength="500" placeholder="只有失主才知道的特征：颜色细节、划痕、编号局部、内部物品等"></textarea>
+        <view class="field-hint">不要在这里填写手机号、微信号；核验通过后由双方协商交接</view>
+      </view>
+    </view>
+    <view class="note-info">你的核验信息只展示给发布者本人用于核验；平台不做自动归属判定。</view>
+    <view class="note" wx:if="{{actionError !== ''}}">{{actionError}}</view>
+    <view class="btn-row">
+      <button class="btn btn-primary {{submitting ? 'btn-disabled' : ''}}" id="lost-found-claim-submit" bindtap="submit">提交申请</button>
+    </view>
+  </block>
+</view>
