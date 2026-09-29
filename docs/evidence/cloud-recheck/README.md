@@ -46,3 +46,19 @@
 | 整套 `verify:wechat` | 已通过部门与课表页面、错误文件、导入放弃、无学分版式、编辑表单及资讯导航中的多个步骤；脚本随后因 automator `timeout waiting for automator response` 中断，没有写出本轮 `verification.json` | 不能据此标记整套通过；实际模拟器的 `wx.chooseMessageFile` 是函数，因此缺失 API 的 `partial` 分支本轮没有触发 |
 
 本轮没有进行真实截图识别、课表助手 10 题、两账号隔离、真机路径、断网/额度故障、资讯第二页或定时任务测试；也没有新增或修改用户课表。V6 出现三次连续空响应后停止继续冒烟，先查模型中转配置与服务端响应记录再复测。
+
+## 2026-09-29 云端版本回读与内容安全窗口探针
+
+本轮是**只读回读 + 真实云端探针**，全部在开发者工具模拟器里跑（`realDevice: false`），云环境 `cloudbase-d2gjtbbwu3575cd7b`，本地仓库 SHA `1267889`（探针修复分支 `e875323`，合入 `1ffdd4c`）。**未做**真机、两账号、真实截图与固定 10 题。逐条字段（含哈希、耗时、配额估算）见私有记录 `artifacts/verify/private-record-2026-09-29-cloud-recon.md`（被 gitignore，只在执行机上）；探针原始结果在 `artifacts/verify/ai-window.jsonl`。
+
+| 核对项 | 本轮实测 | 结论边界 |
+| --- | --- | --- |
+| 已部署 `ai` / `timetable` 版本 | `functions info`：`ai` Active / timeout 60 / Nodejs16.13；`timetable`、`newsSync` Active / timeout 20 / Nodejs16.13。再用 `functions download` 下载代码逐项比对：`ai` 缺 #67 的记账闸门、#69 的 `rag.js`、#74 的窗口拒绝与分片上限文案（含 2026-09-19 的探测有效性字段）；`timetable` 缺 #67 的批次保护标记 | 确认仍停在 2026-09-24 那一版。CLI **不提供版本号与更新时间**，所以这类判断只能靠下载比对或控制台读回 |
+| 遗留 `accounting-gate` | 写 `accounting-gate:<月份>` 的逻辑不在已部署的 `usage.js` 里 | 按已部署代码判定：线上不可能由现有部署写出这种文档。数据库本身仍未读——缺控制台或维护者通道 |
+| 维护者路径（V3） | `npm run probe:wechat` → `diagnosis=maintainer_not_allowlisted`、`failureClass=invalid_request` | 与 2026-09-25 一致，仍未配置白名单。`assertAdmin` 在微信调用之前，因此**未占用探测的 10 分钟窗口、未消耗检测配额**；`usage` / `moderateText` / `moderateImage` 同样取不到 |
+| 窗口探针 1（V8，3.2 万字输入） | `ok=false`、`failureClass=model_unavailable`、`usage=null`、`safety.checked=**false**`，带告警「文本共 32019 字，仅检测了前 20000 字」；云函数耗时 10118ms | **与期望不符**：超长输入没有被提前拒绝，窗口外的 12019 字未检测就送进模型 ⇒ 线上仍是修复前行为 |
+| 窗口探针 2（V8，长输出） | 模型返回 0 字（`model_unavailable`），判定 `covered=false` | **未覆盖，按判据不算通过**。另有结构性限制：覆盖要求输出 ≥2 万字，而服务端把 `maxTokens` 硬钳在 1..8192，这一档目前不可达 |
+| 文字链路（V6） | 当日 6 次真实文字调用**全部**返回空内容（短文本 5345ms；超长输入 9424 / 10118ms；长输出 41651 / 42254ms），`detail=模型返回内容为空（OpenAI 兼容格式）` | 症状仍在，未按 V6 的决定重跑三次；`choices` / `finish_reason` 结构诊断只在 ≥2026-09-27 的代码里，**已部署版本没有这段**，要先部署才能取到 V6 要的结构记录 |
+| 检测配额消耗 | 估算约 50 片（日上限 100） | **无法查询剩余额度**（`getApiQuota` 需小程序 access_token，而 AppSecret 不在本机；`usage` 动作被白名单拦截）。演示/录屏前请按 D15 先查额度 |
+
+**本轮顺带修掉的工具缺陷**：探针原先把整次云函数调用包在一次 `evaluate` 里等待结果，而开发者工具的自动化桥对单次 `evaluate` 有约 10 秒上限（实测 3.2 万字那次恰好在 10010ms 报 `timeout waiting for automator response`），于是连续两次 `exit 1`、`probes` 为空——这也解释了 2026-09-25 那次 `verify:wechat` 的同名中断。已改为「发起后立刻返回 + 短 `evaluate` 轮询」（[PR #79](https://github.com/Iskuyal/wx-match/pull/79)），请求体、判定逻辑与结果文件形状都不变，退出码语义（0 通过 / 1 没跑通 / 2 不符 / 3 未覆盖）也不变。
