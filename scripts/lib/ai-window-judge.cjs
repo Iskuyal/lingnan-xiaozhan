@@ -95,4 +95,49 @@ function judgeLongOutput(result, inputLimit, outputLimit, textLength) {
   return { pass: reasons.length === 0, covered: true, reasons };
 }
 
-module.exports = { judgeLongOutput, judgeOversizeInput, probeRunExitCode };
+/**
+ * 输出侧的可达判据（2026-09-29 改为 B 方案）。
+ *
+ * **为什么不再要求「输出 ≥ 2 万字」**：服务端把 `maxTokens` 钳在 1..8192
+ * （`cloudfunctions/ai/config.ts`），而当前模型在长输出任务上每个字符要烧掉几十个
+ * token——2026-09-29 实测：让模型重复输出六个字，20 次（120 字）用 352 completion
+ * token，100 次（600 字）用 **5575** token；再往上（1200 / 3000 / 5000 / 30000 字）
+ * 一律在 40 秒模型超时处失败。**模型写不出 2 万字**，按 2 万字判覆盖只会永远得到
+ * 「未覆盖」。
+ *
+ * 改为验证**同一套分片检测**在多片文本上整段检完：由维护者动作 `moderateText`
+ * 直接送一段 ≥`minChunks` 片（默认 3 片 = 6000 字）的良性文本，期望
+ * `safety.checked=true` 且返回值里没有 `checked=false` 告警。`moderateOutput`
+ * （chat / vision 的输出检测）走的就是同一个分片函数，只是片数上限不同
+ * （输出 20 片 / 诊断 10 片）。
+ *
+ * **边界（必须与文档一致）**：这条证明「输出被切成多片并全部检完」，**不再证明
+ * 2 万字窗口被用满**；「单次输出超过 4 万字即按 `internal` 拒绝、一个字都不返回」
+ * 那条 fail-closed 规则在线上构造不出来（模型写不出那么长，也没有注入通路），
+ * 仍由单测与本地夹具覆盖。
+ */
+function judgeChunkedModeration(result, textLength, chunkChars = 2000, minChunks = 3) {
+  const response = responseOf(result);
+  const reasons = [];
+  const length = typeof textLength === 'number' ? textLength : 0;
+  if (length < chunkChars * minChunks) {
+    return {
+      pass: false,
+      covered: false,
+      reasons: [`送检文本 ${length} 字，未达到 ${chunkChars}×${minChunks} 字：这一档没被覆盖`],
+    };
+  }
+  if (response.ok !== true) reasons.push(`期望检测成功返回，实际 ${describe(result)}`);
+  const safety = response.safety;
+  if (safety === null || safety === undefined || safety.checked !== true) {
+    reasons.push(`safety.checked 应为 true，实际 ${safety === null || safety === undefined ? '(空)' : safety.checked}`);
+  }
+  const warnings = Array.isArray(response.warnings) ? response.warnings : [];
+  const uncheckedWarning = warnings.find((warning) => String(warning).includes('checked=false'));
+  if (uncheckedWarning !== undefined) {
+    reasons.push(`返回值带着「没检全」的告警：${String(uncheckedWarning).slice(0, 200)}`);
+  }
+  return { pass: reasons.length === 0, covered: true, reasons };
+}
+
+module.exports = { judgeChunkedModeration, judgeLongOutput, judgeOversizeInput, probeRunExitCode };
