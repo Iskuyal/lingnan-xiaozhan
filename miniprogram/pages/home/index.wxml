@@ -46,6 +46,21 @@
       </button>
     </view>
 
+    <button
+      id="goal-days-entry"
+      class="goal-strip"
+      hover-class="pressed"
+      bindtap="openGoals"
+      aria-label="目标日，查看最近的目标日与剩余天数"
+    >
+      <view class="goal-strip-main">
+        <view class="goal-strip-label">最近的目标日</view>
+        <view class="goal-strip-name">{{goalStrip.name}}</view>
+        <view class="goal-strip-meta">{{goalStrip.meta}}</view>
+      </view>
+      <view class="goal-strip-value">{{goalStrip.value}}<text wx:if="{{goalStrip.unit !== ''}}" class="goal-strip-unit">{{goalStrip.unit}}</text></view>
+    </button>
+
     <view class="news-section">
       <view class="news-section-head">
         <view class="section-title">最近动态</view>

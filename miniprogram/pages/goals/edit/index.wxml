@@ -1,0 +1,61 @@
+<view class="page">
+  <block wx:if="{{status === 'missing'}}">
+    <view class="ge-missing">
+      <view class="ge-missing-title">这条目标日已经不在了</view>
+      <view class="ge-missing-copy">它可能已经在列表里被删掉。返回列表看看现在还有哪些目标日。</view>
+      <button id="goal-missing-back" class="home-button ge-missing-btn" hover-class="pressed" bindtap="goBack">返回目标日</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="eyebrow">只保存在这台设备 · 不联网、不上传</view>
+    <view class="ge-title">{{title}}</view>
+
+    <view class="ge-field">
+      <view class="ge-label">事项名称</view>
+      <input id="goal-name" class="ge-input" value="{{form.name}}" maxlength="{{maxName}}" bindinput="onNameInput" placeholder="例如：计算机二级考试" />
+      <view class="ge-hint">最多 {{maxName}} 字，当前 {{nameLength}} 字。写清是哪件事就够，不用写年份。</view>
+    </view>
+
+    <view class="ge-field">
+      <view class="ge-label">目标日期</view>
+      <picker id="goal-date" mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="ge-pick">
+          <view class="ge-pick-value">{{form.date}}</view>
+          <view class="ge-pick-arrow">›</view>
+        </view>
+      </picker>
+      <view class="ge-hint">按北京时间的日历日计算：日期本身不含具体时刻，跨月、跨年和闰年都由日期规则处理。</view>
+    </view>
+
+    <view class="ge-field">
+      <view class="ge-label">是否计入当天</view>
+      <view
+        id="goal-count-today"
+        class="ge-switch-row"
+        hover-class="pressed"
+        bindtap="onCountTodayChange"
+        aria-role="switch"
+        aria-checked="{{form.countToday}}"
+      >
+        <view class="ge-switch-copy">把目标日当天也算进剩余天数</view>
+        <view class="ge-switch {{form.countToday ? 'ge-switch-on' : ''}}"><view class="ge-knob"></view></view>
+      </view>
+      <view class="ge-hint">打开：剩余天数含今天，目标日为明天时显示「还有 2 天」。关闭（默认）：目标日为明天时显示「还有 1 天」。无论开关如何，目标日当天都显示「就是今天」。</view>
+    </view>
+
+    <view class="ge-preview">
+      <view class="ge-preview-top">
+        <view class="ge-preview-name">{{preview.name}}</view>
+        <view class="ge-preview-state">{{preview.label}}</view>
+      </view>
+      <view class="ge-preview-meta">{{preview.meta}}</view>
+      <view class="ge-hint">预览按现在的日期算一次；保存后列表里会随每天变化重新计算。</view>
+    </view>
+
+    <button id="goal-save" class="home-button ge-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
+    <button id="goal-remove" wx:if="{{mode === 'edit'}}" class="ge-delete" hover-class="pressed" bindtap="remove">删除这一条</button>
+    <view id="goal-cancel" class="ge-cancel" hover-class="pressed" bindtap="goBack">取消</view>
+    <view class="quiet ge-note">保存失败时不会改动原来的记录；删除需要再确认一次。</view>
+  </block>
+</view>

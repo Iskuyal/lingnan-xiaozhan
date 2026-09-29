@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>目标日 · 还没有数据</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .goal-empty { margin-top:26px; padding:20px 16px 22px; border:1px solid rgba(43,36,34,.13); background:rgba(255,255,255,.62); }
+    .goal-empty-title { margin-top:4px; color:var(--brand-deep); font-size:20px; line-height:1.35; font-weight:700; }
+    .goal-empty-copy { margin-top:8px; color:var(--text-2); font-size:13px; line-height:1.8; }
+    .goal-empty-list { margin:12px 0 0; padding-left:18px; color:var(--text-2); font-size:12px; line-height:1.9; }
+    .goal-new { margin-top:22px; width:100%; justify-content:center; font-size:15px; }
+    .goal-note { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">目标日</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">只保存在这台设备 · 不联网、不上传</div>
+    <h1 class="page-title">目标日</h1>
+
+    <section class="goal-empty">
+      <div class="empty-mark">◎</div>
+      <div class="goal-empty-title">还没有目标日</div>
+      <p class="goal-empty-copy">自己写一个日期，剩下多少天由小程序替你数。第一件事可以是：</p>
+      <ul class="goal-empty-list">
+        <li>一场考试的日期</li>
+        <li>一个报名或交材料的截止日</li>
+        <li>一个项目节点</li>
+      </ul>
+      <button class="primary" style="margin-top:16px;width:100%;justify-content:center;font-size:15px">＋ 新建目标日</button>
+    </section>
+
+    <div class="quiet goal-note">目标日只存在本机，不上传云端、不进入 AI 请求；学校校历与考试日期请以学校公布为准，这里不预填未经核实的时间。</div>
+  </main>
+</body>
+</html>
