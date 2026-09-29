@@ -104,3 +104,8 @@
 .verified-date { margin-top:4rpx; }
 .source-button { min-height:84rpx; margin-top:14rpx; color:var(--brand-ink, #7a1a12); font-size:23rpx; text-align:left; }
 .home-footer { margin-top:34rpx; color:var(--text-3, #746760); font-size:21rpx; text-align:center; }
+
+/* 整宽次级入口（升学问答）：原生 button 锁 184px，整宽靠行内样式，这里只给版式。 */
+.home-wide-entry { margin-top:19rpx; padding:22rpx 27rpx; border:1rpx solid rgba(43,36,34,0.14); border-left:6rpx solid var(--brand-deep, #8c1614); background:rgba(255,255,255,0.62); text-align:left; }
+.home-wide-entry .entry-title { font-size:27rpx; }
+.home-wide-entry .entry-description { margin-top:6rpx; font-size:19rpx; }

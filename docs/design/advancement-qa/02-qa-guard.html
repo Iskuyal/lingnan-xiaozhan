@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>升学问答 · 澄清与拒答</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .qa-question { margin-top:20px; padding:11px 12px; background:var(--brand-deep); color:#fff; font-size:14px; line-height:1.6; }
+    .qa-guard { margin-top:10px; padding:12px; border:1px solid var(--warn-line); border-left:4px solid #c68a32; background:var(--warn-soft); }
+    .qa-guard-label { color:var(--warn); font-size:10px; font-weight:700; }
+    .qa-guard-text { margin-top:6px; color:var(--warn); font-size:13.5px; line-height:1.8; }
+    .qa-choices { margin-top:10px; display:flex; flex-direction:column; gap:7px; }
+    .qa-choice { min-height:44px; padding:0 12px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.2); background:rgba(255,255,255,.7); color:var(--brand-ink); font-size:13px; }
+    .qa-hint { margin-top:8px; color:var(--text-3); font-size:11px; line-height:1.7; }
+    .qa-code { margin-top:8px; padding:9px 11px; border:1px dashed rgba(43,36,34,.25); color:var(--text-2); font-size:11.5px; line-height:1.7; }
+    .qa-foot { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">升学与实习问答</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">只答官方原文里写过的事 · 语料 4 份 / 25 个段落 · 核查 2026-09-29</div>
+    <h1 class="page-title">升学与实习问答</h1>
+
+    <div class="qa-question">三二分段报名是1月12日开始，对吗？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">需要先确认（跨类型）</div>
+      <div class="qa-guard-text">「三二分段」有两种：中高职贯通三二分段（中职升高职）与三二分段专升本转段（高职升本科），两类报名与考试安排不同。你问的是哪一种？</div>
+    </div>
+    <div class="qa-choices">
+      <div class="qa-choice">三二分段专升本转段（高职升本科）</div>
+      <div class="qa-choice">中高职贯通三二分段（中职升高职）</div>
+    </div>
+    <div class="qa-hint">本语料只覆盖前者（高职升本科）；选后者会告诉你「不在收录范围」并给出查询渠道。</div>
+
+    <div class="qa-question">学校附近哪家公司现在招实习生？薪资多少？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">无法核实</div>
+      <div class="qa-guard-text">我不提供实时岗位与薪资信息，也不能保证岗位时效。你可以从官方入口自己去查：</div>
+    </div>
+    <div class="qa-choices">
+      <div class="qa-choice">打开 广东学生就业创业网（官方入口）</div>
+      <div class="qa-choice">看「就在南粤」供需对接活动</div>
+    </div>
+
+    <div class="qa-question">2027年的专升本政策出来了吗？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">年份未收录</div>
+      <div class="qa-guard-text">语料只收录 2026 年的招生工作规定，2027 年的官方文件还没有收录。我不会把 2026 年的日期当成 2027 年的答案。</div>
+    </div>
+    <div class="qa-code">收录年份：2026 年（普通专升本 / 三二分段转段）、2026 届（就业行动方案）<br>查看渠道：广东省教育考试院 eea.gd.gov.cn</div>
+
+    <div class="quiet qa-foot">
+      澄清与拒答都是固定话术，由规则触发（类别不明、年份未收录、问岗位或分数线），不是模型自由发挥。
+    </div>
+  </main>
+</body>
+</html>
