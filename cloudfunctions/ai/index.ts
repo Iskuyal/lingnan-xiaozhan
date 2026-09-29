@@ -23,11 +23,13 @@ import { isTimeoutError, withTimeout } from './http';
 import { ModelCallResult, ModelInvocation, callModel } from './providers';
 import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
 import { runProbe } from './probe';
+import { buildActivityContext, DepartmentActivityCorpus, isActivityQuestion, isDepartmentActivityCorpus } from './rag';
 import {
   ActionName,
   AiResponse,
   CallUsage,
   ConversationMessage,
+  DepartmentActivityCitation,
   FailureClass,
   MessageRole,
   NormalizedImage,
@@ -68,16 +70,81 @@ const MAX_MESSAGES = 20;
 const MAX_MESSAGE_CHARS = 8000;
 /** 微信 msgSecCheck 的 content 上限是 2500 字；分片检测每次不超过 2000 字。 */
 const MODERATION_CHUNK_CHARS = 2000;
+/** 输入侧最多分几片：2000 字 × 10 = 2 万字。见 `MAX_INPUT_CHARS`。 */
+const MAX_INPUT_CHUNKS = 10;
 /**
- * 一次检测最多分几片：2000 字 × 10 = 2 万字。
- * 超过的部分**不检测**，报告里写明范围并置 `checked: false`——不静默放过，也不假装检过。
+ * 一次调用的输入上限（字符）= 一次检测能覆盖的字数。
+ *
+ * 输入长度由调用方决定，因此超窗口的部分**不能靠「多检几片」兜住**，也不允许带着
+ * `checked: false` 继续送模型——窗口外的文字等于绕过内容安全。超出即按参数错误拒绝
+ * （fail-closed），由调用方精简历史后重试。
  */
-const MAX_MODERATION_CHUNKS = 10;
+const MAX_INPUT_CHARS = MODERATION_CHUNK_CHARS * MAX_INPUT_CHUNKS;
+/**
+ * 输出侧最多分几片：2000 字 × 20 = 4 万字。
+ *
+ * 输出长度不受调用方控制，不能靠「拒绝调用」在事前兜住，所以给的分片比输入多一档
+ * （分带识别的合并结果可以上万字）；仍然超出时按失败处理，**绝不返回没检过的文字**。
+ * 每片都是一次微信检测调用，档位同时是每日配额的暴露上限。
+ */
+const MAX_OUTPUT_CHUNKS = 20;
+const MAX_OUTPUT_CHARS = MODERATION_CHUNK_CHARS * MAX_OUTPUT_CHUNKS;
 /** 留给内容安全与记账的时间（毫秒）：模型调用不能把总截止用满。 */
 const TIMEOUT_RESERVE_MS = 500;
 const ALLOWED_IMAGE_MIME = ['image/png', 'image/jpeg'];
 /** 消息角色只认这三种；调用方写别的值按参数错误处理，不做猜测。 */
 const MESSAGE_ROLES: MessageRole[] = ['system', 'user', 'assistant'];
+
+/**
+ * 部门问答的 feature 名（客户端 `miniprogram/services/ai.ts` 导出同名常量、两个部门页面使用；
+ * 跨包有意复制一份，项目惯例同 FAILURE_CLASSES）。
+ * 只有这个 feature 的 chat 动作会做部门动态检索注入，其余动作与功能不受影响。
+ */
+const DEPARTMENT_QA_FEATURE = 'department-qa';
+/** 部门动态检索注入的 top-k：动态条目只有标题级信息，三条足够覆盖且不挤占提示词预算。 */
+const ACTIVITY_RETRIEVAL_K = 3;
+
+/**
+ * 构建注入的部门动态语料（scripts/build.mjs → dist/cloudfunctions/ai/department-corpus.js）。
+ *
+ * 缺失或读坏时返回 null：检索注入整体禁用、问答退回纯语料模式（fail-open）——
+ * 检索是增强不是前提，语料出问题不能把原有的部门问答链路一起拖垮。
+ */
+function loadDepartmentCorpus(): DepartmentActivityCorpus | null {
+  try {
+    const loaded: unknown = require('./department-corpus');
+    return isDepartmentActivityCorpus(loaded) ? loaded : null;
+  } catch {
+    return null;
+  }
+}
+const departmentCorpus = loadDepartmentCorpus();
+
+/** 指代上一轮动态的短追问，须连同上一轮问题和回答检索，才能保留事实依据。 */
+function activitySearchQuestion(messages: ConversationMessage[]): string {
+  let currentIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === 'user' && messages[i].text.trim() !== '') {
+      currentIndex = i;
+      break;
+    }
+  }
+  if (currentIndex < 0) return '';
+  const current = messages[currentIndex].text.trim();
+  const followUp = /^(那|它|这个|这项|该|上面|刚才|前面|其中|第[一二三1-3]个)/u.test(current);
+  if (followUp) {
+    for (let i = currentIndex - 1; i >= 0; i -= 1) {
+      if (messages[i].role !== 'user') continue;
+      if (isActivityQuestion(messages[i].text)) {
+        const answer = messages.slice(i + 1, currentIndex)
+          .filter((message) => message.role === 'assistant').at(-1)?.text.slice(0, 500) ?? '';
+        return `${messages[i].text} ${answer} ${current}`;
+      }
+      break;
+    }
+  }
+  return isActivityQuestion(current) ? current : '';
+}
 
 /** 云函数事件（都是 unknown，逐个收敛；调用方传错只影响本次调用）。 */
 export interface AiEvent {
@@ -108,6 +175,8 @@ interface RunLog {
   safety: SafetyReport | null;
   warnings: string[];
   accountingFailed: boolean;
+  /** 部门动态检索注入的引用清单（chat 动作才可能有值）。 */
+  activityCitations: DepartmentActivityCitation[];
 }
 
 const ZERO_USAGE: TokenUsage = {
@@ -303,18 +372,20 @@ function attachImage(messages: ConversationMessage[], image: NormalizedImage): v
 }
 
 /**
- * 本次调用要过检的全部文字：**所有消息**（system / user / assistant）与事件顶层的 system。
+ * 本次调用要过检的全部文字：**所有消息**（system / user / assistant）与事件顶层的 system，
+ * 以及其中 system 占的字符数（上限拒绝的 detail 要报这个数，拼接规则因此只留这一处）。
  *
  * 只检 user 是漏检：system 与 assistant 历史同样是调用方送进来的、同样会进入第三方模型的文本，
  * 违规内容从这里进去一样是问题（规格把「AI 文字都要过内容安全」列为硬约束）。
  */
-function inputText(messages: ConversationMessage[], system: string): string {
+function inputText(messages: ConversationMessage[], system: string): { text: string; systemChars: number } {
   const parts: string[] = [];
-  if (system.trim() !== '') parts.push(system);
+  const withSystem = system.trim() !== '';
+  if (withSystem) parts.push(system);
   for (const message of messages) {
     if (message.text !== '') parts.push(message.text);
   }
-  return parts.join('\n');
+  return { text: parts.join('\n'), systemChars: withSystem ? system.length : 0 };
 }
 
 /** 按剩余总时限算模型调用的超时；没有余量就不发请求（可识别失败，不挂起）。 */
@@ -398,10 +469,13 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
 /**
  * 文字内容安全检测（长文本分片）。
  *
- * 分片是为了兼容微信 msgSecCheck 的 2500 字上限；**每一段都要检**，
- * 直到 `MAX_MODERATION_CHUNKS` 段（2 万字）为止。仍然超出时：
- * 不检测的部分明确写进报告，并把 `checked` 置为 false——
- * 既不静默放过，也不让调用方以为整段都检过了。
+ * 分片是为了兼容微信 msgSecCheck 的 2500 字上限；**分到 `maxChunks` 片为止**。
+ * 仍然超出时，没检测的部分明确写进报告并把 `checked` 置为 false——既不静默放过，
+ * 也不让调用方以为整段都检过了。
+ *
+ * 调用方必须自己保证「不该出现这种报告」：输入侧靠 `MAX_INPUT_CHARS` 在事前拒绝，
+ * 输出侧靠 `MAX_OUTPUT_CHARS` 在事前失败（见 `moderateOutput`）。只有诊断动作
+ * （`moderateText`）会把这个部分报告直接交给调用方。
  */
 async function moderateText(
   log: RunLog,
@@ -409,13 +483,14 @@ async function moderateText(
   wechat: WechatSecurityApi | undefined,
   openid: string,
   startedAt: number,
+  maxChunks: number,
 ): Promise<SafetyOutcome> {
   const chunks: string[] = [];
-  for (let index = 0; index < text.length && chunks.length < MAX_MODERATION_CHUNKS; index += MODERATION_CHUNK_CHARS) {
+  for (let index = 0; index < text.length && chunks.length < maxChunks; index += MODERATION_CHUNK_CHARS) {
     chunks.push(text.slice(index, index + MODERATION_CHUNK_CHARS));
   }
   if (chunks.length === 0) chunks.push('');
-  const coveredChars = Math.min(text.length, MODERATION_CHUNK_CHARS * MAX_MODERATION_CHUNKS);
+  const coveredChars = Math.min(text.length, MODERATION_CHUNK_CHARS * maxChunks);
   const truncated = text.length > coveredChars;
   let last: SafetyOutcome | null = null;
   for (const chunk of chunks) {
@@ -436,7 +511,7 @@ async function moderateText(
       report: {
         ...last.report,
         checked: false,
-        detail: `${last.report.detail}｜文本共 ${text.length} 字，仅检测了前 ${coveredChars} 字（超过 ${MODERATION_CHUNK_CHARS}×${MAX_MODERATION_CHUNKS} 字上限的部分未检测）`,
+        detail: `${last.report.detail}｜文本共 ${text.length} 字，仅检测了前 ${coveredChars} 字（超过 ${MODERATION_CHUNK_CHARS}×${maxChunks} 字上限的部分未检测）`,
       },
     };
     recordSafety(log, partial.report);
@@ -559,7 +634,18 @@ async function readSummary(config: Config, now: Date): Promise<UsageSummary> {
   }
 }
 
-/** 输出内容安全检测：AI 生成的文字上屏前再检一次。 */
+/**
+ * 输出内容安全检测：AI 生成的文字上屏前再检一次。
+ *
+ * 输出长度不受调用方控制（分带识别的合并结果可能上万字），所以不能像输入那样靠
+ * 「事前拒绝调用」兜底，只能：**先判长度、再逐段全检、全检通过才返回**。
+ * 超过 `MAX_OUTPUT_CHARS`（分片上限）时这次就不给结果——宁可失败，
+ * 也不把没检过的文字上屏（开发规格把这条列为硬约束）。
+ *
+ * 分类用 `internal` 而不是 `model_unavailable`：模型这次是**成功返回**的，失败的是
+ * 「本地没能把这段输出检完」，与「内容安全检测不可用」同族（都是 fail-closed 的
+ * 服务端能力缺口）；记成模型不可用会把这类事件混进模型/中转的失败统计里。
+ */
 async function moderateOutput(
   log: RunLog,
   text: string,
@@ -568,7 +654,15 @@ async function moderateOutput(
   startedAt: number,
 ): Promise<void> {
   if (!log.config.moderateOutput || text === '') return;
-  const outputOutcome = await moderateText(log, text, wechat, openid, startedAt);
+  if (text.length > MAX_OUTPUT_CHARS) {
+    fail(
+      'internal',
+      `模型输出 ${text.length} 字，超过一次检测能覆盖的 ${MAX_OUTPUT_CHARS} 字（${MODERATION_CHUNK_CHARS}×${MAX_OUTPUT_CHUNKS}）：`
+      + '为避免未经检测的文字上屏，本次不返回结果。',
+      { message: '这次的 AI 回答过长，无法完整做内容安全检查，已丢弃该回答；请重试或把问题问得更具体一些。' },
+    );
+  }
+  const outputOutcome = await moderateText(log, text, wechat, openid, startedAt, MAX_OUTPUT_CHUNKS);
   if (outputOutcome.rejected) rejectContent(outputOutcome);
 }
 
@@ -654,8 +748,35 @@ async function runVision(
 async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, openid: string): Promise<string> {
   const vision = log.action === 'vision';
   const messages = parseMessages(event.messages);
-  const system = safeString(event.system);
+  let system = safeString(event.system);
   const wechat = wechatSecurity();
+
+  // 部门动态检索注入：在输入检测之前拼进 system，注入文本与消息一起过内容安全。
+  // 只对动态类问题检索（意图词表见 rag.ts），无命中 / 非动态类 / 语料缺失时不注入（system 原样）。
+  if (!vision && log.feature === DEPARTMENT_QA_FEATURE) {
+    const query = activitySearchQuestion(messages);
+    if (query !== '' && departmentCorpus !== null) {
+      const context = buildActivityContext(departmentCorpus, query, ACTIVITY_RETRIEVAL_K);
+      if (context.injectedText !== '') {
+        system = `${system}\n\n${context.injectedText}`;
+        log.activityCitations = context.citations;
+        pushWarning(log, `部门动态检索命中 ${context.citations.length} 条（top-${ACTIVITY_RETRIEVAL_K}）`);
+      }
+    }
+  }
+
+  // 1) 输入长度：**先判上限再花任何检测配额或下载图片**。检测窗口覆盖不了的文字等于绕过
+  //    内容安全，因此超窗口不是「检一部分就放行」，而是直接按参数错误拒绝，由调用方精简后重试。
+  const input = inputText(messages, system);
+  if (input.text.length > MAX_INPUT_CHARS) {
+    fail(
+      'invalid_request',
+      `本次输入共 ${input.text.length} 字（其中 system ${input.systemChars} 字），`
+      + `超过一次内容安全检测能覆盖的 ${MAX_INPUT_CHARS} 字（${MODERATION_CHUNK_CHARS}×${MAX_INPUT_CHUNKS}）：`
+      + '未过检的文字不能送进模型，请调用方精简历史或材料后重试。',
+      { message: '本次对话或材料太长，超出单次安全检测能覆盖的范围，请精简后重试（或清空对话重新开始）。' },
+    );
+  }
 
   if (!vision && event.image !== undefined && event.image !== null) {
     fail('invalid_request', '图片请走 vision 动作；chat 动作只处理文字');
@@ -669,18 +790,18 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
     attachImage(messages, image);
   }
 
-  // 1) 输入内容安全：**所有消息文字**（system / user / assistant）与上传的图片都要先过检测。
+  // 2) 输入内容安全：**所有消息文字**（system / user / assistant）与上传的图片都要先过检测。
+  //    输入长度已按上限收敛，所以这一步必然是整段检完（`checked` 只会因检测被关闭而变假）。
   if (image !== undefined) {
     const imageOutcome = await moderateImage(log, image, wechat, openid, startedAt);
     if (imageOutcome.rejected) rejectContent(imageOutcome, 'image');
   }
-  const text = inputText(messages, system);
-  if (text !== '') {
-    const textOutcome = await moderateText(log, text, wechat, openid, startedAt);
+  if (input.text !== '') {
+    const textOutcome = await moderateText(log, input.text, wechat, openid, startedAt, MAX_INPUT_CHUNKS);
     if (textOutcome.rejected) rejectContent(textOutcome);
   }
 
-  // 2) 模型调用（带明确超时边界）。
+  // 3) 模型调用（带明确超时边界）。
   const target = resolveModelTarget(log.config, {
     vision,
     maxTokens: typeof event.maxTokens === 'number' ? event.maxTokens : undefined,
@@ -695,7 +816,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
       timeoutMs: target.timeoutMs,
     })).text;
 
-  // 3) 输出内容安全：AI 生成的文字上屏前再检一次（分带识别在**合并后**的文本上只检一次）。
+  // 4) 输出内容安全：AI 生成的文字上屏前再检一次（分带识别在**合并后**的文本上只检一次）。
   await moderateOutput(log, result, wechat, openid, startedAt);
   return result;
 }
@@ -722,6 +843,7 @@ function baseResponse(options: {
     usageSummary: log === null || !log.isAdmin ? null : log.summary,
     capWarning: log === null || !log.isAdmin ? '' : capWarningFor(log.summary),
     warnings: log === null ? [] : log.warnings.slice(),
+    citations: log === null ? [] : log.activityCitations.slice(),
     probe: null,
     elapsedMs: Date.now() - options.startedAt,
   };
@@ -787,6 +909,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
         usageSummary: null,
         capWarning: '',
         warnings: [],
+        citations: [],
         probe: result.record,
         elapsedMs: Date.now() - startedAt,
       };
@@ -829,6 +952,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       safety: null,
       warnings: [],
       accountingFailed: false,
+      activityCitations: [],
     };
 
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。
@@ -850,7 +974,9 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       if (raw === '') fail('invalid_request', 'moderateText 需要 text');
       // 长文本按窗口逐段检测（与 chat 的输入检测同一套分片逻辑）：前 2 万字全检，
       // 超出部分在报告里写明范围并置 checked=false，不静默放过。
-      const outcome = await moderateText(log, raw, wechatSecurity(), openid, startedAt);
+      // 这是**诊断动作**（管理员限定、不喂模型也不上屏），因此允许返回部分报告；
+      // chat / vision 两条通路不允许：输入超窗直接拒绝，输出超窗不返回内容。
+      const outcome = await moderateText(log, raw, wechatSecurity(), openid, startedAt, MAX_INPUT_CHUNKS);
       const response = successResponse(log, action, startedAt);
       response.safety = outcome.report;
       if (outcome.rejected) {

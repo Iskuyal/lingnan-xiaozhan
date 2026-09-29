@@ -17,7 +17,7 @@
 
 [课程项目答辩陪练（文字版）](../planning/ai-project-defense-plan.md)是 2026-09-28 已选定的新增规划主线，**尚未实施、未验收**，不据此改写当前已交付能力。较早的通知识别、失物招领等建议保留在 [规划索引](../planning/README.md)，不能与当前主线混用。
 
-正式作品名、校内收口日期、AI 时延口径、数据使用及其他决策关卡由 [待办总表](../tasks/pending.md)统一跟踪。校园通知 RAG 与 OCR 仍按对应 Ticket 的关卡处理。
+正式作品名、校内收口日期、AI 时延口径、数据使用及其他决策关卡由 [待办总表](../tasks/pending.md)统一跟踪。失物招领范围与 AI 扩展仍受[实施框架](../planning/lost-found-framework.md)决策关卡约束；校园通知 RAG 与 OCR 按对应 Ticket 的关卡处理。
 
 ## 权威文档
 

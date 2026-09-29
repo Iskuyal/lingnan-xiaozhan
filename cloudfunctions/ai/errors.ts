@@ -117,9 +117,12 @@ export class AiFailure extends Error {
   }
 }
 
-/** 抛出一个分类失败。`detail` 面向维护者，可以包含服务端错误文本（密钥在外层统一剔除）。 */
-export function fail(failureClass: FailureClass, detail = ''): never {
-  throw new AiFailure(failureClass, detail);
+/**
+ * 抛出一个分类失败。`detail` 面向维护者，可以包含服务端错误文本（密钥在外层统一剔除）；
+ * `options.message` 覆盖默认文案——分类不变，只是把「下一步怎么做」写得更具体。
+ */
+export function fail(failureClass: FailureClass, detail = '', options: { message?: string } = {}): never {
+  throw new AiFailure(failureClass, detail, options);
 }
 
 /** 抛出一个由超时引起的分类失败（同一个类，但带上可重试标记）。 */

@@ -1,0 +1,10 @@
+{
+  "name": "lost-found",
+  "version": "1.0.0",
+  "private": true,
+  "description": "失物招领:帖子、认领、候选与审计(LF-3 非 AI 基线)",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "4.0.2"
+  }
+}

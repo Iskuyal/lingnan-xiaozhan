@@ -40,3 +40,11 @@
 .qa-restart { margin-top:12rpx; }
 .qa-restart-button { min-height:58rpx; color:var(--brand-ink, #7a1a12); font-size:20rpx; }
 .qa-note { margin-top:12rpx; color:var(--text-3, #746760); font-size:19rpx; line-height:1.6; }
+
+/* 仅在本轮部门动态检索命中时展示，尺寸以 docs/design/department-rag/ 为准。 */
+.qa-citations { margin-top:19rpx; border-top:1rpx solid var(--gold-deep, #a67f1c); padding-top:15rpx; }
+.qa-citations-head { margin-bottom:12rpx; color:var(--text-3, #746760); font-size:21rpx; }
+.qa-citation { margin-bottom:12rpx; padding:15rpx 19rpx; border:1rpx solid var(--gold-deep, #a67f1c); border-radius:var(--r-control, 20rpx); background:var(--glass, rgba(255,255,255,0.52)); }
+.qa-citation:last-child { margin-bottom:0; }
+.qa-citation-title { color:var(--text, #2b2422); font-size:23rpx; line-height:1.5; }
+.qa-citation-meta { margin-top:4rpx; color:var(--text-3, #746760); font-size:21rpx; line-height:1.5; }

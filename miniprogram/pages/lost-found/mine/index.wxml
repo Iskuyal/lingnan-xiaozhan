@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-title">我的失物招领</view>
+    <view class="nav-sub">发布与认领都在这里跟进</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty"><view class="empty-text">正在读取…</view></view>
+
+  <view wx:elif="{{error !== ''}}" class="empty">
+    <view class="empty-icon">⚠️</view>
+    <view class="empty-text">{{error}}</view>
+    <view class="btn-row"><button class="btn btn-plain" bindtap="refresh">重试</button></view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{posts.length === 0}}" class="empty">
+      <view class="empty-icon">🗂️</view>
+      <view class="empty-text">还没有发布记录</view>
+    </view>
+    <view
+      wx:for="{{posts}}"
+      wx:key="postId"
+      class="card"
+      hover-class="pressed"
+      data-id="{{item.postId}}"
+      bindtap="openDetail"
+    >
+      <view class="card-head">
+        <text class="badge {{item.type === 'lost' ? 'badge-lost' : 'badge-found'}}">{{typeLabelOf[item.type]}}</text>
+        <text class="badge {{item.status === 'verifying' ? 'badge-warn' : 'badge-status'}}">{{statusLabelOf[item.status] || item.status}}</text>
+      </view>
+      <view class="card-title">{{item.title}}</view>
+      <view class="card-meta">
+        <text>{{item.timeRange.start}} ~ {{item.timeRange.end}}</text>
+        <text>{{item.locationArea}}</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="btn-row">
+    <button class="btn btn-primary" bindtap="goPublish">+ 发布信息</button>
+  </view>
+</view>

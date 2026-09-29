@@ -469,11 +469,9 @@ Page({
       assistantError: '',
       assistantSafetyNote: '',
     });
-    return callAi(chatEvent(
-      'timetable-assistant',
-      buildSystemPrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length),
-      chatMessages(history),
-    ))
+    // 课表全文进 system，历史按输入预算自剪：两者拼起来不能超过服务端的检测窗口。
+    const system = buildSystemPrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length);
+    return callAi(chatEvent('timetable-assistant', system, chatMessages(history, system)))
       .then((result) => {
         if (!result.ok) {
           this.setData({

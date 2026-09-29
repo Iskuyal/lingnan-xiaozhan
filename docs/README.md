@@ -33,6 +33,7 @@
 | [reference/](reference/README.md) | 原始赛题、规则调研、外部参考 | 无来源的产品承诺 |
 | [archive/](archive/README.md) | 被替代的方案、整理前快照与早期实施过程 | 当前执行指令 |
 | [adr/](adr/README.md) | 已确认且有实际取舍的架构决策 | 尚未确认的候选方案 |
+| [domain/](domain/lost-found.md) | 失物招领状态机、权限与安全边界 | 已批准首版功能的宣称 |
 | agents/ | [领域文档规则](agents/domain.md)、[任务载体](agents/issue-tracker.md)、[分流标签](agents/triage-labels.md) | 重复的产品规格 |
 
 ## 单一事实来源

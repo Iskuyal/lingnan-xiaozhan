@@ -46,3 +46,52 @@
 | 整套 `verify:wechat` | 已通过部门与课表页面、错误文件、导入放弃、无学分版式、编辑表单及资讯导航中的多个步骤；脚本随后因 automator `timeout waiting for automator response` 中断，没有写出本轮 `verification.json` | 不能据此标记整套通过；实际模拟器的 `wx.chooseMessageFile` 是函数，因此缺失 API 的 `partial` 分支本轮没有触发 |
 
 本轮没有进行真实截图识别、课表助手 10 题、两账号隔离、真机路径、断网/额度故障、资讯第二页或定时任务测试；也没有新增或修改用户课表。V6 出现三次连续空响应后停止继续冒烟，先查模型中转配置与服务端响应记录再复测。
+
+## 2026-09-29 云端版本回读与内容安全窗口探针
+
+本轮是**只读回读 + 真实云端探针**，全部在开发者工具模拟器里跑（`realDevice: false`），云环境 `cloudbase-d2gjtbbwu3575cd7b`，本地仓库 SHA `1267889`（探针修复分支 `e875323`，合入 `1ffdd4c`）。**未做**真机、两账号、真实截图与固定 10 题。逐条字段（含哈希、耗时、配额估算）见私有记录 `artifacts/verify/private-record-2026-09-29-cloud-recon.md`（被 gitignore，只在执行机上）；探针原始结果在 `artifacts/verify/ai-window.jsonl`。
+
+| 核对项 | 本轮实测 | 结论边界 |
+| --- | --- | --- |
+| 已部署 `ai` / `timetable` 版本 | `functions info`：`ai` Active / timeout 60 / Nodejs16.13；`timetable`、`newsSync` Active / timeout 20 / Nodejs16.13。再用 `functions download` 下载代码逐项比对：`ai` 缺 #67 的记账闸门、#69 的 `rag.js`、#74 的窗口拒绝与分片上限文案（含 2026-09-19 的探测有效性字段）；`timetable` 缺 #67 的批次保护标记 | 确认仍停在 2026-09-24 那一版。CLI **不提供版本号与更新时间**，所以这类判断只能靠下载比对或控制台读回 |
+| 遗留 `accounting-gate` | 写 `accounting-gate:<月份>` 的逻辑不在已部署的 `usage.js` 里 | 按已部署代码判定：线上不可能由现有部署写出这种文档。数据库本身仍未读——缺控制台或维护者通道 |
+| 维护者路径（V3） | `npm run probe:wechat` → `diagnosis=maintainer_not_allowlisted`、`failureClass=invalid_request` | 与 2026-09-25 一致，仍未配置白名单。`assertAdmin` 在微信调用之前，因此**未占用探测的 10 分钟窗口、未消耗检测配额**；`usage` / `moderateText` / `moderateImage` 同样取不到 |
+| 窗口探针 1（V8，3.2 万字输入） | `ok=false`、`failureClass=model_unavailable`、`usage=null`、`safety.checked=**false**`，带告警「文本共 32019 字，仅检测了前 20000 字」；云函数耗时 10118ms | **与期望不符**：超长输入没有被提前拒绝，窗口外的 12019 字未检测就送进模型 ⇒ 线上仍是修复前行为 |
+| 窗口探针 2（V8，长输出） | 模型返回 0 字（`model_unavailable`），判定 `covered=false` | **未覆盖，按判据不算通过**。另有结构性限制：覆盖要求输出 ≥2 万字，而服务端把 `maxTokens` 硬钳在 1..8192，这一档目前不可达 |
+| 文字链路（V6） | 当日 6 次真实文字调用**全部**返回空内容（短文本 5345ms；超长输入 9424 / 10118ms；长输出 41651 / 42254ms），`detail=模型返回内容为空（OpenAI 兼容格式）` | 症状仍在，未按 V6 的决定重跑三次；`choices` / `finish_reason` 结构诊断只在 ≥2026-09-27 的代码里，**已部署版本没有这段**，要先部署才能取到 V6 要的结构记录 |
+| 检测配额消耗 | 估算约 50 片（日上限 100） | **无法查询剩余额度**（`getApiQuota` 需小程序 access_token，而 AppSecret 不在本机；`usage` 动作被白名单拦截）。演示/录屏前请按 D15 先查额度 |
+
+**本轮顺带修掉的工具缺陷**：探针原先把整次云函数调用包在一次 `evaluate` 里等待结果，而开发者工具的自动化桥对单次 `evaluate` 有约 10 秒上限（实测 3.2 万字那次恰好在 10010ms 报 `timeout waiting for automator response`），于是连续两次 `exit 1`、`probes` 为空——这也解释了 2026-09-25 那次 `verify:wechat` 的同名中断。已改为「发起后立刻返回 + 短 `evaluate` 轮询」（[PR #79](https://github.com/Iskuyal/wx-match/pull/79)），请求体、判定逻辑与结果文件形状都不变，退出码语义（0 通过 / 1 没跑通 / 2 不符 / 3 未覆盖）也不变。
+
+### 2026-09-29 部署 `ai` 新版后的复验
+
+同一天中午按 V7 的关卡部署了 `ai`（**只发 `ai`**，`timetable`/`newsSync` 未动）并复跑判据。
+
+| 步骤 | 实测 | 边界 |
+| --- | --- | --- |
+| 部署前账目核对（控制台） | 当月 `ai_usage_records` 776 条、`ai_usage_monthly.calls` 776；遗留 `accounting-gate` 由负责人确认「不清楚」，但按代码判定不可能存在（写闸门的逻辑不在旧版里） | 新版只在「记录数 > 汇总」时暂停调用，776 = 776 不触发 |
+| 旧版留档 | `artifacts/rollback-2026-09-29/ai/`（`index.js` SHA-256 `a89b3127…`），供回退 | 被 gitignore，只在执行机上 |
+| 部署 | `cli cloud functions deploy --names ai --remote-npm-install` 成功：16 文件 / 75.6 KB；`info` 仍 Active / timeout 60 / Nodejs16.13 | 部署**不**重置超时与环境变量 |
+| 版本回读 | `download` 回读的 `index.js` 与本地构建**逐字节一致**（`8707f5a3…`）；`rag.js`、`accounting-gate`、窗口拒绝与分片上限、结构诊断 `choices=` 标记齐全 | CLI 不给版本号，这类判断只能这样比对 |
+| 首次调用是否被账目拦 | 未出现「记录多于汇总」拦截 | 说明预检有效 |
+| 窗口探针 1（V8） | **通过**：`ok=false`、`failureClass=invalid_request`、`usage=null`、`safety=null`、`detail` 写明 20000、云函数耗时 **1469ms**（拒绝早于检测与模型调用）⇒ CT-01 修复在线上生效 | 这一档现在确实不消耗检测配额 |
+| 窗口探针 2（V8） | 仍 `covered=false`（模型对该长输出提示返回 0 字）⇒ **不算通过** | 覆盖还受 `maxTokens` 1..8192 硬钳限制 |
+| `smoke:ai --attempts=3`（V6） | **3/3 成功**：`ok=true`、5227/4703/4720ms、输出「链路已通」、101~116 token | 部署前同日 6/6 为空 ⇒ 常规短请求已恢复；不能据此说「代码修好了空响应」 |
+| 空响应的结构（V6 要的判据） | 探针 2 复现时取到：`choices=1；finish_reason=stop；content=string；reasoning_content=present；error=missing；usage=present` | 内容都进了 `reasoning_content`、`content` 为空；代码只读 `content` 并按 `model_unavailable` 处理，诊断只报结构、不记录推理正文 |
+| 单变量对照（V6） | 同一条短提示、只把 `maxTokens` 提到 8192 → `ok=true`、4 字、243 completion token | 触发器是「长输出任务」而非 `maxTokens` 值 |
+| 维护者路径（V3） | 把 `AI_ADMIN_OPENIDS` 的值改成纯 openid 后**通过**：`probe:wechat` 退出码 0、`probe.valid: true`、`openidPresent: true`（v2 形态）、`msgSecCheck` 620ms 与 `imgSecCheck` 559ms 均 `errcode 0` | 记录已回填[探测记录表](../../development/cloud/README.md)；`assertAdmin` 排在微信调用之前，配错时也不耗配额、不占探测窗口 |
+| 月度用量汇总（V2 的额度侧 / V7 的读数通道） | 维护者动作 `usage` 读到：当月 **790 次调用**、212,525 token、**0.0531 元**（上限 50 元、告警线 40 元，`warn: false`、`exceeded: false`） | 这是**月度汇总**，不是「个人分钟/日额度」；两账号归属与个人额度仍需两个微信号实测，不能用它代替 |
+| 配额消耗 | 本轮部署后新增约 5 片（探针 2 输出为空 ⇒ 0 片；探针 1 0 片；smoke 3 次各 1 片；对照 1 片） | 加上上午的约 50 片，当天下午已用满（见下节） |
+
+**仍未做**：`newsSync` 的部署与全量入库（V4）、真实定时器（V1，负责人已开日志，等下一天 06:00 的记录）、两账号服务端归属/额度（V2 的两账号部分）、`timetable` 的「首次整份替换只显示新课」与「手工新增仍可读」（要写真实课表）、真机与真实截图（B1/A5 仍待归档）、`verify:wechat` 全量复跑。
+
+### 2026-09-29 下午：V8 改判据（B 方案）、`timetable` 部署、单账号额度
+
+| 项 | 实测 | 边界 |
+| --- | --- | --- |
+| V8 输出侧改判据（B 方案） | 原判据要求模型自己写 ≥2 万字才判「覆盖」——实测模型每个字符要烧几十个 token（120 字用 352 completion token，600 字用 **5575**，1200 / 3000 / 5000 / 30000 字一律在 40 秒模型超时失败）⇒ 模型侧不可达。改为**维护者 `moderateText` 送 6000 字（3 片）**验证「多片整段检完」：`ok=true`、`safety.checked=true`、2669ms ✅ | 判据证明「多片全检链路在线上成立」，**不再证明 2 万字窗口被用满**；「输出 >4 万字即不返回」仍只有单测覆盖。第三次探针（模型自写长输出）保留为机会性记录、不计入结论 |
+| `npm run probe:ai-window` 整轮 | **exit 0**：探针 1（超长输入，1526ms 拒绝、`usage`/`safety` 为空）与探针 2（6000 字 3 片全检）都覆盖且符合期望 | 记录：`artifacts/verify/ai-window.json` |
+| `timetable` 部署（V7） | 7 文件 / 37.1 KB；旧版留档 `1b68c504…`，回读与本地构建**逐字节一致**（`3c59db57…`，批次标记 12 处） | 只发 `timetable`，`newsSync` 仍未动 |
+| 旧数据可读（V7） | `{"action":"list"}` **ok，返回 51 门课程**（旧版数据里 50 门带旧格式 `batch`、1 门没有）；`getSettings` 正常；**没有**触发「课表批次标记损坏」的 fail-closed | 只验证了读；「整份替换只显示新课」「手工新增仍可读」要写真实课表，未做。记录只存计数、不存课程内容：`artifacts/verify/timetable-legacy-read.json` |
+| 个人分钟额度（V2 单账号部分） | 同一分钟内并发 7 次 `chat`：其中一次返回 `quota_exhausted` +「本分钟 AI 调用次数已达上限」+ detail「本分钟调用次数超过 6 次」⇒ **默认 6 次/分确实在服务端生效**；另有 3 次撞在记账闸门上（`internal`「闸门正在使用或待核对」） | 证明闸门在正常工作且会释放（后续请求能继续）；**个人日额度（30/天）与两账号归属仍未验**。记录：`artifacts/verify/v2-minute-limit.json` |
+| **当天检测配额用尽** | 上述探针的最后一档直接返回 `errcode 45009 fail reach max api daily quota limit`；默认 `AI_SAFETY_FAIL_MODE=closed` ⇒ **当天三处 AI 落点全不可用** | 本轮验证（多次失败探针会照旧送检）把 100 次/天用满；需等次日恢复；演示或录屏前必须按 D15 先查额度 |
