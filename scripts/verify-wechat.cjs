@@ -83,6 +83,10 @@ async function run() {
     const home = await waitForPage('pages/home/index');
     await home.waitFor(1200);
     assert.equal(await (await home.$('.school-name')).text(), '广东岭南职业技术学院');
+    assert.ok(await home.$('#timetable-entry'), '首页缺少课表主入口');
+    assert.ok(await home.$('#departments-entry'), '首页缺少学生部门入口');
+    assert.ok(await home.$('#news-entry'), '首页缺少校园资讯入口');
+    assert.equal(await home.$('#lost-found-entry'), null, '首页应保持定稿布局，不显示失物招领入口');
     await mini.screenshot({ path: path.join(output, 'home.png') });
 
     // 学生部门：首页入口 → 列表 → 详情 → 返回列表 → 返回首页
