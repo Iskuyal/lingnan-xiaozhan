@@ -2,7 +2,7 @@
 
 > **这不是产品代码，是一次性的可行性验证脚本。**
 > 结论见上级文档 [`../ai-news-poc.md`](../ai-news-poc.md)。
-> 保留在此仅为**可复现的证据**（primary source），**不建议合并进 main**。
+> 脚本与原始结果是报告的复现材料，不代表产品功能或当前模型效果。
 
 ## 文件
 
@@ -31,7 +31,7 @@
    npm run build
    ```
 
-3. 脚本内写死了项目路径 `D:/DSH/wx-match/dist/...`。换机器运行时需修改 `fetch-news.cjs` 顶部的 `PARSE_PATH`。
+3. `fetch-news.cjs` 会从仓库根目录定位 `dist/cloudfunctions/newsSync/parse.js`；在别的工作目录运行也无需修改路径。
 
 ## 运行
 

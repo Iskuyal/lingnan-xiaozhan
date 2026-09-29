@@ -1,7 +1,7 @@
 # AI 资讯可行性实测（小样）
 
 实测日期：2026-09-18 ｜ 状态：已完成，**结论为否定**（不建议将「AI 资讯」纳入首版）
-对应分支：`docs/ai-news-poc` ｜ 脚本与原始数据：`docs/reference/ai-news-poc/`（**只在 `docs/ai-news-poc` 分支上，未合并进 main**，见第七节）
+复现脚本与原始数据：[PoC 复现资料](ai-news-poc/README.md)；本报告结论仅对应历史样本。
 
 ---
 
@@ -130,18 +130,15 @@
 
 ## 七、复现方式
 
-**本报告已合并进 main；脚本与原始数据只在 `docs/ai-news-poc` 分支上**——该目录 `README.md` 明确写了「不建议合并进 main」，因此按原作者意图保留为分支上的可复现证据。引用本报告的结论时，请保留 `docs/ai-news-poc` 分支，不要删除。
+脚本与 43 次调用的原始结果已归档在[PoC 复现资料](ai-news-poc/README.md)。它们用于复核本报告对应的历史样本，不代表当前线上模型或产品效果。
 
-脚本在分支上的位置同样是 `docs/reference/ai-news-poc/`，说明见该目录 `README.md`。取用方式：
+在仓库根目录运行 `npm run build` 后，进入 `docs/reference/ai-news-poc/` 执行：
 
 ```powershell
-git fetch origin docs/ai-news-poc
-git checkout origin/docs/ai-news-poc -- docs/reference/ai-news-poc
-cd docs/reference/ai-news-poc
-node fetch-news.cjs      # 抓取官网真实资讯（官网限速约 1 请求/秒，脚本内置 1.3 秒间隔）
+node fetch-news.cjs      # 抓取官网真实资讯（脚本内置 1.3 秒间隔）
 node smoke-test.cjs      # 冒烟测试：确认 Key / baseUrl / 模型名正确
 node poc-ai-news.cjs     # 执行 5 项能力测试
 node analyze.cjs         # 汇总统计
 ```
 
-原始数据 `results.json`（43 次调用的逐条记录）随脚本一起在分支上，本报告的表格即由它汇总而来。复现前需自建 `key.txt` 提供模型 API Key；该文件已被脚本目录的 `.gitignore` 忽略，**不会进入版本库**。脚本内写死了项目路径，换机器需改 `fetch-news.cjs` 顶部的 `PARSE_PATH`。
+模型调用需要自备 API Key，可通过 `POC_API_KEY` 环境变量提供，也可在目录内创建已被 `.gitignore` 排除的 `key.txt`。官网抓取只用于复现公开样本，遵守脚本内的请求间隔。

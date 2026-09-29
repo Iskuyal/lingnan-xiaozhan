@@ -11,8 +11,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const PARSE_PATH = 'D:/DSH/wx-match/dist/cloudfunctions/newsSync/parse.js';
-const parse = require(path.resolve(PARSE_PATH));
+const PROJECT_ROOT = path.resolve(__dirname, '../../..');
+const PARSE_PATH = path.join(PROJECT_ROOT, 'dist/cloudfunctions/newsSync/parse.js');
+if (!fs.existsSync(PARSE_PATH)) {
+  console.error('请先在仓库根目录运行 npm run build，再重试。');
+  process.exit(1);
+}
+const parse = require(PARSE_PATH);
 
 const LIST_URL = 'https://lnc.edu.cn/xyxw/xydt';
 const BASE_URL = 'https://lnc.edu.cn/xyxw/xydt/';
