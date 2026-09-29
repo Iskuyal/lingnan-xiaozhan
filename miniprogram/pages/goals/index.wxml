@@ -1,0 +1,72 @@
+<view class="page">
+  <view class="eyebrow">只保存在这台设备 · 不联网、不上传</view>
+  <view class="goal-title">目标日</view>
+  <view class="goal-copy">考试、报名截止、项目节点都可以记在这里。日期按北京时间的当天计算，今天就是今天。</view>
+
+  <block wx:if="{{hasGoals}}">
+    <view class="goal-group" wx:if="{{upcomingCount > 0}}">
+      <view class="goal-group-head">
+        <view class="section-title">未到期</view>
+        <view class="goal-group-note">{{upcomingCount}} 个</view>
+      </view>
+      <view class="goal-item goal-item-upcoming" wx:for="{{groups.upcoming}}" wx:key="id">
+        <view class="goal-item-top">
+          <view class="goal-name">{{item.name}}</view>
+          <view class="goal-state goal-state-upcoming">{{item.label}}</view>
+        </view>
+        <view class="goal-meta">{{item.meta}}</view>
+        <view class="goal-actions">
+          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="goal-group" wx:if="{{todayCount > 0}}">
+      <view class="goal-group-head">
+        <view class="section-title">今天</view>
+        <view class="goal-group-note">{{todayCount}} 个</view>
+      </view>
+      <view class="goal-item goal-item-today" wx:for="{{groups.today}}" wx:key="id">
+        <view class="goal-item-top">
+          <view class="goal-name">{{item.name}}</view>
+          <view class="goal-state goal-state-today">{{item.label}}</view>
+        </view>
+        <view class="goal-meta">{{item.meta}}</view>
+        <view class="goal-actions">
+          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="goal-group" wx:if="{{expiredCount > 0}}">
+      <view class="goal-group-head">
+        <view class="section-title">已过期</view>
+        <view class="goal-group-note">{{expiredCount}} 个</view>
+      </view>
+      <view class="goal-item goal-item-expired" wx:for="{{groups.expired}}" wx:key="id">
+        <view class="goal-item-top">
+          <view class="goal-name">{{item.name}}</view>
+          <view class="goal-state goal-state-expired">{{item.label}}</view>
+        </view>
+        <view class="goal-meta">{{item.meta}}</view>
+        <view class="goal-actions">
+          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <button id="goal-new" class="home-button goal-new" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+  </block>
+
+  <view wx:else class="goal-empty">
+    <view class="goal-empty-mark">◎</view>
+    <view class="goal-empty-title">还没有目标日</view>
+    <view class="goal-empty-copy">自己写一个日期，剩下多少天由小程序替你数。第一件事可以是一场考试的日期、一个报名或交材料的截止日，或者一个项目节点。</view>
+    <button id="goal-new" class="home-button goal-new" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+  </view>
+
+  <view class="quiet goal-note">目标日只存在本机，换设备或删除小程序后不再恢复；这里的日期由你填写，不代表学校已公布的安排。今天（北京时间）{{todayText}}</view>
+</view>
