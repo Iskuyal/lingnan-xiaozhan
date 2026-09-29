@@ -176,16 +176,28 @@ function toRow(goal: GoalDay, now: number): GoalRow {
 }
 
 /**
- * 按状态分组。组内顺序：未到期按目标日由近到远；今天按名称；已过期按目标日由近到远
- * （刚过期的排前面）。日期相同时用创建时间兜底，保证顺序稳定、不随读取次序抖动。
+ * 平台无关的文本比较。**不用 `localeCompare`**：它对中文的排序依赖运行环境的 ICU 数据，
+ * 同一份数据在本机（Windows）与 CI（Linux）会给出不同顺序——2026-09-29 被 CI 抓到过一次。
+ */
+function compareText(a: string, b: string): number {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
+/**
+ * 按状态分组。组内顺序：未到期按目标日由近到远；今天按创建时间（同一天里先建的排前面）；
+ * 已过期按目标日由近到远（刚过期的排前面）。日期相同时用创建时间兜底，
+ * 保证顺序稳定、不随读取次序或运行平台抖动。
  */
 export function groupGoals(goals: GoalDay[], now: number = Date.now()): GoalGroups {
   const rows = goals.map((goal) => toRow(goal, now));
-  const byDate = (a: GoalRow, b: GoalRow) => a.date.localeCompare(b.date) || a.createdAt - b.createdAt;
+  const byDate = (a: GoalRow, b: GoalRow) => compareText(a.date, b.date) || a.createdAt - b.createdAt;
+  const byNewest = (a: GoalRow, b: GoalRow) => compareText(b.date, a.date) || a.createdAt - b.createdAt;
+  const byCreated = (a: GoalRow, b: GoalRow) => a.createdAt - b.createdAt || compareText(a.id, b.id);
   return {
     upcoming: rows.filter((row) => row.kind === 'upcoming').sort(byDate),
-    today: rows.filter((row) => row.kind === 'today').sort((a, b) => a.name.localeCompare(b.name)),
-    expired: rows.filter((row) => row.kind === 'expired').sort((a, b) => b.date.localeCompare(a.date) || a.createdAt - b.createdAt),
+    today: rows.filter((row) => row.kind === 'today').sort(byCreated),
+    expired: rows.filter((row) => row.kind === 'expired').sort(byNewest),
   };
 }
 

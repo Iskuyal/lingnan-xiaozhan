@@ -116,21 +116,32 @@ test('计入当天不改变状态：今天永远是「就是今天」，跨年�
   assert.equal(goals.statusOf(goal({ date: '2026-02-29' }), leapNow).label, '日期待核对');
 });
 
-test('分组：三组各自排序，未到期与已过期都按日期、今天按名称', () => {
+test('分组：三组各自排序，未到期与已过期都按日期、今天按创建时间', () => {
   const now = noon('2026-09-29');
   const groups = goals.groupGoals([
     goal({ id: 'a', name: '较远', date: '2026-12-05' }),
     goal({ id: 'b', name: '较近', date: '2026-10-01' }),
-    goal({ id: 'c', name: '乙今天', date: '2026-09-29' }),
-    goal({ id: 'd', name: '甲今天', date: '2026-09-29' }),
+    goal({ id: 'c', name: '乙今天', date: '2026-09-29', createdAt: 30, updatedAt: 30 }),
+    goal({ id: 'd', name: '甲今天', date: '2026-09-29', createdAt: 10, updatedAt: 10 }),
     goal({ id: 'e', name: '刚过期', date: '2026-09-28' }),
     goal({ id: 'f', name: '过期更久', date: '2026-09-01' }),
   ], now);
   assert.deepEqual(groups.upcoming.map((row) => row.id), ['b', 'a']);
+  // 今天这一组按创建时间：先建的排前面（不用按名称排序，见下一条测试）
   assert.deepEqual(groups.today.map((row) => row.id), ['d', 'c']);
   assert.deepEqual(groups.expired.map((row) => row.id), ['e', 'f']);
   assert.equal(groups.upcoming[0].meta, '2026-10-01 · 不计入当天');
   assert.equal(groups.today[0].meta, '2026-09-29');
+});
+
+test('排序不依赖 localeCompare：同日同创建时间按 id 兜底，结果与运行平台无关', () => {
+  const now = noon('2026-09-29');
+  const groups = goals.groupGoals([
+    goal({ id: 'z', name: '乙', date: '2026-09-29', createdAt: 5, updatedAt: 5 }),
+    goal({ id: 'a', name: '甲', date: '2026-09-29', createdAt: 5, updatedAt: 5 }),
+  ], now);
+  // 若用 name.localeCompare，Windows 与 CI（不同 ICU）会给出相反的顺序——CI 已经抓到过一次
+  assert.deepEqual(groups.today.map((row) => row.id), ['a', 'z']);
 });
 
 test('首页入口只挑今天或最近的未到期，不拿过期的事当安排', () => {
