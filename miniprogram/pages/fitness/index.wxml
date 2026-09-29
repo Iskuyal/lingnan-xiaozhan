@@ -55,7 +55,7 @@
   <view class="fit-field">
     <view class="fit-label">1000 米跑（男）/ 800 米跑（女）</view>
     <input id="fit-run" class="fit-input" type="text" value="{{form.distanceRun}}" data-value="distanceRun" bindinput="onInput" placeholder="3′42″ 或 222" />
-    <view class="fit-hint" wx:if="{{runHint !== ''}}">{{runHint}}</view>
+    <view id="fit-run-hint" class="fit-hint" wx:if="{{runHint !== ''}}">{{runHint}}</view>
   </view>
 
   <button id="fit-calc" class="home-button fit-calc" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="calculate">估算</button>

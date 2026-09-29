@@ -4,7 +4,7 @@
 `miniprogram/pages/calendar/`；待拍板项在最后一节，负责人未拍板前这份稿不算定稿。
 
 对应 [Issue #91](https://github.com/Iskuyal/wx-match/issues/91)，数据来源见
-[`docs/exam-calendar-sources.md`](../../exam-calendar-sources.md)（2026-09-29 核查）。
+[`docs/product/sources/exam-calendar.md`](../../product/sources/exam-calendar.md)（2026-09-29 核查）。
 
 ## 为什么这样画
 

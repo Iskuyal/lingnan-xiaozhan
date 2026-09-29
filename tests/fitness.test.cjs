@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 
 // 体测估算（Issue #92）：分数只来自《国家学生体质健康标准（2014年修订）》大学组评分表。
 // 这里钉住的每一条都能回到原表：先写边界（正好 100 分档 / 60 分档 / 表外下限），再写缺项与非法值。
-// 表本身在 dist/services/fitness/standard.js，来源与抽取过程见 docs/fitness-standard-sources.md。
+// 表本身在 dist/services/fitness/standard.js，来源与抽取过程见 docs/product/sources/fitness-standard.md。
 const fitness = require('../dist/services/fitness/index.js');
 
 /** 找某一项的得分，找不到则抛错（缺失本身也要被测出来）。 */

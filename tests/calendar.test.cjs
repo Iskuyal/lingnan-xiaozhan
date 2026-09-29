@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
 // 校历与考试日期卡（Issue #91）：先用真实数据守住「每条都能追溯、没有日期就不编」，
-// 再钉住按日期算出的状态文案。来源核验记录见 docs/exam-calendar-sources.md。
+// 再钉住按日期算出的状态文案。来源核验记录见 docs/product/sources/exam-calendar.md。
 const calendar = require('../dist/services/calendar/index.js');
 const dates = require('../dist/services/dates/index.js');
 

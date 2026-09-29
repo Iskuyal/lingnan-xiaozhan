@@ -1,7 +1,7 @@
 /**
  * 《国家学生体质健康标准（2014年修订）》大学组评分表（数据，不含逻辑）。
  *
- * 数据来源与抽取过程的证据见 `docs/fitness-standard-sources.md` 与
+ * 数据来源与抽取过程的证据见 `docs/product/sources/fitness-standard.md` 与
  * `docs/reference/fitness-standard-2014-tables.json`：
  * - 主来源：教育部通知附件（教体艺〔2014〕5号，Word 文件，本地抽取正文）；
  * - 校核来源：北京市教委转发件（京教体艺〔2014〕17号）的公开转载页；

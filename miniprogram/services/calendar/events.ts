@@ -4,7 +4,7 @@
  * 数据只从官方公告抄写，每条都带发布主体、原文 URL、公告发布日期与最后核查日；
  * 没有官方日期的事项不写日期（宁可写「以本校通知为准」「待公布」），**绝不沿用上一年的日期**。
  *
- * 来源核验记录见 `docs/exam-calendar-sources.md`（2026-09-29 核查）。改数据必须同时改那份文档。
+ * 来源核验记录见 `docs/product/sources/exam-calendar.md`（2026-09-29 核查）。改数据必须同时改那份文档。
  */
 export type CalendarCategory = 'cet' | 'ncre' | 'mandarin' | 'school';
 

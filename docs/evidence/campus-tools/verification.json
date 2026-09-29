@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-09-29T09:41:01.788Z",
+  "platform": "devtools",
+  "model": "iPhone 12/13 (Pro)",
+  "SDKVersion": "3.17.2",
+  "checks": [
+    "校历与考试页按「学校校历 / 四六级 / 计算机等级 / 普通话」分组渲染",
+    "四级笔试卡：考试 2026-12-12 09:00–11:20、倒计时「还有 74 天」、报名行写「以本校教务处通知为准」",
+    "待公布与仅官方入口的卡片都没有日期行，也没有倒计时",
+    "复制原文链接把官方公告地址写进了剪贴板",
+    "体测估算：七项齐全时给出总分 100、等级「优秀」与 7 行明细",
+    "体测估算：BMI 超重（26.1）时不给总分与等级，改为显示加权标准分 85 并说明原因"
+  ],
+  "boundaries": [
+    "脚本自己独立算一遍日期与分数，不读页面数据，避免「页面写错脚本也跟着错」",
+    "长跑输入用元素 input 填 3′17″，换算提示由页面给出"
+  ],
+  "screenshots": [
+    "01-calendar-list.png",
+    "02-calendar-pending.png",
+    "03-fitness-input.png",
+    "04-fitness-result.png",
+    "05-fitness-incomplete.png"
+  ],
+  "result": "passed",
+  "realDevice": false
+}

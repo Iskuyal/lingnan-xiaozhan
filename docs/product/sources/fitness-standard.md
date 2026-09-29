@@ -35,7 +35,7 @@
 
 ## 三、评分表数据的抽取与校核
 
-数据文件：[`docs/reference/fitness-standard-2014-tables.json`](reference/fitness-standard-2014-tables.json)
+数据文件：[`docs/reference/fitness-standard-2014-tables.json`](../../reference/fitness-standard-2014-tables.json)
 （实现引用的 TS 模块是 `miniprogram/services/fitness/standard.ts`，与它同源）。
 
 抽取与校核过程（可复现）：

@@ -4,7 +4,7 @@
 `miniprogram/pages/fitness/`；待拍板项在最后一节。
 
 对应 [Issue #92](https://github.com/Iskuyal/wx-match/issues/92)，标准版本与评分表来源见
-[`docs/fitness-standard-sources.md`](../../fitness-standard-sources.md)。
+[`docs/product/sources/fitness-standard.md`](../../product/sources/fitness-standard.md)。
 
 ## 为什么这样画
 
