@@ -7,7 +7,7 @@
  */
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { judgeLongOutput, judgeOversizeInput } = require('../scripts/lib/ai-window-judge.cjs');
+const { judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('../scripts/lib/ai-window-judge.cjs');
 
 const INPUT_LIMIT = 20000;
 const OUTPUT_LIMIT = 40000;
@@ -56,6 +56,14 @@ test('超长输入：分类写错或 detail 没写上限都不通过', () => {
   assert.ok(noLimit.reasons.some((reason) => reason.includes('20000')), noLimit.reasons.join('；'));
 });
 
+test('超长输入：即使分类正确，带未检全告警也不能判为提前拒绝', () => {
+  const verdict = judgeOversizeInput(rejectedOversize({
+    warnings: ['内容安全检测未完整执行（checked=false）：只检了前 20000 字'],
+  }), INPUT_LIMIT);
+  assert.equal(verdict.pass, false);
+  assert.ok(verdict.reasons.some((reason) => reason.includes('告警')), verdict.reasons.join('；'));
+});
+
 test('长输出：整段检完才返回的形状通过', () => {
   const verdict = judgeLongOutput({
     ok: true,
@@ -93,6 +101,13 @@ test('长输出：模型没写够 2 万字时如实报「未覆盖」，不算�
   assert.equal(verdict.covered, false, '没到窗口就是没验证到');
   assert.equal(verdict.pass, false);
   assert.ok(verdict.reasons[0].includes('未达到检测窗口'), verdict.reasons.join('；'));
+});
+
+test('整轮探针：未覆盖的长输出必须以非零退出码阻止误报通过', () => {
+  assert.equal(probeRunExitCode({ pass: true }, { pass: false, covered: false }), 3);
+  assert.equal(probeRunExitCode({ pass: true }, { pass: true, covered: true }), 0);
+  assert.equal(probeRunExitCode({ pass: false }, { pass: true, covered: true }), 2);
+  assert.equal(probeRunExitCode({ pass: true }, { pass: false, covered: true }), 2);
 });
 
 test('长输出：超过分片上限被 internal 拒绝，算符合修复后的 fail-closed 行为', () => {

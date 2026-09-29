@@ -24,11 +24,11 @@
  * 用法：`npm run probe:ai-window`。记录追加到 artifacts/verify/ai-window.jsonl，
  * 最新一次写入 ai-window.json（artifacts 已 gitignore，只在执行机上）。
  *
- * 退出码：0 = 两个探针都符合期望（或探针 2 如实报告「未覆盖」）；1 = 调用没跑通
- *         （未部署 / 权限 / 端口）；2 = 有探针与期望不符（输出里会写明差在哪一行）。
+ * 退出码：0 = 两个探针都覆盖且符合期望；1 = 调用没跑通（未部署 / 权限 / 端口）；
+ *         2 = 有探针与期望不符；3 = 探针 2 未覆盖，需让模型输出更长后重跑。
  */
 const { connectMini } = require('./lib/mini-connect.cjs');
-const { judgeLongOutput, judgeOversizeInput } = require('./lib/ai-window-judge.cjs');
+const { judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('./lib/ai-window-judge.cjs');
 const { mkdirSync, writeFileSync, appendFileSync } = require('node:fs');
 const path = require('node:path');
 
@@ -142,7 +142,6 @@ async function run() {
     console.log(oversizeVerdict.pass
       ? '✅ 符合期望：拒绝发生在检测与模型调用之前（这一档不消耗检测配额）'
       : `❌ 与期望不符：${oversizeVerdict.reasons.join('；')}`);
-    if (!oversizeVerdict.pass) exitCode = Math.max(exitCode, 2);
 
     // 探针 2：长输出（按片消耗检测配额）。
     await sleep(1500);
@@ -166,8 +165,9 @@ async function run() {
       console.log(`⚠️ 未被覆盖：${longVerdict.reasons.join('；')}`);
     } else {
       console.log(longVerdict.pass ? '✅ 符合期望：输出整段检完才返回' : `❌ 与期望不符：${longVerdict.reasons.join('；')}`);
-      if (!longVerdict.pass) exitCode = Math.max(exitCode, 2);
     }
+
+    exitCode = probeRunExitCode(oversizeVerdict, longVerdict);
 
     save({
       probedAt: new Date().toISOString(),
@@ -176,7 +176,8 @@ async function run() {
       outputLimit: OUTPUT_LIMIT,
       probes,
     });
-    if (exitCode === 0) console.log('\n探针结论：无与期望不符的项。');
+    if (exitCode === 0) console.log('\n探针结论：两档均覆盖且符合期望。');
+    else if (exitCode === 3) console.log('\n探针结论：长输出未覆盖，不能算通过；请调整输出长度后重跑。');
   } catch (error) {
     save({
       probedAt: new Date().toISOString(),
