@@ -5,17 +5,24 @@
  * `smoke:ai`（短文本）与 `smoke:ai:vision`（真实截图）都构造不到那个长度，
  * 只跑它们无法证明修复在线上生效。
  *
- * 两个探针：
+ * 三个探针（前两个计入结论，第三个只作记录）：
  * 1. **超长输入**（4 条 8000 字消息 = 3.2 万字）：期望 `ok: false` + `invalid_request`，
  *    且 `usage` / `safety` 为空、无告警——说明服务端**在花检测配额与调模型之前**就拒绝了。
  *    这一档**不消耗微信检测配额**（拒绝早于检测），可以放心在演示前跑。
- * 2. **长输出**（要求模型输出大量字符，`maxTokens: 8192`）：期望 `ok: true` 且
- *    `safety.checked: true`、无 `checked=false` 告警（整段检完才返回）。
- *    这一档**会消耗检测配额**：按 2000 字一片，2 万字以上约 10~16 次。
- *    模型若没输出到 2 万字，脚本如实标 `covered: false`（不算通过）——不能把
- *    「这次模型没写那么长」当成修复已验证。
+ * 2. **分片全检（输出侧判据，2026-09-29 改为 B 方案）**：由维护者动作 `moderateText`
+ *    送 6000 字（3 片）良性文本，期望 `safety.checked: true`、无 `checked=false` 告警。
+ *    `moderateOutput`（chat / vision 的输出检测）走的是同一个分片函数，只是片数上限
+ *    不同（输出 20 片 / 诊断 10 片）。**这一档消耗 3 次检测调用**，且需要维护者白名单
+ *    （不是维护者时标 `covered: false`，脚本按「没有覆盖证据」退出 3）。
+ *    **原判据（要求模型自己写出 ≥2 万字）已废弃**：服务端把 `maxTokens` 钳在 1..8192，
+ *    而当前模型每个字符要烧几十个 token（实测 600 字用 5575 completion token），
+ *    模型写不出 2 万字 ⇒ 那条判据永远不可达。**代价要说清楚**：这一档证明「输出被切成
+ *    多片并全部检完」，**不再证明 2 万字窗口被用满**；「输出 >4 万字即不返回」那条
+ *    fail-closed 规则仍只有单测覆盖。
+ * 3. **模型自写长输出**（机会性，不计入结论）：让模型自己写长文本，能写到 ≥2 万字就
+ *    按原判据判，写不到就如实标未覆盖——留着它是因为模型或供应商换掉后这一档可能又可用。
  *
- * 长文本在**模拟器里就地构造**（`'好'.repeat(8000)`），不把几万字经自动化协议传过去。
+ * 长文本在**模拟器里就地构造**（`'好'.repeat(8000)` 或 `'好'.repeat(6000)`），不把几万字经自动化协议传过去。
  *
  * **取结果用轮询，不把云函数调用包在一次 `evaluate` 里等到底。** 开发者工具的自动化桥
  * 对单次 `evaluate` 有约 10 秒上限（2026-09-29 实测：超长输入那次恰好在 10010ms 报
@@ -35,11 +42,11 @@
  * 用法：`npm run probe:ai-window`。记录追加到 artifacts/verify/ai-window.jsonl，
  * 最新一次写入 ai-window.json（artifacts 已 gitignore，只在执行机上）。
  *
- * 退出码：0 = 两个探针都覆盖且符合期望；1 = 调用没跑通（未部署 / 权限 / 端口）；
- *         2 = 有探针与期望不符；3 = 探针 2 未覆盖，需让模型输出更长后重跑。
+ * 退出码：0 = 探针 1 与探针 2 都覆盖且符合期望；1 = 调用没跑通（未部署 / 权限 / 端口）；
+ *         2 = 有探针与期望不符；3 = 输出侧没有覆盖证据（探针 2 被跳过，例如当前账号不是维护者）。
  */
 const { connectMini } = require('./lib/mini-connect.cjs');
-const { judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('./lib/ai-window-judge.cjs');
+const { judgeChunkedModeration, judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('./lib/ai-window-judge.cjs');
 const { mkdirSync, writeFileSync, appendFileSync } = require('node:fs');
 const path = require('node:path');
 
@@ -47,6 +54,12 @@ const path = require('node:path');
 const INPUT_LIMIT = 20000;
 /** 输出侧分片上限（服务端 `MAX_OUTPUT_CHARS`：2000 字 × 20 片）。 */
 const OUTPUT_LIMIT = 40000;
+/** 微信检测的分片大小（与服务端 `MODERATION_CHUNK_CHARS` 同源）。 */
+const MODERATION_CHUNK_CHARS = 2000;
+/** 探针 2 送检的文本长度：3 片，足以证明「多片全检」。 */
+const CHUNKED_TEXT_CHARS = 6000;
+/** 探针 2 至少几片才算覆盖。 */
+const CHUNKED_MIN_CHUNKS = 3;
 /** 轮询上限：云函数自身超时 60 秒（控制台配置），长输出那一档实测约 42 秒。 */
 const RESULT_WAIT_MS = 180000;
 /** 轮询间隔：每次 `evaluate` 都很短，2 秒足够取回结果。 */
@@ -79,13 +92,20 @@ async function startAi(mini, kind) {
         messages: [0, 1, 2, 3].map(() => ({ role: 'user', text: '好'.repeat(8000) })),
         maxTokens: 64,
       }
-      : {
-        action: 'chat',
-        feature: 'window-probe',
-        system: '你只输出被要求的内容，不要解释，不要换行。',
-        messages: [{ role: 'user', text: '请连续输出 30000 个小写字母 a，不要换行、不要分段、不要任何其它字符。' }],
-        maxTokens: 8192,
-      };
+      : probeKind === 'chunked-moderation'
+        ? {
+          // 维护者动作：文本由调用方给出（6000 字 = 3 片），不依赖模型写多少字。
+          action: 'moderateText',
+          feature: 'window-probe',
+          text: '好'.repeat(6000),
+        }
+        : {
+          action: 'chat',
+          feature: 'window-probe',
+          system: '你只输出被要求的内容，不要解释，不要换行。',
+          messages: [{ role: 'user', text: '请连续输出 30000 个小写字母 a，不要换行、不要分段、不要任何其它字符。' }],
+          maxTokens: 8192,
+        };
     wx.cloud
       .callFunction({ name: 'ai', data: request })
       .then((res) => {
@@ -173,7 +193,38 @@ async function run() {
       ? '✅ 符合期望：拒绝发生在检测与模型调用之前（这一档不消耗检测配额）'
       : `❌ 与期望不符：${oversizeVerdict.reasons.join('；')}`);
 
-    // 探针 2：长输出（按片消耗检测配额）。
+    // 探针 2：输出侧的可达判据——维护者动作 `moderateText` 送 6000 字（3 片）良性文本，
+    // 期望整段检完（`checked: true`、无 `checked=false` 告警）。这是 `moderateOutput`
+    // 走的同一个分片函数，只是片数上限不同（输出 20 片 / 诊断 10 片）。
+    await sleep(1500);
+    await startAi(mini, 'chunked-moderation');
+    const chunked = await awaitAi(mini, 'chunked-moderation');
+    const chunkedVerdict = judgeChunkedModeration(chunked.result, CHUNKED_TEXT_CHARS, MODERATION_CHUNK_CHARS, CHUNKED_MIN_CHUNKS);
+    probes.push({
+      probe: 'chunked-moderation',
+      expectation: `送检 ${CHUNKED_TEXT_CHARS} 字（${CHUNKED_TEXT_CHARS / MODERATION_CHUNK_CHARS} 片）：ok=true、safety.checked=true、无 checked=false 告警`,
+      textChars: CHUNKED_TEXT_CHARS,
+      chunkChars: MODERATION_CHUNK_CHARS,
+      minChunks: CHUNKED_MIN_CHUNKS,
+      cloudElapsedMs: chunked.elapsedMs,
+      verdict: chunkedVerdict,
+      result: chunked.result,
+    });
+    console.log('');
+    console.log(`===== 探针 2：分片全检（维护者送检 ${CHUNKED_TEXT_CHARS} 字 = ${CHUNKED_TEXT_CHARS / MODERATION_CHUNK_CHARS} 片）=====`);
+    console.log(`${summarize(chunked.result)} 云函数耗时=${chunked.elapsedMs}ms`);
+    console.log(`safety.detail=${String((chunked.result.safety && chunked.result.safety.detail) || '').slice(0, 240)}`);
+    if (!chunkedVerdict.covered) {
+      console.log(`⚠️ 未被覆盖：${chunkedVerdict.reasons.join('；')}`);
+    } else {
+      console.log(chunkedVerdict.pass
+        ? '✅ 符合期望：多片文本整段检完才返回（分片链路在线上成立）'
+        : `❌ 与期望不符：${chunkedVerdict.reasons.join('；')}`);
+    }
+
+    // 探针 3（机会性，不计入结论）：让模型自己写长文本。2026-09-29 实测模型写不出
+    // 多片输出（每个字符要烧几十个 token，1200 字就在 40 秒模型超时处失败），
+    // 因此这一档常常「未覆盖」——输出侧判据以探针 2 为准。
     await sleep(1500);
     await startAi(mini, 'long-output');
     const long = await awaitAi(mini, 'long-output');
@@ -181,7 +232,7 @@ async function run() {
     const longVerdict = judgeLongOutput(long.result, INPUT_LIMIT, OUTPUT_LIMIT, textLength);
     probes.push({
       probe: 'long-output',
-      expectation: `文本长度 ≥ ${INPUT_LIMIT} 字时：ok=true、safety.checked=true、无 checked=false 告警（分片上限 ${OUTPUT_LIMIT} 字）`,
+      expectation: `（机会性）文本长度 ≥ ${INPUT_LIMIT} 字时：ok=true、safety.checked=true、无 checked=false 告警（分片上限 ${OUTPUT_LIMIT} 字）`,
       limit: INPUT_LIMIT,
       outputLimit: OUTPUT_LIMIT,
       textLength,
@@ -190,16 +241,13 @@ async function run() {
       result: long.result,
     });
     console.log('');
-    console.log('===== 探针 2：长输出 =====');
+    console.log('===== 探针 3：模型自写长输出（机会性，不计入结论）=====');
     console.log(`${summarize(long.result)} 文本长度=${textLength} 云函数耗时=${long.elapsedMs}ms`);
-    console.log(`warnings=${JSON.stringify(Array.isArray(long.result.warnings) ? long.result.warnings : []).slice(0, 300)}`);
-    if (!longVerdict.covered) {
-      console.log(`⚠️ 未被覆盖：${longVerdict.reasons.join('；')}`);
-    } else {
-      console.log(longVerdict.pass ? '✅ 符合期望：输出整段检完才返回' : `❌ 与期望不符：${longVerdict.reasons.join('；')}`);
-    }
+    console.log(!longVerdict.covered
+      ? `ℹ️ 未覆盖（模型没写出足够长的文本）：${longVerdict.reasons.join('；')}`
+      : (longVerdict.pass ? '✅ 符合期望：输出整段检完才返回' : `❌ 与期望不符：${longVerdict.reasons.join('；')}`));
 
-    exitCode = probeRunExitCode(oversizeVerdict, longVerdict);
+    exitCode = probeRunExitCode(oversizeVerdict, chunkedVerdict);
 
     save({
       probedAt: new Date().toISOString(),
@@ -208,8 +256,8 @@ async function run() {
       outputLimit: OUTPUT_LIMIT,
       probes,
     });
-    if (exitCode === 0) console.log('\n探针结论：两档均覆盖且符合期望。');
-    else if (exitCode === 3) console.log('\n探针结论：长输出未覆盖，不能算通过；请调整输出长度后重跑。');
+    if (exitCode === 0) console.log('\n探针结论：输入侧与输出侧（分片全检）均覆盖且符合期望。');
+    else if (exitCode === 3) console.log('\n探针结论：输出侧没有覆盖证据（例如当前账号不是维护者、分片探针被跳过），不能算通过。');
   } catch (error) {
     save({
       probedAt: new Date().toISOString(),

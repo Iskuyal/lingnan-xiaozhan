@@ -1,13 +1,13 @@
 /**
  * 内容安全窗口云端探针的判定逻辑（`scripts/lib/ai-window-judge.cjs`）。
  *
- * 这两个判定的价值在于**能区分修复前后**：桩值取自审计报告实测的两种返回值形状
+ * 这些判定的价值在于**能区分修复前后**：桩值取自审计报告实测的返回值形状
  * （修复前的 `ok: true` + `checked: false`，修复后的拒绝 / 全检），
  * 因此判定写错时这条测试会先失败，不用等到云端跑一次才发现。
  */
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('../scripts/lib/ai-window-judge.cjs');
+const { judgeChunkedModeration, judgeLongOutput, judgeOversizeInput, probeRunExitCode } = require('../scripts/lib/ai-window-judge.cjs');
 
 const INPUT_LIMIT = 20000;
 const OUTPUT_LIMIT = 40000;
@@ -121,4 +121,57 @@ test('长输出：超过分片上限被 internal 拒绝，算符合修复后的 
   }, INPUT_LIMIT, OUTPUT_LIMIT);
   assert.equal(verdict.pass, true, verdict.reasons.join('；'));
   assert.ok(verdict.reasons[0].includes('fail-closed'), verdict.reasons.join('；'));
+});
+
+/** 维护者 `moderateText` 在 6000 字（3 片）良性文本上的返回值（真实形状）。 */
+function chunkedModeration(overrides = {}) {
+  return {
+    ok: true,
+    failureClass: '',
+    detail: '',
+    text: '',
+    safety: {
+      provider: 'wechat',
+      api: 'security.msgSecCheck',
+      passed: true,
+      checked: true,
+      detail: 'v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100',
+    },
+    usage: null,
+    warnings: [],
+    ...overrides,
+  };
+}
+
+test('分片全检（B 方案）：3 片文本整段检完通过', () => {
+  const verdict = judgeChunkedModeration(chunkedModeration(), 6000, 2000, 3);
+  assert.equal(verdict.covered, true);
+  assert.equal(verdict.pass, true, verdict.reasons.join('；'));
+});
+
+test('分片全检：带 checked=false 告警即不通过（部分检测不得算检完）', () => {
+  const verdict = judgeChunkedModeration(chunkedModeration({
+    safety: { provider: 'wechat', api: 'security.msgSecCheck', passed: true, checked: false, detail: '仅检测了前 20000 字' },
+    warnings: ['内容安全检测未完整执行（checked=false）：wechat｜security.msgSecCheck'],
+  }), 6000, 2000, 3);
+  assert.equal(verdict.covered, true);
+  assert.equal(verdict.pass, false);
+  assert.ok(verdict.reasons.some((reason) => reason.includes('没检全')), verdict.reasons.join('；'));
+});
+
+test('分片全检：送检文本不足最小片数时标未覆盖，不算通过', () => {
+  const verdict = judgeChunkedModeration(chunkedModeration(), 2000, 2000, 3);
+  assert.equal(verdict.covered, false);
+  assert.equal(verdict.pass, false);
+  assert.ok(verdict.reasons[0].includes('未达到 2000×3'), verdict.reasons.join('；'));
+});
+
+test('分片全检：被拒是不符（2），没跑过是没覆盖证据（3）', () => {
+  const rejected = judgeChunkedModeration({ ok: false, failureClass: 'invalid_request', detail: '这项 AI 维护操作仅向维护者开放', safety: null, warnings: [] }, 6000, 2000, 3);
+  assert.equal(rejected.pass, false);
+  assert.equal(rejected.covered, true, '送检了但被拒 ⇒ 算覆盖过（判不符），不能算未覆盖');
+  assert.equal(probeRunExitCode({ pass: true }, rejected), 2);
+
+  const notRun = { pass: false, covered: false, reasons: ['未跑：当前账号不是维护者'] };
+  assert.equal(probeRunExitCode({ pass: true }, notRun), 3, '没跑过 ⇒ 没有覆盖证据，不能算通过');
 });
