@@ -14,9 +14,7 @@
     "pages/lost-found/publish/index",
     "pages/lost-found/detail/index",
     "pages/lost-found/claim/index",
-    "pages/lost-found/mine/index",
-    "pages/goals/index",
-    "pages/goals/edit/index"
+    "pages/lost-found/mine/index"
   ],
   "window": {
     "navigationBarTitleText": "校园工具",
