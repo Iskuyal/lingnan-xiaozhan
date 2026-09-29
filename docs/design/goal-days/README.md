@@ -44,7 +44,16 @@
 | `05-home-entry.html` | 首页「最近的目标日」入口带 | `pages/home/index.*` |
 
 日期算法、分组与文案在 `miniprogram/services/goals/index.ts`，由 `tests/goals.test.cjs` 与
-`tests/goal-pages.test.cjs` 覆盖。
+`tests/goal-pages.test.cjs` 覆盖。模拟器实测记录见
+[`docs/evidence/goal-days/`](../../evidence/goal-days/README.md)（9 项检查，`realDevice: false`）。
+
+实现时踩到的两个库内限制（写下来省一次返工）：
+
+- **原生 `button` 在模拟器里锁 184px 内在宽度与水平 auto 外边距**：页面 WXSS 写的 `width` / `margin`
+  不生效。成对的小按钮（修改 / 删除）因此改用 `view` + `aria-role="button"`，整宽按钮在 wxml 里写
+  `style="display:block;width:100%;max-width:none"`——与首页主入口同一种写法。
+- **改完 WXSS 要重启开发者工具**：只 `npm run build` 时模拟器仍用上一次编译的样式
+  （本次实测按钮宽度 161px → 重启后才是设计值 61px）。
 
 ## 待拍板项
 

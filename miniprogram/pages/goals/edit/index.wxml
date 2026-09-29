@@ -53,8 +53,8 @@
       <view class="ge-hint">预览按现在的日期算一次；保存后列表里会随每天变化重新计算。</view>
     </view>
 
-    <button id="goal-save" class="home-button ge-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
-    <button id="goal-remove" wx:if="{{mode === 'edit'}}" class="ge-delete" hover-class="pressed" bindtap="remove">删除这一条</button>
+    <button id="goal-save" class="home-button ge-save" style="display:block;width:100%;max-width:none" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
+    <button id="goal-remove" wx:if="{{mode === 'edit'}}" class="ge-delete" style="display:flex;width:100%;max-width:none" hover-class="pressed" bindtap="remove">删除这一条</button>
     <view id="goal-cancel" class="ge-cancel" hover-class="pressed" bindtap="goBack">取消</view>
     <view class="quiet ge-note">保存失败时不会改动原来的记录；删除需要再确认一次。</view>
   </block>

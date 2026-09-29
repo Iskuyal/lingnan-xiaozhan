@@ -17,9 +17,10 @@
 .goal-state-expired { color:var(--warn, #9a5b1e); border:1rpx solid var(--warn-line, rgba(214,160,90,0.55)); background:var(--warn-soft, rgba(255,244,228,0.86)); }
 .goal-meta { margin-top:10rpx; color:var(--text-2, #6b5d57); font-size:21rpx; line-height:1.6; }
 
-/* 修改 / 删除两键显式定宽：原生 button 自带内在宽度，不限宽会把整行挤变形。 */
+/* 修改 / 删除两键显式定宽：原生 button 自带内在宽度与水平 auto 外边距，
+   在 flex 行里只写 width 会被撑开（课表列表踩过同一个坑，所以补 flex:none 与 max-width）。 */
 .goal-actions { margin-top:17rpx; display:flex; gap:13rpx; }
-.goal-action { width:119rpx; min-height:62rpx; display:flex; align-items:center; justify-content:center; border:1rpx solid rgba(43,36,34,0.2); color:var(--brand-ink, #7a1a12); font-size:21rpx; }
+.goal-action { flex:none; width:119rpx; max-width:119rpx; min-width:0; margin:0; min-height:62rpx; display:flex; align-items:center; justify-content:center; border:1rpx solid rgba(43,36,34,0.2); color:var(--brand-ink, #7a1a12); font-size:21rpx; }
 .goal-action-warn { color:var(--warn, #9a5b1e); border-color:var(--warn-line, rgba(214,160,90,0.55)); }
 
 .goal-new { margin-top:42rpx; font-size:29rpx; }

@@ -60,19 +60,18 @@
 .home-entry .entry-title { margin-top:0; font-size:29rpx; }
 .home-entry .entry-description { margin-top:6rpx; }
 
-/* 目标日入口带：最近一条目标日 + 剩余天数；没有目标日时右侧写「去添加」。 */
+/* 目标日入口带：最近一条目标日 + 剩余天数；没有目标日时右侧写「去添加」。
+   原生 button 在模拟器里锁 184px 内在宽度、水平 auto 外边距（页面 WXSS 的 width/margin 不生效），
+   所以整宽靠 wxml 里的行内样式，内部布局放在 .goal-strip-row 上。 */
 .goal-strip {
-  width:100%;
   margin-top:19rpx;
   padding:25rpx 27rpx;
-  display:flex;
-  align-items:center;
-  gap:23rpx;
   border:1rpx solid rgba(43,36,34,0.14);
   border-left:6rpx solid var(--gold, #c69a28);
   background:rgba(255,255,255,0.62);
   text-align:left;
 }
+.goal-strip-row { display:flex; align-items:center; gap:23rpx; }
 .goal-strip-main { flex:1; min-width:0; }
 .goal-strip-label { color:var(--text-3, #746760); font-size:19rpx; }
 .goal-strip-name { margin-top:6rpx; color:var(--text, #2b2422); font-size:27rpx; line-height:1.4; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
