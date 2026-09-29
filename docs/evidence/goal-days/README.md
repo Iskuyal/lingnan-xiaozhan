@@ -73,6 +73,17 @@ node scripts/verify-goals.cjs
 - **内容安全配额**：本轮 AI 相关检查拿到「内容安全检测的额度已用尽」的降级提示。
   本票不接 AI，不受影响；但同一台机器上跑 AI 相关验收前要先确认当日配额。
 
+## 同分支的整机回归（`npm run verify:wechat`）
+
+2026-09-29 16:48（北京时间）在同一个模拟器上跑完整回归：**25 项检查全过、0 项跳过**
+（`result: passed`、`platform: devtools`、`model: iPhone 12/13 (Pro)`、`SDKVersion 3.17.2`、
+`realDevice: false`），报告见 [`regression-verification.json`](regression-verification.json)，
+首页截图见 [`regression-home-news.png`](regression-home-news.png)。这次回归覆盖新闻、部门、课表、
+导入与 AI 降级路径，用来证明新增的首页入口带没有影响既有页面。
+
+本轮 AI 相关检查拿到的是**降级**路径（内容安全当日配额已用尽，页面提示「AI 功能暂时不可用」），
+这让「失败提示可读」这一条在真实失败下被验到；同时也意味着**本轮没有成功路径的 AI 证据**。
+
 ## 与设计图的关系
 
 设计图 `docs/design/goal-days/`（5 张 PNG，状态**待评审**）是实现依据；本目录的截图是
