@@ -18,7 +18,7 @@
 
 **范围调整（2026-09-19 负责人决定）**：为 [Ticket 10](10-campus-rag-qa.md) 的 RAG 语料让路——**校园动态 126 页 / 1252 条的全量导入暂缓**（它是事后报道，对「办事指引问答」价值低），**只保每日增量**；**团委通知公告 16 页 / 155 条仍要全量入库**，它是 Ticket 10 的 A 类主力语料。上面「历史范围」一行按此理解为**分栏目区别对待**，不是取消全量。**这是对两处决定（10 的语料范围 + 本票降优先级）的合并解释，需负责人在 10 的门禁处一并确认。**
 
-**Status:** **in-progress（2026-09-19：新版已部署上线；触发器与全量导入待人工执行）**。本票的代码、解析规则、测试与文档已按负责人选定的五项参数在本地完成，`npm run typecheck` / `npm run build` / `npm test`（90 项）通过。**云端进展（2026-09-19）**：`npm run build` 后用 `cli cloud functions deploy --names newsSync --remote-npm-install` 部署成功（**7 个文件 / 25.6 KB**，含 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示 `newsSync` **最后更新 2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%、配置页显示内存 256 MB 与执行超时 20 秒；**部署后复核「普通客户端仍被拒绝」——小程序端调用返回 `-501023 permission denied`**（安全规则未随部署失效）。**仍未完成**：`{"column":"tw-tqsd","maxRequests":2}` 的云端测试调用（人工步骤 A 的运行判据）、06:00 触发器的实际触发（步骤 B、C）与首次全量导入（步骤 D，约 155 批）；因此涉及线上数据的验收项一律保持「未验证」。人工步骤见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤)，状态词义见 [Ticket 索引](README.md) 末尾。
+**Status:** **in-progress（2026-09-19：新版已部署上线；触发器与全量导入待人工执行）**。本票的代码、解析规则、测试与文档已按负责人选定的五项参数在本地完成，`npm run typecheck` / `npm run build` / `npm test`（90 项）通过。**云端进展（2026-09-19）**：`npm run build` 后用 `cli cloud functions deploy --names newsSync --remote-npm-install` 部署成功（**7 个文件 / 25.6 KB**，含 `columns.js` 与带触发器的 `config.json`）；`cli cloud functions info` 读回 **Active / timeout 20 / Nodejs16.13**；控制台「云函数」列表显示 `newsSync` **最后更新 2026-09-19 12:07:52**、版本 `$LATEST` 流量 100%、配置页显示内存 256 MB 与执行超时 20 秒；**部署后复核「普通客户端仍被拒绝」——小程序端调用返回 `-501023 permission denied`**（安全规则未随部署失效）。**仍未完成**：`{"column":"tw-tqsd","maxRequests":2}` 的云端测试调用（人工步骤 A 的运行判据）、06:00 触发器的实际触发（步骤 B、C）与首次全量导入（步骤 D，约 155 批）；因此涉及线上数据的验收项一律保持「未验证」。人工步骤见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤动作--对象--判据步骤-a-的部署已完成运行判据与-be-未执行)，状态词义见 [Ticket 索引](README.md) 末尾。
 
 **勾选口径：** `[x]` = 本地代码与测试已完成、证据在册；`[ ]` = 仍需云端或人工验证，原因写在条目里。本票不把「本地桩测试通过」当成「云端验收通过」。
 
@@ -108,4 +108,4 @@
 
 ## 本轮未执行（一律未验证）
 
-- 未部署云函数、未上传 `config.json`、未触发定时器、未调用云端函数、未跑全量导入、未在真实限速下验证 403 处理、未复核 `invoke: false`、未建 `date + id` 组合索引。步骤与判据见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤)。
+- 未部署云函数、未上传 `config.json`、未触发定时器、未调用云端函数、未跑全量导入、未在真实限速下验证 403 处理、未复核 `invoke: false`、未建 `date + id` 组合索引。步骤与判据见 [云开发文档](../../cloud-development.md#ticket-04-人工步骤动作--对象--判据步骤-a-的部署已完成运行判据与-be-未执行)。
