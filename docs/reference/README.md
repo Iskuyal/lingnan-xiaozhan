@@ -8,5 +8,6 @@
 | [公众号内容接入核查](wechat-mp-access-research.md) | 自动抓取、账号权限与其他接入方式的历史研究 |
 | [公众号内容使用规则](miniprogram-mp-content-rules.md) | 内容使用与小程序能力边界的核查记录 |
 | [AI 资讯小样 PoC](ai-news-poc.md) | 基于当时样本的可行性评估，不是已上线功能 |
+| [PoC 复现资料](ai-news-poc/README.md) | 一次性脚本与 43 次调用的原始记录；需自备 API Key |
 
 已确认赛事事项归 [赛事要求](../competition/README.md)，产品内容依据归 [来源记录](../product/sources/README.md)，新增功能选型归 [规划](../planning/README.md)。
