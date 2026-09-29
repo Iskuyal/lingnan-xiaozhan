@@ -80,3 +80,13 @@ export function noonOf(dateText: string): number | null {
   if (parts === null) return null;
   return Date.UTC(parts.year, parts.month - 1, parts.day) - SHANGHAI_OFFSET_MS + 12 * 60 * 60 * 1000;
 }
+
+/**
+ * 平台无关的文本比较。**不要用 `localeCompare`**：它对中文的排序依赖运行环境的 ICU 数据，
+ * 同一份数据在本机（Windows）与 CI（Linux）会给出不同顺序——2026-09-29 被 CI 抓到过一次。
+ * 这里要的是**可复现**；真要"人类语言顺序"时再单独讨论。
+ */
+export function compareText(a: string, b: string): number {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}

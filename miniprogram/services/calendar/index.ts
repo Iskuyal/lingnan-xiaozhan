@@ -10,7 +10,7 @@
  * 「没有确定日期的事件不得带日期」这些不变量。
  */
 import { CalendarCategory, CalendarEvent, CalendarEventStatus, CATEGORY_LABEL, CATEGORY_ORDER, CALENDAR_EVENTS } from './events';
-import { diffDays, isValidDate, shanghaiToday } from '../dates/index';
+import { compareText, diffDays, isValidDate, shanghaiToday } from '../dates/index';
 
 export * from './events';
 
@@ -79,7 +79,7 @@ export function groupEvents(events: CalendarEvent[], now: number = Date.now()): 
         if (a.date === '' && b.date === '') return 0;
         if (a.date === '') return 1;
         if (b.date === '') return -1;
-        return a.date.localeCompare(b.date);
+        return compareText(a.date, b.date);
       }),
   })).filter((group) => group.rows.length > 0);
 }
