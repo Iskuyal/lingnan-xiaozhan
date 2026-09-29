@@ -342,6 +342,7 @@ Ticket 04 起同步两个栏目（校园动态 `xyxw-xydt`、团委通知公告 
 | 2026-09-19 01:35 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（544ms） | `errcode 0`（458ms） | **可调用**：文本与图片两条路径都通 | `wechat`（保持默认） |
 | 2026-09-20 00:17 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `45009` reach max api daily quota limit | `errcode 0` | **部分可用**：文本配额用尽、图片正常；**北京时间已过午夜仍未重置**，说明它不是按自然日 0 点恢复 | 不切换（等恢复） |
 | 2026-09-20 01:2x | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态） | `errcode 0`（420ms） | `errcode 0`（487ms） | **可调用**：两条接口都恢复 | `wechat`（保持默认） |
+| 2026-09-29 11:40 | `cloudbase-d2gjtbbwu3575cd7b` | 是（小程序端，v2 形态；**维护者白名单账号**） | `errcode 0`（620ms） | `errcode 0`（559ms） | **可调用**：配好 `AI_ADMIN_OPENIDS` 后维护者探测首次跑通（V3），`probe.valid: true`；两条接口都通 | `wechat`（保持默认） |
 
 第二行（有效测量）粘贴进文档的原始记录：
 
