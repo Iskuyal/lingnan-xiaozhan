@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>校历与考试 · 列表</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .cal-group { margin-top:20px; }
+    .cal-group-head { display:flex; align-items:baseline; justify-content:space-between; }
+    .cal-group-note { color:var(--text-3); font-size:11px; }
+    .cal-card { margin-top:8px; padding:11px 12px; border:1px solid rgba(43,36,34,.13); border-left:3px solid var(--brand-deep); background:rgba(255,255,255,.62); }
+    .cal-card-pending { border-left-color:rgba(43,36,34,.25); background:rgba(255,255,255,.45); }
+    .cal-top { display:flex; align-items:flex-start; gap:10px; }
+    .cal-title { flex:1; min-width:0; font-size:15px; font-weight:600; line-height:1.4; }
+    .cal-state { flex:none; min-height:22px; padding:2px 8px; display:flex; align-items:center; border-radius:3px; font-size:10px; font-weight:700; color:var(--brand-ink); border:1px solid rgba(198,154,40,.55); background:rgba(198,154,40,.12); }
+    .cal-state-plain { color:var(--text-2); border-color:rgba(43,36,34,.2); background:rgba(255,255,255,.5); }
+    /* 考试与报名分两行：报名没有官方统一日期时只写「以本校通知为准」，不给假日期。 */
+    .cal-line { margin-top:6px; display:flex; gap:8px; font-size:11.5px; line-height:1.7; }
+    .cal-key { flex:none; width:44px; color:var(--text-3); }
+    .cal-val { flex:1; min-width:0; color:var(--text-2); }
+    .cal-val-strong { color:var(--text); font-weight:600; }
+    .cal-source { margin-top:8px; padding-top:8px; border-top:1px solid rgba(43,36,34,.14); display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .cal-source-text { min-width:0; color:var(--text-3); font-size:10px; line-height:1.6; }
+    .cal-copy { flex:none; color:var(--brand-ink); font-size:10px; font-weight:700; }
+    .cal-foot { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">校历与考试</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">只收录经核实的官方日期 · 最后核查 2026-09-29</div>
+    <h1 class="page-title">校历与考试</h1>
+    <p class="copy">每条日期都能点开官方原文核对。没有官方日期的事项只给入口或写「待公布」，不沿用上一年。</p>
+
+    <section class="cal-group">
+      <div class="cal-group-head"><span class="section-title">四六级</span><span class="cal-group-note">4 条有日期</span></div>
+
+      <article class="cal-card">
+        <div class="cal-top">
+          <div class="cal-title">大学英语四级口语考试（CET-SET4）</div>
+          <div class="cal-state">还有 53 天</div>
+        </div>
+        <div class="cal-line"><span class="cal-key">考试</span><span class="cal-val cal-val-strong">2026-11-21</span></div>
+        <div class="cal-line"><span class="cal-key">报名</span><span class="cal-val">各考点报名时间不同，以本校教务处通知为准</span></div>
+        <div class="cal-source">
+          <span class="cal-source-text">中国教育考试网 · 2026年下半年四六级报名工作启动<br>公告发布 2026-09-02 · 适用 2026 年下半年 · 全国</span>
+          <span class="cal-copy">复制原文链接 ›</span>
+        </div>
+      </article>
+
+      <article class="cal-card">
+        <div class="cal-top">
+          <div class="cal-title">大学英语四级笔试（CET4）</div>
+          <div class="cal-state">还有 74 天</div>
+        </div>
+        <div class="cal-line"><span class="cal-key">考试</span><span class="cal-val cal-val-strong">2026-12-12 09:00–11:20</span></div>
+        <div class="cal-line"><span class="cal-key">报名</span><span class="cal-val">各考点报名时间不同，以本校教务处通知为准</span></div>
+        <div class="cal-line"><span class="cal-key">备注</span><span class="cal-val">笔试准考证自 12 月 1 日 9 时起可打印</span></div>
+        <div class="cal-source">
+          <span class="cal-source-text">中国教育考试网 · 2026年下半年四六级报名工作启动<br>公告发布 2026-09-02 · 适用 2026 年下半年 · 全国</span>
+          <span class="cal-copy">复制原文链接 ›</span>
+        </div>
+      </article>
+
+      <article class="cal-card">
+        <div class="cal-top">
+          <div class="cal-title">大学英语六级笔试（CET6）</div>
+          <div class="cal-state">还有 74 天</div>
+        </div>
+        <div class="cal-line"><span class="cal-key">考试</span><span class="cal-val cal-val-strong">2026-12-12 15:00–17:25</span></div>
+        <div class="cal-line"><span class="cal-key">报名</span><span class="cal-val">各考点报名时间不同，以本校教务处通知为准</span></div>
+        <div class="cal-source">
+          <span class="cal-source-text">中国教育考试网 · 2026年下半年四六级报名工作启动<br>公告发布 2026-09-02 · 适用 2026 年下半年 · 全国</span>
+          <span class="cal-copy">复制原文链接 ›</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="cal-group">
+      <div class="cal-group-head"><span class="section-title">计算机等级</span><span class="cal-group-note">1 条有日期</span></div>
+      <article class="cal-card">
+        <div class="cal-top">
+          <div class="cal-title">全国计算机等级考试（2026 年 9 月批次）</div>
+          <div class="cal-state cal-state-plain">已结束 21 天</div>
+        </div>
+        <div class="cal-line"><span class="cal-key">考试</span><span class="cal-val">2026-09-19 至 09-21</span></div>
+        <div class="cal-line"><span class="cal-key">报名</span><span class="cal-val">广东省：2026-06-25 10:00 至 2026-07-03 16:00（已结束）</span></div>
+        <div class="cal-source">
+          <span class="cal-source-text">中国教育考试网 · 2026年9月NCRE报名工作启动<br>公告发布 2026-06-24 · 适用 2026 年 9 月批次 · 广东</span>
+          <span class="cal-copy">复制原文链接 ›</span>
+        </div>
+      </article>
+    </section>
+
+    <div class="quiet cal-foot">本页日期来自官方公告，最后核查 2026-09-29；卡片只显示官方已公布的考试日，报名时间以本校教务处通知为准。</div>
+  </main>
+</body>
+</html>

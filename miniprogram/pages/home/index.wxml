@@ -46,6 +46,29 @@
       </button>
     </view>
 
+    <view class="entry-pair">
+      <button
+        id="calendar-entry"
+        class="home-entry home-entry-calendar"
+        hover-class="pressed"
+        bindtap="openCalendar"
+        aria-label="校历与考试，查看经核实的官方考试日期与来源"
+      >
+        <view class="entry-title">校历与考试</view>
+        <view class="entry-description">官方日期与来源</view>
+      </button>
+      <button
+        id="fitness-entry"
+        class="home-entry home-entry-fitness"
+        hover-class="pressed"
+        bindtap="openFitness"
+        aria-label="体测估算，按国家标准估算体测单项与总分"
+      >
+        <view class="entry-title">体测估算</view>
+        <view class="entry-description">按国家标准估算</view>
+      </button>
+    </view>
+
     <button
       id="goal-days-entry"
       class="goal-strip"

@@ -20,15 +20,12 @@ export const MAX_GOALS = 50;
 export const MAX_NAME_LENGTH = 30;
 
 /**
- * Asia/Shanghai 相对 UTC 的固定偏移 8 小时。中国大陆自 1991 年起不再使用夏令时，
- * 因此这里用固定偏移而不是 `Intl` 时区库——小程序端也没有可靠的时区数据库。
+ * 日期判断全部来自 `services/dates`：本项目只有一份「今天怎么算」。
+ * 这里把它们再导出，页面与测试继续从本模块取，不必知道实现被搬到了哪。
  */
-const SHANGHAI_OFFSET_MS = 8 * 60 * 60 * 1000;
+import { diffDays, isValidDate, parseDate, shanghaiToday } from '../dates/index';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** 只认 `YYYY-MM-DD`：宁可拒绝，也不去猜 `2026/9/29` 或 `2026-9-29` 这类写法。 */
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+export { diffDays, isValidDate, parseDate, shanghaiToday };
 
 /** 目标日状态：未到期 / 今天 / 已过期。 */
 export type GoalKind = 'upcoming' | 'today' | 'expired';
@@ -84,66 +81,6 @@ let sequence = 0;
 function nextId(now: number): string {
   sequence += 1;
   return `goal-${now.toString(36)}-${sequence.toString(36)}`;
-}
-
-function isLeapYear(year: number): boolean {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-function daysInMonth(year: number, month: number): number {
-  if (month === 2) return isLeapYear(year) ? 29 : 28;
-  if (month === 4 || month === 6 || month === 9 || month === 11) return 30;
-  return 31;
-}
-
-interface DateParts {
-  year: number;
-  month: number;
-  day: number;
-}
-
-/**
- * 解析 `YYYY-MM-DD`：格式与真实日历都合法才返回年月日，否则 null。
- * `2026-02-30`、`2025-02-29`（平年）这类「格式对但没有这一天」的写法一律拒绝。
- */
-export function parseDate(text: unknown): DateParts | null {
-  if (typeof text !== 'string') return null;
-  const trimmed = text.trim();
-  if (!DATE_PATTERN.test(trimmed)) return null;
-  const year = Number(trimmed.slice(0, 4));
-  const month = Number(trimmed.slice(5, 7));
-  const day = Number(trimmed.slice(8, 10));
-  if (year < 1900 || year > 2999) return null;
-  if (month < 1 || month > 12) return null;
-  if (day < 1 || day > daysInMonth(year, month)) return null;
-  return { year, month, day };
-}
-
-export function isValidDate(text: unknown): boolean {
-  return parseDate(text) !== null;
-}
-
-/** 日期 → 从 1970-01-01 起的天序号。用 UTC 构造，避免本机时区把日期推前或推后一天。 */
-function dayNumber(parts: DateParts): number {
-  return Math.floor(Date.UTC(parts.year, parts.month - 1, parts.day) / DAY_MS);
-}
-
-function pad(value: number): string {
-  return String(value).padStart(2, '0');
-}
-
-/** 今天（Asia/Shanghai）的 'YYYY-MM-DD'。设备在其他时区时结论也不变。 */
-export function shanghaiToday(now: number = Date.now()): string {
-  const shifted = new Date(now + SHANGHAI_OFFSET_MS);
-  return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())}`;
-}
-
-/** 两个日期相差的日历日数（`to − from`）；任一非法返回 null。 */
-export function diffDays(fromText: string, toText: string): number | null {
-  const from = parseDate(fromText);
-  const to = parseDate(toText);
-  if (from === null || to === null) return null;
-  return dayNumber(to) - dayNumber(from);
 }
 
 /**

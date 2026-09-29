@@ -59,6 +59,12 @@ Page({
   openGoals() {
     wx.navigateTo({ url: '/pages/goals/index' });
   },
+  openCalendar() {
+    wx.navigateTo({ url: '/pages/calendar/index' });
+  },
+  openFitness() {
+    wx.navigateTo({ url: '/pages/fitness/index' });
+  },
   /** 最近资讯读取失败时本区块显示可重试的错误状态；不影响静态入口与简介。 */
   loadRecentNews() {
     this.setData({ newsStatus: 'loading', newsError: '' });

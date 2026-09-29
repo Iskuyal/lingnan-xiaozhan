@@ -1,0 +1,108 @@
+<view class="page">
+  <view class="eyebrow">国家学生体质健康标准（2014年修订）· {{bandLabel}} · {{sexLabel}}</view>
+  <view class="fit-title">体测估算</view>
+  <view class="fit-copy">按国家标准评分表算一次估算分。只在你手机上计算，不上传、不保存；不确定的项目留空即可。</view>
+
+  <!-- 输入区 -->
+  <view class="fit-field">
+    <view class="fit-label">性别</view>
+    <view class="fit-pills">
+      <view id="fit-sex-male" class="fit-pill {{sex === 'male' ? 'fit-pill-on' : ''}}" hover-class="pressed" data-value="male" bindtap="onSexTap">男</view>
+      <view id="fit-sex-female" class="fit-pill {{sex === 'female' ? 'fit-pill-on' : ''}}" hover-class="pressed" data-value="female" bindtap="onSexTap">女</view>
+    </view>
+  </view>
+
+  <view class="fit-field">
+    <view class="fit-label">年级组</view>
+    <view class="fit-pills">
+      <view id="fit-band-freshman" class="fit-pill {{band === 'freshman' ? 'fit-pill-on' : ''}}" hover-class="pressed" data-value="freshman" bindtap="onBandTap">大一 / 大二</view>
+      <view id="fit-band-senior" class="fit-pill {{band === 'senior' ? 'fit-pill-on' : ''}}" hover-class="pressed" data-value="senior" bindtap="onBandTap">大三 / 大四</view>
+    </view>
+    <view class="fit-hint">标准把大学一二年级与三四年级分成两组，同一成绩在两组里的分数不同。</view>
+  </view>
+
+  <view class="fit-row">
+    <view class="fit-field">
+      <view class="fit-label">身高（厘米）</view>
+      <input id="fit-height" class="fit-input" type="digit" value="{{form.height}}" data-value="height" bindinput="onInput" placeholder="175" />
+    </view>
+    <view class="fit-field">
+      <view class="fit-label">体重（千克）</view>
+      <input id="fit-weight" class="fit-input" type="digit" value="{{form.weight}}" data-value="weight" bindinput="onInput" placeholder="61.3" />
+    </view>
+  </view>
+
+  <view class="fit-field">
+    <view class="fit-label">肺活量（毫升）</view>
+    <input id="fit-vital" class="fit-input" type="number" value="{{form.vitalCapacity}}" data-value="vitalCapacity" bindinput="onInput" placeholder="4300" />
+  </view>
+  <view class="fit-field">
+    <view class="fit-label">50 米跑（秒）</view>
+    <input id="fit-sprint" class="fit-input" type="digit" value="{{form.sprint50}}" data-value="sprint50" bindinput="onInput" placeholder="7.0" />
+  </view>
+  <view class="fit-field">
+    <view class="fit-label">坐位体前屈（厘米）</view>
+    <input id="fit-sit" class="fit-input" type="digit" value="{{form.sitAndReach}}" data-value="sitAndReach" bindinput="onInput" placeholder="17.7" />
+  </view>
+  <view class="fit-field">
+    <view class="fit-label">立定跳远（厘米）</view>
+    <input id="fit-jump" class="fit-input" type="number" value="{{form.standingLongJump}}" data-value="standingLongJump" bindinput="onInput" placeholder="248" />
+  </view>
+  <view class="fit-field">
+    <view class="fit-label">引体向上 / 1 分钟仰卧起坐（次）</view>
+    <input id="fit-strength" class="fit-input" type="number" value="{{form.strength}}" data-value="strength" bindinput="onInput" placeholder="15" />
+  </view>
+  <view class="fit-field">
+    <view class="fit-label">1000 米跑（男）/ 800 米跑（女）</view>
+    <input id="fit-run" class="fit-input" type="text" value="{{form.distanceRun}}" data-value="distanceRun" bindinput="onInput" placeholder="3′42″ 或 222" />
+    <view class="fit-hint" wx:if="{{runHint !== ''}}">{{runHint}}</view>
+  </view>
+
+  <button id="fit-calc" class="home-button fit-calc" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="calculate">估算</button>
+
+  <!-- 结果区 -->
+  <block wx:if="{{hasResult}}">
+    <view wx:if="{{result.total === null}}" class="fit-warn">
+      这次没有给出学年总分与等级：{{result.missing.length}} 项没有分数（见下表）。缺项不会被当成 0 分，也不会替你猜。
+    </view>
+
+    <view class="fit-summary">
+      <view class="fit-summary-top">
+        <view class="fit-total" wx:if="{{result.total !== null}}">{{result.total}}</view>
+        <view class="fit-total-partial" wx:else>{{result.standardScore}}</view>
+        <view class="fit-grade" wx:if="{{result.grade !== null}}">{{result.grade}}</view>
+      </view>
+      <view class="fit-summary-line" wx:if="{{result.total !== null}}">
+        标准分 {{result.standardScore}}（各单项得分 × 权重之和）· 附加分 {{result.bonus}} · 7 项全部计入
+      </view>
+      <view class="fit-summary-line" wx:else>
+        这是按已填项目折算的加权标准分，<text class="fit-em">不是学年总分</text>。
+      </view>
+    </view>
+
+    <view class="fit-table">
+      <view class="fit-table-row" wx:for="{{result.items}}" wx:key="key">
+        <view class="fit-item-main">
+          <view class="fit-item-name">{{item.label}}</view>
+          <view class="fit-item-note" wx:if="{{item.note !== ''}}">{{item.note}}</view>
+        </view>
+        <view class="fit-item-value">{{item.valueText === '' ? '未填' : item.valueText}}</view>
+        <view class="fit-item-score {{item.score === null ? 'fit-item-score-null' : ''}}">{{item.score === null ? '—' : item.score}}</view>
+      </view>
+    </view>
+
+    <view class="fit-bonus" wx:if="{{result.bonus > 0}}">
+      <view wx:for="{{result.bonusDetail}}" wx:key="*this">附加分：{{item}}</view>
+    </view>
+
+    <view class="fit-notes">
+      <view wx:for="{{result.notes}}" wx:key="*this">{{item}}</view>
+      <view>你的输入只在这台手机上参与计算，不上传、不保存。</view>
+    </view>
+
+    <button id="fit-again" class="home-button fit-again" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="focusForm">改一个数字重算</button>
+  </block>
+
+  <view class="quiet fit-foot">填了的项目才参与计算；留空的项目不会按 0 分算。</view>
+  <view id="back-from-fitness" class="fit-back" hover-class="pressed" bindtap="goHome">返回首页</view>
+</view>
