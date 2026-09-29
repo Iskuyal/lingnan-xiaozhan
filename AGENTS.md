@@ -20,8 +20,8 @@
 
 ## 比赛与提交
 
-规划功能或安排阶段时，阅读 `docs/competition.md` 和 `docs/workflow.md`；准备参赛材料时阅读 `docs/submission.md`。
-开发前读取 `docs/development-spec.md`、`docs/development-phases.md` 及相关 ADR。原生微信小程序 + TypeScript、课表导入制和三个 AI 落点已定；正式名称、导入范围及 AI 成本与评估等按文档中的决策关卡处理。
+规划功能或安排阶段时，阅读 `docs/competition/README.md` 和 `docs/development/workflow.md`；准备参赛材料时阅读 `docs/competition/submission.md`。
+开发前读取 `docs/product/spec.md`、`docs/development/phases.md` 及相关 ADR。原生微信小程序 + TypeScript、课表导入制和三个 AI 落点已定；正式名称、导入范围及 AI 成本与评估等按文档中的决策关卡处理。
 Git 提交说明和提交报告使用中文，报告说明提交内容；允许 Conventional Commits 前缀。
 **界面改动先出设计图**：在 `docs/design/<主题>/` 画 HTML 设计图并渲染成 PNG（`node scripts/render-mockups.mjs`），PNG 是评审件、HTML 里的数字是实现依据，设计图定稿后再改代码；约定见 `docs/design/README.md`。
 
@@ -38,3 +38,7 @@ Git 提交说明和提交报告使用中文，报告说明提交内容；允许 
 ### Domain docs
 
 采用 single-context；探索项目或修改领域概念前按 `docs/agents/domain.md` 读取领域文档。
+
+## 文档维护
+
+新增、移动或整理文档前阅读 `docs/README.md`。当前状态统一写入 `docs/status.md`，待办与执行票放 `docs/tasks/`，新增方向放 `docs/planning/`；保留历史记录的日期与版本，不将规划、模板或旧验收写成当前成果。修改后运行 `npm run docs:check`，移动路径时同步更新代码注释和脚本提示。

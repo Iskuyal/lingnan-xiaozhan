@@ -212,7 +212,7 @@ export function resolveModelTarget(config: Config, options: { vision: boolean; m
     if (config.model === '') missing.push('AI_MODEL');
   }
   if (missing.length > 0) {
-    fail('internal', `AI 服务未配置：缺少云函数环境变量 ${missing.join('、')}（配置方式见 docs/cloud-development.md）`);
+    fail('internal', `AI 服务未配置：缺少云函数环境变量 ${missing.join('、')}（配置方式见 docs/development/cloud/ai.md）`);
   }
   const isAnthropic = config.provider === 'anthropic';
   const model = options.vision ? config.visionModel : config.model;

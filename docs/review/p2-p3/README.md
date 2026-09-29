@@ -24,7 +24,7 @@
 | [verification.md](verification.md) | 验证证据：命令、实测数字、截图位置 |
 | [known-gaps.md](known-gaps.md) | 已知限制、未覆盖项、需要你决策的点 |
 
-相关既有文档：[开发规格](../../development-spec.md)、[开发阶段](../../development-phases.md)、[云开发环境与 P3 云端实施](../../cloud-development.md)、[部门资料来源](../../departments-sources.md)、[资讯栏目来源](../../news-sources.md)、[验证记录](../../evidence/p2-p3/README.md)。
+相关既有文档：[开发规格](../../product/spec.md)、[开发阶段](../../development/phases.md)、[云开发环境与 P3 云端实施](../../development/cloud/README.md)、[部门资料来源](../../product/sources/departments.md)、[资讯栏目来源](../../product/sources/news.md)、[验证记录](../../evidence/p2-p3/README.md)。
 
 ## 建议审查顺序
 

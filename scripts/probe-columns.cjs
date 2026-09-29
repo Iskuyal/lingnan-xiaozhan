@@ -120,7 +120,7 @@ function classifyItems(html) {
  * 抽样一篇官网详情页，判断正文容器与字数。
  *
  * 正文提取不能假设「容器后紧跟边界标记」：通知公告模板的正文里混着整段脚本、
- * `div.property` 与 `h2.title`（见 docs/news-sources.md），所以先按多种右边界取最早的一个截断，
+ * `div.property` 与 `h2.title`（见 docs/product/sources/news.md），所以先按多种右边界取最早的一个截断，
  * 再删掉脚本、property 与标题块，最后剥标签。
  */
 function analyzeArticle(html) {

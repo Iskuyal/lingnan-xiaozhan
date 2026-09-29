@@ -2,7 +2,7 @@
  * 课表的数据契约（云函数侧）。
  *
  * 解析跑在云函数里：客户端把文件上传到本人云存储路径，云函数下载后解析成「草稿」返回，
- * 学生确认后才写库（见 docs/development-spec.md 的「课表导入」一节）。
+ * 学生确认后才写库（见 docs/product/spec.md 的「课表导入」一节）。
  * 小程序侧的类型在 `miniprogram/services/timetable/types.ts`，字段名是两侧的契约，改名要同步。
  */
 

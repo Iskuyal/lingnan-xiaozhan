@@ -7,7 +7,7 @@
 > - 云函数超时由默认 3 秒调到 **20 秒**——默认值下 10 篇同步耗时 2.5–3.0 秒，会间歇性返回 `-504003`。
 > - 测试数已由 49 项增至 **50 项**（新增部门 2025-2026 动态覆盖）。
 >
-> 线上最终状态以 [云开发文档](../../cloud-development.md) 为准。
+> 线上最终状态以 [云开发文档](../../development/cloud/README.md) 为准。
 
 ## 本轮审查修复（2026-09-18，本地已验证，待部署）
 
@@ -20,8 +20,8 @@
 - 全部文章失败记录 `failed`，部分成功记录 `partial`；仅整批成功更新 `lastSuccessAt`。页面的 `updatedAt` 是文章写入时间，部分成功可能推进。
 - 契约测试将真实解析/入库输出交给真实客户端服务，验证列表、详情、正文与时间字段。
 - 测试替换网络和数据库边界，执行真实云函数入口；没有触碰线上数据。未重新执行开发者工具、真机或云端验收。
-- 函数权限配置样例见 `docs/newsSync-permissions.json`，需保留环境原规则并合并 `newsSync.invoke: false`；尚未应用/核实线上权限。数据库的写入拒绝不能证明函数调用已受限。
-- 本轮云函数代码尚未部署，部署与权限验收步骤见 [云开发文档](../../cloud-development.md)。
+- 函数权限配置样例见 `docs/development/cloud/newsSync-permissions.json`，需保留环境原规则并合并 `newsSync.invoke: false`；尚未应用/核实线上权限。数据库的写入拒绝不能证明函数调用已受限。
+- 本轮云函数代码尚未部署，部署与权限验收步骤见 [云开发文档](../../development/cloud/README.md)。
 
 以下各节是原实现的历史验收记录，不代表修复后重新进行了同样的云端实测。
 
@@ -95,6 +95,6 @@ npm run verify:wechat   # 开发者工具点击验收：10 项全过
 | 点击验收截图（首页 / 部门 / 部门详情 / 课表 / 资讯 / 资讯详情） | `docs/evidence/p2-p3/*.png` |
 | 开发者工具验收原始结果 | `docs/evidence/p2-p3/verification.json` |
 | P1 时期的验收记录（对照） | `docs/evidence/p1/` |
-| 部门来源与转录记录 | `docs/departments-sources.md` |
-| 资讯栏目结构与样本 | `docs/news-sources.md` |
-| 云端实施与验收清单 | `docs/cloud-development.md` |
+| 部门来源与转录记录 | `docs/product/sources/departments.md` |
+| 资讯栏目结构与样本 | `docs/product/sources/news.md` |
+| 云端实施与验收清单 | `docs/development/cloud/README.md` |

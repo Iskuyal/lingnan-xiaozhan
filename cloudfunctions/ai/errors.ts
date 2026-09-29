@@ -5,7 +5,7 @@
  * 「额度或配额用尽」必须可区分，**文案各自独立、不合并成一句**。
  *
  * 文案默认值写在代码里，但每一项都可以由云函数环境变量覆盖——
- * 措辞是负责人的决定，改措辞不该改代码（见 docs/cloud-development.md 的环境变量表）。
+ * 措辞是负责人的决定，改措辞不该改代码（见 docs/development/cloud/ai.md 的环境变量表）。
  */
 import { FailureClass } from './types';
 
@@ -52,7 +52,7 @@ export type MessageInputKind = 'text' | 'image';
  *
  * 实测依据：2026-09-19 在 `msgSecCheck` 上撞到 `45009 fail reach max api daily quota limit`，
  * 当时被归成 `internal`、用户看到「AI 服务开小差了」，而实际原因是当天检测次数用尽
- * （见 docs/cloud-development.md 的内容安全配额一节）。
+ * （见 docs/development/cloud/ai.md 的内容安全配额一节）。
  */
 const DEFAULT_SAFETY_QUOTA_MESSAGE = '内容安全检测的额度已用尽，AI 功能暂时不可用；未上架小程序每天有检测次数上限，通常次日恢复。';
 

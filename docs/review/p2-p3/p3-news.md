@@ -1,6 +1,6 @@
 # P3 官网资讯（含云端同步）
 
-对应 [开发阶段](../../development-phases.md) 的 **P3-1**（已完成）与 **P3-2**（未开始），规格见 [开发规格](../../development-spec.md) 的「校园资讯」行与「内容与边界」。云端实施的完整依据见 [云开发环境与 P3 云端实施](../../cloud-development.md)。
+对应 [开发阶段](../../development/phases.md) 的 **P3-1**（已完成）与 **P3-2**（未开始），规格见 [开发规格](../../product/spec.md) 的「校园资讯」行与「内容与边界」。云端实施的完整依据见 [云开发环境与 P3 云端实施](../../development/cloud/README.md)。
 
 ## 状态
 
@@ -49,7 +49,7 @@ parseNewsArticle()  ──►  标题、日期、清理后的正文段落（剥�
 | `project.config.json` | — | 增加 `cloudfunctionRoot: "cloudfunctions/"` |
 | `tests/news.test.cjs`、`tests/newsSync.test.cjs` | 308 / 56 | 解析、服务、页面、字段契约测试 |
 | `tests/fixtures/news/*.html` | 4 个文件 | 真实页面片段（抓取日期 2026-09-17） |
-| `docs/news-sources.md` | — | 栏目结构、分页格式、真实样本、未验证清单 |
+| `docs/product/sources/news.md` | — | 栏目结构、分页格式、真实样本、未验证清单 |
 
 **已删除**：`miniprogram/services/news/snapshot.ts`（随包内容快照，42KB）。正文现在只来自云端。
 
@@ -60,7 +60,7 @@ parseNewsArticle()  ──►  标题、日期、清理后的正文段落（剥�
 - **编辑署名行剥离**：官网正文末尾固定 4 行（供稿 / 初审 / 复审 / 终审），实测 4 篇文章 100% 命中，其中一篇用全角分号（`复审；黄雅晴`）。只剥离**尾部连续**的署名行；署名行之后仍有正文时不剥离；正文只由署名行组成时返回空数组。
 - **去重键是原文绝对 URL**（`id` 取 URL 末段，用于页面传参）。
 - 容错：缺日期 → 空字符串；缺正文 / 缺列表容器 / 空输入 → 空数组，都不抛异常。
-- 只覆盖已实测的页面特征；选择器依据与脆弱点记录在 [资讯栏目来源](../../news-sources.md)。
+- 只覆盖已实测的页面特征；选择器依据与脆弱点记录在 [资讯栏目来源](../../product/sources/news.md)。
 
 ## 云函数 `newsSync`
 

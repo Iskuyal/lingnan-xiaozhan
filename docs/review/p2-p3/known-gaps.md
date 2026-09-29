@@ -6,7 +6,7 @@
 > - C 表「未开始」中，定时触发器、首页资讯入口、逐页加载仍未开始；**真机验证的替代路径已明确**（可用「预览」，不受备案影响），单页模式实测被备案阻塞。
 > - D6「函数调用权限待核实」**已完成**：`newsSync` 已设 `invoke: false` 并实测客户端被拒。
 >
-> 当前状态以 [开发阶段](../../development-phases.md) 与 [云开发文档](../../cloud-development.md) 为准。
+> 当前状态以 [开发阶段](../../development/phases.md) 与 [云开发文档](../../development/cloud/README.md) 为准。
 
 本文件是审查的重点：以下每一项都是「没做」「做不了」或「我替你做了判断」的地方。请逐条确认或推翻。
 
@@ -117,11 +117,11 @@
 ## D. 已知技术债与后续风险
 
 1. **两份类型定义靠测试对齐**：微信云函数按目录整体部署，没有跨目录共享模块的机制，`cloudfunctions/newsSync/types.ts` 与 `miniprogram/services/news/types.ts` 各自存在，`tests/newsSync.test.cjs` 已补充真实服务端记录到真实客户端列表/详情映射的契约测试，覆盖实际使用字段，不宣称两份类型定义自动同步。改名时两侧必须同步。
-2. **解析器依赖官网页面结构**：选择器只覆盖已实测特征（`ul.list.list-intro`、`h1.title`、`article-fd` 边界等），脆弱点与依据记录在 [资讯栏目来源](../../news-sources.md)。官网改版可能让解析返回空值：空列表导致整批失败；标题或正文为空导致该篇失败并保留旧记录。本轮已加回归测试，修复代码待部署。
+2. **解析器依赖官网页面结构**：选择器只覆盖已实测特征（`ul.list.list-intro`、`h1.title`、`article-fd` 边界等），脆弱点与依据记录在 [资讯栏目来源](../../product/sources/news.md)。官网改版可能让解析返回空值：空列表导致整批失败；标题或正文为空导致该篇失败并保留旧记录。本轮已加回归测试，修复代码待部署。
 3. **免费额度与调用成本未核实**：按量计费的实际额度、云函数调用与数据库读写的成本没有量化。ADR-0001 把「预算」列为 P3 前应核实的事项，目前仍未核实。
 4. **未配置请求频率限制**：单次同步 10 篇约 11 个请求、耗时 2.6 秒，无并发与重试策略。全量抓取前需要设计（见 B7）。
 5. **本地与云端测试边界**：根目录已安装 `wx-server-sdk` 开发依赖；部署用 `--remote-npm-install`。本地可用网络/数据库桩执行真实入口，验证同步行为，但不能代替云端权限和部署验收。
-6. **函数调用权限待核实**：已准备 `docs/newsSync-permissions.json`，需在控制台合并 `newsSync.invoke: false`。数据库写入拒绝不等于函数调用拒绝；详见 `docs/cloud-development.md`。
+6. **函数调用权限待核实**：已准备 `docs/development/cloud/newsSync-permissions.json`，需在控制台合并 `newsSync.invoke: false`。数据库写入拒绝不等于函数调用拒绝；详见 `docs/development/cloud/README.md`。
 
 ---
 

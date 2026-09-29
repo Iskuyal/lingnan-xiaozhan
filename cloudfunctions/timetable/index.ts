@@ -17,7 +17,7 @@
  *
  * 集合 `timetable_courses` 与 `timetable_settings` 的权限都取最严格预设（所有用户不可读写）：
  * 读写都只发生在这里。函数本身需要允许客户端调用（与 `newsSync` 不同），
- * 见 docs/cloud-development.md 的控制台步骤。
+ * 见 docs/development/cloud/timetable.md 的控制台步骤。
  */
 import * as cloud from 'wx-server-sdk';
 import * as crypto from 'crypto';

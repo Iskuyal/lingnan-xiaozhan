@@ -17,6 +17,8 @@ jobs:
           for function in ai timetable newsSync; do
             npm ci --ignore-scripts --prefix "cloudfunctions/$function"
           done
+      - name: 检查文档链接与锚点
+        run: npm run docs:check
       - run: npm run typecheck
       - run: npm test
       - name: 审计锁定依赖

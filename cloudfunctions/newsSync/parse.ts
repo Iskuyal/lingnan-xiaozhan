@@ -5,7 +5,7 @@
  * 因此可以直接在 Node 测试中执行，也可以在云函数（Node.js 运行时）里复用。
  * 客户端页面不依赖本模块——正文在入库前完成解析，见 services/news/index.ts。
  *
- * 页面结构依据与实测样本见 docs/news-sources.md；选择器只覆盖已实测特征，
+ * 页面结构依据与实测样本见 docs/product/sources/news.md；选择器只覆盖已实测特征，
  * 匹配失败时返回空值而不是抛出异常（缺日期、缺正文、缺列表都不应让整次抓取失败）。
  */
 import { NewsArticle, NewsListItem, NewsTemplate } from './types';

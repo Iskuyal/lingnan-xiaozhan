@@ -4,7 +4,7 @@
 
 跨票的未完成项、决策关卡与人工验收前置条件集中在[待办总表](../pending.md)。
 
-拆分依据：[开发规格](../../development-spec.md)、[开发阶段](../../development-phases.md)、[候选场景对比](../scenario-comparison.md)（MVP 与 AI 落点的定案记录）。
+拆分依据：[开发规格](../../product/spec.md)、[开发阶段](../../development/phases.md)、[候选场景对比](../../archive/scenario-comparison.md)（MVP 与 AI 落点的定案记录）。
 
 ## 依赖关系
 

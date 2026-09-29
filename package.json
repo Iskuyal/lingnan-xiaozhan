@@ -4,6 +4,7 @@
   "private": true,
   "description": "校园工具微信小程序",
   "scripts": {
+    "docs:check": "node scripts/check-docs.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "build": "node scripts/build.mjs",
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",

@@ -5,12 +5,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createRequire } = require('node:module');
 
-// 真实页面片段（抓取日期 2026-09-17），详情见 docs/news-sources.md。
+// 真实页面片段（抓取日期 2026-09-17），详情见 docs/product/sources/news.md。
 const fixturesDir = path.resolve('tests/fixtures/news');
 const fixture = (name) => fs.readFileSync(path.join(fixturesDir, name), 'utf8');
 const LIST_URL = 'https://lnc.edu.cn/xyxw/xydt';
 const articleUrl = (id) => `https://lnc.edu.cn/xyxw/xydt/${id}`;
-/** 团委通知公告（Ticket 04 新增的第二套模板）：列表与正文见 docs/news-sources.md。 */
+/** 团委通知公告（Ticket 04 新增的第二套模板）：列表与正文见 docs/product/sources/news.md。 */
 const TW_LIST_URL = 'https://lnc.edu.cn/tw/djxf/tqsd';
 const TW_ARTICLE_URL = `${TW_LIST_URL}/content_32355`;
 /** 解析模块随云函数部署，测试直接从云函数产物加载。 */
@@ -339,7 +339,7 @@ test('两套模板各自分派：容器与标题锚点不同，交叉套用解�
  * 2026-09-19 追加栏目的真实页面片段。它们全部实测为 `newsList` 模板（列表 ul.newsList、
  * 条目 title 属性、文章 div.printArea），因此**加栏目只改 columns.ts 的清单、不改解析**——
  * 本组测试锁定这一结论，免得日后有人以为需要新的模板分支。
- * 抓取与实测过程见 docs/tasks/tickets/10-campus-rag-qa.md 与 docs/news-sources.md。
+ * 抓取与实测过程见 docs/tasks/tickets/10-campus-rag-qa.md 与 docs/product/sources/news.md。
  */
 const ADDED_COLUMNS = [
   { file: 'bw-list-page-1.html', url: 'https://lnc.edu.cn/bw/tqsd', count: 10, title: '关于国庆中秋假期防御台风“麦德姆”的公告', date: '2025-10-05' },

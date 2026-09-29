@@ -151,7 +151,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01 # 单张
 云函数）；新集合与云函数重新部署未做；编辑页的 `color` 字段只做了静态白名单确认，未在真实云端落库验证。
 
 实现里不得出现与图不一致的间距与字号；图上覆盖不到的行为（滑动手势、加载态、失败态）
-仍按 `docs/development-spec.md` 与既有验收项处理。
+仍按 `docs/product/spec.md` 与既有验收项处理。
 
 ### 平台能力缺失的导入降级
 

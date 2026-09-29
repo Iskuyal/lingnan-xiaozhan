@@ -1,7 +1,7 @@
 /**
  * 小程序入口：云开发初始化。
  *
- * 环境 ID 不是密钥，直接写在代码里（见 docs/cloud-development.md）。
+ * 环境 ID 不是密钥，直接写在代码里（见 docs/development/cloud/README.md）。
  * 初始化失败时不静默——资讯数据来自云端，需要能在页面上如实反映不可用状态。
  */
 App({

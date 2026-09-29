@@ -4,7 +4,7 @@
  * 答案只能建立在 services/departments.ts 的已核实语料上：语料组装进系统提示词，
  * 模型被要求「资料里没有的信息一律回答官网未公布，绝不编造联系方式/负责人/所属校区」，
  * 回答可注明「来源：学校官网学生组织页面」——全项目「不编造」纪律的直接落点
- * （docs/development-spec.md「AI 功能」与 Ticket 07）。
+ * （docs/product/spec.md「AI 功能」与 Ticket 07）。
  *
  * 提示词纪律之外还有两道**客户端后置检查**：
  * - `guardAnswer`：确定性复核模型输出，命中就**整条替换**成如实回答（见该函数上方的
@@ -57,7 +57,7 @@ export const QA_SOURCE_NOTE = 'AI 答案的依据是学校官网已核实的学�
 /**
  * 服务端内容安全没有真正执行时的提示行（`safety.checked === false`）。
  *
- * 依据 docs/cloud-development.md：`checked: false` 表示这次没有真正检测
+ * 依据 docs/development/cloud/ai.md：`checked: false` 表示这次没有真正检测
  * （`AI_SAFETY_PROVIDER=off` 或 `AI_SAFETY_FAIL_MODE=open` 放行未检内容、长文本只检了前一段），
  * 调用方与日志都不得把「跳过」读成「干净」——所以要在对话里明说。
  * 提示行与判定函数本身在 `services/ai.ts`（05/06/07 共用），这里只保留引用。

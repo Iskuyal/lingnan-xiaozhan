@@ -7,10 +7,10 @@
  *   定时同步每日 06:00（Asia/Shanghai）。
  * - 2026-09-19 Ticket 10 追加（见 docs/tasks/tickets/10-campus-rag-qa.md）：为「校园通知与办事
  *   指引问答」的语料入库 8 个栏目。它们与团委通知公告同属站群的 `newsList` 模板，**不需要新的
- *   解析分支**，实测依据见 docs/news-sources.md 与 tests/fixtures/news/*-list-page-1.html。
+ *   解析分支**，实测依据见 docs/product/sources/news.md 与 tests/fixtures/news/*-list-page-1.html。
  * - 同日决定校园动态 126 页全量暂缓（只保每日增量），故 `xyxw-xydt` 仍在清单里但不再跑全量。
  *
- * 页数、分页格式与模板差异均来自 docs/news-sources.md 与 tests/fixtures/news/ 的真实页面实测。
+ * 页数、分页格式与模板差异均来自 docs/product/sources/news.md 与 tests/fixtures/news/ 的真实页面实测。
  */
 import { NewsColumn } from './types';
 

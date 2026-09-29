@@ -44,7 +44,7 @@ export const FAILURE_CLASSES: FailureClass[] = [
  * 五类失败的用户兜底文案：前三类必须可区分，后两类只用于服务端没给 `message` 时兜底。
  *
  * 服务端返回的 `message` 非空时优先用它——负责人改云函数环境变量里的文案
- * （`AI_MSG_*`）应当立刻生效，「改措辞不用改代码」（docs/cloud-development.md）。
+ * （`AI_MSG_*`）应当立刻生效，「改措辞不用改代码」（docs/development/cloud/ai.md）。
  */
 export const AI_MESSAGES: Record<FailureClass, string> = {
   model_unavailable: 'AI 暂时不可用，请稍后再试；已保存的内容不受影响',
@@ -101,7 +101,7 @@ export interface AiCallResult {
 /**
  * 服务端内容安全没有真正执行时的提示行（`safety.checked !== true`）。
  *
- * 依据 docs/cloud-development.md：`checked: false` 表示这次没有真正检测
+ * 依据 docs/development/cloud/ai.md：`checked: false` 表示这次没有真正检测
  * （`AI_SAFETY_PROVIDER=off` 或 `AI_SAFETY_FAIL_MODE=open` 放行未检内容、长文本只检了前一段），
  * 调用方与日志都不得把「跳过」读成「干净」——07 与 06 都在对话里明说。
  */

@@ -1,7 +1,7 @@
 /**
  * 云函数发 HTTP 请求的最小实现。
  *
- * 为什么不用 fetch：云函数运行时是 Nodejs16.13（见 docs/cloud-development.md），
+ * 为什么不用 fetch：云函数运行时是 Nodejs16.13（见 docs/development/cloud/ai.md），
  * 没有全局 fetch；项目也不引入额外依赖（函数只依赖 wx-server-sdk），
  * 因此直接基于 https.request 写一个带**硬超时**的 JSON POST。
  *

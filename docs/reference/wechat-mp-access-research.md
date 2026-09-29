@@ -8,7 +8,7 @@
 
 | 文档 | 回答的问题 |
 | --- | --- |
-| [`docs/reference/miniprogram-mp-content-rules.md`](./miniprogram-mp-content-rules.md) | **规则边界**：能不能用、合规风险、robots.txt、`web-view`/`wx.openOfficialAccountArticle`、转载侵权 |
+| [`docs/reference/miniprogram-mp-content-rules.md`](miniprogram-mp-content-rules.md) | **规则边界**：能不能用、合规风险、robots.txt、`web-view`/`wx.openOfficialAccountArticle`、转载侵权 |
 | 本文 | **技术可行性**：第三方能不能*枚举*一个公众号的文章列表、能不能抓单篇、官方 API 长什么样、学校有哪些号 |
 
 本文**不重复**论证合规问题。凡涉及「该不该做」，一律指向姊妹文档。特别地，姊妹文档已实测的 `mp.weixin.qq.com/robots.txt` 全文 `Disallow: /` 与「无浏览器特征 UA 被 302 到验证页」两条结论，本文直接沿用，不另测。
@@ -352,7 +352,7 @@ curl -sS -m 40 -o art.html -w "HTTP=%{http_code} size=%{size_download}\n" -A "$U
 
 即：**这些接口面向「认证服务号」；未认证主体 2025 年 7 月起已被回收权限。**
 
-姊妹文档另引到更具体的一条（同一接口的订阅号版本文档）：`access_token` 属于**该公众号**，适用范围写「公众号：**仅认证**」，未授权调用返回 `48001 api unauthorized`。详见 [`miniprogram-mp-content-rules.md`](./miniprogram-mp-content-rules.md) 的 4d 节。
+姊妹文档另引到更具体的一条（同一接口的订阅号版本文档）：`access_token` 属于**该公众号**，适用范围写「公众号：**仅认证**」，未授权调用返回 `48001 api unauthorized`。详见 [`miniprogram-mp-content-rules.md`](miniprogram-mp-content-rules.md) 的 4d 节。
 
 ### 3b 素材管理
 
@@ -505,7 +505,7 @@ http://weixin.qq.com/r/3Tjv9wnEXFQjrU2U923P
 - **冷却后仍 403**：间隔 45 秒、再间隔 60 秒各重试一次，两次都还是同样的 403 页（冻结不是秒级）；
 - 但静态图片 `https://lnc.edu.cn/content/tw/base/img/wx.jpg` 仍 **HTTP 200**（静态资源与页面走不同策略）。
 
-这与 `docs/news-sources.md` 记录的「官网列表页可稳定抓取」**不矛盾**（那是低频、单线程抓取），但它给出一个**明确的运维红线**：官网同步**每秒不得超过 1 个页面请求**，否则会整站 403 且解冻缓慢。`docs/cloud-development.md` 已记录现有 403 处理方案，建议把这条写进那里。（分级：已验证（实测））
+这与 `docs/product/sources/news.md` 记录的「官网列表页可稳定抓取」**不矛盾**（那是低频、单线程抓取），但它给出一个**明确的运维红线**：官网同步**每秒不得超过 1 个页面请求**，否则会整站 403 且解冻缓慢。`docs/development/cloud/README.md` 已记录现有 403 处理方案，建议把这条写进那里。（分级：已验证（实测））
 
 ---
 

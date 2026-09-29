@@ -3,7 +3,7 @@
 **约定（2026-09-20 起）：界面改动先出设计图，设计图定稿后再改代码。**
 理由：这个项目的界面问题大多不是「写不出来」，而是「画的时候就发现不对」——列宽、字号、信息层级
 在纸面上改一次的成本，远低于写完 WXML/WXSS 再返工。设计图同时也是实现时的尺寸依据与参赛材料里的
-过程证据（`docs/submission.md` 的 e 项要求真实界面截图）。
+过程证据（`docs/competition/submission.md` 的 e 项要求真实界面截图）。
 
 ## 目录与命名
 
@@ -52,9 +52,15 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 2. 设计说明里列清「待拍板项」，负责人拍板后把状态从「待评审」改成「定稿」。
 3. 定稿后才动实现；实现里不得出现与图不一致的间距与字号。
 4. 图上的行为覆盖不到的部分（滑动手势、加载态、失败态、无障碍），仍按
-   `docs/development-spec.md`、既有验收脚本与 ADR 处理，并在设计说明里写明。
+   `docs/product/spec.md`、既有验收脚本与 ADR 处理，并在设计说明里写明。
 
 ## 与验收的关系
 
 设计图**不是**验收证据：验收仍以开发者工具/真机实测、`npm run verify:wechat` 与
 `docs/evidence/` 为准。设计图是评审件与尺寸依据，PNG 进仓库是为了可追溯。
+
+## 设计主题索引
+
+- [全模块界面改版](campus-refresh/README.md)
+- [课表改版](timetable/README.md)
+- [课表主页可读性返工](timetable-readability/README.md)
