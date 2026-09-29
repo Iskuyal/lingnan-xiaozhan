@@ -1,6 +1,6 @@
 # 项目当前状态
 
-云端部署状态核对日期：2026-09-24；本地自动化证据更新至 2026-09-28，开发者工具模拟器点测更新至 2026-09-26。**2026-09-27 负责人确认人工验收 A1–C1 全部通过，详细记录待归档**，见[人工验收清单](testing/manual-acceptance.md)；已测 Git/云函数版本尚未提供，不能外推到当前 `main`。此页是当前版本的状态入口；各 Ticket 和验收记录中的早期数字、故障与处理过程保留为历史证据。**代码合入、云端部署、模拟器验证、真机验证是四个不同状态。**
+云端部署状态核对日期：2026-09-24（**2026-09-29 下载已部署代码回读确认为同一版，并在模拟器里做了一次窗口探针实测**）；本地自动化证据更新至 2026-09-28，开发者工具模拟器点测更新至 2026-09-26。**2026-09-27 负责人确认人工验收 A1–C1 全部通过，详细记录待归档**，见[人工验收清单](testing/manual-acceptance.md)；已测 Git/云函数版本尚未提供，不能外推到当前 `main`。此页是当前版本的状态入口；各 Ticket 和验收记录中的早期数字、故障与处理过程保留为历史证据。**代码合入、云端部署、模拟器验证、真机验证是四个不同状态。**
 
 尚未完成的事项、决策关卡与人工验收的前置条件集中列在[待办总表](tasks/pending.md)；本页描述「现在是什么状态」，该页回答「接下来还剩哪几件事、谁做、判据是什么」。
 
@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | GitHub `main` | 2026-09-29 核对为 `c0c6b20`；审查修复 [PR #67](https://github.com/Iskuyal/wx-match/pull/67)、部门动态 RAG [PR #69](https://github.com/Iskuyal/wx-match/pull/69)、选题归档 [PR #71](https://github.com/Iskuyal/wx-match/pull/71)、答辩陪练规划 [PR #72](https://github.com/Iskuyal/wx-match/pull/72)、内容安全检测窗口修复 [PR #74](https://github.com/Iskuyal/wx-match/pull/74)、状态页核对 [PR #75](https://github.com/Iskuyal/wx-match/pull/75)、失物招领非 AI 基线 [PR #76](https://github.com/Iskuyal/wx-match/pull/76) 与校园 AI 候选补充 [PR #77](https://github.com/Iskuyal/wx-match/pull/77) 已合入 | **本行是核对点，不是「当前主线」的实时值**——此后每次合入（含状态文档自身的 PR）都会让 `main` 前进，不逐次追记，下次核对时一并刷新。代码合入与云端生效分别核对；答辩陪练目前只有规划，失物招领只到非 AI 基线 |
 | 自动化与模拟器 | 2026-09-27 审查修复分支的 `npm run typecheck` 与 `npm test`（471/471）通过；部门动态 RAG 合并前 2026-09-28 记录 `npm test` 490/490 通过，见[部门 RAG 证据](evidence/department-rag/README.md)；同日内容安全检测窗口修复（审计 CT-01/CT-02）后 `npm test` **504/504** 通过，审计探针复跑见[证据](evidence/content-safety-audit-2026-09-27/README.md)。2026-09-26 的 `npm run verify:wechat` 24 项全过属于较早的模拟器记录 | 本地/CI 检查不等于当前代码已部署，也不等于新功能真机验收 |
-| 云端 | 2026-09-24 从当时的 `main` 合并提交 `0f184cd` 部署 `ai`、`newsSync`、`timetable`，三条均 Active；当时远端入口文件与锁文件哈希读回一致，`timetable` 的 SheetJS 为 0.20.3。**该核对不适用于其后的主线代码。**2026-09-25 开发者工具中维护者探测按预期拒绝；文字冒烟 3/3 返回空模型响应 | [云端证据](evidence/security-remediation/README.md)、[复测记录](evidence/cloud-recheck/README.md)；新版 `ai`/`timetable` 部署、V1 独立定时器运行核验、V2 两账号服务端归属/额度及合法维护者路径仍待验；**内容安全窗口修复（V8）已随 PR #74 合入 `main`，但未部署，线上仍是修复前行为**，且需与新版客户端一起发 |
+| 云端 | 2026-09-24 从当时的 `main` 合并提交 `0f184cd` 部署 `ai`、`newsSync`、`timetable`，三条均 Active；当时远端入口文件与锁文件哈希读回一致，`timetable` 的 SheetJS 为 0.20.3。**该核对不适用于其后的主线代码。**2026-09-25 开发者工具中维护者探测按预期拒绝；文字冒烟 3/3 返回空模型响应。**2026-09-29 下载已部署代码逐项回读，确认仍是同一版**：`ai`（Active / timeout 60 / Nodejs16.13）的入口文件里没有 #67 的记账闸门、#69 的部门动态检索与 #74 的窗口拒绝与分片上限文案（含 2026-09-19 的探测有效性字段），`timetable`（Active / timeout 20）没有 #67 的批次保护标记 | [云端证据](evidence/security-remediation/README.md)、[复测记录](evidence/cloud-recheck/README.md)；新版 `ai`/`timetable` 部署、V1 独立定时器运行核验、V2 两账号服务端归属/额度及合法维护者路径仍待验；**内容安全窗口修复（V8）已随 PR #74 合入 `main`，但未部署，线上仍是修复前行为**，2026-09-29 的 `npm run probe:ai-window` 实测与期望不符（超长输入未被提前拒绝，窗口外 12019 字未检测就进了模型；长输出 0 字、标「未覆盖」，不算通过），且需与新版客户端一起发。同日 6 次文字调用仍全部返回空模型响应 |
 | 发布 | 本次参赛采用微信开发者工具「预览」做真机演示；认证、备案、体验版及正式发布不在已完成范围 | [Ticket 08](tasks/tickets/08-post-publish-single-page-mode.md) 为 `wontfix`，未登录单页模式未实测 |
 
 ## 功能与验收
