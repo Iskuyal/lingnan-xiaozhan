@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>体测估算 · 结果（完整）</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .fit-summary { margin-top:16px; padding:14px; border-left:3px solid var(--brand); background:var(--paper-shade); }
+    .fit-summary-top { display:flex; align-items:baseline; gap:10px; }
+    .fit-total { color:var(--brand-deep); font-size:34px; line-height:1.1; font-weight:700; }
+    .fit-grade { padding:2px 8px; border:1px solid rgba(198,154,40,.55); background:rgba(198,154,40,.12); color:var(--brand-ink); font-size:11px; font-weight:700; }
+    .fit-summary-line { margin-top:6px; color:var(--text-2); font-size:12px; line-height:1.75; }
+    .fit-table { margin-top:16px; border-top:1px solid rgba(43,36,34,.16); }
+    .fit-table-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid rgba(43,36,34,.13); }
+    .fit-item-name { flex:1; min-width:0; font-size:13px; }
+    .fit-item-value { flex:none; width:104px; color:var(--text-2); font-size:11.5px; text-align:right; }
+    .fit-item-score { flex:none; width:52px; text-align:right; color:var(--brand-deep); font-size:14px; font-weight:700; }
+    .fit-item-score-null { color:var(--warn); font-size:11px; font-weight:600; }
+    .fit-bonus { margin-top:14px; padding:10px 12px; border-left:3px solid var(--gold); background:rgba(198,154,40,.10); color:var(--text-2); font-size:11.5px; line-height:1.75; }
+    .fit-notes { margin-top:16px; color:var(--text-3); font-size:11px; line-height:1.8; }
+    .fit-again { margin-top:20px; width:100%; justify-content:center; font-size:15px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">体测估算</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">国家学生体质健康标准（2014年修订）· 大学一、二年级 · 男</div>
+    <h1 class="page-title">估算结果</h1>
+
+    <section class="fit-summary">
+      <div class="fit-summary-top">
+        <span class="fit-total">83.0</span>
+        <span class="fit-grade">良好</span>
+      </div>
+      <div class="fit-summary-line">标准分 83.0（各单项得分 × 权重之和）· 附加分 0 · 7 项全部计入</div>
+      <div class="fit-summary-line">等级按标准原文分段：90 及以上优秀、80~89.9 良好、60~79.9 及格、59.9 及以下不及格。</div>
+    </section>
+
+    <section class="fit-table">
+      <div class="fit-table-row"><span class="fit-item-name">体重指数（BMI）</span><span class="fit-item-value">20.0（175 厘米 / 61.3 千克）</span><span class="fit-item-score">100</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">肺活量</span><span class="fit-item-value">4300 毫升</span><span class="fit-item-score">80</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">50 米跑</span><span class="fit-item-value">7.0 秒</span><span class="fit-item-score">85</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">坐位体前屈</span><span class="fit-item-value">17.7 厘米</span><span class="fit-item-score">80</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">立定跳远</span><span class="fit-item-value">248 厘米</span><span class="fit-item-score">80</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">引体向上</span><span class="fit-item-value">15 次</span><span class="fit-item-score">80</span></div>
+      <div class="fit-table-row"><span class="fit-item-name">1000 米跑</span><span class="fit-item-value">3′42″</span><span class="fit-item-score">80</span></div>
+    </section>
+
+    <div class="fit-bonus">附加分：无（附加分只看引体向上与长跑超过 100 分标准的部分，各自上限 10 分、合计上限 20 分）</div>
+
+    <div class="fit-notes">
+      口径说明：单项得分取「达到的最高档」；低于表中最低档（10 分档）按 0 分计，这是本估算器的口径。
+      结果是估算分，不是学校体测的正式成绩，也不代表体检或医学建议；学校实际采用的规则尚未核实。
+      你的输入只在这台手机上参与计算，不上传、不保存。
+    </div>
+
+    <button class="primary fit-again">改一个数字重算</button>
+  </main>
+</body>
+</html>

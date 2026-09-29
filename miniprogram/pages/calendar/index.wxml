@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="eyebrow">只收录经核实的官方日期 · 最后核查 {{summary.verifiedAt}}</view>
+  <view class="cal-title">校历与考试</view>
+  <view class="cal-copy">每条日期都能复制官方原文链接核对。没有官方日期的事项只给入口或写「待公布」，不沿用上一年。</view>
+
+  <view wx:if="{{hasProblems}}" class="cal-problems">
+    <view class="cal-problems-title">这份日期表没有通过自检，先别当真</view>
+    <view class="cal-problems-item" wx:for="{{problems}}" wx:key="id">{{item.id}}：{{item.problem}}</view>
+  </view>
+
+  <view class="cal-group" wx:for="{{groups}}" wx:key="category" wx:for-item="group">
+    <view class="cal-group-head">
+      <view class="section-title">{{group.label}}</view>
+      <view class="cal-group-note">{{group.rows.length}} 条</view>
+    </view>
+
+    <view class="cal-card" wx:for="{{group.rows}}" wx:key="id" wx:for-item="card">
+      <view class="cal-top">
+        <view class="cal-title-item">{{card.title}}</view>
+        <view class="cal-state {{card.status === 'published' ? 'cal-state-live' : 'cal-state-plain'}}">{{card.stateLabel}}</view>
+      </view>
+
+      <view wx:if="{{card.dateText !== ''}}" class="cal-line">
+        <view class="cal-key">考试</view>
+        <view class="cal-val cal-val-strong">{{card.dateText}}</view>
+      </view>
+      <view class="cal-line">
+        <view class="cal-key">报名</view>
+        <view class="cal-val">{{card.registerText}}</view>
+      </view>
+      <view wx:if="{{card.note !== ''}}" class="cal-line">
+        <view class="cal-key">说明</view>
+        <view class="cal-val">{{card.note}}</view>
+      </view>
+
+      <view class="cal-source">
+        <view class="cal-source-text">
+          {{card.sourceLabel}}<block wx:if="{{card.publishedAt !== ''}}"> · 公告发布 {{card.publishedAt}}</block><br />适用 {{card.scope}} · 核查 {{card.verifiedAt}}
+        </view>
+        <view id="copy-source-{{card.id}}" class="cal-copy" hover-class="pressed" data-url="{{card.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="quiet cal-foot">
+    共 {{summary.total}} 条，其中 {{summary.published}} 条有官方公布的考试日期；报名时间以本校教务处通知为准。
+    学校校历与全国放假安排不是一回事，本页只做校历。
+  </view>
+  <view id="back-from-calendar" class="cal-back" hover-class="pressed" bindtap="goHome">返回首页</view>
+</view>
