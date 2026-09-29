@@ -1,4 +1,4 @@
-# 失物招领 · 阶段证据（feat/lost-found，产物存本地未推送）
+# 失物招领 · 阶段证据（feat/lost-found，代码已随 [PR #76](https://github.com/Iskuyal/wx-match/pull/76) 合入 `main`；原始明细存本地未推送）
 
 状态：**LF-3 非 AI 基线已实现并验证；LF-4 AI 原型未开始（待决策关卡 D1–D3 与许可样本）**。
 框架与完成定义见 [lost-found-framework.md](../../tasks/lost-found-framework.md)，领域口径见 [domain/lost-found.md](../../domain/lost-found.md)，设计图见 [design/lost-found/](../../design/lost-found/)（待评审定稿）。
