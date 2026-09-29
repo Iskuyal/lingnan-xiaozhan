@@ -1,0 +1,717 @@
+{
+  "ranAt": "2026-09-29T11:15:46.914Z",
+  "corpus": {
+    "documents": 4,
+    "passages": 25,
+    "collectedAt": "2026-09-29"
+  },
+  "questions": 20,
+  "metrics": {
+    "constrained": {
+      "recallAt1": 1,
+      "recallAt3": 1,
+      "citationSupported": 1,
+      "guardCorrect": 1,
+      "behaviorCorrectAll": 1
+    },
+    "keywordOnly": {
+      "recallAt1": 1,
+      "recallAt3": 1,
+      "guardWronglyAnswered": 1
+    }
+  },
+  "limitations": [
+    "分类规则与守门规则是按同一批 20 道题反复调整出来的（在评测集上调参），因此 recall 与守门正确率的 1.0 不是无偏估计；换一批没见过的题会下降。",
+    "语料只有 4 份文档 / 25 个段落，段落数远小于真实语料规模，retrieval 的难度被显著低估。",
+    "本轮没有任何模型调用：回答生成、引用摘录与「模型是否照着摘录说」都没有验证（内容安全与额度是硬约束）。",
+    "两种策略的 recall 相同是因为语料很小且池子已经按类别切开；两者的差别在守门题上（关键词检索一定会给一个答案）。"
+  ],
+  "cost": {
+    "modelCalls": 0,
+    "estimatedCostYuan": 0,
+    "note": "本次只跑本地确定性检索；模型回答未执行（内容安全与额度是硬约束），因此没有真实调用耗时与费用"
+  },
+  "totalElapsedMs": 10,
+  "averageElapsedMs": 1,
+  "rows": [
+    {
+      "id": "q01",
+      "type": "fact_专升本",
+      "question": "2026年广东普通专升本什么时候网上预报名？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#register-time"
+      ],
+      "top1": "gd-zsb-2026#register-time",
+      "top3": [
+        "gd-zsb-2026#register-time",
+        "gd-zsb-2026#exam-time",
+        "gd-zsb-2026#volunteer"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#register-time",
+        "top3": [
+          "gd-zsb-2026#register-time",
+          "gd-zsb-2026#exam-time",
+          "gd-segmented-2026#register"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 6
+    },
+    {
+      "id": "q02",
+      "type": "fact_专升本",
+      "question": "普通专升本考试时间是哪两天？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#exam-time"
+      ],
+      "top1": "gd-zsb-2026#exam-time",
+      "top3": [
+        "gd-zsb-2026#exam-time",
+        "gd-zsb-2026#fee-deadline",
+        "gd-zsb-2026#register-time"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "2026年3月28日（星期六）至29日（星期日）两天",
+      "expectedAnswer": "2026年3月28日（星期六）至29日（星期日）两天",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#exam-time",
+        "top3": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#fee-deadline",
+          "gd-employment-2026#upgrade-plan"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 1
+    },
+    {
+      "id": "q03",
+      "type": "fact_专升本",
+      "question": "普通批可以填几个院校专业组志愿？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#volunteer"
+      ],
+      "top1": "gd-zsb-2026#volunteer",
+      "top3": [
+        "gd-zsb-2026#volunteer",
+        "gd-zsb-2026#admission",
+        "gd-zsb-2026#physical-exam"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "2026年普通专升本实行考后知分填报志愿；提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿",
+      "expectedAnswer": "提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#volunteer",
+        "top3": [
+          "gd-zsb-2026#volunteer",
+          "gd-zsb-2026#admission",
+          "gd-zsb-2026#physical-exam"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q04",
+      "type": "fact_专升本",
+      "question": "报考职教师资专业需要什么证书？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#vocational-teacher"
+      ],
+      "top1": "gd-zsb-2026#vocational-teacher",
+      "top3": [
+        "gd-zsb-2026#vocational-teacher",
+        "gd-zsb-2026#volunteer",
+        "gd-zsb-2026#fee-deadline"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等。",
+      "expectedAnswer": "必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#vocational-teacher",
+        "top3": [
+          "gd-zsb-2026#vocational-teacher",
+          "gd-zsb-2026#volunteer",
+          "gd-segmented-2026#graduation"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q05",
+      "type": "fact_专升本",
+      "question": "普通专升本的加分政策有哪些分值？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#bonus"
+      ],
+      "top1": "gd-zsb-2026#bonus",
+      "top3": [
+        "gd-zsb-2026#bonus",
+        "gd-zsb-2026#fee-deadline",
+        "gd-zsb-2026#exam-time"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "增加15分投档；增加10分投档；增加5分投档",
+      "expectedAnswer": "增加15分投档、增加10分投档、增加5分投档",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#bonus",
+        "top3": [
+          "gd-zsb-2026#bonus",
+          "gd-employment-2026#upgrade-plan",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q06",
+      "type": "fact_专升本",
+      "question": "专升本体检要怎么做、体检表有效期是多久？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-zsb-2026#physical-exam"
+      ],
+      "top1": "gd-zsb-2026#physical-exam",
+      "top3": [
+        "gd-zsb-2026#physical-exam",
+        "gd-zsb-2026#fee-deadline",
+        "gd-zsb-2026#exam-time"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。",
+      "expectedAnswer": "自行前往二级甲等（含）以上医院或相应的医疗单位体检，体检表有效期：2026年1月1日至填报志愿第一天",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#physical-exam",
+        "top3": [
+          "gd-zsb-2026#physical-exam",
+          "gd-employment-2026#upgrade-plan",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 1
+    },
+    {
+      "id": "q07",
+      "type": "fact_转段",
+      "question": "三二分段专升本转段招生的对象是谁？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-segmented-2026#target",
+        "gd-segmented-2026#quality-check"
+      ],
+      "top1": "gd-segmented-2026#target",
+      "top3": [
+        "gd-segmented-2026#target",
+        "gd-segmented-2026#exam-time",
+        "gd-segmented-2026#parts"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+      "expectedAnswer": "2023年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，且基本素质考核须为“合格”",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#target",
+        "top3": [
+          "gd-segmented-2026#target",
+          "gd-employment-2026#upgrade-plan",
+          "gd-segmented-2026#exam-time"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q08",
+      "type": "fact_转段",
+      "question": "转段考核包括哪几个部分？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-segmented-2026#parts"
+      ],
+      "top1": "gd-segmented-2026#parts",
+      "top3": [
+        "gd-segmented-2026#parts",
+        "gd-segmented-2026#exam-time",
+        "gd-segmented-2026#quality-check"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。",
+      "expectedAnswer": "公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#parts",
+        "top3": [
+          "gd-segmented-2026#parts",
+          "gd-segmented-2026#exam-time",
+          "gd-segmented-2026#quality-check"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q09",
+      "type": "fact_转段",
+      "question": "技能大赛获奖可以免考吗？免哪个部分？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-segmented-2026#exemption"
+      ],
+      "top1": "gd-segmented-2026#exemption",
+      "top3": [
+        "gd-segmented-2026#exemption",
+        "gd-segmented-2026#parts",
+        "gd-segmented-2026#register"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "学生在高职学段参加教育部或省教育厅主办的世界、全国或全省职业院校技能大赛，获得国家级三等奖及以上或省级一等奖的，可免予专业能力……考核，并将专业能力考核等级定为优秀。",
+      "expectedAnswer": "获得国家级三等奖及以上或省级一等奖的，可免予专业能力考核，并将专业能力考核等级定为优秀",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#exemption",
+        "top3": [
+          "gd-segmented-2026#exemption",
+          "gd-segmented-2026#parts",
+          "gd-zsb-2026#vocational-teacher"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q10",
+      "type": "fact_转段",
+      "question": "转段进本科以后毕业证怎么标注？就业和普通本科生一样吗？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-segmented-2026#graduation"
+      ],
+      "top1": "gd-segmented-2026#graduation",
+      "top3": [
+        "gd-segmented-2026#graduation",
+        "gd-segmented-2026#fee",
+        "gd-segmented-2026#register"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同",
+      "expectedAnswer": "转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#graduation",
+        "top3": [
+          "gd-segmented-2026#graduation",
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q11",
+      "type": "fact_就业",
+      "question": "广东今年给毕业生提供了多少事业单位岗位？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-employment-2026#public-institution"
+      ],
+      "top1": "gd-employment-2026#public-institution",
+      "top3": [
+        "gd-employment-2026#public-institution",
+        "gd-employment-portal#entry",
+        "gd-employment-2026#civil-servant"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "全年全省提供事业单位岗位不少于5万个",
+      "expectedAnswer": "全年全省提供事业单位岗位不少于5万个",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-employment-2026#public-institution",
+        "top3": [
+          "gd-employment-2026#public-institution",
+          "gd-employment-portal#entry",
+          "gd-employment-2026#civil-servant"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q12",
+      "type": "fact_就业",
+      "question": "科研助理岗位有多少个？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-employment-2026#research-assistant"
+      ],
+      "top1": "gd-employment-2026#research-assistant",
+      "top3": [
+        "gd-employment-2026#research-assistant",
+        "gd-employment-2026#civil-servant",
+        "gd-employment-2026#public-institution"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "全省开发1万个以上科研助理岗位",
+      "expectedAnswer": "全省开发1万个以上科研助理岗位",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-employment-2026#research-assistant",
+        "top3": [
+          "gd-employment-2026#research-assistant",
+          "gd-employment-2026#civil-servant",
+          "gd-employment-2026#public-institution"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q13",
+      "type": "fact_就业",
+      "question": "在哪里可以看招聘活动和就业服务入口？",
+      "expectedBehavior": "answer",
+      "behavior": "answer",
+      "behaviorCorrect": true,
+      "note": "",
+      "expectedPassages": [
+        "gd-employment-portal#entry"
+      ],
+      "top1": "gd-employment-portal#entry",
+      "top3": [
+        "gd-employment-portal#entry",
+        "gd-employment-2026#upgrade-plan",
+        "gd-employment-2026#research-assistant"
+      ],
+      "recallAt1": true,
+      "recallAt3": true,
+      "citationSupported": true,
+      "citationText": "广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+      "expectedAnswer": "广东学生就业创业网、用人单位登录入口、国聘行动、“就在南粤”供需对接活动、就业创业“政策地图”等入口",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-employment-portal#entry",
+        "top3": [
+          "gd-employment-portal#entry",
+          "gd-employment-2026#upgrade-plan",
+          "gd-employment-2026#research-assistant"
+        ],
+        "recallAt1": true,
+        "recallAt3": true
+      },
+      "guardExpected": false,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q14",
+      "type": "cross_跨类型",
+      "question": "专升本和三二分段转段有什么区别？我应该报哪个？",
+      "expectedBehavior": "clarify",
+      "behavior": "clarify",
+      "behaviorCorrect": true,
+      "note": "命中多个类别：ordinary_专升本（专科毕业生统考） / segmented_三二分段专升本转段（试点高职学生转段）",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "先澄清：三二分段转段只面向 2023 年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，其他专科毕业生走普通专升本；两类不能混答",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#target",
+        "top3": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#fee",
+          "gd-employment-2026#upgrade-plan"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q15",
+      "type": "cross_跨类型",
+      "question": "三二分段报名是1月12日开始，对吗？",
+      "expectedBehavior": "clarify",
+      "behavior": "clarify",
+      "behaviorCorrect": true,
+      "note": "命中多个类别：segmented_中高职贯通（中职升高职） / segmented_三二分段专升本转段（高职升本科）",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "先澄清是哪一种“三二分段”：中高职贯通三二分段（中职升高职，本语料不覆盖）与三二分段专升本转段（高职升本科，2026 年预报名同为 1 月 12 日 09:00 起）；不能混答",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#register-time",
+        "top3": [
+          "gd-zsb-2026#register-time",
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#target"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 1
+    },
+    {
+      "id": "q16",
+      "type": "unknown_year_年份不明",
+      "question": "报名时间是什么时候？",
+      "expectedBehavior": "clarify",
+      "behavior": "clarify",
+      "behaviorCorrect": true,
+      "note": "没说清是哪一类考试，先澄清普通专升本还是三二分段转段",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "缺少年份与考试类型，先澄清是哪一类考试（普通专升本 / 三二分段转段）；不拿旧年份代替",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#register-time",
+        "top3": [
+          "gd-zsb-2026#register-time",
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#fee"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q17",
+      "type": "unknown_year_年份不明",
+      "question": "2027年的专升本政策出来了吗？",
+      "expectedBehavior": "refuse",
+      "behavior": "refuse",
+      "behaviorCorrect": true,
+      "note": "语料只覆盖 2026 年，2027 年没有官方文件，不沿用旧年份",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "语料只覆盖 2026 年招生规定，2027 年规定尚未收录，应说明无 2027 年官方文件、给出查看渠道，不能沿用 2026 年日期当作 2027 年",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#exam-time",
+        "top3": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#register-time",
+          "gd-segmented-2026#target"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q18",
+      "type": "no_source_无来源",
+      "question": "广东岭南职业技术学院今年专升本的录取分数线是多少？",
+      "expectedBehavior": "refuse",
+      "behavior": "refuse",
+      "behaviorCorrect": true,
+      "note": "问的是语料明确不含的数据（分数线），只给官方入口",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "无法核实：录取最低控制分数线由省级划定、各校各专业投档线按当年录取产生，语料里没有分数线数据，不猜测",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#admission",
+        "top3": [
+          "gd-zsb-2026#admission",
+          "gd-employment-2026#upgrade-plan",
+          "gd-zsb-2026#vet-soldier"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q19",
+      "type": "no_source_无来源",
+      "question": "学校附近哪家公司现在招实习生？薪资多少？",
+      "expectedBehavior": "refuse",
+      "behavior": "refuse",
+      "behaviorCorrect": true,
+      "note": "问的是语料明确不含的数据（薪资），只给官方入口",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "无法核实：不提供实时岗位与薪资信息，只给官方招聘入口（广东学生就业创业网等），并说明岗位信息以招聘平台为准",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-segmented-2026#fee",
+        "top3": [
+          "gd-segmented-2026#fee",
+          "gd-segmented-2026#exam-time",
+          "gd-zsb-2026#vet-soldier"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    },
+    {
+      "id": "q20",
+      "type": "stale_过期年份",
+      "question": "2025年普通专升本的报名时间也是1月12日吗？我按去年的准备可以吗？",
+      "expectedBehavior": "refuse",
+      "behavior": "refuse",
+      "behaviorCorrect": true,
+      "note": "语料只覆盖 2026 年，2025 年没有官方文件，不沿用旧年份",
+      "expectedPassages": [],
+      "top1": "",
+      "top3": [],
+      "recallAt1": null,
+      "recallAt3": null,
+      "citationSupported": null,
+      "citationText": "",
+      "expectedAnswer": "不能沿用：语料只覆盖 2026 年规定，2025 年报名时间未收录；应说明适用年份、按 2026 年规定给出日期并提醒以当年官方公告为准",
+      "keyword": {
+        "behavior": "answer",
+        "top1": "gd-zsb-2026#register-time",
+        "top3": [
+          "gd-zsb-2026#register-time",
+          "gd-segmented-2026#register",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "recallAt1": null,
+        "recallAt3": null
+      },
+      "guardExpected": true,
+      "elapsedMs": 0
+    }
+  ]
+}

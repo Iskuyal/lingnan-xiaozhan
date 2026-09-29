@@ -15,7 +15,8 @@
     "smoke:settings": "node scripts/smoke-settings.cjs",
     "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs",
     "eval:lost-found": "node scripts/eval-lost-found.cjs",
-    "eval:department-rag": "node scripts/eval-department-rag.cjs"
+    "eval:department-rag": "node scripts/eval-department-rag.cjs",
+    "poc:advancement": "node scripts/advancement-poc.cjs"
   },
   "engines": {
     "node": ">=22"

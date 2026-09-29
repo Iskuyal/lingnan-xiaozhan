@@ -1,0 +1,319 @@
+{
+  "builtAt": "2026-09-29",
+  "note": "20 道固定题与人工确认的标准答案。答案一律引用语料里的原文段落（citationRequired=true 时必须带出处）。类型分布：事实题 12、跨类型澄清 2、年份不明 2、无来源拒答 3、过期年份 1。",
+  "questions": [
+    {
+      "id": "q01",
+      "type": "fact_专升本",
+      "question": "2026年广东普通专升本什么时候网上预报名？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#register-time"
+      ],
+      "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "mustContain": [
+        "2026年1月12日",
+        "19日18:00"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q02",
+      "type": "fact_专升本",
+      "question": "普通专升本考试时间是哪两天？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#exam-time"
+      ],
+      "expectedAnswer": "2026年3月28日（星期六）至29日（星期日）两天",
+      "mustContain": [
+        "3月28日",
+        "29日"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q03",
+      "type": "fact_专升本",
+      "question": "普通批可以填几个院校专业组志愿？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#volunteer"
+      ],
+      "expectedAnswer": "提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿",
+      "mustContain": [
+        "普通批设置10个院校专业组志愿"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q04",
+      "type": "fact_专升本",
+      "question": "报考职教师资专业需要什么证书？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#vocational-teacher"
+      ],
+      "expectedAnswer": "必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书",
+      "mustContain": [
+        "中级及以上职业资格技能等级证书"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q05",
+      "type": "fact_专升本",
+      "question": "普通专升本的加分政策有哪些分值？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#bonus"
+      ],
+      "expectedAnswer": "增加15分投档、增加10分投档、增加5分投档",
+      "mustContain": [
+        "15分",
+        "10分",
+        "5分"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q06",
+      "type": "fact_专升本",
+      "question": "专升本体检要怎么做、体检表有效期是多久？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-zsb-2026#physical-exam"
+      ],
+      "expectedAnswer": "自行前往二级甲等（含）以上医院或相应的医疗单位体检，体检表有效期：2026年1月1日至填报志愿第一天",
+      "mustContain": [
+        "二级甲等",
+        "2026年1月1日至填报志愿第一天"
+      ],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q07",
+      "type": "fact_转段",
+      "question": "三二分段专升本转段招生的对象是谁？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-segmented-2026#target",
+        "gd-segmented-2026#quality-check"
+      ],
+      "expectedAnswer": "2023年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，且基本素质考核须为“合格”",
+      "mustContain": [
+        "2023年试点高职院校招收"
+      ],
+      "basis": [
+        "gd-segmented-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q08",
+      "type": "fact_转段",
+      "question": "转段考核包括哪几个部分？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-segmented-2026#parts"
+      ],
+      "expectedAnswer": "公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分",
+      "mustContain": [
+        "三个部分"
+      ],
+      "basis": [
+        "gd-segmented-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q09",
+      "type": "fact_转段",
+      "question": "技能大赛获奖可以免考吗？免哪个部分？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-segmented-2026#exemption"
+      ],
+      "expectedAnswer": "获得国家级三等奖及以上或省级一等奖的，可免予专业能力考核，并将专业能力考核等级定为优秀",
+      "mustContain": [
+        "免予专业能力"
+      ],
+      "basis": [
+        "gd-segmented-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q10",
+      "type": "fact_转段",
+      "question": "转段进本科以后毕业证怎么标注？就业和普通本科生一样吗？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-segmented-2026#graduation"
+      ],
+      "expectedAnswer": "转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同",
+      "mustContain": [
+        "专科起点本科学习"
+      ],
+      "basis": [
+        "gd-segmented-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q11",
+      "type": "fact_就业",
+      "question": "广东今年给毕业生提供了多少事业单位岗位？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-employment-2026#public-institution"
+      ],
+      "expectedAnswer": "全年全省提供事业单位岗位不少于5万个",
+      "mustContain": [
+        "不少于5万个"
+      ],
+      "basis": [
+        "gd-employment-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q12",
+      "type": "fact_就业",
+      "question": "科研助理岗位有多少个？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-employment-2026#research-assistant"
+      ],
+      "expectedAnswer": "全省开发1万个以上科研助理岗位",
+      "mustContain": [
+        "1万个以上"
+      ],
+      "basis": [
+        "gd-employment-2026"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q13",
+      "type": "fact_就业",
+      "question": "在哪里可以看招聘活动和就业服务入口？",
+      "behavior": "answer",
+      "expectedPassages": [
+        "gd-employment-portal#entry"
+      ],
+      "expectedAnswer": "广东学生就业创业网、用人单位登录入口、国聘行动、“就在南粤”供需对接活动、就业创业“政策地图”等入口",
+      "mustContain": [
+        "广东学生就业创业网"
+      ],
+      "basis": [
+        "gd-employment-portal"
+      ],
+      "citationRequired": true
+    },
+    {
+      "id": "q14",
+      "type": "cross_跨类型",
+      "question": "专升本和三二分段转段有什么区别？我应该报哪个？",
+      "behavior": "clarify",
+      "expectedPassages": [],
+      "expectedAnswer": "先澄清：三二分段转段只面向 2023 年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，其他专科毕业生走普通专升本；两类不能混答",
+      "mustContain": [],
+      "basis": [
+        "gd-zsb-2026",
+        "gd-segmented-2026"
+      ],
+      "citationRequired": false
+    },
+    {
+      "id": "q15",
+      "type": "cross_跨类型",
+      "question": "三二分段报名是1月12日开始，对吗？",
+      "behavior": "clarify",
+      "expectedPassages": [],
+      "expectedAnswer": "先澄清是哪一种“三二分段”：中高职贯通三二分段（中职升高职，本语料不覆盖）与三二分段专升本转段（高职升本科，2026 年预报名同为 1 月 12 日 09:00 起）；不能混答",
+      "mustContain": [],
+      "basis": [
+        "gd-segmented-2026"
+      ],
+      "citationRequired": false
+    },
+    {
+      "id": "q16",
+      "type": "unknown_year_年份不明",
+      "question": "报名时间是什么时候？",
+      "behavior": "clarify",
+      "expectedPassages": [],
+      "expectedAnswer": "缺少年份与考试类型，先澄清是哪一类考试（普通专升本 / 三二分段转段）；不拿旧年份代替",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "q17",
+      "type": "unknown_year_年份不明",
+      "question": "2027年的专升本政策出来了吗？",
+      "behavior": "refuse",
+      "expectedPassages": [],
+      "expectedAnswer": "语料只覆盖 2026 年招生规定，2027 年规定尚未收录，应说明无 2027 年官方文件、给出查看渠道，不能沿用 2026 年日期当作 2027 年",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "q18",
+      "type": "no_source_无来源",
+      "question": "广东岭南职业技术学院今年专升本的录取分数线是多少？",
+      "behavior": "refuse",
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：录取最低控制分数线由省级划定、各校各专业投档线按当年录取产生，语料里没有分数线数据，不猜测",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "q19",
+      "type": "no_source_无来源",
+      "question": "学校附近哪家公司现在招实习生？薪资多少？",
+      "behavior": "refuse",
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：不提供实时岗位与薪资信息，只给官方招聘入口（广东学生就业创业网等），并说明岗位信息以招聘平台为准",
+      "mustContain": [],
+      "basis": [
+        "gd-employment-portal"
+      ],
+      "citationRequired": false
+    },
+    {
+      "id": "q20",
+      "type": "stale_过期年份",
+      "question": "2025年普通专升本的报名时间也是1月12日吗？我按去年的准备可以吗？",
+      "behavior": "refuse",
+      "expectedPassages": [],
+      "expectedAnswer": "不能沿用：语料只覆盖 2026 年规定，2025 年报名时间未收录；应说明适用年份、按 2026 年规定给出日期并提醒以当年官方公告为准",
+      "mustContain": [],
+      "basis": [
+        "gd-zsb-2026"
+      ],
+      "citationRequired": false
+    }
+  ]
+}
