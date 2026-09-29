@@ -43,6 +43,16 @@ export interface AskResult {
   links: Array<{ label: string; url: string }>;
 }
 
+/**
+ * 平台无关的文本比较。**不要用 `localeCompare`**：它对中文的排序依赖运行环境的 ICU 数据，
+ * 本机（Windows）与 CI（Linux）会给出不同顺序（2026-09-29 在目标日那边被 CI 抓到过）。
+ * 这里只用它给「分数相同的段落」做稳定兜底排序，要求的是**可复现**。
+ */
+function compareText(a: string, b: string): number {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
 const SEGMENTED_STRONG = /三二分段|转段|专业能力考核|基本素质考核|技能大赛|免考|贯通/;
 const SEGMENTED_LOOSE = /三二分段|贯通/;
 const DISAMBIGUATORS = /转段|专升本|本科|中职|高职/;
@@ -247,7 +257,7 @@ export function ask(question: string, topN: number = 2): AskResult {
   const ranked = pool
     .map((passage) => ({ passage, value: score(trimmed, PASSAGES.indexOf(passage)) }))
     .filter((entry) => entry.value > 0)
-    .sort((a, b) => b.value - a.value || a.passage.id.localeCompare(b.passage.id));
+    .sort((a, b) => b.value - a.value || compareText(a.passage.id, b.passage.id));
   if (ranked.length === 0) {
     return {
       behavior: 'refuse',
