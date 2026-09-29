@@ -8,9 +8,9 @@
 
 | 对象 | 已核实状态 | 证据与边界 |
 | --- | --- | --- |
-| GitHub `main` | 2026-09-28 核对为 `e854722`；审查修复 [PR #67](https://github.com/Iskuyal/wx-match/pull/67)、部门动态 RAG [PR #69](https://github.com/Iskuyal/wx-match/pull/69)、选题归档 [PR #71](https://github.com/Iskuyal/wx-match/pull/71) 和答辩陪练规划 [PR #72](https://github.com/Iskuyal/wx-match/pull/72) 已合入 | 代码合入与云端生效分别核对；答辩陪练目前只有规划 |
+| GitHub `main` | 2026-09-29 核对为 `148b9da`；审查修复 [PR #67](https://github.com/Iskuyal/wx-match/pull/67)、部门动态 RAG [PR #69](https://github.com/Iskuyal/wx-match/pull/69)、选题归档 [PR #71](https://github.com/Iskuyal/wx-match/pull/71)、答辩陪练规划 [PR #72](https://github.com/Iskuyal/wx-match/pull/72)、内容安全检测窗口修复 [PR #74](https://github.com/Iskuyal/wx-match/pull/74)、失物招领非 AI 基线 [PR #76](https://github.com/Iskuyal/wx-match/pull/76) 与校园 AI 候选补充 [PR #77](https://github.com/Iskuyal/wx-match/pull/77) 已合入 | 代码合入与云端生效分别核对；答辩陪练目前只有规划，失物招领只到非 AI 基线 |
 | 自动化与模拟器 | 2026-09-27 审查修复分支的 `npm run typecheck` 与 `npm test`（471/471）通过；部门动态 RAG 合并前 2026-09-28 记录 `npm test` 490/490 通过，见[部门 RAG 证据](evidence/department-rag/README.md)；同日内容安全检测窗口修复（审计 CT-01/CT-02）后 `npm test` **504/504** 通过，审计探针复跑见[证据](evidence/content-safety-audit-2026-09-27/README.md)。2026-09-26 的 `npm run verify:wechat` 24 项全过属于较早的模拟器记录 | 本地/CI 检查不等于当前代码已部署，也不等于新功能真机验收 |
-| 云端 | 2026-09-24 从当时的 `main` 合并提交 `0f184cd` 部署 `ai`、`newsSync`、`timetable`，三条均 Active；当时远端入口文件与锁文件哈希读回一致，`timetable` 的 SheetJS 为 0.20.3。**该核对不适用于其后的主线代码。**2026-09-25 开发者工具中维护者探测按预期拒绝；文字冒烟 3/3 返回空模型响应 | [云端证据](evidence/security-remediation/README.md)、[复测记录](evidence/cloud-recheck/README.md)；新版 `ai`/`timetable` 部署、V1 独立定时器运行核验、V2 两账号服务端归属/额度及合法维护者路径仍待验；**内容安全窗口修复（V8）也只在本地，线上仍是修复前行为**，且需与新版客户端一起发 |
+| 云端 | 2026-09-24 从当时的 `main` 合并提交 `0f184cd` 部署 `ai`、`newsSync`、`timetable`，三条均 Active；当时远端入口文件与锁文件哈希读回一致，`timetable` 的 SheetJS 为 0.20.3。**该核对不适用于其后的主线代码。**2026-09-25 开发者工具中维护者探测按预期拒绝；文字冒烟 3/3 返回空模型响应 | [云端证据](evidence/security-remediation/README.md)、[复测记录](evidence/cloud-recheck/README.md)；新版 `ai`/`timetable` 部署、V1 独立定时器运行核验、V2 两账号服务端归属/额度及合法维护者路径仍待验；**内容安全窗口修复（V8）已随 PR #74 合入 `main`，但未部署，线上仍是修复前行为**，且需与新版客户端一起发 |
 | 发布 | 本次参赛采用微信开发者工具「预览」做真机演示；认证、备案、体验版及正式发布不在已完成范围 | [Ticket 08](tasks/tickets/08-post-publish-single-page-mode.md) 为 `wontfix`，未登录单页模式未实测 |
 
 ## 功能与验收
@@ -21,6 +21,7 @@
 | Excel 课表与手工编辑 | 负责人确认 A1–A4 的导入、放弃、手工编辑与双账号界面隔离通过 | 样本、字段对照、设备与版本待归档；服务端越权及当前分支部署另计 |
 | AI 基础与三个落点 | 负责人确认 B1–B4 的截图识别、两组问答题集与失败降级通过；2026-09-25 三次空模型响应是历史故障记录 | B1 逐字段准确率、B2/B3 逐题结果、逐次耗时/成本待归档；文字链路当前可靠性及当前分支部署另计 |
 | 部门动态 RAG | 代码已随 PR #69 合入；离线题集 recall@1 为 4/5、recall@3 为 5/5 | 真实模型 10 题、引用正确性、云端部署与真机效果仍待验证 |
+| 失物招领 | 非 AI 基线（发布、规则找线索、人工认领的五页面与 `lost-found` 云函数）连同设计图与离线评测集已随 [PR #76](https://github.com/Iskuyal/wx-match/pull/76) 合入，评测见[阶段证据](evidence/lost-found/README.md) | 范围本身尚未纳入已确认首版（[框架](tasks/lost-found-framework.md)的决策关卡 D1–D3 待负责人）；AI 图文匹配（LF-4）未开始、设计图待评审、云端部署与真机回归未做 |
 | 校园通知 RAG、OCR | [Ticket 10](tasks/tickets/10-campus-rag-qa.md) 有语料 PoC；[Ticket 11](tasks/tickets/11-ocr-document-parsing.md) 有 OCR 清单与脚本 | 尚未形成可对学生开放的 RAG 问答或已抽检入库的 OCR 语料；国赛版方向，不能计入省赛已完成能力 |
 | 课程项目答辩陪练 | [规划](tasks/ai-project-defense-plan.md)已合入 | 样本、设计、代码、真实模型与真机验收均未完成，不能列为已实现能力 |
 | 参赛材料 | [七项材料模板](submission.md)与历史截图存在 | 正式作品名、校内收口日期、真机录屏、效果评估、七项完整正文、提交回执 |
