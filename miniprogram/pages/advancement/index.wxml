@@ -1,0 +1,83 @@
+<view class="page">
+  <view class="eyebrow">只答官方原文里写过的事 · 语料 4 份 / 25 个段落 · 核查 {{collectedAt}}</view>
+  <view class="qa-title">升学与实习问答</view>
+
+  <view class="qa-note">
+    这一版<text class="qa-strong">没有接模型</text>：回答是把检索到的官方原文段落原样给你，附出处与适用年份；
+    找不到原文、年份对不上、或问岗位与分数线时直接说无法核实。回答不构成录取或报考资格判断。
+  </view>
+
+  <view class="qa-ask">
+    <input id="qa-input" class="qa-input" value="{{question}}" bindinput="onInput" placeholder="例如：转段考核包括哪几个部分？" confirm-type="search" bindconfirm="onAsk" />
+    <view id="qa-ask" class="qa-ask-btn" hover-class="pressed" bindtap="onAsk">提问</view>
+  </view>
+  <view class="qa-chips">
+    <view
+      class="qa-chip"
+      wx:for="{{examples}}"
+      wx:key="*this"
+      hover-class="pressed"
+      data-value="{{item}}"
+      bindtap="onExample"
+    >{{item}}</view>
+  </view>
+
+  <block wx:if="{{hasResult}}">
+    <view class="qa-question">{{asked}}</view>
+
+    <block wx:if="{{result.behavior === 'answer'}}">
+      <view class="qa-answer">
+        <view class="qa-answer-label">回答（原文摘录 · 未改写）</view>
+        <view class="qa-answer-text">{{result.answer}}</view>
+        <view class="qa-answer-note">适用年份 {{result.citations[0].applicableYear}} · 请以官方原文与学校通知为准</view>
+      </view>
+      <view class="qa-source" wx:for="{{result.citations}}" wx:key="documentId" wx:for-item="cite">
+        <view class="qa-source-head">
+          <view class="qa-source-title">{{cite.title}}</view>
+          <view class="qa-source-meta">{{cite.documentNumber}}</view>
+        </view>
+        <view class="qa-source-quote">{{cite.quote}}</view>
+        <view class="qa-source-meta">发布主体 {{cite.issuer}} · 发布 {{cite.publishedAt}} · 适用 {{cite.applicableRegion}} · 核查 {{cite.collectedAt}}</view>
+        <view class="qa-source-foot">
+          <view class="qa-source-url">{{cite.sourceUrl}}</view>
+          <view class="qa-copy" hover-class="pressed" data-url="{{cite.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="qa-guard">
+        <view class="qa-guard-label">{{result.behavior === 'clarify' ? '需要先确认' : '无法核实'}}</view>
+        <view class="qa-guard-text">{{result.answer}}</view>
+        <view class="qa-guard-note">{{result.note}}</view>
+      </view>
+      <view class="qa-choices" wx:if="{{result.choices.length > 0}}">
+        <view
+          class="qa-choice"
+          wx:for="{{result.choices}}"
+          wx:key="*this"
+          hover-class="pressed"
+          data-value="{{item}}"
+          bindtap="onChoice"
+        >{{item}}</view>
+      </view>
+      <view class="qa-links" wx:if="{{result.links.length > 0}}">
+        <view class="qa-source-title">官方入口</view>
+        <view
+          class="qa-choice"
+          wx:for="{{result.links}}"
+          wx:key="url"
+          hover-class="pressed"
+          data-url="{{item.url}}"
+          bindtap="onCopySource"
+        >复制链接：{{item.label}}</view>
+      </view>
+    </block>
+  </block>
+
+  <view class="quiet qa-foot">
+    回答来自 4 份官方材料的 25 个逐字段落；不包含岗位、薪资与录取分数线——问这些会直接告诉你「无法核实」。
+    澄清与拒答都是固定话术，由规则触发，不是模型自由发挥。
+  </view>
+  <view id="back-from-qa" class="qa-back" hover-class="pressed" bindtap="goHome">返回首页</view>
+</view>

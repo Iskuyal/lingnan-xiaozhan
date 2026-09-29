@@ -18,7 +18,8 @@
     "pages/goals/index",
     "pages/goals/edit/index",
     "pages/calendar/index",
-    "pages/fitness/index"
+    "pages/fitness/index",
+    "pages/advancement/index"
   ],
   "window": {
     "navigationBarTitleText": "校园工具",

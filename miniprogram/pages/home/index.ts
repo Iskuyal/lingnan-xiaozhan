@@ -101,6 +101,9 @@ Page({
   openTimetable() {
     wx.navigateTo({ url: '/pages/timetable/index' });
   },
+  openAdvancement() {
+    wx.navigateTo({ url: '/pages/advancement/index' });
+  },
   copySource() {
     wx.setClipboardData({
       data: school.sourceUrl,

@@ -87,6 +87,18 @@
       </view>
     </button>
 
+    <button
+      id="advancement-entry"
+      class="home-wide-entry"
+      style="display:block;width:100%;max-width:none"
+      hover-class="pressed"
+      bindtap="openAdvancement"
+      aria-label="升学与实习问答，只用官方原文回答并附出处"
+    >
+      <view class="entry-title">升学与实习问答</view>
+      <view class="entry-description">只用官方原文回答，附出处与核查日</view>
+    </button>
+
     <view class="news-section">
       <view class="news-section-head">
         <view class="section-title">最近动态</view>
