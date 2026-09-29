@@ -1,6 +1,6 @@
 # Domain docs
 
-采用 single-context：根目录 `CONTEXT.md` 保存领域术语与项目设定，`docs/adr/` 保存已确认的架构决策。
+采用 single-context：根目录 `CONTEXT.md` 保存领域术语，`docs/product/spec.md` 保存产品范围，`docs/adr/` 保存已确认的架构决策。
 
 ## 读取规则
 
@@ -12,4 +12,4 @@
 - Issue、规格、代码和测试使用 `CONTEXT.md` 已定义的术语。
 - 新概念需要定义时，说明领域词汇缺口；经确认后更新上下文。
 - 方案与 ADR 冲突时，指出具体 ADR 和重新决策理由，避免静默覆盖。
-- 尚未确定的产品或技术选择保留为待定；只有已确认决策才写入 ADR。
+- 尚未确定的产品或技术选择在 `docs/tasks/pending.md` 或对应规划中保留为待定；只有已确认决策才写入 ADR。

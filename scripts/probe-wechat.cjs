@@ -116,7 +116,7 @@ async function run() {
       console.log(`    说明：${check.note}`);
     }
     console.log('');
-    console.log('粘贴进 docs/cloud-development.md 探测记录表的一行：');
+    console.log('粘贴进 docs/development/cloud/ai.md 探测记录表的一行：');
     console.log(result.detail || JSON.stringify(record));
 
     if (record.valid === false) {

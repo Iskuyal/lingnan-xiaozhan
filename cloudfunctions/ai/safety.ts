@@ -262,7 +262,7 @@ function unavailable(
   if (timedOut) {
     failTimeout('model_unavailable', `${note}（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）`);
   }
-  fail('internal', `${note}（AI_SAFETY_FAIL_MODE=closed，拒绝调用；可切换第三方适配器或改为 open，见 docs/cloud-development.md）`);
+  fail('internal', `${note}（AI_SAFETY_FAIL_MODE=closed，拒绝调用；可切换第三方适配器或改为 open，见 docs/development/cloud/ai.md）`);
 }
 
 function reviewPolicy(config: Config): { rejected: boolean; detail: string } {

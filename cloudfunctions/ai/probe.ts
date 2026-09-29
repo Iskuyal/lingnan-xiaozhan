@@ -6,7 +6,7 @@
  *
  * 探测只做一件事：用**固定良性文本**与**程序生成的 8×8 PNG**调用
  * `security.msgSecCheck` / `security.imgSecCheck`，把 errcode / errmsg 原样记录下来。
- * 结论由维护者粘贴进 docs/cloud-development.md 的探测记录表。
+ * 结论由维护者粘贴进 docs/development/cloud/ai.md 的探测记录表。
  *
  * **触发方式决定结果是否有效**：云调用要求调用方带上小程序侧的票据，
  * 控制台「测试」页、CLI、HTTP 触发、云函数互调都拿不到它，必然返回 -501001——

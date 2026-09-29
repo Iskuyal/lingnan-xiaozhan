@@ -1,6 +1,6 @@
 # P2 学生部门
 
-对应 [开发阶段](../../development-phases.md) 的 **P2-1 部门资料到列表和详情**，规格见 [开发规格](../../development-spec.md) 的「学生部门」行与「内容与边界」。
+对应 [开发阶段](../../development/phases.md) 的 **P2-1 部门资料到列表和详情**，规格见 [开发规格](../../product/spec.md) 的「学生部门」行与「内容与边界」。
 
 ## 状态
 
@@ -8,7 +8,7 @@ P2-1 的三项验收条件全部完成，开发者工具点击验收通过（见
 
 | 阶段条目 | 状态 |
 | --- | --- |
-| 核实学生会部门资料、所属校区和信息日期，保持出处 | 已完成，记录在 [部门资料来源](../../departments-sources.md) |
+| 核实学生会部门资料、所属校区和信息日期，保持出处 | 已完成，记录在 [部门资料来源](../../product/sources/departments.md) |
 | 本地内容服务返回部门数据，页面显示列表与详情；缺失时说明缺失，不编造 | 已完成 |
 | 验证部门选择、返回、未知部门和空列表；用真实部门演示完整路径 | 已完成（10 项测试 + 开发者工具点击） |
 
@@ -19,7 +19,7 @@ P2-1 的三项验收条件全部完成，开发者工具点击验收通过（见
 | `miniprogram/services/departments.ts` | 279 | 部门内容数据 + 列表/详情视图构造 |
 | `miniprogram/pages/departments/index.{ts,wxml,wxss}` | 14 / 40 / 14 | 列表页（替换了原「资料整理中」状态页） |
 | `miniprogram/pages/departments/detail/index.{ts,wxml,wxss,json}` | 32 / 59 / 20 / 1 | 详情页 |
-| `docs/departments-sources.md` | — | 来源 URL、核查日期、逐条转录、未采用来源与原因 |
+| `docs/product/sources/departments.md` | — | 来源 URL、核查日期、逐条转录、未采用来源与原因 |
 | `tests/departments.test.cjs` | 191 | 10 项行为测试 |
 | `scripts/verify-wechat.cjs` | — | 部门页断言改为选择器（`#departments-list`、`.department-item` 等） |
 

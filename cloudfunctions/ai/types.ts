@@ -153,7 +153,7 @@ export interface ProbeCheck {
 }
 
 /**
- * 微信内容安全接口探测记录：维护者把它粘贴进 docs/cloud-development.md。
+ * 微信内容安全接口探测记录：维护者把它粘贴进 docs/development/cloud/ai.md。
  *
  * `valid` 与 `ok` 是两件事：
  * - `valid: false` 表示**这次探测不构成证据**——调用方没有小程序侧的云调用票据

@@ -2,7 +2,7 @@
 
 日期：2026-09-18（原始本地验证记录）；2026-09-19 追加云端端上验收，见文末「[2026-09-19 云端端上验收](#2026-09-19-云端端上验收)」。状态：**代码与本地测试完成；云端已部署，导入、周次切换、退出重进与手工三条路径已实测；云存储权限（「仅创建者可读写」）、函数超时（20 秒）与临时文件清理已由负责人确认；两个微信号隔离与确认页「放弃导入」路径仍未验证**。分支 `feat/timetable-excel-import`（已合入 main）。
 
-对应 [Ticket 03](../../tasks/tickets/03-timetable-excel-import.md)、[开发规格](../../development-spec.md) 的「课表导入」一节、[云开发文档](../../cloud-development.md) 的「课表云端实施」。
+对应 [Ticket 03](../../tasks/tickets/03-timetable-excel-import.md)、[开发规格](../../product/spec.md) 的「课表导入」一节、[云开发文档](../../development/cloud/timetable.md) 的「课表云端实施」。
 
 ## 环境
 

@@ -4,7 +4,7 @@
  * 识别走 ai 云函数的 vision 动作（图片先过内容安全再送模型，见 cloudfunctions/ai）：
  * 客户端上传截图后只传上传接口返回的 **fileID**（`cloud://…`，不是裸路径）；
  * 模型返回的 JSON 在这里解析成课表草稿（TimetableDraft），复用 03 的确认页与保存链路。
- * 识别不出的字段只标记不猜——与导入解析同一纪律（docs/development-spec.md「课表导入」与 Ticket 03）。
+ * 识别不出的字段只标记不猜——与导入解析同一纪律（docs/product/spec.md「课表导入」与 Ticket 03）。
  */
 import { DraftCourse, SectionRange, TimetableDraft } from './types';
 import { extractJson } from '../ai';

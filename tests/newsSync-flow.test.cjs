@@ -26,7 +26,7 @@ const TWO_COLUMNS = require(path.resolve('dist/cloudfunctions/newsSync/columns.j
   .filter((column) => column.id === 'xyxw-xydt' || column.id === 'tw-tqsd');
 
 /**
- * 最小可用的官网页面桩：结构照抄实测模板（见 docs/news-sources.md 的「通知公告类栏目」）。
+ * 最小可用的官网页面桩：结构照抄实测模板（见 docs/product/sources/news.md 的「通知公告类栏目」）。
  * 解析器的真实页面验证在 tests/news.test.cjs 用真 fixture；这里只为同步引擎提供可控输入。
  */
 function articleStub(title, date) {

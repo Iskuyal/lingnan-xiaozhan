@@ -1,15 +1,15 @@
 # 失物招领模块实施框架（提案）
 
-> 状态：待评审，尚未纳入已确认开发范围  
-> 文档用途：定义失物招领主线的范围、闭环、技术边界、验证方法与决策关卡  
-> 实施状态：仅完成框架文档，未完成设计图、业务代码、模型评测或上线验证  
+> 状态：待评审，尚未纳入已确认开发范围
+> 文档用途：定义失物招领主线的范围、闭环、技术边界、验证方法与决策关卡
+> 实施状态：仅完成框架文档，未完成设计图、业务代码、模型评测或上线验证
 > 最近更新：2026-09-27
 
 ## 1. 背景与文档边界
 
 评审建议优先展示“失物招领双向匹配”：用户发布丢失或拾获信息，AI 从照片和文字中寻找候选线索，解释相符点与冲突点，隐藏可用于冒领的特征，最后由双方人工核验并结案。
 
-当前项目基线仍以 [`CONTEXT.md`](../../CONTEXT.md)、[`development-spec.md`](../development-spec.md) 和 [`development-phases.md`](../development-phases.md) 为准，其中已经固定三个 AI 落点：院系问答、课表截图识别、课表自然语言助手。失物招领属于新增业务域和新增 AI 能力，不能由本文件自动替换既定范围。
+当前项目基线仍以 [`CONTEXT.md`](../../CONTEXT.md)、[`development-spec.md`](../product/spec.md) 和 [`development-phases.md`](../development/phases.md) 为准，其中已经固定三个 AI 落点：院系问答、课表截图识别、课表自然语言助手。失物招领属于新增业务域和新增 AI 能力，不能由本文件自动替换既定范围。
 
 因此，本文件是实施提案，不代表以下事项已经确定：
 
@@ -381,10 +381,10 @@ tests/
 ## 18. 相关文档
 
 - [`CONTEXT.md`](../../CONTEXT.md)：当前项目权威状态与已定边界；
-- [`development-spec.md`](../development-spec.md)：开发规范与现有三个 AI 落点；
-- [`development-phases.md`](../development-phases.md)：现有阶段计划；
-- [`competition.md`](../competition.md)：比赛目标与评审约束；
-- [`workflow.md`](../workflow.md)：实施、验证和证据要求；
-- [`scenario-comparison.md`](scenario-comparison.md)：现有场景优先级比较；
+- [`development-spec.md`](../product/spec.md)：开发规范与现有三个 AI 落点；
+- [`development-phases.md`](../development/phases.md)：现有阶段计划；
+- [`competition.md`](../competition/README.md)：比赛目标与评审约束；
+- [`workflow.md`](../development/workflow.md)：实施、验证和证据要求；
+- [`scenario-comparison.md`](../archive/scenario-comparison.md)：现有场景优先级比较；
 - [`ADR-0001`](../adr/0001-native-wechat-typescript.md)：原生微信小程序 + TypeScript 技术路线；
 - [`docs/design/README.md`](../design/README.md)：界面设计图门禁。

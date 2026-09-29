@@ -7,7 +7,7 @@
 
 ## 一、为什么做这个实测
 
-`docs/tasks/scenario-comparison.md` 第二节对「候选 A：校园信息整合」的 AI 落点有如下判断：
+`docs/archive/scenario-comparison.md` 第二节对「候选 A：校园信息整合」的 AI 落点有如下判断：
 
 > 一个只能展示官网文章的资讯页，**AI 贡献接近于零**；把摘要贴上去也**不构成「真实发挥作用」**。
 >

@@ -5,7 +5,7 @@
  * 共享模块的机制，因此两份类型各自存在。字段名是云函数与小程序之间的数据契约，改名要同步。
  *
  * 客户端**不直连数据库**：读取与写入都经 `wx.cloud.callFunction({ name: 'timetable' })`，
- * 由云函数按调用上下文的 openid 过滤（见 docs/development-spec.md 的「存储与隔离」）。
+ * 由云函数按调用上下文的 openid 过滤（见 docs/product/spec.md 的「存储与隔离」）。
  */
 
 export interface SectionRange {

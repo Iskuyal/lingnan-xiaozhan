@@ -27,7 +27,7 @@ export interface NewsArticle extends NewsListItem {
  * 栏目模板标识：决定用哪一套列表/正文解析规则。
  * - `xyxw`：校园动态，`ul.list.list-intro` + `a.tit` / `h1.title` + `div.article-content`。
  * - `newsList`：团委通知公告，`ul.newsList` + 直挂 `span.date` 与 `<a title>` / `h2.title` + `div.property` + `div.printArea`。
- * 两套模板实测不同构，依据见 docs/news-sources.md 的「模板与校园动态不同构」。
+ * 两套模板实测不同构，依据见 docs/product/sources/news.md 的「模板与校园动态不同构」。
  */
 export type NewsTemplate = 'xyxw' | 'newsList';
 

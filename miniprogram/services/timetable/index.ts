@@ -2,7 +2,7 @@
  * 课表服务：把页面要用的动作映射到 `timetable` 云函数的各 action。
  *
  * **客户端不直连数据库**：全部读写都经 `wx.cloud.callFunction`，由云函数按调用上下文的
- * openid 过滤（见 docs/development-spec.md 的「存储与隔离」）。这里不做任何本地持久化，
+ * openid 过滤（见 docs/product/spec.md 的「存储与隔离」）。这里不做任何本地持久化，
  * 页面每次进入都从云端读取，因此退出重进数据仍在。
  */
 import { Course, CourseInput, DraftCourse, TimetableDraft } from './types';

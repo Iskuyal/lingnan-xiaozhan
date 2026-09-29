@@ -5,7 +5,7 @@
  * `news_articles` → 把进度与结果写进 `sync_state`（每个栏目一条文档）。写入只发生在这里，
  * 客户端对 `news_articles` 只有读权限（安全规则 {"read": true, "write": false}）。
  *
- * 抓取约束（依据 docs/news-sources.md 与 docs/tasks/p3-2-news-updates.md）：
+ * 抓取约束（依据 docs/product/sources/news.md 与 docs/tasks/p3-2-news-updates.md）：
  * - 官网 WAF 明写「每秒不能多于 1 个页面请求」，超限返回 403 并冻结 IP；本函数串行请求、
  *   相邻请求间隔 1.3 秒，单次调用最多 10 次页面请求（≈13 秒，云函数超时 20 秒）。
  * - 首次全量导入按页续跑：状态文档保存「下一个要读的列表页」与「待抓正文的条目队列」，
@@ -762,7 +762,7 @@ async function processPendingItem(
     return 'offsite';
   }
   // 增量回看：列表元信息没变且已有正文时跳过抓取，避免每天重复抓同一批文章。
-  // 代价是「官网只改正文、标题与日期都不变」的修改不会被发现，见 docs/cloud-development.md。
+  // 代价是「官网只改正文、标题与日期都不变」的修改不会被发现，见 docs/development/cloud/news-sync.md。
   if (state.round.phase === 'incremental' && existing !== null && isUnchanged(existing, item)) {
     return 'skipped';
   }
