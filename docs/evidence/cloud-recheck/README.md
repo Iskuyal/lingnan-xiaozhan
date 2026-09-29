@@ -62,3 +62,24 @@
 | 检测配额消耗 | 估算约 50 片（日上限 100） | **无法查询剩余额度**（`getApiQuota` 需小程序 access_token，而 AppSecret 不在本机；`usage` 动作被白名单拦截）。演示/录屏前请按 D15 先查额度 |
 
 **本轮顺带修掉的工具缺陷**：探针原先把整次云函数调用包在一次 `evaluate` 里等待结果，而开发者工具的自动化桥对单次 `evaluate` 有约 10 秒上限（实测 3.2 万字那次恰好在 10010ms 报 `timeout waiting for automator response`），于是连续两次 `exit 1`、`probes` 为空——这也解释了 2026-09-25 那次 `verify:wechat` 的同名中断。已改为「发起后立刻返回 + 短 `evaluate` 轮询」（[PR #79](https://github.com/Iskuyal/wx-match/pull/79)），请求体、判定逻辑与结果文件形状都不变，退出码语义（0 通过 / 1 没跑通 / 2 不符 / 3 未覆盖）也不变。
+
+### 2026-09-29 部署 `ai` 新版后的复验
+
+同一天中午按 V7 的关卡部署了 `ai`（**只发 `ai`**，`timetable`/`newsSync` 未动）并复跑判据。
+
+| 步骤 | 实测 | 边界 |
+| --- | --- | --- |
+| 部署前账目核对（控制台） | 当月 `ai_usage_records` 776 条、`ai_usage_monthly.calls` 776；遗留 `accounting-gate` 由负责人确认「不清楚」，但按代码判定不可能存在（写闸门的逻辑不在旧版里） | 新版只在「记录数 > 汇总」时暂停调用，776 = 776 不触发 |
+| 旧版留档 | `artifacts/rollback-2026-09-29/ai/`（`index.js` SHA-256 `a89b3127…`），供回退 | 被 gitignore，只在执行机上 |
+| 部署 | `cli cloud functions deploy --names ai --remote-npm-install` 成功：16 文件 / 75.6 KB；`info` 仍 Active / timeout 60 / Nodejs16.13 | 部署**不**重置超时与环境变量 |
+| 版本回读 | `download` 回读的 `index.js` 与本地构建**逐字节一致**（`8707f5a3…`）；`rag.js`、`accounting-gate`、窗口拒绝与分片上限、结构诊断 `choices=` 标记齐全 | CLI 不给版本号，这类判断只能这样比对 |
+| 首次调用是否被账目拦 | 未出现「记录多于汇总」拦截 | 说明预检有效 |
+| 窗口探针 1（V8） | **通过**：`ok=false`、`failureClass=invalid_request`、`usage=null`、`safety=null`、`detail` 写明 20000、云函数耗时 **1469ms**（拒绝早于检测与模型调用）⇒ CT-01 修复在线上生效 | 这一档现在确实不消耗检测配额 |
+| 窗口探针 2（V8） | 仍 `covered=false`（模型对该长输出提示返回 0 字）⇒ **不算通过** | 覆盖还受 `maxTokens` 1..8192 硬钳限制 |
+| `smoke:ai --attempts=3`（V6） | **3/3 成功**：`ok=true`、5227/4703/4720ms、输出「链路已通」、101~116 token | 部署前同日 6/6 为空 ⇒ 常规短请求已恢复；不能据此说「代码修好了空响应」 |
+| 空响应的结构（V6 要的判据） | 探针 2 复现时取到：`choices=1；finish_reason=stop；content=string；reasoning_content=present；error=missing；usage=present` | 内容都进了 `reasoning_content`、`content` 为空；代码只读 `content` 并按 `model_unavailable` 处理，诊断只报结构、不记录推理正文 |
+| 单变量对照（V6） | 同一条短提示、只把 `maxTokens` 提到 8192 → `ok=true`、4 字、243 completion token | 触发器是「长输出任务」而非 `maxTokens` 值 |
+| 维护者路径（V3） | 配 `AI_ADMIN_OPENIDS` 后 `probe:wechat` **仍被拒**（`maintainer_not_allowlisted`） | 值为 `usage;probe;<openid>` 形式不匹配（按逗号切分后要求整项等于 openid）；改成纯 openid 再复测 |
+| 配额消耗 | 本轮部署后新增约 5 片（探针 2 输出为空 ⇒ 0 片；探针 1 0 片；smoke 3 次各 1 片；对照 1 片） | 加上上午的约 50 片，当天已用掉一半以上；演示前务必按 D15 查额度 |
+
+**仍未做**：`timetable`/`newsSync` 的部署与旧数据兼容验证（V7）、真实定时器（V1）、两账号服务端归属/额度（V2）、真机与真实截图（B1/A5 仍待归档）、`verify:wechat` 全量复跑。
