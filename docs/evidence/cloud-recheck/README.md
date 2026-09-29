@@ -79,7 +79,8 @@
 | `smoke:ai --attempts=3`（V6） | **3/3 成功**：`ok=true`、5227/4703/4720ms、输出「链路已通」、101~116 token | 部署前同日 6/6 为空 ⇒ 常规短请求已恢复；不能据此说「代码修好了空响应」 |
 | 空响应的结构（V6 要的判据） | 探针 2 复现时取到：`choices=1；finish_reason=stop；content=string；reasoning_content=present；error=missing；usage=present` | 内容都进了 `reasoning_content`、`content` 为空；代码只读 `content` 并按 `model_unavailable` 处理，诊断只报结构、不记录推理正文 |
 | 单变量对照（V6） | 同一条短提示、只把 `maxTokens` 提到 8192 → `ok=true`、4 字、243 completion token | 触发器是「长输出任务」而非 `maxTokens` 值 |
-| 维护者路径（V3） | 配 `AI_ADMIN_OPENIDS` 后 `probe:wechat` **仍被拒**（`maintainer_not_allowlisted`） | 值为 `usage;probe;<openid>` 形式不匹配（按逗号切分后要求整项等于 openid）；改成纯 openid 再复测 |
+| 维护者路径（V3） | 把 `AI_ADMIN_OPENIDS` 的值改成纯 openid 后**通过**：`probe:wechat` 退出码 0、`probe.valid: true`、`openidPresent: true`（v2 形态）、`msgSecCheck` 620ms 与 `imgSecCheck` 559ms 均 `errcode 0` | 记录已回填[探测记录表](../../cloud-development.md)；`assertAdmin` 排在微信调用之前，配错时也不耗配额、不占探测窗口 |
+| 月度用量汇总（V2 的额度侧 / V7 的读数通道） | 维护者动作 `usage` 读到：当月 **790 次调用**、212,525 token、**0.0531 元**（上限 50 元、告警线 40 元，`warn: false`、`exceeded: false`） | 这是**月度汇总**，不是「个人分钟/日额度」；两账号归属与个人额度仍需两个微信号实测，不能用它代替 |
 | 配额消耗 | 本轮部署后新增约 5 片（探针 2 输出为空 ⇒ 0 片；探针 1 0 片；smoke 3 次各 1 片；对照 1 片） | 加上上午的约 50 片，当天已用掉一半以上；演示前务必按 D15 查额度 |
 
 **仍未做**：`timetable`/`newsSync` 的部署与旧数据兼容验证（V7）、真实定时器（V1）、两账号服务端归属/额度（V2）、真机与真实截图（B1/A5 仍待归档）、`verify:wechat` 全量复跑。
