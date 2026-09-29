@@ -69,7 +69,7 @@ function rank(query, candidates) {
   return candidates
     .map((passage, index) => ({ passage, index }))
     .map((entry) => ({ passage: entry.passage, value: score(query, passages.indexOf(entry.passage)) }))
-    .sort((a, b) => b.value - a.value || a.passage.id.localeCompare(b.passage.id));
+    .sort((a, b) => b.value - a.value || (a.passage.id < b.passage.id ? -1 : 1));
 }
 
 /**
