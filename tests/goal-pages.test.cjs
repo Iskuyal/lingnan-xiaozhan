@@ -199,6 +199,20 @@ test('编辑页：名称空或日期非法都不写库，弹出可读原因', ()
   assert.equal(stub.calls.modal[1].content, '请选择目标日期');
 });
 
+test('编辑页：成功后连点保存只新增一次、只返回一次，失败后允许修改重试', () => {
+  const stub = wxStub();
+  const page = loadPage('goals/edit', stub);
+  page.onLoad({ today: TODAY });
+  page.save();
+  assert.equal(page.data.saving, false, '名称为空失败后解锁');
+  page.onNameInput({ detail: { value: '目标' } });
+  page.save();
+  page.save();
+  assert.equal(stored(stub).length, 1);
+  stub.timers.forEach((fn) => fn());
+  assert.deepEqual(stub.calls.navigate, ['back']);
+});
+
 test('编辑页：打开已有记录回填，保存只改这一条', () => {
   const stub = wxStub();
   seed(stub, [

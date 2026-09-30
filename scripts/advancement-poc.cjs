@@ -72,96 +72,15 @@ function rank(query, candidates) {
     .sort((a, b) => b.value - a.value || (a.passage.id < b.passage.id ? -1 : 1));
 }
 
-/**
- * 类别判定（顺序即优先级）。规则来自三类语料的用词差异，而不是模型判断：
- * - 「三二分段专升本转段」是一个整体说法，先把整词归一到「三二分段」再匹配，避免被当成普通专升本；
- * - 只说「三二分段 / 贯通」而没有「转段 / 专升本 / 本科 / 中职 / 高职」时，无法区分中高职贯通与
- *   专升本转段 → 先澄清（票面要求：跨类型问题先澄清）；
- * - 问句同时出现「专升本」和「三二分段」并要求比较时 → 澄清；
- * - 「转段」类问句里常带「就业」「本科」，所以转段优先于就业；“技能大赛/免考/专业能力考核”这些
- *   只出现在转段语料里，足以单独判定类别。
- */
-const SEGMENTED_STRONG = /三二分段|转段|专业能力考核|基本素质考核|技能大赛|免考|贯通/;
-const SEGMENTED_LOOSE = /三二分段|贯通/;
-const DISAMBIGUATORS = /转段|专升本|本科|中职|高职/;
-const UPGRADE_MARKERS = /专升本|专插本|职教师资|建档立卡|志愿|普通批|提前批|院校专业组|加分|体检|预报名|退役|招生工作规定/;
-const EMPLOYMENT_MARKERS = /就业|实习|招聘|岗位|校招|毕业生|公务员|事业单位|国企|科研助理|用人单位/;
-const COMPARISON = /区别|哪个|还是|两个都|怎么选|一样吗/;
-
-function classify(question) {
-  const normalized = question.split('三二分段专升本').join('三二分段');
-  const segmented = SEGMENTED_STRONG.test(normalized);
-  const loose = SEGMENTED_LOOSE.test(normalized) && !DISAMBIGUATORS.test(normalized);
-  const upgrade = UPGRADE_MARKERS.test(normalized);
-  const employment = EMPLOYMENT_MARKERS.test(normalized);
-
-  if (segmented && upgrade && COMPARISON.test(normalized)) {
-    return { kind: 'ambiguous', categories: ['ordinary_专升本（专科毕业生统考）', 'segmented_三二分段专升本转段（试点高职学生转段）'] };
-  }
-  if (loose) {
-    return { kind: 'ambiguous', categories: ['segmented_中高职贯通（中职升高职）', 'segmented_三二分段专升本转段（高职升本科）'] };
-  }
-  if (segmented) return { kind: 'single', category: 'segmented_三二分段专升本转段' };
-  if (upgrade) return { kind: 'single', category: 'ordinary_专升本' };
-  if (employment) return { kind: 'single', category: 'internship_实习招聘' };
-  return { kind: 'unknown' };
-}
-
-function coveredYears(category) {
-  return [...new Set(passages.filter((passage) => passage.category === category).map((passage) => passage.applicableYear))]
-    .filter((year) => year > 0)
-    .sort();
-}
-
-function isCoveredYear(category, year) {
-  return coveredYears(category).includes(year);
-}
-
-const DATE_SENSITIVE = ['报名', '考试', '时间', '截止', '几号', '哪天'];
-
-/**
- * 语料明确不含的数据：这类问题一律拒答并给官方入口，不用「相关段落」硬答。
- * （票面要求：不宣称实时岗位全集、不做个性录取资格判断。）
- */
-const OUT_OF_SCOPE = ['分数线', '投档线', '录取结果', '录取名单', '录取率', '薪资', '工资', '招人', '招不招', '哪家公司', '哪家单位'];
-
-/** 问句里出现的年份（4 位数字）；没有就返回 null。 */
-function yearOf(question) {
-  const match = question.match(/(20\d{2})\s*年/);
-  return match === null ? null : Number(match[1]);
-}
-
-/** 策略 B：来源约束检索。返回 { behavior, passages, note }。 */
-function constrainedSearch(question) {
-  const outOfScope = OUT_OF_SCOPE.find((word) => question.includes(word));
-  if (outOfScope !== undefined) {
-    return { behavior: 'refuse', passages: [], note: `问的是语料明确不含的数据（${outOfScope}），只给官方入口` };
-  }
-  const classification = classify(question);
-  if (classification.kind === 'ambiguous') {
-    return { behavior: 'clarify', passages: [], note: `命中多个类别：${classification.categories.join(' / ')}` };
-  }
-  if (classification.kind === 'unknown') {
-    const asksDate = DATE_SENSITIVE.some((word) => question.includes(word));
-    return asksDate
-      ? { behavior: 'clarify', passages: [], note: '没说清是哪一类考试，先澄清普通专升本还是三二分段转段' }
-      : { behavior: 'refuse', passages: [], note: '没有命中任何类别，语料里没有可引用来源' };
-  }
-  // 语料只覆盖一个招生年度时，问题不带年份也能回答；但年份写错（如问 2025、2027）时必须说无法核实。
-  const year = yearOf(question);
-  if (year !== null && !isCoveredYear(classification.category, year)) {
-    return {
-      behavior: 'refuse',
-      passages: [],
-      note: `语料只覆盖 ${coveredYears(classification.category).join('、')} 年，${year} 年没有官方文件，不沿用旧年份`,
-    };
-  }
-  const pool = passages.filter((passage) => passage.category === classification.category);
-  const hits = rank(question, pool).filter((entry) => entry.value > 0);
-  if (hits.length === 0) {
-    return { behavior: 'refuse', passages: [], note: '该类别下没有与问题相关的段落' };
-  }
-  return { behavior: 'answer', passages: hits.slice(0, 3).map((entry) => entry.passage), note: '' };
+// 策略 B 调用客户端同一份来源守门，避免脚本和产品各有一套规则。
+// 历史事实题的适用范围显式确认；无范围问题的首次澄清另由回归题验证。
+const { ask } = require('../dist/services/advancement/index.js');
+function constrainedSearch(question, scope = {}) {
+  const result = ask(question, 3, scope);
+  const citations = result.citations.map((citation) => passages.find((passage) =>
+    passage.documentId === citation.documentId && passage.text === citation.quote));
+  if (citations.some((passage) => passage === undefined)) throw new Error('产品引用与 PoC 语料不一致，请先重新构建');
+  return { behavior: result.behavior, passages: citations, note: result.note };
 }
 
 /** 策略 A：不加约束的关键词检索。 */
@@ -176,7 +95,7 @@ function evaluate() {
   for (const item of questionSet.questions) {
     const questionStarted = Date.now();
     const keyword = keywordSearch(item.question);
-    const constrained = constrainedSearch(item.question);
+    const constrained = constrainedSearch(item.question, item.behavior === 'answer' ? { year: 2026, region: '广东省' } : {});
     const elapsedMs = Date.now() - questionStarted;
 
     const expected = item.expectedPassages || [];
@@ -277,7 +196,9 @@ function evaluate() {
 
 function main() {
   const report = evaluate();
-  const output = path.resolve('docs/evidence/advancement-poc/report.json');
+  const outputIndex = process.argv.indexOf('--output');
+  const output = path.resolve(outputIndex >= 0 ? process.argv[outputIndex + 1] : 'artifacts/advancement-poc/report.json');
+  fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, JSON.stringify(report, null, 2) + '\n');
 
   const { metrics } = report;
@@ -299,4 +220,5 @@ function main() {
   console.log(`报告已写入 ${path.relative(process.cwd(), output)}`);
 }
 
-main();
+if (require.main === module) main();
+module.exports = { constrainedSearch, evaluate };

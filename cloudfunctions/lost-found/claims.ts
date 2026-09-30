@@ -181,12 +181,12 @@ export async function confirmHandover(
 ): Promise<LostFoundResponse> {
   const claim = await readClaim(db, claimId);
   if (claim === null || claim.postId !== postId) return fail('not_found', '申请不存在');
-  // 幂等:双方都已确认过(completed)的重入直接成功,重复点击/重试不再报错。
-  if (claim.status === 'completed') return ok({ claim: claimView(claim, true) });
-  if (claim.status !== 'accepted') return fail('conflict', '只有已通过的申请可以确认交接');
   const post = await readPost(db, postId);
   if (post === null) return fail('not_found', '帖子不存在');
   if (claim.claimantOpenId !== openid && post.ownerOpenId !== openid) return fail('forbidden', '只有申请双方可以确认交接');
+  // 幂等也须先鉴权；认领人重试仍只得到认领人视图。
+  if (claim.status === 'completed') return ok({ claim: claimView(claim, openid === post.ownerOpenId) });
+  if (claim.status !== 'accepted') return fail('conflict', '只有已通过的申请可以确认交接');
 
   const patch: Record<string, unknown> = {};
   if (openid === post.ownerOpenId) {

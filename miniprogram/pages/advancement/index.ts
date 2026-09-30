@@ -4,10 +4,9 @@
  * 页面完全不含模型调用：`services/advancement` 在本地检索官方原文段落，页面把它原样展示并附出处。
  * 界面固定三句话：语料规模与核查日、「未接模型」、不构成录取或报考资格判断。
  *
- * 澄清选项点一下就把它拼回问题上重问（例如把「三二分段专升本转段」拼到原问题前），
- * 这样用户的追问仍然走同一条检索与守门路径，不额外引入第二种逻辑。
+ * 澄清用明确的类别/年份/地区状态，原问题不改写；新问题不沿用上一题状态。
  */
-import { AskResult, CORPUS_COLLECTED_AT, ask } from '../../services/advancement/index';
+import { AskResult, AskScope, CORPUS_COLLECTED_AT, ask, selectScope } from '../../services/advancement/index';
 
 interface InputEvent {
   detail: { value: string };
@@ -33,8 +32,9 @@ Page({
     examples: EXAMPLES,
     collectedAt: CORPUS_COLLECTED_AT,
   },
+  scope: {} as AskScope,
   onLoad() {
-    this.ask('2026年普通专升本什么时候网上预报名？');
+    this.ask('2026年广东普通专升本什么时候网上预报名？');
   },
   onInput(event: InputEvent) {
     this.setData({ question: event.detail.value });
@@ -48,15 +48,18 @@ Page({
     this.setData({ question: value });
     this.ask(value);
   },
-  /** 点了澄清选项：把选项拼到原问题前面重问一次。 */
+  /** 只接受本轮可选项，保留原问题，继续确认该题的适用范围。 */
   onChoice(event: TapEvent) {
     const value = event.currentTarget.dataset.value;
     if (value === undefined || value === '') return;
-    const merged = `${value} ${this.data.asked}`;
-    this.setData({ question: merged });
-    this.ask(merged);
+    if (this.data.result === null) return;
+    const selected = selectScope(this.data.result, value);
+    if (selected === null) return;
+    this.scope = { ...this.scope, ...selected };
+    this.setData({ question: this.data.asked, result: ask(this.data.asked, 2, this.scope) });
   },
   ask(question: string) {
+    this.scope = {};
     this.setData({ asked: question, result: ask(question), hasResult: true });
   },
   onCopySource(event: TapEvent) {

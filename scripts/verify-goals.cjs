@@ -1,6 +1,6 @@
 /**
  * 目标日（Issue #90）的开发者工具验收：创建 → 修改 → 删除 → 退出重进，
- * 并把每一步的截图与结果写进 `docs/evidence/goal-days/`。
+ * 并把每一步的截图与结果写进 `artifacts/verify/goals/`（可用 WECHAT_VERIFY_OUTPUT 指定归档目录）。
  *
  * 跑法（工具须已用 `cli.bat auto --project <仓库>/dist --auto-port 9420` 拉起）：
  *   node scripts/verify-goals.cjs
@@ -14,11 +14,11 @@
  */
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const { mkdirSync, writeFileSync, rmSync } = require('node:fs');
+const { mkdirSync, writeFileSync } = require('node:fs');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
 const STORAGE_KEY = 'goal-days/v1';
-const output = path.resolve('docs/evidence/goal-days');
+const output = path.resolve(process.env.WECHAT_VERIFY_OUTPUT || 'artifacts/verify/goals');
 
 /** 北京时间某一天相对今天的天数；与小程序侧的算法独立，用来交叉核对页面上的数字。 */
 function shanghaiToday(now = Date.now()) {
@@ -34,7 +34,6 @@ function diffDays(fromText, toText) {
 }
 
 async function run() {
-  rmSync(output, { recursive: true, force: true });
   mkdirSync(output, { recursive: true });
   const mini = await connectMini();
   const checks = [];

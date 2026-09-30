@@ -40,7 +40,8 @@ test('语料自检：四份文档、段落齐全、每条都有 https 出处与�
 
 test('20 道固定题：行为与引用都与 PoC 预登记的一致', () => {
   for (const item of questionSet.questions) {
-    const result = advancement.ask(item.question);
+    // 历史事实题的已知范围须显式确认，不能再靠服务默认为广东 2026。
+    const result = advancement.ask(item.question, 2, item.behavior === 'answer' ? { year: 2026, region: '广东省' } : {});
     assert.equal(result.behavior, item.behavior, `${item.id}（${item.question}）行为不对：${result.behavior}`);
 
     if (item.behavior === 'answer') {
@@ -110,6 +111,50 @@ test('空问题与无关问题：不硬答', () => {
   assert.equal(advancement.ask('校园卡在哪里补办？').behavior, 'refuse');
 });
 
+test('适用范围：年份简写、缺失范围、异省与冲突年份都不能用广东 2026 年资料硬答', () => {
+  for (const q of ['2027专升本什么时候报名？', '2025普通专升本什么时候报名？', '2026年湖南普通专升本什么时候报名？', '2026广东和湖南普通专升本报名时间一样吗？']) {
+    const result = advancement.ask(q);
+    assert.equal(result.behavior, 'refuse', q);
+    assert.equal(result.citations.length, 0);
+  }
+  for (const q of ['普通专升本什么时候报名？', '2026专升本什么时候报名？', '广东普通专升本什么时候报名？', '2026和2027年广东普通专升本什么时候报名？']) {
+    const result = advancement.ask(q);
+    assert.equal(result.behavior, 'clarify', q);
+    assert.equal(result.citations.length, 0);
+  }
+  assert.equal(advancement.ask('2026广东普通专升本什么时候报名？').behavior, 'answer');
+});
+
+test('澄清类别有明确状态：比较题选择后不循环，中职升高职不混答', () => {
+  const question = '2026年广东专升本和三二分段转段有什么区别？';
+  const initial = advancement.ask(question);
+  assert.equal(initial.behavior, 'clarify');
+  for (const choice of initial.choices) {
+    const scope = advancement.selectScope(initial, choice);
+    assert.ok(scope, '澄清选项必须携带类别，而不是拼接问题文字');
+    assert.equal(advancement.ask(question, 2, scope).behavior, 'answer');
+  }
+  const looseQuestion = '2026年广东三二分段报名是1月12日开始吗？';
+  const loose = advancement.ask(looseQuestion);
+  const scope = advancement.selectScope(loose, '中高职贯通三二分段（中职升高职）');
+  assert.ok(scope);
+  assert.equal(advancement.ask(looseQuestion, 2, scope).behavior, 'refuse');
+  assert.equal(advancement.ask('2026年广东中高职贯通三二分段什么时候报名？').behavior, 'refuse');
+  assert.equal(advancement.selectScope(initial, '不是本轮的选项'), null);
+});
+
+test('类别守门：中职简写不混答，明确普通专升本不被免考词或矛盾 scope 覆盖', () => {
+  assert.equal(advancement.ask('2026年广东普通专升本和三二分段报名日期是什么？').behavior, 'clarify', '同时问两类考试不依赖“区别”等比较词');
+  for (const q of ['2026年广东中职三二分段怎么报名？', '2026年广东中职生三二分段什么时候报名？', '2026年广东中职学校应届毕业生想报三二分段，报名时间是什么时候？']) {
+    assert.equal(advancement.ask(q).behavior, 'refuse', q);
+  }
+  const ordinary = advancement.ask('2026年广东普通专升本免考英语条件是什么？');
+  assert.ok(ordinary.citations.every((citation) => citation.documentId === 'gd-zsb-2026'));
+  const mismatch = advancement.ask('2026年广东普通专升本什么时候预报名？', 2, { category: 'segmented_三二分段专升本转段', year: 2026, region: '广东省' });
+  assert.equal(mismatch.behavior, 'refuse');
+  assert.equal(mismatch.citations.length, 0);
+});
+
 test('不接模型：服务与页面都不调用云函数或 AI', () => {
   const service = fs.readFileSync('dist/services/advancement/index.js', 'utf8');
   const page = fs.readFileSync('dist/pages/advancement/index.js', 'utf8');
@@ -118,11 +163,11 @@ test('不接模型：服务与页面都不调用云函数或 AI', () => {
     assert.ok(!source.includes('wx.cloud'), '不该使用云开发');
   }
   // 出处必须是真实链接（点开可核对），不是占位
-  const result = advancement.ask('2026年普通专升本什么时候网上预报名？');
+  const result = advancement.ask('2026年广东普通专升本什么时候网上预报名？');
   assert.equal(result.citations[0].sourceUrl.startsWith('https://eea.gd.gov.cn/'), true);
 });
 
-test('问答页：默认问一题、点示例提问、点澄清选项会拼回问题上重问', () => {
+test('问答页：澄清保留原问题，新题清空旧选择，并可复制出处', () => {
   const store = new Map();
   const calls = { clipboard: [], toast: [], navigate: [] };
   const wx = {
@@ -162,21 +207,36 @@ test('问答页：默认问一题、点示例提问、点澄清选项会拼回�
   page.onLoad();
   assert.equal(page.data.hasResult, true);
   assert.equal(page.data.result.behavior, 'answer');
-  assert.equal(page.data.asked, '2026年普通专升本什么时候网上预报名？');
+  assert.equal(page.data.asked, '2026年广东普通专升本什么时候网上预报名？');
 
   page.onExample({ currentTarget: { dataset: { value: '转段考核包括哪几个部分？' } } });
+  assert.equal(page.data.result.behavior, 'clarify');
+  page.onChoice({ currentTarget: { dataset: { value: '2026 年广东省' } } });
   assert.equal(page.data.result.behavior, 'answer');
   assert.match(page.data.result.answer, /三个部分/);
 
   page.onExample({ currentTarget: { dataset: { value: '三二分段报名是1月12日开始吗？' } } });
   assert.equal(page.data.result.behavior, 'clarify');
   page.onChoice({ currentTarget: { dataset: { value: '三二分段专升本转段（高职升本科）' } } });
-  assert.equal(page.data.question, '三二分段专升本转段（高职升本科） 三二分段报名是1月12日开始吗？');
+  assert.equal(page.data.question, '三二分段报名是1月12日开始吗？');
+  assert.equal(page.data.result.behavior, 'clarify', '类别确定后仍需确认年份地区');
+  page.onChoice({ currentTarget: { dataset: { value: '2026 年广东省' } } });
   assert.equal(page.data.result.behavior, 'answer', '澄清后重问应当给出原文摘录');
 
   page.onCopySource({ currentTarget: { dataset: { url: page.data.result.citations[0].sourceUrl } } });
   assert.equal(calls.clipboard.length, 1);
   assert.deepEqual(calls.toast, ['原文链接已复制']);
+
+  // 新问题清空上一题范围；比较题选择后不再循环分类。
+  page.onExample({ currentTarget: { dataset: { value: '专升本和三二分段转段有什么区别？' } } });
+  page.onChoice({ currentTarget: { dataset: { value: '普通专升本（专科毕业生统考）' } } });
+  assert.equal(page.data.result.behavior, 'clarify', '新题不沿用上一题年份地区');
+  page.onChoice({ currentTarget: { dataset: { value: '2026 年广东省' } } });
+  assert.equal(page.data.result.behavior, 'answer');
+  assert.equal(page.data.asked, '专升本和三二分段转段有什么区别？');
+  page.onExample({ currentTarget: { dataset: { value: '三二分段报名是1月12日开始吗？' } } });
+  page.onChoice({ currentTarget: { dataset: { value: '中高职贯通三二分段（中职升高职）' } } });
+  assert.equal(page.data.result.behavior, 'refuse');
   assert.deepEqual(Array.from(store.keys()), [], '问答页不该往本机存储写东西');
 
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));

@@ -64,3 +64,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 - [全模块界面改版](campus-refresh/README.md)
 - [课表改版](timetable/README.md)
 - [课表主页可读性返工](timetable-readability/README.md)
+- [目标日（整体待评审）](goal-days/README.md)
+- [校历与考试（整体待评审）](exam-calendar/README.md)
+- [体测估算（BMI 来源纠错，整体待评审）](fitness-calc/README.md)
+- [升学问答（澄清纠错，整体待评审）](advancement-qa/README.md)

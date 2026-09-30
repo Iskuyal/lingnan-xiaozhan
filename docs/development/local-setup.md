@@ -28,7 +28,9 @@ npm run build
 - 修改源码后重新构建；构建会清理生成目录内容，手工文件不要放在 `dist/`。
 - `miniprogram/` 与 `cloudfunctions/` 才是源码；生成物和本地 `artifacts/` 不提交。
 - 静态学校、部门资料可用于基础页面预览；资讯云读取、课表存储和 AI 功能需要云开发配置。
-- 本地构建不上传云函数。部署前读 [部署关卡](cloud/deployment.md)，不能把历史部署记录当作本次已部署。
+- `npm run verify:goals` 与 `npm run verify:campus-tools` 默认输出本地 `artifacts/verify/`，不覆盖历史证据；可通过 `WECHAT_VERIFY_OUTPUT` 指定新归档目录。新功能纠错的定向模拟器验收使用 `node scripts/verify-review-fixes.cjs`，临时目标日结束后恢复原本机数据。
+
+本地构建不上传云函数。部署前读 [部署关卡](cloud/deployment.md)，不能把历史部署记录当作本次已部署。
 
 ## 开发者工具自动化
 

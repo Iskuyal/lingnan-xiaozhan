@@ -161,20 +161,20 @@ test('体测估算页：估算后给标准分与等级，性别与年级组切�
   assert.ok(page.data.result.items.some((item) => item.label.includes('仰卧起坐')));
 });
 
-test('体测估算页：缺项与超重时不给总分与等级，并列出没有分数的项目', () => {
+test('体测估算页：BMI 超重正常计分，其他缺项仍不给总分与等级', () => {
   const stub = wxStub();
   const page = loadPage('fitness', stub);
   page.onLoad();
   const fill = (field, value) => page.onInput({ currentTarget: { dataset: { value: field } }, detail: { value } });
   fill('height', '175');
-  fill('weight', '80'); // BMI 26.1 → 超重，原表未给分
+  fill('weight', '80'); // BMI 26.1 → 超重，按原表计 80 分
   fill('sprint50', '7.0');
   page.calculate();
   assert.equal(page.data.result.total, null);
   assert.equal(page.data.result.grade, null);
-  assert.ok(page.data.result.missing.some((text) => text.includes('BMI')));
+  assert.equal(page.data.result.missing.some((text) => text.includes('BMI')), false);
   assert.ok(page.data.result.missing.length >= 2, `缺项应当列出来：${page.data.result.missing.join('、')}`);
-  assert.equal(page.data.result.standardScore, 17, '只有 50 米跑（权重 20%）有分：85 × 0.2 = 17');
+  assert.equal(page.data.result.standardScore, 29, 'BMI 权重 15% 贡献 12，50 米跑权重 20% 贡献 17');
 });
 
 test('体测估算页：「改一个数字重算」回到输入区，输入不写本机存储', () => {

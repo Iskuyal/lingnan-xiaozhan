@@ -189,6 +189,28 @@ test('认领处理：拒绝与需补充都要记录原因,补充后回到待核�
 // 规则召回
 // ---------------------------------------------------------------------------
 
+test('已完成交接重试：无关账号仍被拒，认领人不获私密回答，发布者可幂等读取', async () => {
+  const { db, post } = await createPost();
+  const evidence = '合成私密核验回答';
+  const submitted = await claims.submitClaim(db, OTHER, post.postId, { relation: '本人遗失', evidence }, { now: NOW });
+  const claimId = submitted.data.claimId;
+  await claims.reviewClaim(db, OWNER, claimId, 'accepted', '', { now: NOW });
+  await claims.confirmHandover(db, OWNER, post.postId, claimId, { now: NOW });
+  await claims.confirmHandover(db, OTHER, post.postId, claimId, { now: NOW });
+
+  const forbidden = await claims.confirmHandover(db, 'unrelated-account', post.postId, claimId, { now: NOW });
+  assert.equal(forbidden.ok, false);
+  assert.equal(forbidden.failureClass, 'forbidden');
+  assert.equal(forbidden.data.claim, undefined);
+  const claimantRetry = await claims.confirmHandover(db, OTHER, post.postId, claimId, { now: NOW });
+  assert.equal(claimantRetry.ok, true);
+  assert.equal(claimantRetry.data.claim.evidence, '');
+  const ownerRetry = await claims.confirmHandover(db, OWNER, post.postId, claimId, { now: NOW });
+  assert.equal(ownerRetry.ok, true);
+  assert.equal(ownerRetry.data.claim.status, 'completed');
+  assert.equal(ownerRetry.data.claim.evidence, evidence);
+});
+
 test('规则召回：只召回相反类型 + 类别相同 + 时间窗内 + 同区域,rank 由时间邻近度排', async () => {
   const { db, post } = await createPost({}, OWNER); // lost 电子设备 09-24~25 三教-食堂
   const foundMatch = await posts.createPost(db, OTHER, postInput({

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "S1 适用范围不应直接回答",
+    "passed": true,
+    "expected": [
+      false,
+      false,
+      false
+    ],
+    "actual": [
+      false,
+      false,
+      false
+    ]
+  },
+  {
+    "id": "S2 澄清应消除歧义，未收录类别应拒答",
+    "passed": true,
+    "expected": {
+      "stillClarifying": false,
+      "uncollected": "refuse"
+    },
+    "actual": {
+      "stillClarifying": false,
+      "uncollected": "refuse"
+    }
+  },
+  {
+    "id": "R1 BMI 超重应为 80 分",
+    "passed": true,
+    "expected": {
+      "bmiScore": 80,
+      "total": 81
+    },
+    "actual": {
+      "bmiScore": 80,
+      "total": 81
+    }
+  },
+  {
+    "id": "R2 无关账号不得读取已完成申请",
+    "passed": true,
+    "expected": {
+      "ok": false,
+      "leaked": false
+    },
+    "actual": {
+      "ok": false,
+      "leaked": false
+    }
+  },
+  {
+    "id": "R3 入口须拒绝他人候选反馈",
+    "passed": true,
+    "expected": {
+      "ok": false,
+      "feedback": ""
+    },
+    "actual": {
+      "ok": false,
+      "feedback": ""
+    }
+  },
+  {
+    "id": "R4 读取异常不得覆盖旧记录",
+    "passed": true,
+    "expected": true,
+    "actual": true
+  },
+  {
+    "id": "R5 连续保存只应生成一条记录和一次返回",
+    "passed": true,
+    "expected": {
+      "records": 1,
+      "timers": 1
+    },
+    "actual": {
+      "records": 1,
+      "timers": 1
+    }
+  }
+]

@@ -168,18 +168,14 @@ function storageAvailable(): boolean {
   return typeof wx !== 'undefined' && typeof wx.getStorageSync === 'function' && typeof wx.setStorageSync === 'function';
 }
 
-/**
- * 读取全部目标日。**读失败或数据损坏都不抛异常**：返回已经能用的那些记录，
- * 让页面至少能显示、能新建，而不是整页打不开。
- */
-export function loadGoals(): GoalDay[] {
-  if (!storageAvailable()) return [];
+/** 写操作必须成功读取旧列表；读取失败不能被当作空列表覆盖。 */
+function readGoals(): GoalDay[] {
+  if (!storageAvailable()) throw new Error('无法读取本机目标日，请稍后重试');
   let raw: unknown;
   try {
     raw = wx.getStorageSync(STORAGE_KEY);
   } catch (error) {
-    console.error('读取目标日失败，按空列表处理：', error);
-    return [];
+    throw new Error('读取目标日失败，请稍后重试');
   }
   if (raw === '' || raw === null || raw === undefined) return [];
   let parsed: unknown = raw;
@@ -187,11 +183,10 @@ export function loadGoals(): GoalDay[] {
     try {
       parsed = JSON.parse(raw);
     } catch (error) {
-      console.error('目标日数据不是合法 JSON，按空列表处理：', error);
-      return [];
+      throw new Error('无法读取目标日数据，请保留原数据并重试');
     }
   }
-  if (!Array.isArray(parsed)) return [];
+  if (!Array.isArray(parsed)) throw new Error('无法读取目标日数据，请保留原数据并重试');
   const goals: GoalDay[] = [];
   const seen = new Set<string>();
   for (const item of parsed) {
@@ -201,6 +196,14 @@ export function loadGoals(): GoalDay[] {
     goals.push(goal);
   }
   return goals;
+}
+
+/** 只读展示失败时降级；新增、修改、删除不使用这个降级值。 */
+export function loadGoals(): GoalDay[] {
+  try { return readGoals(); } catch (error) {
+    console.error('读取目标日失败，展示按空列表处理：', error);
+    return [];
+  }
 }
 
 /** 写入全部目标日；存储写失败（配额、环境异常）时抛出，由页面提示，不静默丢弃。 */
@@ -218,7 +221,7 @@ export function saveGoals(goals: GoalDay[]): void {
 export function addGoal(input: GoalInput, now: number = Date.now()): GoalDay {
   const problem = validateInput(input);
   if (problem !== '') throw new Error(problem);
-  const goals = loadGoals();
+  const goals = readGoals();
   if (goals.length >= MAX_GOALS) throw new Error(`最多保存 ${MAX_GOALS} 个目标日，请先删掉一些`);
   const goal: GoalDay = {
     id: nextId(now),
@@ -236,7 +239,7 @@ export function addGoal(input: GoalInput, now: number = Date.now()): GoalDay {
 export function updateGoal(id: string, input: GoalInput, now: number = Date.now()): GoalDay {
   const problem = validateInput(input);
   if (problem !== '') throw new Error(problem);
-  const goals = loadGoals();
+  const goals = readGoals();
   const index = goals.findIndex((goal) => goal.id === id);
   if (index === -1) throw new Error('这条目标日已经不在了，请返回列表重试');
   const updated: GoalDay = {
@@ -253,7 +256,7 @@ export function updateGoal(id: string, input: GoalInput, now: number = Date.now(
 
 /** 删除一条；返回是否真的删掉了（不存在时返回 false，不报错）。 */
 export function removeGoal(id: string): boolean {
-  const goals = loadGoals();
+  const goals = readGoals();
   const rest = goals.filter((goal) => goal.id !== id);
   if (rest.length === goals.length) return false;
   saveGoals(rest);

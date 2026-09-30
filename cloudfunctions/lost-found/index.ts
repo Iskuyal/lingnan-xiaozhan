@@ -58,7 +58,7 @@ export async function main(event: Record<string, unknown> = {}): Promise<LostFou
       case 'listMatches':
         return await matches.listMatches(db, String(event.postId ?? ''), { now }, openid);
       case 'feedbackMatch':
-        return await matches.feedbackMatch(db, String(event.matchId ?? ''), (event.feedback ?? '') as never, { now });
+        return await matches.feedbackMatch(db, String(event.matchId ?? ''), (event.feedback ?? '') as never, { now }, openid);
       case 'reportPost': {
         const postId = String(event.postId ?? '');
         await record(db, { actorOpenId: openid, action: 'reportPost', postId, summary: String(event.summary ?? '').slice(0, 200) });

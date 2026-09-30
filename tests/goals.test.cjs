@@ -267,3 +267,21 @@ test('上限与保存失败都给可读原因，不静默丢弃', () => {
     clearStorage();
   }
 });
+
+test('读取异常时新增、修改、删除都不覆盖旧数据，恢复读取后可以继续新增', () => {
+  const stub = useStorage();
+  try {
+    goals.saveGoals([goal({ id: 'keep', name: '保留目标' })]);
+    const before = stub.store.get('goal-days/v1');
+    const read = stub.wx.getStorageSync;
+    stub.wx.getStorageSync = () => { throw new Error('read failed'); };
+    assert.deepEqual(goals.loadGoals(), [], '只读展示仍可降级');
+    assert.throws(() => goals.addGoal({ name: '新目标', date: '2026-12-06', countToday: false }), /读取.*重试/);
+    assert.throws(() => goals.updateGoal('keep', { name: '改名', date: '2026-12-06', countToday: false }), /读取.*重试/);
+    assert.throws(() => goals.removeGoal('keep'), /读取.*重试/);
+    assert.equal(stub.store.get('goal-days/v1'), before);
+    stub.wx.getStorageSync = read;
+    goals.addGoal({ name: '新目标', date: '2026-12-06', countToday: false });
+    assert.deepEqual(goals.loadGoals().map((entry) => entry.name), ['保留目标', '新目标']);
+  } finally { clearStorage(); }
+});

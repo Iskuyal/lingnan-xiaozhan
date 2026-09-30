@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-09-30T02:45:59.146Z",
+  "baseCommit": "8691d03cef0ff94600e470c026269cea49fd97cd",
+  "nodeVersion": "v24.16.0",
+  "sourceSha256": {
+    "miniprogram/services/advancement/index.ts": "cbefeab0c912e98d8d2091dc028d343d36a490bb8a0c4b98fe9525423c881ef7",
+    "miniprogram/pages/advancement/index.ts": "08f2ff8b3b123428f0ca37effaf25d217ae24d65aa0d749eb8c341235326f228",
+    "miniprogram/services/fitness/index.ts": "5d42ff7b03ace2b87280588f56972575afb5fb13e6f1540c29c7fd297d57534c",
+    "miniprogram/services/goals/index.ts": "b8177a4fd0ef84031db0a817773d78d6a9b1aa114925412f1ff646b427eac1d1",
+    "miniprogram/pages/goals/edit/index.ts": "d0d173da64abb2b383da15d293031c3372ff631d955fa549d3acd26048dafaf5",
+    "cloudfunctions/lost-found/claims.ts": "dad11815f4df5c56d81d5a41861326d4f969d75b103652773407980677a20084",
+    "cloudfunctions/lost-found/index.ts": "75efd7fb9228e424ca63e08d25de1140638df83dae1533c63e987d88935ea1e2",
+    "cloudfunctions/lost-found/matches.ts": "7f4e6213d0ab8a1586662f6c5964ef97bc8af5f09d80d4044a67401b23c8a672"
+  },
+  "tests": {
+    "total": 619,
+    "passed": 619,
+    "failed": 0
+  },
+  "reviews": {
+    "standards": "passed",
+    "spec": "passed"
+  },
+  "boundaries": [
+    "真实云端 lost-found 未部署验收",
+    "新功能真机未测",
+    "没有模型调用"
+  ]
+}
