@@ -1,0 +1,2495 @@
+{
+  "generatedAt": "2026-09-30T05:11:43.033Z",
+  "note": "同一题可能有多轮（首评 / 修复后复测）；latest 是最后一轮，history 保留全部轮次。逐题判定见 README.md。",
+  "runs": [
+    {
+      "file": "advancement-model-2026-09-30T04-37-53-060Z.jsonl",
+      "questions": 13,
+      "tag": "新题首评（未参与调参的第一次真实模型评测）"
+    },
+    {
+      "file": "advancement-model-2026-09-30T04-43-05-408Z.jsonl",
+      "questions": 7,
+      "tag": "修复后复测（语料补全主语/小标题 + 数字等值口径）"
+    },
+    {
+      "file": "advancement-model-2026-09-30T04-46-46-950Z.jsonl",
+      "questions": 9,
+      "tag": "校验口径修复后复测（材料标题与文号纳入可核对范围）"
+    },
+    {
+      "file": "advancement-model-2026-09-30T04-47-52-386Z.jsonl",
+      "questions": 20,
+      "tag": "历史 20 题回归（原题集）"
+    }
+  ],
+  "latest": {
+    "new:n01": [
+      {
+        "key": "new:n01",
+        "set": "new",
+        "id": "n01",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本网上缴费截止到什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上缴费截止时间为1月23日17:00（文号粤招办普〔2025〕51号）",
+        "expectedPassages": [
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "mustContain": [
+          "1月23日17:00"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "localAnswer": "网上缴费截止时间为1月23日17:00\n网上预报名时间为2026年1月12日09:00至19日18:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:unsupported_number"
+        ],
+        "sourceIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5872,
+        "usage": {
+          "promptTokens": 451,
+          "completionTokens": 22,
+          "totalTokens": 473,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000118,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n01",
+        "set": "new",
+        "id": "n01",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本网上缴费截止到什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上缴费截止时间为1月23日17:00（文号粤招办普〔2025〕51号）",
+        "expectedPassages": [
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "mustContain": [
+          "1月23日17:00"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "localAnswer": "网上缴费截止时间为1月23日17:00\n网上预报名时间为2026年1月12日09:00至19日18:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:unsupported_number(2026)"
+        ],
+        "sourceIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5126,
+        "usage": {
+          "promptTokens": 451,
+          "completionTokens": 22,
+          "totalTokens": 473,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000118,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      },
+      {
+        "key": "new:n01",
+        "set": "new",
+        "id": "n01",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本网上缴费截止到什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上缴费截止时间为1月23日17:00（文号粤招办普〔2025〕51号）",
+        "expectedPassages": [
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "mustContain": [
+          "1月23日17:00"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "localAnswer": "网上缴费截止时间为1月23日17:00\n网上预报名时间为2026年1月12日09:00至19日18:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年广东普通专升本网上缴费截止时间为1月23日17:00 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#fee-deadline",
+          "gd-zsb-2026#register-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4308,
+        "usage": {
+          "promptTokens": 451,
+          "completionTokens": 22,
+          "totalTokens": 473,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000118,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n02": [
+      {
+        "key": "new:n02",
+        "set": "new",
+        "id": "n02",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本，还在停考期内的人员可以报考吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "不可以：被给予暂停参加普通专升本招生考试处理且在停考期内的人员属于不能报考的情形之一",
+        "expectedPassages": [
+          "gd-zsb-2026#not-eligible"
+        ],
+        "mustContain": [
+          "停考期内"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#not-eligible",
+          "gd-zsb-2026#exam-time"
+        ],
+        "localAnswer": "具有普通高等学历教育资格的高校非应届毕业在校生（含保留学籍的学生）；因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员；因触犯刑律受到刑事处罚、尚在处罚期内的；不符合报考条件的其他人员\n2026年3月28日（星期六）至29日（星期日）两天",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "相关规定将「因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员」列入[S1]所列人员范围 [S1]。上述段落未直接写明停考期内人员是否可以报考 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#not-eligible",
+          "gd-zsb-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4964,
+        "usage": {
+          "promptTokens": 503,
+          "completionTokens": 273,
+          "totalTokens": 776,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000194,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n02",
+        "set": "new",
+        "id": "n02",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本，还在停考期内的人员可以报考吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "不可以：被给予暂停参加普通专升本招生考试处理且在停考期内的人员属于不能报考的情形之一",
+        "expectedPassages": [
+          "gd-zsb-2026#not-eligible"
+        ],
+        "mustContain": [
+          "停考期内"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#not-eligible",
+          "gd-zsb-2026#exam-time"
+        ],
+        "localAnswer": "下列人员不得报考：具有普通高等学历教育资格的高校非应届毕业在校生（含保留学籍的学生）；因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员；因触犯刑律受到刑事处罚、尚在处罚期内的；不符合报考条件的其他人员\n2026年3月28日（星期六）至29日（星期日）两天",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "不可以，因违反国家教育考试规定被给予暂停参加普通专升本招生考试处理且在停考期内的人员不得报考 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#not-eligible",
+          "gd-zsb-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4767,
+        "usage": {
+          "promptTokens": 508,
+          "completionTokens": 52,
+          "totalTokens": 560,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.00014,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      }
+    ],
+    "new:n03": [
+      {
+        "key": "new:n03",
+        "set": "new",
+        "id": "n03",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本，退役大学生士兵要不要参加文化课考试？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "退役大学生士兵可申请参加免文化课考试的专升本招生，具体办法另见粤招办普〔2025〕50号",
+        "expectedPassages": [
+          "gd-zsb-2026#vet-soldier"
+        ],
+        "mustContain": [
+          "免文化课考试"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#vet-soldier",
+          "gd-zsb-2026#exam-time"
+        ],
+        "localAnswer": "退役大学生士兵可申请参加相关高校的退役大学生士兵免文化课考试专升本招生，具体办法见《关于做好广东省2026年普通高等学校专升本免文化课考试招收退役大学生士兵工作的通知》（粤招办普〔2025〕50号）。\n2026年3月28日（星期六）至29日（星期日）两天",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "退役大学生士兵可申请参加相关高校的退役大学生士兵免文化课考试专升本招生 [S1]。具体办法见粤招办普〔2025〕50号通知 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#vet-soldier",
+          "gd-zsb-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5818,
+        "usage": {
+          "promptTokens": 493,
+          "completionTokens": 145,
+          "totalTokens": 638,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000159,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n03",
+        "set": "new",
+        "id": "n03",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本，退役大学生士兵要不要参加文化课考试？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "退役大学生士兵可申请参加免文化课考试的专升本招生，具体办法另见粤招办普〔2025〕50号",
+        "expectedPassages": [
+          "gd-zsb-2026#vet-soldier"
+        ],
+        "mustContain": [
+          "免文化课考试"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#vet-soldier",
+          "gd-zsb-2026#exam-time"
+        ],
+        "localAnswer": "退役大学生士兵可申请参加相关高校的退役大学生士兵免文化课考试专升本招生，具体办法见《关于做好广东省2026年普通高等学校专升本免文化课考试招收退役大学生士兵工作的通知》（粤招办普〔2025〕50号）。\n2026年3月28日（星期六）至29日（星期日）两天",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "退役大学生士兵可申请免文化课考试专升本招生 [S1]。具体办法见《关于做好广东省2026年普通高等学校专升本免文化课考试招收退役大学生士兵工作的通知》（粤招办普〔2025〕50号）[S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#vet-soldier",
+          "gd-zsb-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 6612,
+        "usage": {
+          "promptTokens": 493,
+          "completionTokens": 135,
+          "totalTokens": 628,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000157,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      }
+    ],
+    "new:n04": [
+      {
+        "key": "new:n04",
+        "set": "new",
+        "id": "n04",
+        "type": "fact_转段",
+        "question": "三二分段转段每科报考费是多少？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "报考费按普通高等学校普通专升本报名考试收费标准执行，每科40元",
+        "expectedPassages": [
+          "gd-segmented-2026#fee"
+        ],
+        "mustContain": [
+          "每科40元"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#fee",
+          "gd-segmented-2026#target"
+        ],
+        "localAnswer": "报考费：按照普通高等学校普通专升本报名考试收费标准执行，每科40元\n1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "每科报考费为40元 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#fee",
+          "gd-segmented-2026#target"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": false,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4017,
+        "usage": {
+          "promptTokens": 469,
+          "completionTokens": 12,
+          "totalTokens": 481,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.00012,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n04",
+        "set": "new",
+        "id": "n04",
+        "type": "fact_转段",
+        "question": "三二分段转段每科报考费是多少？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "报考费按普通高等学校普通专升本报名考试收费标准执行，每科40元",
+        "expectedPassages": [
+          "gd-segmented-2026#fee"
+        ],
+        "mustContain": [
+          "每科40元"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#fee",
+          "gd-segmented-2026#target"
+        ],
+        "localAnswer": "报考费：按照普通高等学校普通专升本报名考试收费标准执行，每科40元\n1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "每科报考费为40元 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#fee",
+          "gd-segmented-2026#target"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": false,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5940,
+        "usage": {
+          "promptTokens": 469,
+          "completionTokens": 108,
+          "totalTokens": 577,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000144,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      }
+    ],
+    "new:n05": [
+      {
+        "key": "new:n05",
+        "set": "new",
+        "id": "n05",
+        "type": "fact_转段",
+        "question": "转段招生怎么报名，要不要审核？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上预报名、网上审核和网上缴费；提交预报名资料后48小时内由对口试点本科高校完成审核，审核通过才能缴费",
+        "expectedPassages": [
+          "gd-segmented-2026#register"
+        ],
+        "mustContain": [
+          "48小时"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#exam-time"
+        ],
+        "localAnswer": "2026年转段招生考试实行网上预报名、网上审核和网上缴费。网上预报名时间为2026年1月12日09:00至19日18:00；考生提交预报名资料的48小时内，对口试点本科高校完成资料审核，考生可登录系统查看报名资格审核结果，审核结果为“通过”的考生可以缴费；网上缴费截止时间为1月23日17:00。\n普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "实行网上预报名、网上审核和网上缴费，要审核 [S1]。  \n预报名时间为2026年1月12日09:00至19日18:00 [S1]；考生提交预报名资料后48小时内，由对口试点本科高校完成资料审核，审核结果为“通过”的考生可以缴费 [S1]；网上缴费截止时间为1月23日17:00 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5542,
+        "usage": {
+          "promptTokens": 537,
+          "completionTokens": 407,
+          "totalTokens": 944,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000236,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n05",
+        "set": "new",
+        "id": "n05",
+        "type": "fact_转段",
+        "question": "转段招生怎么报名，要不要审核？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上预报名、网上审核和网上缴费；提交预报名资料后48小时内由对口试点本科高校完成审核，审核通过才能缴费",
+        "expectedPassages": [
+          "gd-segmented-2026#register"
+        ],
+        "mustContain": [
+          "48小时"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#exam-time"
+        ],
+        "localAnswer": "2026年转段招生考试实行网上预报名、网上审核和网上缴费。网上预报名时间为2026年1月12日09:00至19日18:00；考生提交预报名资料的48小时内，对口试点本科高校完成资料审核，考生可登录系统查看报名资格审核结果，审核结果为“通过”的考生可以缴费；网上缴费截止时间为1月23日17:00。\n普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "转段招生实行网上预报名、网上审核和网上缴费 [S1]。网上预报名时间为2026年1月12日09:00至19日18:00 [S1]。考生提交预报名资料后48小时内，对口试点本科高校完成资料审核 [S1]；审核结果为“通过”的考生可以缴费，网上缴费截止时间为1月23日17:00 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#register",
+          "gd-segmented-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5323,
+        "usage": {
+          "promptTokens": 537,
+          "completionTokens": 494,
+          "totalTokens": 1031,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000258,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      }
+    ],
+    "new:n06": [
+      {
+        "key": "new:n06",
+        "set": "new",
+        "id": "n06",
+        "type": "fact_就业",
+        "question": "2026年广东给高校毕业生提供多少公务员岗位？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "全省提供公务员岗位不少于1.5万个（2026年广东省高校毕业生就业创业十大行动方案）",
+        "expectedPassages": [
+          "gd-employment-2026#civil-servant"
+        ],
+        "mustContain": [
+          "1.5万个"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-2026#soe"
+        ],
+        "localAnswer": "全省提供公务员岗位不少于1.5万个\n力争招用高校毕业生不少于1.7万人",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:unsupported_number"
+        ],
+        "sourceIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-2026#soe"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5242,
+        "usage": {
+          "promptTokens": 465,
+          "completionTokens": 133,
+          "totalTokens": 598,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.00015,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n06",
+        "set": "new",
+        "id": "n06",
+        "type": "fact_就业",
+        "question": "2026年广东给高校毕业生提供多少公务员岗位？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "全省提供公务员岗位不少于1.5万个（2026年广东省高校毕业生就业创业十大行动方案）",
+        "expectedPassages": [
+          "gd-employment-2026#civil-servant"
+        ],
+        "mustContain": [
+          "1.5万个"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "全省提供公务员岗位不少于1.5万个\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:unsupported_number(2026)"
+        ],
+        "sourceIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-portal#entry"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4153,
+        "usage": {
+          "promptTokens": 447,
+          "completionTokens": 39,
+          "totalTokens": 486,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000122,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      },
+      {
+        "key": "new:n06",
+        "set": "new",
+        "id": "n06",
+        "type": "fact_就业",
+        "question": "2026年广东给高校毕业生提供多少公务员岗位？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "全省提供公务员岗位不少于1.5万个（2026年广东省高校毕业生就业创业十大行动方案）",
+        "expectedPassages": [
+          "gd-employment-2026#civil-servant"
+        ],
+        "mustContain": [
+          "1.5万个"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "全省提供公务员岗位不少于1.5万个\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年广东全省提供公务员岗位不少于1.5万个 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-portal#entry"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5550,
+        "usage": {
+          "promptTokens": 447,
+          "completionTokens": 18,
+          "totalTokens": 465,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000116,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n07": [
+      {
+        "key": "new:n07",
+        "set": "new",
+        "id": "n07",
+        "type": "fact_就业",
+        "question": "2026年广东的国有企业要招用多少高校毕业生？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "力争招用高校毕业生不少于1.7万人",
+        "expectedPassages": [
+          "gd-employment-2026#soe"
+        ],
+        "mustContain": [
+          "1.7万人"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "力争招用高校毕业生不少于1.7万人\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_refused",
+        "modelText": "无法核实",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "independentVerify": {
+          "refused": true,
+          "violations": []
+        },
+        "mustContainInModel": false,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4423,
+        "usage": {
+          "promptTokens": 448,
+          "completionTokens": 247,
+          "totalTokens": 695,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000174,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-34e8bcf7a71c",
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n07",
+        "set": "new",
+        "id": "n07",
+        "type": "fact_就业",
+        "question": "2026年广东的国有企业要招用多少高校毕业生？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "力争招用高校毕业生不少于1.7万人",
+        "expectedPassages": [
+          "gd-employment-2026#soe"
+        ],
+        "mustContain": [
+          "1.7万人"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "quota_exhausted",
+        "message": "本分钟 AI 调用次数已达上限，请稍后再试。",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 73,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-43-05-408Z.jsonl"
+      },
+      {
+        "key": "new:n07",
+        "set": "new",
+        "id": "n07",
+        "type": "fact_就业",
+        "question": "2026年广东的国有企业要招用多少高校毕业生？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "力争招用高校毕业生不少于1.7万人",
+        "expectedPassages": [
+          "gd-employment-2026#soe"
+        ],
+        "mustContain": [
+          "1.7万人"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年广东省力争国有企业招用高校毕业生不少于1.7万人[S1]，原则上8月底前全部完成招聘[S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-employment-2026#soe",
+          "gd-employment-portal#entry"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 6473,
+        "usage": {
+          "promptTokens": 490,
+          "completionTokens": 180,
+          "totalTokens": 670,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000168,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n08": [
+      {
+        "key": "new:n08",
+        "set": "new",
+        "id": "n08",
+        "type": "unknown_year_年份不明",
+        "question": "普通专升本的加分政策是什么？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先确认年份与地区（语料只收录 2026 年广东省），确认前不给日期或条件答案",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n08",
+        "set": "new",
+        "id": "n08",
+        "type": "unknown_year_年份不明",
+        "question": "普通专升本的加分政策是什么？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先确认年份与地区（语料只收录 2026 年广东省），确认前不给日期或条件答案",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n09": [
+      {
+        "key": "new:n09",
+        "set": "new",
+        "id": "n09",
+        "type": "unknown_year_地区不明",
+        "question": "2026年普通专升本什么时候网上报名？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先确认地区：语料只收录广东省资料，未确认前不套用广东的日期作答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n09",
+        "set": "new",
+        "id": "n09",
+        "type": "unknown_year_地区不明",
+        "question": "2026年普通专升本什么时候网上报名？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先确认地区：语料只收录广东省资料，未确认前不套用广东的日期作答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n10": [
+      {
+        "key": "new:n10",
+        "set": "new",
+        "id": "n10",
+        "type": "cross_跨类型",
+        "question": "中职的三二分段和高职的三二分段是一回事吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：中高职贯通三二分段（中职升高职）不在收录范围，不能用高职升本科的转段资料回答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：中高职贯通三二分段（中职升高职）不在收录范围，不能用高职升本科的转段资料回答。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n10",
+        "set": "new",
+        "id": "n10",
+        "type": "cross_跨类型",
+        "question": "中职的三二分段和高职的三二分段是一回事吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：中高职贯通三二分段（中职升高职）不在收录范围，不能用高职升本科的转段资料回答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：中高职贯通三二分段（中职升高职）不在收录范围，不能用高职升本科的转段资料回答。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n11": [
+      {
+        "key": "new:n11",
+        "set": "new",
+        "id": "n11",
+        "type": "stale_过期年份",
+        "question": "2027年三二分段转段什么时候报名？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料只收录 2026 年文件，不把 2026 年的时间当 2027 年答案",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2027 年还没有收录。我不会把 2026 年的日期当成 2027 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n11",
+        "set": "new",
+        "id": "n11",
+        "type": "stale_过期年份",
+        "question": "2027年三二分段转段什么时候报名？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料只收录 2026 年文件，不把 2026 年的时间当 2027 年答案",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2027 年还没有收录。我不会把 2026 年的日期当成 2027 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n12": [
+      {
+        "key": "new:n12",
+        "set": "new",
+        "id": "n12",
+        "type": "stale_过期年份",
+        "question": "2025年普通专升本报名时间是什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料只收录 2026 年文件，2025 年未收录，不沿用旧年份",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2025 年还没有收录。我不会把 2026 年的日期当成 2025 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n12",
+        "set": "new",
+        "id": "n12",
+        "type": "stale_过期年份",
+        "question": "2025年普通专升本报名时间是什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料只收录 2026 年文件，2025 年未收录，不沿用旧年份",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2025 年还没有收录。我不会把 2026 年的日期当成 2025 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "new:n13": [
+      {
+        "key": "new:n13",
+        "set": "new",
+        "id": "n13",
+        "type": "no_source_无来源",
+        "question": "2026年广东普通专升本录取名单什么时候公布？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料不含录取名单这类数据，给官方入口自行查询",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：我的语料里没有录取名单这类数据，也不提供实时信息。请从官方入口查看。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-37-53-060Z.jsonl"
+      },
+      {
+        "key": "new:n13",
+        "set": "new",
+        "id": "n13",
+        "type": "no_source_无来源",
+        "question": "2026年广东普通专升本录取名单什么时候公布？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：语料不含录取名单这类数据，给官方入口自行查询",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：我的语料里没有录取名单这类数据，也不提供实时信息。请从官方入口查看。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-46-46-950Z.jsonl"
+      }
+    ],
+    "legacy:q01": [
+      {
+        "key": "legacy:q01",
+        "set": "legacy",
+        "id": "q01",
+        "type": "fact_专升本",
+        "question": "2026年广东普通专升本什么时候网上预报名？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+        "expectedPassages": [
+          "gd-zsb-2026#register-time"
+        ],
+        "mustContain": [
+          "2026年1月12日",
+          "19日18:00"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#register-time",
+          "gd-zsb-2026#exam-time"
+        ],
+        "localAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00\n2026年3月28日（星期六）至29日（星期日）两天",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年广东普通专升本网上预报名时间为2026年1月12日09:00至19日18:00 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#register-time",
+          "gd-zsb-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 3614,
+        "usage": {
+          "promptTokens": 456,
+          "completionTokens": 31,
+          "totalTokens": 487,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000122,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q02": [
+      {
+        "key": "legacy:q02",
+        "set": "legacy",
+        "id": "q02",
+        "type": "fact_专升本",
+        "question": "普通专升本考试时间是哪两天？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "2026年3月28日（星期六）至29日（星期日）两天",
+        "expectedPassages": [
+          "gd-zsb-2026#exam-time"
+        ],
+        "mustContain": [
+          "3月28日",
+          "29日"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "localAnswer": "2026年3月28日（星期六）至29日（星期日）两天\n网上缴费截止时间为1月23日17:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年3月28日（星期六）至29日（星期日）两天 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5167,
+        "usage": {
+          "promptTokens": 443,
+          "completionTokens": 48,
+          "totalTokens": 491,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000123,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q03": [
+      {
+        "key": "legacy:q03",
+        "set": "legacy",
+        "id": "q03",
+        "type": "fact_专升本",
+        "question": "普通批可以填几个院校专业组志愿？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿",
+        "expectedPassages": [
+          "gd-zsb-2026#volunteer"
+        ],
+        "mustContain": [
+          "普通批设置10个院校专业组志愿"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#volunteer",
+          "gd-zsb-2026#admission"
+        ],
+        "localAnswer": "2026年普通专升本实行考后知分填报志愿；提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿\n按考生类别……专业基础课分别划定三科总分……和专业综合课两条最低控制分数线；依照“分数优先，遵循志愿”的原则",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "普通批设置10个院校专业组志愿 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#volunteer",
+          "gd-zsb-2026#admission"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 6012,
+        "usage": {
+          "promptTokens": 498,
+          "completionTokens": 33,
+          "totalTokens": 531,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000133,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q04": [
+      {
+        "key": "legacy:q04",
+        "set": "legacy",
+        "id": "q04",
+        "type": "fact_专升本",
+        "question": "报考职教师资专业需要什么证书？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书",
+        "expectedPassages": [
+          "gd-zsb-2026#vocational-teacher"
+        ],
+        "mustContain": [
+          "中级及以上职业资格技能等级证书"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#vocational-teacher",
+          "gd-zsb-2026#volunteer"
+        ],
+        "localAnswer": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等。\n2026年普通专升本实行考后知分填报志愿；提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "报考职教师资专业的，必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#vocational-teacher",
+          "gd-zsb-2026#volunteer"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5217,
+        "usage": {
+          "promptTokens": 498,
+          "completionTokens": 148,
+          "totalTokens": 646,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000162,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q05": [
+      {
+        "key": "legacy:q05",
+        "set": "legacy",
+        "id": "q05",
+        "type": "fact_专升本",
+        "question": "普通专升本的加分政策有哪些分值？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "增加15分投档、增加10分投档、增加5分投档",
+        "expectedPassages": [
+          "gd-zsb-2026#bonus"
+        ],
+        "mustContain": [
+          "15分",
+          "10分",
+          "5分"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#bonus",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "localAnswer": "增加15分投档；增加10分投档；增加5分投档\n网上缴费截止时间为1月23日17:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "加分投档分值有：增加15分投档 [S1]；增加10分投档 [S1]；增加5分投档 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#bonus",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5445,
+        "usage": {
+          "promptTokens": 445,
+          "completionTokens": 89,
+          "totalTokens": 534,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000134,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q06": [
+      {
+        "key": "legacy:q06",
+        "set": "legacy",
+        "id": "q06",
+        "type": "fact_专升本",
+        "question": "专升本体检要怎么做、体检表有效期是多久？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "自行前往二级甲等（含）以上医院或相应的医疗单位体检，体检表有效期：2026年1月1日至填报志愿第一天",
+        "expectedPassages": [
+          "gd-zsb-2026#physical-exam"
+        ],
+        "mustContain": [
+          "二级甲等",
+          "2026年1月1日至填报志愿第一天"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-zsb-2026#physical-exam",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "localAnswer": "考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。\n网上缴费截止时间为1月23日17:00",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "考生须自行前往二级甲等（含）以上医院或相应的医疗单位体检 [S1]；填报志愿开始前将体检结果上传至报名系统 [S1]；体检表有效期为2026年1月1日至填报志愿第一天 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-zsb-2026#physical-exam",
+          "gd-zsb-2026#fee-deadline"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5209,
+        "usage": {
+          "promptTokens": 494,
+          "completionTokens": 147,
+          "totalTokens": 641,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.00016,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q07": [
+      {
+        "key": "legacy:q07",
+        "set": "legacy",
+        "id": "q07",
+        "type": "fact_转段",
+        "question": "三二分段专升本转段招生的对象是谁？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "2023年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，且基本素质考核须为“合格”",
+        "expectedPassages": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#quality-check"
+        ],
+        "mustContain": [
+          "2023年试点高职院校招收"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#exam-time"
+        ],
+        "localAnswer": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。\n普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "招收对象为 2023 年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": false,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": false,
+        "elapsedMs": 5324,
+        "usage": {
+          "promptTokens": 478,
+          "completionTokens": 69,
+          "totalTokens": 547,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000137,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q08": [
+      {
+        "key": "legacy:q08",
+        "set": "legacy",
+        "id": "q08",
+        "type": "fact_转段",
+        "question": "转段考核包括哪几个部分？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分",
+        "expectedPassages": [
+          "gd-segmented-2026#parts"
+        ],
+        "mustContain": [
+          "三个部分"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#parts",
+          "gd-segmented-2026#exam-time"
+        ],
+        "localAnswer": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。\n普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价” [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#parts",
+          "gd-segmented-2026#exam-time"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4388,
+        "usage": {
+          "promptTokens": 480,
+          "completionTokens": 36,
+          "totalTokens": 516,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000129,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q09": [
+      {
+        "key": "legacy:q09",
+        "set": "legacy",
+        "id": "q09",
+        "type": "fact_转段",
+        "question": "技能大赛获奖可以免考吗？免哪个部分？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "获得国家级三等奖及以上或省级一等奖的，可免予专业能力考核，并将专业能力考核等级定为优秀",
+        "expectedPassages": [
+          "gd-segmented-2026#exemption"
+        ],
+        "mustContain": [
+          "免予专业能力"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#exemption",
+          "gd-segmented-2026#parts"
+        ],
+        "localAnswer": "学生在高职学段参加教育部或省教育厅主办的世界、全国或全省职业院校技能大赛，获得国家级三等奖及以上或省级一等奖的，可免予专业能力……考核，并将专业能力考核等级定为优秀。\n转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:uncited_claim"
+        ],
+        "sourceIds": [
+          "gd-segmented-2026#exemption",
+          "gd-segmented-2026#parts"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5002,
+        "usage": {
+          "promptTokens": 502,
+          "completionTokens": 226,
+          "totalTokens": 728,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000182,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q10": [
+      {
+        "key": "legacy:q10",
+        "set": "legacy",
+        "id": "q10",
+        "type": "fact_转段",
+        "question": "转段进本科以后毕业证怎么标注？就业和普通本科生一样吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同",
+        "expectedPassages": [
+          "gd-segmented-2026#graduation"
+        ],
+        "mustContain": [
+          "专科起点本科学习"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-segmented-2026#graduation",
+          "gd-segmented-2026#fee"
+        ],
+        "localAnswer": "转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同\n报考费：按照普通高等学校普通专升本报名考试收费标准执行，每科40元",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "毕业证书标注“专科起点本科学习”[S1]；毕业后就业办法与普通高校本科毕业生相同[S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-segmented-2026#graduation",
+          "gd-segmented-2026#fee"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4290,
+        "usage": {
+          "promptTokens": 474,
+          "completionTokens": 26,
+          "totalTokens": 500,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000125,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q11": [
+      {
+        "key": "legacy:q11",
+        "set": "legacy",
+        "id": "q11",
+        "type": "fact_就业",
+        "question": "广东今年给毕业生提供了多少事业单位岗位？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "全年全省提供事业单位岗位不少于5万个",
+        "expectedPassages": [
+          "gd-employment-2026#public-institution"
+        ],
+        "mustContain": [
+          "不少于5万个"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#public-institution",
+          "gd-employment-portal#entry"
+        ],
+        "localAnswer": "全年全省提供事业单位岗位不少于5万个\n广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "2026年广东全年全省提供事业单位岗位不少于5万个 [S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-employment-2026#public-institution",
+          "gd-employment-portal#entry"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 5352,
+        "usage": {
+          "promptTokens": 444,
+          "completionTokens": 105,
+          "totalTokens": 549,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000137,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q12": [
+      {
+        "key": "legacy:q12",
+        "set": "legacy",
+        "id": "q12",
+        "type": "fact_就业",
+        "question": "科研助理岗位有多少个？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "全省开发1万个以上科研助理岗位",
+        "expectedPassages": [
+          "gd-employment-2026#research-assistant"
+        ],
+        "mustContain": [
+          "1万个以上"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-2026#research-assistant",
+          "gd-employment-2026#civil-servant"
+        ],
+        "localAnswer": "全省开发1万个以上科研助理岗位\n全省提供公务员岗位不少于1.5万个",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "fallback_sources",
+        "modelText": "",
+        "modelOk": false,
+        "failureClass": "citation_unverified",
+        "message": "这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。",
+        "violations": [
+          "s1:uncited_claim"
+        ],
+        "sourceIds": [
+          "gd-employment-2026#research-assistant",
+          "gd-employment-2026#civil-servant"
+        ],
+        "independentVerify": null,
+        "mustContainInModel": false,
+        "mustContainInSources": true,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4718,
+        "usage": {
+          "promptTokens": 459,
+          "completionTokens": 46,
+          "totalTokens": 505,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000126,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q13": [
+      {
+        "key": "legacy:q13",
+        "set": "legacy",
+        "id": "q13",
+        "type": "fact_就业",
+        "question": "在哪里可以看招聘活动和就业服务入口？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "answer",
+        "expectedAnswer": "广东学生就业创业网、用人单位登录入口、国聘行动、“就在南粤”供需对接活动、就业创业“政策地图”等入口",
+        "expectedPassages": [
+          "gd-employment-portal#entry"
+        ],
+        "mustContain": [
+          "广东学生就业创业网"
+        ],
+        "localBehavior": "answer",
+        "localPassageIds": [
+          "gd-employment-portal#entry",
+          "gd-employment-2026#soe"
+        ],
+        "localAnswer": "广东学生就业创业网；用人单位登录入口；国聘行动；“就在南粤”广东省普通高校毕业生供需对接活动；高校毕业生就业创业“政策地图”\n发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "guardCorrect": null,
+        "delivery": "model_answer",
+        "modelText": "可在广东学生就业创业网（广东省教育厅专题页）查看，页面列有用人单位登录入口、国聘行动、“就在南粤”广东省普通高校毕业生供需对接活动、高校毕业生就业创业“政策地图”[S1]。",
+        "modelOk": true,
+        "failureClass": "",
+        "message": "",
+        "violations": [],
+        "sourceIds": [
+          "gd-employment-portal#entry",
+          "gd-employment-2026#soe"
+        ],
+        "independentVerify": {
+          "refused": false,
+          "violations": []
+        },
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true,
+        "elapsedMs": 4737,
+        "usage": {
+          "promptTokens": 486,
+          "completionTokens": 244,
+          "totalTokens": 730,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000183,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "safetyChecked": true,
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q14": [
+      {
+        "key": "legacy:q14",
+        "set": "legacy",
+        "id": "q14",
+        "type": "cross_跨类型",
+        "question": "专升本和三二分段转段有什么区别？我应该报哪个？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先澄清：三二分段转段只面向 2023 年试点高职院校招收的三二分段专升本应用型人才培养全日制学生，其他专科毕业生走普通专升本；两类不能混答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "先确认一下你问的是哪一类，两类的报名与考试安排不同。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q15": [
+      {
+        "key": "legacy:q15",
+        "set": "legacy",
+        "id": "q15",
+        "type": "cross_跨类型",
+        "question": "三二分段报名是1月12日开始，对吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "先澄清是哪一种“三二分段”：中高职贯通三二分段（中职升高职，本语料不覆盖）与三二分段专升本转段（高职升本科，2026 年预报名同为 1 月 12 日 09:00 起）；不能混答",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "先确认一下你问的是哪一类，两类的报名与考试安排不同。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q16": [
+      {
+        "key": "legacy:q16",
+        "set": "legacy",
+        "id": "q16",
+        "type": "unknown_year_年份不明",
+        "question": "报名时间是什么时候？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "clarify",
+        "expectedAnswer": "缺少年份与考试类型，先澄清是哪一类考试（普通专升本 / 三二分段转段）；不拿旧年份代替",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "clarify",
+        "localPassageIds": [],
+        "localAnswer": "先确认一下你问的是哪一类考试：普通专升本、三二分段专升本转段，还是实习/就业？",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q17": [
+      {
+        "key": "legacy:q17",
+        "set": "legacy",
+        "id": "q17",
+        "type": "unknown_year_年份不明",
+        "question": "2027年的专升本政策出来了吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "语料只覆盖 2026 年招生规定，2027 年规定尚未收录，应说明无 2027 年官方文件、给出查看渠道，不能沿用 2026 年日期当作 2027 年",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2027 年还没有收录。我不会把 2026 年的日期当成 2027 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q18": [
+      {
+        "key": "legacy:q18",
+        "set": "legacy",
+        "id": "q18",
+        "type": "no_source_无来源",
+        "question": "广东岭南职业技术学院今年专升本的录取分数线是多少？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：录取最低控制分数线由省级划定、各校各专业投档线按当年录取产生，语料里没有分数线数据，不猜测",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：我的语料里没有录取分数线这类数据，也不提供实时信息。请从官方入口查看。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q19": [
+      {
+        "key": "legacy:q19",
+        "set": "legacy",
+        "id": "q19",
+        "type": "no_source_无来源",
+        "question": "学校附近哪家公司现在招实习生？薪资多少？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "无法核实：不提供实时岗位与薪资信息，只给官方招聘入口（广东学生就业创业网等），并说明岗位信息以招聘平台为准",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：我的语料里没有薪资这类数据，也不提供实时信息。请从官方入口查看。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ],
+    "legacy:q20": [
+      {
+        "key": "legacy:q20",
+        "set": "legacy",
+        "id": "q20",
+        "type": "stale_过期年份",
+        "question": "2025年普通专升本的报名时间也是1月12日吗？我按去年的准备可以吗？",
+        "questionSource": "maintainer_design",
+        "expectedBehavior": "refuse",
+        "expectedAnswer": "不能沿用：语料只覆盖 2026 年规定，2025 年报名时间未收录；应说明适用年份、按 2026 年规定给出日期并提醒以当年官方公告为准",
+        "expectedPassages": [],
+        "mustContain": [],
+        "localBehavior": "refuse",
+        "localPassageIds": [],
+        "localAnswer": "无法核实：语料只收录 2026 年的官方文件，2025 年还没有收录。我不会把 2026 年的日期当成 2025 年的答案。",
+        "resolvedScope": null,
+        "guardCorrect": true,
+        "delivery": null,
+        "modelText": "",
+        "modelOk": null,
+        "failureClass": null,
+        "message": "",
+        "violations": [],
+        "sourceIds": [],
+        "independentVerify": null,
+        "mustContainInModel": null,
+        "mustContainInSources": null,
+        "expectedPassageInTopN": null,
+        "elapsedMs": null,
+        "usage": null,
+        "safetyChecked": null,
+        "corpusVersion": null,
+        "run": "advancement-model-2026-09-30T04-47-52-386Z.jsonl"
+      }
+    ]
+  },
+  "deployment": {
+    "gitSha": "7d0041b（工作区在评测后新增本次改动，对应提交见 docs/status.md）",
+    "cloudFunction": "ai",
+    "deployedAt": "2026-09-30（三次部署：新增 advancement-qa → 语料补全 → 校验口径修复）",
+    "readback": {
+      "note": "每次部署后用 cli cloud functions download 回读，与本地 dist/cloudfunctions/ai 逐字节一致",
+      "indexJsSha256": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942",
+      "advancementJsSha256": "ad84dca8657efcf7db507cc022cd802a56f64a8db8ca6921ceeef39ab6c75a73",
+      "advancementCorpusSha256": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd",
+      "corpusVersion": "adv-corpus-e6fc53aa80b7",
+      "rollbackBackup": "artifacts/rollback-2026-09-30/ai（旧版 index.js SHA-256 8707f5a3…，即 2026-09-29 部署版）"
+    },
+    "model": "deepseek/deepseek-v4.1-flash（provider=openai 兼容中转，与 09-25 冒烟一致）",
+    "pricesYuanPerMillionToken": {
+      "input": 0.25,
+      "output": 0.25
+    },
+    "monthlyCapYuan": 50
+  }
+}

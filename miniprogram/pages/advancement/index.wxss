@@ -14,10 +14,24 @@
 .qa-answer-label { color:var(--text-3, #746760); font-size:19rpx; }
 .qa-answer-text { margin-top:12rpx; color:var(--text, #2b2422); font-size:27rpx; line-height:1.8; font-weight:600; }
 .qa-answer-note { margin-top:15rpx; color:var(--warn, #9a5b1e); font-size:21rpx; line-height:1.7; }
+/* 模型自己说「无法核实」：与语料不含数据的拒答同一套琥珀样式，别让用户读成官方结论。 */
+.qa-answer-guard { border-left-color:#c68a32; background:var(--warn-soft, rgba(255,244,228,0.86)); }
+.qa-answer-guard .qa-answer-text { color:var(--warn, #9a5b1e); }
+
+/* 等待态：说清「在等什么」与「可以不等」，取消后立刻能看原文。 */
+.qa-pending { margin-top:19rpx; padding:23rpx; border:1rpx dashed rgba(43,36,34,0.25); background:rgba(255,255,255,0.5); }
+.qa-pending-label { color:var(--brand-deep, #8c1614); font-size:26rpx; font-weight:700; }
+.qa-pending-note { margin-top:12rpx; color:var(--text-3, #746760); font-size:21rpx; line-height:1.7; }
+.qa-pending-cancel { margin-top:15rpx; min-height:72rpx; display:flex; align-items:center; color:var(--brand-ink, #7a1a12); font-size:23rpx; font-weight:700; }
+
+/* 降级后的重试入口；降级本身不是错误页，只是这次的解释没上屏。 */
+.qa-actions { margin-top:19rpx; display:flex; }
+.qa-retry { min-height:85rpx; padding:0 27rpx; display:flex; align-items:center; border:1rpx solid rgba(43,36,34,0.2); background:rgba(255,255,255,0.7); color:var(--brand-ink, #7a1a12); font-size:25rpx; font-weight:700; }
 
 .qa-source { margin-top:19rpx; padding:21rpx 23rpx; border:1rpx solid rgba(43,36,34,0.14); background:var(--paper-shade, #faeee9); }
 .qa-source-head { display:flex; align-items:baseline; justify-content:space-between; gap:15rpx; }
 .qa-source-title { color:var(--brand-deep, #8c1614); font-size:24rpx; font-weight:700; }
+.qa-source-badge { margin-right:8rpx; color:var(--gold, #c69a28); font-size:21rpx; }
 .qa-source-meta { color:var(--text-3, #746760); font-size:19rpx; line-height:1.6; }
 .qa-source-quote { margin-top:15rpx; padding-left:19rpx; border-left:4rpx solid var(--gold, #c69a28); color:var(--text-2, #6b5d57); font-size:23rpx; line-height:1.8; }
 .qa-source-foot { margin-top:15rpx; display:flex; align-items:center; justify-content:space-between; gap:15rpx; }

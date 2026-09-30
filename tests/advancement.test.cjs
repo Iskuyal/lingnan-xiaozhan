@@ -22,7 +22,7 @@ test('语料自检：四份文档、段落齐全、每条都有 https 出处与�
   assert.equal(passages.length, 25);
   for (const document of advancement.ADVANCEMENT_DOCUMENTS) {
     assert.match(document.sourceUrl, /^https?:\/\//, `${document.id} 缺少官方链接`);
-    assert.equal(document.collectedAt, '2026-09-29');
+    assert.ok(['2026-09-29', '2026-09-30'].includes(document.collectedAt), `${document.id} 核查日不对：${document.collectedAt}`);
     assert.ok(document.title !== '' && document.issuer !== '');
   }
   for (const passage of passages) {
@@ -155,16 +155,22 @@ test('类别守门：中职简写不混答，明确普通专升本不被免考�
   assert.equal(mismatch.citations.length, 0);
 });
 
-test('不接模型：服务与页面都不调用云函数或 AI', () => {
+test('检索层不碰网络：服务与语料都是本地的（模型调用只经 services/ai，不走页面直连）', () => {
   const service = fs.readFileSync('dist/services/advancement/index.js', 'utf8');
-  const page = fs.readFileSync('dist/pages/advancement/index.js', 'utf8');
-  for (const source of [service, page]) {
+  const corpusModule = fs.readFileSync('dist/services/advancement/corpus.js', 'utf8');
+  for (const source of [service, corpusModule]) {
     assert.ok(!source.includes('callFunction'), '不该调用云函数');
     assert.ok(!source.includes('wx.cloud'), '不该使用云开发');
   }
   // 出处必须是真实链接（点开可核对），不是占位
   const result = advancement.ask('2026年广东普通专升本什么时候网上预报名？');
   assert.equal(result.citations[0].sourceUrl.startsWith('https://eea.gd.gov.cn/'), true);
+  // 引用带段落 id 与本次实际范围：模型版按它们向云函数声明「依据哪几段、什么范围」。
+  assert.equal(result.citations[0].passageId, 'gd-zsb-2026#register-time');
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(result.resolvedScope)),
+    { category: 'ordinary_专升本', year: 2026, region: '广东省' },
+  );
 });
 
 test('问答页：澄清保留原问题，新题清空旧选择，并可复制出处', () => {

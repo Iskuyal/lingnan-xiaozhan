@@ -35,7 +35,8 @@ export type FailureClass =
   | 'content_rejected'
   | 'quota_exhausted'
   | 'invalid_request'
-  | 'internal';
+  | 'internal'
+  | 'citation_unverified';
 
 /** 失败分类清单（运行时可用，供测试与服务端类型比对）。 */
 export const FAILURE_CLASSES: FailureClass[] = [
@@ -44,10 +45,11 @@ export const FAILURE_CLASSES: FailureClass[] = [
   'quota_exhausted',
   'invalid_request',
   'internal',
+  'citation_unverified',
 ];
 
 /**
- * 五类失败的用户兜底文案：前三类必须可区分，后两类只用于服务端没给 `message` 时兜底。
+ * 六类失败的用户兜底文案：前三类必须可区分，后三类只用于服务端没给 `message` 时兜底。
  *
  * 服务端返回的 `message` 非空时优先用它——负责人改云函数环境变量里的文案
  * （`AI_MSG_*`）应当立刻生效，「改措辞不用改代码」（docs/development/cloud/ai.md）。
@@ -58,6 +60,7 @@ export const AI_MESSAGES: Record<FailureClass, string> = {
   quota_exhausted: '本月的 AI 用量已达上限，下个月恢复后再试',
   invalid_request: 'AI 服务无法处理这次请求（例如内容过长或格式不支持），请调整后重试',
   internal: 'AI 服务开小差了，请稍后重试',
+  citation_unverified: '这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录',
 };
 
 /**
@@ -110,6 +113,40 @@ export interface AiCallResult {
    * 本文件的解析断言共同拦住，注意保持两份同步）。
    */
   citations: DepartmentActivityCitation[];
+  /**
+   * 升学问答的引用与出处校验结论（仅 advancement-qa 有值，其余为 null）。
+   *
+   * **必须按校验结论上屏**：`verified !== true` 时服务端不会把模型回答当官方结论返回，
+   * 页面要降级为本地原文摘录（见 `services/advancement/model.ts` 的 modelOutcome）。
+   */
+  advancement: AdvancementCallReport | null;
+}
+
+/** 一条可信段落（服务端从它自己的语料里取出，形状与 cloudfunctions/ai/advancement.ts 一致）。 */
+export interface AdvancementSource {
+  id: string;
+  documentId: string;
+  title: string;
+  documentNumber: string;
+  issuer: string;
+  publishedAt: string;
+  applicableYear: number;
+  applicableRegion: string;
+  collectedAt: string;
+  sourceUrl: string;
+  quote: string;
+}
+
+/** 升学问答的校验结论（服务端 AdvancementResult 的客户端镜像）。 */
+export interface AdvancementCallReport {
+  corpusVersion: string;
+  /** 服务端出处校验是否通过；不是 true 就不当官方结论用。 */
+  verified: boolean;
+  /** 模型自己回复「无法核实」。 */
+  refused: boolean;
+  /** 校验不过的原因（短代码，不含回答正文）。 */
+  violations: string[];
+  sources: AdvancementSource[];
 }
 
 /** 一条部门动态来源（服务端检索注入的引用清单元素，形状与服务端契约一致）。 */
@@ -281,6 +318,59 @@ function citationsOf(value: unknown): DepartmentActivityCitation[] {
   return citations;
 }
 
+/**
+ * 升学问答的返回块：逐条收敛形状，缺字段的条目丢弃（少一条来源比多一条假来源好）。
+ *
+ * 导出供测试直接核对收敛规则（页面只经 `callAi` 拿结果）。
+ */
+export function advancementOf(value: unknown): AdvancementCallReport | null {
+  if (value === null || value === undefined || typeof value !== 'object') return null;
+  const source = value as Record<string, unknown>;
+  const sources: AdvancementSource[] = [];
+  if (Array.isArray(source.sources)) {
+    for (const item of source.sources) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const entry = item as Record<string, unknown>;
+      if (
+        typeof entry.id !== 'string'
+        || typeof entry.documentId !== 'string'
+        || typeof entry.title !== 'string'
+        || typeof entry.documentNumber !== 'string'
+        || typeof entry.issuer !== 'string'
+        || typeof entry.publishedAt !== 'string'
+        || typeof entry.applicableYear !== 'number'
+        || typeof entry.applicableRegion !== 'string'
+        || typeof entry.collectedAt !== 'string'
+        || typeof entry.sourceUrl !== 'string'
+        || typeof entry.quote !== 'string'
+      ) continue;
+      sources.push({
+        id: entry.id,
+        documentId: entry.documentId,
+        title: entry.title,
+        documentNumber: entry.documentNumber,
+        issuer: entry.issuer,
+        publishedAt: entry.publishedAt,
+        applicableYear: entry.applicableYear,
+        applicableRegion: entry.applicableRegion,
+        collectedAt: entry.collectedAt,
+        sourceUrl: entry.sourceUrl,
+        quote: entry.quote,
+      });
+    }
+  }
+  return {
+    corpusVersion: typeof source.corpusVersion === 'string' ? source.corpusVersion : '',
+    // 只有服务端明确回 true 才算校验通过：字段缺失或 false 一律按「没通过」处理。
+    verified: source.verified === true,
+    refused: source.refused === true,
+    violations: Array.isArray(source.violations)
+      ? source.violations.filter((item): item is string => typeof item === 'string')
+      : [],
+    sources,
+  };
+}
+
 /** 调用 ai 云函数；调用本身失败（未部署/超时/权限）时抛错，由 transportMessage 转文案。 */
 export async function callAi(data: Record<string, unknown>): Promise<AiCallResult> {
   requireCloud();
@@ -301,6 +391,7 @@ export async function callAi(data: Record<string, unknown>): Promise<AiCallResul
       ? source.warnings.filter((item): item is string => typeof item === 'string')
       : [],
     citations: citationsOf(source.citations),
+    advancement: advancementOf(source.advancement),
   };
 }
 

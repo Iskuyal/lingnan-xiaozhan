@@ -3,8 +3,9 @@
   <view class="qa-title">升学与实习问答</view>
 
   <view class="qa-note">
-    这一版<text class="qa-strong">没有接模型</text>：回答是把检索到的官方原文段落原样给你，附出处与适用年份；
-    找不到原文、年份对不上、或问岗位与分数线时直接说无法核实。回答不构成录取或报考资格判断。
+    检索到官方原文后由 <text class="qa-strong">AI 依据原文解释</text>，每句含日期、条件或数字的话都要带出处编号；
+    <text class="qa-strong">核不到出处的回答不会显示</text>，会退回原文摘录。澄清与拒答仍由规则触发。
+    回答不构成录取或报考资格判断。
   </view>
 
   <view class="qa-ask">
@@ -26,14 +27,25 @@
     <view class="qa-question">{{asked}}</view>
 
     <block wx:if="{{result.behavior === 'answer'}}">
-      <view class="qa-answer">
-        <view class="qa-answer-label">回答（原文摘录 · 未改写）</view>
-        <view class="qa-answer-text">{{result.answer}}</view>
-        <view class="qa-answer-note">适用年份 {{result.citations[0].applicableYear}} · 请以官方原文与学校通知为准</view>
+      <view class="qa-pending" wx:if="{{modelPhase === 'loading'}}">
+        <view class="qa-pending-label">正在依据官方原文生成解释…</view>
+        <view class="qa-pending-note">模型只能用下面这些原文段落；核对不上出处的回答不会显示。</view>
+        <view id="qa-cancel" class="qa-pending-cancel" hover-class="pressed" bindtap="onCancelModel">取消，直接看原文</view>
       </view>
-      <view class="qa-source" wx:for="{{result.citations}}" wx:key="documentId" wx:for-item="cite">
+
+      <block wx:else>
+        <view class="qa-answer {{modelRefused ? 'qa-answer-guard' : ''}}">
+          <view class="qa-answer-label">{{modelLabel}}</view>
+          <view class="qa-answer-text">{{modelText}}</view>
+          <view class="qa-answer-note">{{modelNote}}</view>
+        </view>
+      </block>
+
+      <view class="qa-source" wx:for="{{result.citations}}" wx:key="passageId" wx:for-item="cite" wx:for-index="citeIndex">
         <view class="qa-source-head">
-          <view class="qa-source-title">{{cite.title}}</view>
+          <view class="qa-source-title">
+            <text class="qa-source-badge" wx:if="{{modelPhase === 'ready'}}">[S{{citeIndex + 1}}]</text>{{cite.title}}
+          </view>
           <view class="qa-source-meta">{{cite.documentNumber}}</view>
         </view>
         <view class="qa-source-quote">{{cite.quote}}</view>
@@ -42,6 +54,10 @@
           <view class="qa-source-url">{{cite.sourceUrl}}</view>
           <view class="qa-copy" hover-class="pressed" data-url="{{cite.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
         </view>
+      </view>
+
+      <view class="qa-actions" wx:if="{{modelPhase === 'fallback'}}">
+        <view id="qa-retry" class="qa-retry" hover-class="pressed" bindtap="onRetryModel">重试 AI 解释</view>
       </view>
     </block>
 
@@ -76,8 +92,8 @@
   </block>
 
   <view class="quiet qa-foot">
-    回答来自 4 份官方材料的 25 个逐字段落；不包含岗位、薪资与录取分数线——问这些会直接告诉你「无法核实」。
-    澄清与拒答都是固定话术，由规则触发，不是模型自由发挥。
+    回答来自 4 份官方材料的 25 个逐字段落，不包含岗位、薪资与录取分数线——问这些会直接告诉你「无法核实」。
+    澄清与拒答由规则触发；模型只解释检索到的原文，日期、条件与数字必须能核到出处，否则退回原文摘录。
   </view>
   <view id="back-from-qa" class="qa-back" hover-class="pressed" bindtap="goHome">返回首页</view>
 </view>
