@@ -5,6 +5,7 @@
  * 所有 AI 功能只通过本函数的 `main` 入口调模型，密钥只来自云函数环境变量。
  * 事件与返回值的形状一旦被那三票依赖，就不要再随手改；改这里等于改三处调用方。
  */
+import { AdvancementResult } from './advancement';
 
 /**
  * 失败分类。
@@ -13,13 +14,19 @@
  * 模型不可用或超时、内容被安全策略拒绝、额度或配额用尽。
  * 后两类是调用方参数错误与云函数内部错误，同样有独立文案——
  * 把参数错误或内部错误说成「模型不可用」会让排查方向跑偏。
+ *
+ * `citation_unverified` 是 2026-09-30 升学问答模型版新增的第六类：模型答了，但回答里的
+ * 日期/数字/条件句**没有可核对的出处**，服务端不把它作为官方结论返回。它既不是模型不可用
+ * （模型正常返回了），也不是内容违规，更不该混进 `internal`（那不是调用方能处理的）；
+ * 调用方据此降级为本地原文摘录。
  */
 export type FailureClass =
   | 'model_unavailable'
   | 'content_rejected'
   | 'quota_exhausted'
   | 'invalid_request'
-  | 'internal';
+  | 'internal'
+  | 'citation_unverified';
 
 /** 云函数支持的入口动作；05/06/07 只会用到 chat / vision / moderateText / moderateImage。 */
 export type ActionName = 'chat' | 'vision' | 'moderateText' | 'moderateImage' | 'usage' | 'probe';
@@ -233,6 +240,14 @@ export interface AiResponse {
   warnings: string[];
   /** 部门动态检索注入的引用清单；仅 department-qa 的 chat 动作可能有值，其余恒为空数组。 */
   citations: DepartmentActivityCitation[];
+  /**
+   * 升学问答的引用与校验结论；仅 advancement-qa 的 chat 动作有值，其余恒为空。
+   *
+   * 与 `citations` 分开是有意的：那边是部门动态条目的形状（无逐字引文），
+   * 这边要给出逐字引文、文号与校验结论，混进一个字段会让两边解析互相牵制。
+   * 形状见 advancement.ts 的 AdvancementResult。
+   */
+  advancement: AdvancementResult | null;
   /** probe 动作的完整记录；其它动作恒为空。 */
   probe: ProbeRecord | null;
   elapsedMs: number;

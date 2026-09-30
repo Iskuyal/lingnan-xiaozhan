@@ -56,6 +56,16 @@ import {
 } from './usage';
 import { BandCallResult, VISION_PROFILE, bandMaxTokens, bandedSystem, mergeBands, planBands, predictSeconds } from './vision';
 import { assertAdmin, assertOwnPhotoFile, consumeProbeWindow, consumeUserLimits, isAdmin, requireOpenid, userKey } from './access';
+import {
+  ADVANCEMENT_QA_FEATURE,
+  AdvancementCorpus,
+  AdvancementResult,
+  injectedAdvancementText,
+  isAdvancementCorpus,
+  resolveAdvancementScope,
+  resolveAdvancementSources,
+  verifyAdvancementAnswer,
+} from './advancement';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法（与 newsSync 一致）。
@@ -120,6 +130,22 @@ function loadDepartmentCorpus(): DepartmentActivityCorpus | null {
 }
 const departmentCorpus = loadDepartmentCorpus();
 
+/**
+ * 构建注入的升学语料（scripts/build.mjs → dist/cloudfunctions/ai/advancement-corpus.js）。
+ *
+ * 与部门语料的 fail-open 相反：这份语料是升学问答的**前提**——回答只能建立在可信段落上，
+ * 缺失时按 `internal` 拒绝（fail-closed），不退化成凭模型常识回答。
+ */
+function loadAdvancementCorpus(): AdvancementCorpus | null {
+  try {
+    const loaded: unknown = require('./advancement-corpus');
+    return isAdvancementCorpus(loaded) ? loaded : null;
+  } catch {
+    return null;
+  }
+}
+const advancementCorpus = loadAdvancementCorpus();
+
 /** 指代上一轮动态的短追问，须连同上一轮问题和回答检索，才能保留事实依据。 */
 function activitySearchQuestion(messages: ConversationMessage[]): string {
   let currentIndex = -1;
@@ -177,6 +203,8 @@ interface RunLog {
   accountingFailed: boolean;
   /** 部门动态检索注入的引用清单（chat 动作才可能有值）。 */
   activityCitations: DepartmentActivityCitation[];
+  /** 升学问答的引用与出处校验结论（advancement-qa 的 chat 动作才可能有值）。 */
+  advancementResult: AdvancementResult | null;
 }
 
 const ZERO_USAGE: TokenUsage = {
@@ -751,6 +779,29 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
   let system = safeString(event.system);
   const wechat = wechatSecurity();
 
+  // 升学问答的资料注入：与部门动态同一时机（输入检测之前），但约束更硬——
+  // 语料缺失、范围不全、段落 id 越权或与范围不符，一律**在这里就拒绝**（fail-closed）：
+  // 没有可信依据时不发模型请求，也就不存在「模型凭常识补一个官方日期」的机会。
+  if (!vision && log.feature === ADVANCEMENT_QA_FEATURE) {
+    if (advancementCorpus === null) {
+      fail('internal', '升学语料未随函数部署（dist/cloudfunctions/ai/advancement-corpus.js 缺失或损坏），升学问答拒答');
+    }
+    const scopeOutcome = resolveAdvancementScope(advancementCorpus, event.scope);
+    if ('error' in scopeOutcome) fail('invalid_request', `升学问答范围校验未通过：${scopeOutcome.error}`);
+    const sourceOutcome = resolveAdvancementSources(advancementCorpus, event.passageIds, scopeOutcome.scope);
+    if ('error' in sourceOutcome) fail('invalid_request', `升学问答资料来源校验未通过：${sourceOutcome.error}`);
+    system = `${system}\n\n${injectedAdvancementText(sourceOutcome.sources, scopeOutcome.scope)}`;
+    log.advancementResult = {
+      scope: scopeOutcome.scope,
+      corpusVersion: advancementCorpus.version,
+      sources: sourceOutcome.sources,
+      verified: false,
+      refused: false,
+      violations: [],
+    };
+    pushWarning(log, `升学资料注入 ${sourceOutcome.sources.length} 段（语料版本 ${advancementCorpus.version}）`);
+  }
+
   // 部门动态检索注入：在输入检测之前拼进 system，注入文本与消息一起过内容安全。
   // 只对动态类问题检索（意图词表见 rag.ts），无命中 / 非动态类 / 语料缺失时不注入（system 原样）。
   if (!vision && log.feature === DEPARTMENT_QA_FEATURE) {
@@ -818,6 +869,23 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
 
   // 4) 输出内容安全：AI 生成的文字上屏前再检一次（分带识别在**合并后**的文本上只检一次）。
   await moderateOutput(log, result, wechat, openid, startedAt);
+
+  // 5) 出处校验（升学问答）：内容安全之后再过一次事实闸。句子里的日期、数字与官方事实
+  //    必须指向本次注入的可信段落，否则不作为官方结论返回——调用方降级为本地原文摘录。
+  //    这一步在输出检测之后：不通过的回答同样已经过检，两个结论互不掩盖。
+  if (log.advancementResult !== null) {
+    const verdict = verifyAdvancementAnswer(result, log.advancementResult.sources);
+    log.advancementResult.verified = verdict.violations.length === 0;
+    log.advancementResult.refused = verdict.refused;
+    log.advancementResult.violations = verdict.violations;
+    if (verdict.violations.length > 0) {
+      fail(
+        'citation_unverified',
+        `升学问答的模型回答未通过出处校验（${verdict.violations.join('、')}），已丢弃该回答，请调用方展示原文摘录`,
+        { message: '这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。' },
+      );
+    }
+  }
   return result;
 }
 
@@ -844,6 +912,7 @@ function baseResponse(options: {
     capWarning: log === null || !log.isAdmin ? '' : capWarningFor(log.summary),
     warnings: log === null ? [] : log.warnings.slice(),
     citations: log === null ? [] : log.activityCitations.slice(),
+    advancement: log === null ? null : log.advancementResult,
     probe: null,
     elapsedMs: Date.now() - options.startedAt,
   };
@@ -910,6 +979,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
         capWarning: '',
         warnings: [],
         citations: [],
+        advancement: null,
         probe: result.record,
         elapsedMs: Date.now() - startedAt,
       };
@@ -953,6 +1023,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
       warnings: [],
       accountingFailed: false,
       activityCitations: [],
+      advancementResult: null,
     };
 
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。

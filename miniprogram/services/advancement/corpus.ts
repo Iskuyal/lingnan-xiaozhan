@@ -3,7 +3,7 @@
  *
  * **本文件由 `docs/evidence/advancement-poc/corpus.json` 生成，不要手改**：
  * 语料的唯一来源是那份 PoC 语料文件（4 份官方材料、逐字段落、每段带出处与核查日）。
- * 重新生成：`node scripts/generate-advancement-corpus.cjs`（见该脚本头部的说明）。
+ * 重新生成：`node scripts/generate-advancement-corpus.cjs`。
  *
  * 纪律：`text` 一律是官方原文的逐字摘录，回答与引用只能用它；`context` 只为检索打分添加，
  * 不得出现在界面上当作原文。
@@ -44,7 +44,7 @@ export const ADVANCEMENT_DOCUMENTS: AdvancementDocument[] = [
     "applicableRegion": "广东省",
     "applicableAudience": "符合报考条件的专科毕业生（含应届与往届）",
     "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
-    "collectedAt": "2026-09-29",
+    "collectedAt": "2026-09-30",
     "passages": [
       {
         "id": "gd-zsb-2026#register-time",
@@ -93,7 +93,7 @@ export const ADVANCEMENT_DOCUMENTS: AdvancementDocument[] = [
       },
       {
         "id": "gd-zsb-2026#not-eligible",
-        "text": "具有普通高等学历教育资格的高校非应届毕业在校生（含保留学籍的学生）；因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员；因触犯刑律受到刑事处罚、尚在处罚期内的；不符合报考条件的其他人员",
+        "text": "下列人员不得报考：具有普通高等学历教育资格的高校非应届毕业在校生（含保留学籍的学生）；因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员；因触犯刑律受到刑事处罚、尚在处罚期内的；不符合报考条件的其他人员",
         "context": "不得报考 报考限制 停考期 非应届在校生 刑事处罚"
       }
     ]
@@ -169,7 +169,7 @@ export const ADVANCEMENT_DOCUMENTS: AdvancementDocument[] = [
     "applicableRegion": "广东省",
     "applicableAudience": "2026 届高校毕业生",
     "sourceUrl": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
-    "collectedAt": "2026-09-29",
+    "collectedAt": "2026-09-30",
     "passages": [
       {
         "id": "gd-employment-2026#civil-servant",
@@ -183,7 +183,7 @@ export const ADVANCEMENT_DOCUMENTS: AdvancementDocument[] = [
       },
       {
         "id": "gd-employment-2026#soe",
-        "text": "力争招用高校毕业生不少于1.7万人",
+        "text": "发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘",
         "context": "就业行动 国有企业 招用高校毕业生 1.7万人"
       },
       {

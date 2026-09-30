@@ -24,6 +24,8 @@ export interface AskScope {
 
 /** 一条出处：文档级元信息 + 被引用的那一段原文。 */
 export interface Citation {
+  /** 段落 id（`文档id#段落`）：模型版按它向云函数声明「本次依据哪几段」，服务端据此复核。 */
+  passageId: string;
   documentId: string;
   title: string;
   documentNumber: string;
@@ -35,6 +37,13 @@ export interface Citation {
   sourceUrl: string;
   /** 逐字原文段落；界面只展示它，不展示检索用的 context。 */
   quote: string;
+}
+
+/** 一次回答实际采用的适用范围（三个字段都在 ask 内部定下来后才可能有答案）。 */
+export interface ResolvedScope {
+  category: AdvancementDocument['category'];
+  year: number;
+  region: string;
 }
 
 export interface AskResult {
@@ -49,6 +58,13 @@ export interface AskResult {
   choiceScopes?: Record<string, AskScope>;
   /** 拒答时给的官方入口。 */
   links: Array<{ label: string; url: string }>;
+  /**
+   * 只有 behavior === 'answer' 时才有：这次检索实际用的类别/年份/地区。
+   *
+   * 模型版要把它原样交给云函数复核（服务端不接受「范围不明」的调用），因此必须由
+   * 检索这一层给出——页面不重新推断范围，避免两处判断漂移。
+   */
+  resolvedScope?: ResolvedScope;
 }
 
 /**
@@ -211,6 +227,7 @@ export function coveredYears(category: AdvancementDocument['category']): number[
 function citationOf(passage: FlatPassage): Citation {
   const document = passage.document;
   return {
+    passageId: passage.id,
     documentId: document.id,
     title: document.title,
     documentNumber: document.documentNumber,
@@ -349,5 +366,6 @@ export function ask(question: string, topN: number = 2, scope: AskScope = {}): A
     citations: top.map(citationOf),
     choices: [],
     links: [],
+    resolvedScope: { category: classification.category, year, region },
   };
 }

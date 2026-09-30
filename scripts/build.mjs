@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, readdirSync, copyFileSync, rmSync, lstatSync, existsSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, copyFileSync, rmSync, lstatSync, existsSync, writeFileSync } from 'node:fs';
 import { resolve, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -73,4 +73,23 @@ if (existsSync(functionsRoot)) {
 }
 
 cpSync(resolve(root, 'project.config.json'), join(output, 'project.config.json'));
+
+// 升学语料注入：与部门动态不同，这份语料是**前提**——云函数侧的模型回答只能建立在这些
+// 可信段落上，生成失败时升学问答会在运行时按 internal 拒绝（fail-closed），
+// 不会退化成凭模型常识回答。因此这里失败也要在构建输出里说清楚。
+{
+  const require = createRequire(import.meta.url);
+  try {
+    const { ADVANCEMENT_CORPUS_SOURCE, buildAdvancementPayload, renderAdvancementCorpusModule } = require('./lib/generate-advancement-cloud-corpus.cjs');
+    const raw = JSON.parse(readFileSync(resolve(root, ADVANCEMENT_CORPUS_SOURCE), 'utf8'));
+    const payload = buildAdvancementPayload(raw);
+    const target = join(output, 'cloudfunctions', 'ai', 'advancement-corpus.js');
+    mkdirSync(join(output, 'cloudfunctions', 'ai'), { recursive: true });
+    writeFileSync(target, renderAdvancementCorpusModule(payload), 'utf8');
+    console.log(`升学语料已注入 ai 云函数（${payload.documents.length} 份材料、${payload.documents.reduce((sum, item) => sum + item.passages.length, 0)} 个段落、版本 ${payload.version}）`);
+  } catch (error) {
+    console.warn(`升学语料生成失败，升学问答将按 internal 拒绝（fail-closed）：${error && error.message ? error.message : error}`);
+  }
+}
+
 console.log('微信小程序已构建至 dist/');

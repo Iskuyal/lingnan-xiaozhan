@@ -17,7 +17,7 @@
 | 事件字段 | 取值 | 说明 |
 | --- | --- | --- |
 | `action` | `chat` / `vision` / `moderateText` / `moderateImage` / `usage` / `probe` | 必填 |
-| `feature` | 如 `department-qa`、`timetable-screenshot`、`timetable-assistant` | 只用于记账与统计，未知值不影响调用 |
+| `feature` | 如 `department-qa`、`advancement-qa`、`timetable-screenshot`、`timetable-assistant` | 只用于记账与统计，未知值不影响调用；**`advancement-qa` 例外**：它会触发升学问答的服务端约束（见下文「升学问答的服务端约束」） |
 | `system` | string | 系统提示词（可选）；**同样要过内容安全**（属于调用方送进来的文本）。没有单独的字符上限，但被下面的**输入总量上限**覆盖：`system` 自己超窗同样按 `invalid_request` 拒绝 |
 | `messages` | `[{"role":"user"｜"assistant"｜"system","text":"..."}]` | 非空数组、最多 20 条；`role` 必填且只接受这三个值（写错返回 `invalid_request`，不会默认当成 `user`）；`content` 可作 `text` 的别名；单条 ≤8000 字；**与 `system` 拼起来 ≤20000 字**（一次内容安全检测的覆盖上限，超出即 `invalid_request`） |
 | `text` | string | `moderateText` 用（管理员限定的诊断动作）；按 2000 字窗口逐段检测（最多 10 片 = 2 万字），超出部分在报告里写明并置 `checked: false`——**只有这个动作允许不完整检测**，`chat` / `vision` 的输入超窗直接拒绝、输出超窗不返回内容 |
@@ -30,7 +30,7 @@
 | 字段 | 说明 |
 | --- | --- |
 | `ok` | 是否完成。**入口不抛异常**：中转挂掉、超时、参数写错都返回 `false` |
-| `failureClass` | `model_unavailable` / `content_rejected` / `quota_exhausted` / `invalid_request` / `internal`；成功为空串 |
+| `failureClass` | `model_unavailable` / `content_rejected` / `quota_exhausted` / `invalid_request` / `internal` / `citation_unverified`；成功为空串 |
 | `message` | 用户可见文案；**成功时为空串**（`usage` 的上限告警在 `capWarning`，`probe` 的结论在 `message` 与 `probe.conclusion`） |
 | `text` | `chat` / `vision` 成功时的模型输出 |
 | `detail` | 维护者排查细节（密钥已剔除） |
@@ -93,7 +93,7 @@
 | `AI_SAFETY_TIMEOUT_MS` | `6000` | **访问微信云调用与第三方审核的单次超时**（毫秒）；第三方审核另有一层同值 +1 秒的兜底定时器。超时归入「模型不可用或超时」（可重试） |
 | `AI_SAFETY_CALL_PRICE_YUAN` | `0` | 每次审核调用的固定价（元）：接口不返回 token 用量时（`/moderations`）按它记账；`0` 表示不计入金额，但记录会带 `usageUnknown: true` 且返回值有告警 |
 | `AI_SAFETY_MAX_TOKENS` / `AI_SAFETY_SCENE` | `256` / `1` | 审核最大输出 token、微信 `msgSecCheck` 的 scene（1 资料 / 2 评论 / 3 论坛 / 4 社交日志） |
-| `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码**；`AI_MSG_CONTENT_REJECTED_IMAGE` 只覆盖「用户上传的图片被拒」这一种输入（05 截图路径），缺省时不回落到图片专属文案而是用 `AI_MSG_CONTENT_REJECTED` |
+| `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` / `AI_MSG_CITATION_UNVERIFIED` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码**；`AI_MSG_CONTENT_REJECTED_IMAGE` 只覆盖「用户上传的图片被拒」这一种输入（05 截图路径），缺省时不回落到图片专属文案而是用 `AI_MSG_CONTENT_REJECTED` |
 
 ### 失败分类与默认文案
 
@@ -106,10 +106,43 @@
 | `quota_exhausted` | 本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。 | 当月累计成本 ≥ `AI_MONTHLY_CAP_YUAN`，或模型服务返回 **402**（服务商额度/余额不足） |
 | `invalid_request` | AI 请求参数不正确，请重试；若反复出现请联系维护者。 | 动作、消息角色、图片参数不合法（含图片超限、格式不支持、格式无法判断）；**`system` 与全部消息拼起来超过 `MAX_INPUT_CHARS`（2 万字）**——窗口外的文字测不到，直接拒绝，不消耗检测配额也不进模型 |
 | `internal` | AI 服务内部错误，请稍后重试。 | 配置缺失、用量读不到、内容安全检测不可用（fail closed，配置/权限类原因）等；**模型输出超过 `MAX_OUTPUT_CHARS`（4 万字）**——本地检不完全部输出，丢弃该回答而不是上屏未检测内容（模型这次是成功返回的，故不归 `model_unavailable`） |
+| `citation_unverified` | 这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。 | **升学问答专用**：模型正常返回，但回答里含日期/数字/条件的句子**核不到所引段落的出处**（见「升学问答的服务端约束」）。这时**不返回模型答案**（`text` 为空），调用方降级为本地原文摘录。与「模型不可用」分开是因为下一步不同：模型没坏，是这条回答没依据。改措辞用 `AI_MSG_CITATION_UNVERIFIED` |
 
-**默认文案是可供负责人修改的默认值**，改法见上一节的环境变量；三者不得合并成一句（有测试锁定）。
+**默认文案是可供负责人修改的默认值**，改法见上一节的环境变量；三类必需失败不得合并成一句（有测试锁定）。
 **两处例外**：输入超窗与输出超限这两条在 `fail(..., { message })` 里带了固定文案（「对话或材料太长，请精简后重试」／「回答过长已丢弃」），它们**优先于 `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL`**——默认文案对这两种情况给不出可执行的下一步。改措辞要改代码（同 `access.ts` 的维护者拒绝文案）。
 **429 与 402 必须分开**：429 是瞬时限流（可重试），说成「本月额度已用尽，请下月再试」会让用户白等一个月；只有 402 才归「额度或配额用尽」。
+
+### 升学问答的服务端约束（`feature = advancement-qa`）
+
+升学问答把「模型说的话有没有官方依据」放在服务端把关（实现 `cloudfunctions/ai/advancement.ts`，
+逐字语料由 `scripts/build.mjs` 从 `docs/evidence/advancement-poc/corpus.json` 生成 `advancement-corpus.js` 随函数部署）。
+调用方与其它 `chat` 的差别只有两个事件字段，以及一个额外的返回字段：
+
+| 事件字段 | 取值 | 说明 |
+| --- | --- | --- |
+| `scope` | `{category, year, region}` | 本次适用范围，三个字段缺一不可。服务端按自己的语料复核：类别要在可信语料的类别里、年份要在该类别收录的年份里、地区要一致，任何一条不符按 `invalid_request` 拒绝 |
+| `passageIds` | `string[]`，1~3 条 | 本次检索到的**段落 id**。调用方只给 id，**正文一律由服务端从自己那份语料取**——客户端传不了「官方原文」；id 不在语料里、与 scope 不符、重复或超上限都按 `invalid_request` 拒绝 |
+
+| 返回字段 | 说明 |
+| --- | --- |
+| `advancement.scope` / `advancement.corpusVersion` | 本次生效的范围与语料版本（`adv-corpus-<12 位哈希>`，语料一改就变） |
+| `advancement.sources[]` | 实际注入并用于引用的可信段落（含逐字引文、文号、发布主体、适用年份、原文链接） |
+| `advancement.verified` / `advancement.refused` / `advancement.violations[]` | 出处校验结论：`verified` 不是 `true` 就**不能当官方结论上屏**；`refused` 表示模型自己回复「无法核实」；`violations` 是短代码（如 `s2:uncited_claim`、`s1:unsupported_number(30)`），不含回答正文 |
+
+注入与校验顺序（都在模型之后、返回之前）：**输入检测 → 模型 → 输出检测 → 出处校验**。
+校验规则（逐句）：
+
+1. 除固定过渡语外，所有业务句**必须带 `[Sn]` 标记**，否则 `uncited_claim`；分号保留，避免切掉条件与列表标题；
+2. 标记只能指向本次注入的段落（`unknown_marker`）；同句有多个标记时按并集核对；
+3. 句中数字要在**所引段落的可核对字段**（段落正文 + 材料标题 + 文号 + 发布日期 + 适用年份）里找到：
+   数量必须数值相等（`1.5万` = `15000`），日期仅允许相同写法或省略完整年份；禁止任意数字后缀匹配；
+   否则 `unsupported_number(<该数字>)`——标记里带上具体数字，便于维护者定位（回答正文本身不返回）。
+4. 数字初筛通过还不够：业务句必须对应所引正文的**完整原句**，只允许标点、空格、等值数量、适用年份重复/省略；保留主语、否定、条件、比较词和词序。否则 `unsupported_claim`。这是模型选句与排列的保守模式，不保证任意释义，不能证明语料本身正确或回答完整。
+5. 校验不过 → `citation_unverified`，`text` 为空，调用方降级为本地原文摘录；只有完整固定短语「无法核实」（可带末尾句号）→
+   `ok: true` + `refused: true`，同样由调用方决定怎么展示（产品页面仍列出原文，由学生自己核对）。
+
+**语料缺失或格式不对时 fail-closed**：升学问答没有可信语料就按 `internal` 拒绝，
+不退化成「凭模型常识回答」（部门动态语料的 fail-open 只适用于部门问答）。
 
 ### 内容安全适配层
 

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>升学问答 · 降级为原文摘录</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .qa-note { margin-top:14px; padding:11px 12px; border-left:3px solid var(--gold); background:var(--paper-shade); color:var(--text-2); font-size:12px; line-height:1.75; }
+    .qa-strong { color:var(--warn); font-weight:700; }
+    .qa-ask { margin-top:16px; display:flex; gap:8px; }
+    .qa-ask-input { flex:1; min-height:48px; padding:0 12px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.18); background:#fff; color:var(--text); font-size:14px; }
+    .qa-ask-btn { flex:none; width:76px; min-height:48px; display:flex; align-items:center; justify-content:center; background:var(--brand); color:#fff; font-size:14px; font-weight:700; }
+    .qa-chips { margin-top:10px; display:flex; flex-wrap:wrap; gap:7px; }
+    .qa-chip { min-height:34px; padding:0 10px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.18); color:var(--brand-ink); font-size:11px; }
+
+    .qa-question { margin-top:22px; padding:11px 12px; background:var(--brand-deep); color:#fff; font-size:14px; line-height:1.6; }
+
+    /* 降级态：主文本是本地原文摘录（不是错误页），失败原因写清楚，并给重试入口。 */
+    .qa-answer { margin-top:10px; padding:12px; border:1px solid rgba(43,36,34,.14); border-left:3px solid var(--brand); background:rgba(255,255,255,.62); }
+    .qa-answer-label { color:var(--text-3); font-size:10px; }
+    .qa-answer-text { margin-top:6px; color:var(--text); font-size:14px; line-height:1.8; font-weight:600; }
+    .qa-answer-note { margin-top:8px; color:var(--warn); font-size:11px; line-height:1.7; }
+    .qa-actions { margin-top:10px; display:flex; gap:10px; }
+    .qa-retry { min-height:44px; padding:0 14px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.2); background:rgba(255,255,255,.7); color:var(--brand-ink); font-size:13px; font-weight:700; }
+
+    .qa-source { margin-top:10px; padding:11px 12px; border:1px solid rgba(43,36,34,.14); background:var(--paper-shade); }
+    .qa-source-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+    .qa-source-title { color:var(--brand-deep); font-size:12.5px; font-weight:700; }
+    .qa-source-meta { color:var(--text-3); font-size:10px; }
+    .qa-source-quote { margin-top:8px; padding-left:10px; border-left:2px solid var(--gold); color:var(--text-2); font-size:12px; line-height:1.8; }
+    .qa-source-foot { margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .qa-source-url { min-width:0; color:var(--text-3); font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .qa-copy { flex:none; color:var(--brand-ink); font-size:10px; font-weight:700; }
+    .qa-foot { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">升学与实习问答</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">只答官方原文里写过的事 · 语料 4 份 / 25 个段落 · 核查 2026-09-29</div>
+    <h1 class="page-title">升学与实习问答</h1>
+
+    <div class="qa-note">
+      检索到官方原文后由 <span class="qa-strong">AI 依据原文解释</span>；
+      <span class="qa-strong">核不到出处的回答不会显示</span>，会退回原文摘录。这条就是退回后的样子。
+    </div>
+
+    <div class="qa-ask">
+      <div class="qa-ask-input">2026年广东普通专升本什么时候网上预报名？</div>
+      <div class="qa-ask-btn">提问</div>
+    </div>
+    <div class="qa-chips">
+      <div class="qa-chip">转段考核包括哪几个部分？</div>
+      <div class="qa-chip">在哪里看招聘活动？</div>
+    </div>
+
+    <div class="qa-question">2026年广东普通专升本什么时候网上预报名？</div>
+
+    <div class="qa-answer">
+      <div class="qa-answer-label">原文摘录</div>
+      <div class="qa-answer-text">网上预报名时间为2026年1月12日09:00至19日18:00</div>
+      <div class="qa-answer-note">
+        这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。（核对点：s1:unsupported_number）
+        下面是检索到的官方原文（未改写），可以自己核对。
+      </div>
+    </div>
+
+    <div class="qa-actions">
+      <div class="qa-retry">重试 AI 解释</div>
+    </div>
+
+    <div class="qa-source">
+      <div class="qa-source-head">
+        <span class="qa-source-title">广东省2026年普通高等学校专升本招生工作规定</span>
+        <span class="qa-source-meta">粤招办普〔2025〕51号</span>
+      </div>
+      <div class="qa-source-quote">网上预报名时间为2026年1月12日09:00至19日18:00</div>
+      <div class="qa-source-meta" style="margin-top:6px">发布主体 广东省教育考试院 · 发布 2025-11-19 · 适用 广东省 · 核查 2026-09-29</div>
+      <div class="qa-source-foot">
+        <span class="qa-source-url">eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html</span>
+        <span class="qa-copy">复制原文链接 ›</span>
+      </div>
+    </div>
+
+    <div class="qa-source">
+      <div class="qa-source-head">
+        <span class="qa-source-title">广东省2026年普通高等学校专升本招生工作规定</span>
+        <span class="qa-source-meta">粤招办普〔2025〕51号</span>
+      </div>
+      <div class="qa-source-quote">网上缴费截止时间为1月23日17:00</div>
+      <div class="qa-source-meta" style="margin-top:6px">发布主体 广东省教育考试院 · 发布 2025-11-19 · 适用 广东省 · 核查 2026-09-29</div>
+      <div class="qa-source-foot">
+        <span class="qa-source-url">eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html</span>
+        <span class="qa-copy">复制原文链接 ›</span>
+      </div>
+    </div>
+
+    <div class="quiet qa-foot">
+      降级不是错误页：模型不可用或回答核不到出处时，页面展示的仍是这次检索到的官方原文与出处，可以重试一次模型解释。
+    </div>
+  </main>
+</body>
+</html>

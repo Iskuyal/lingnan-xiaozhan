@@ -15,6 +15,9 @@ const DEFAULT_MESSAGES: Record<FailureClass, string> = {
   quota_exhausted: '本月 AI 使用额度已用尽，暂时无法使用 AI 功能，请下月再试或联系维护者。',
   invalid_request: 'AI 请求参数不正确，请重试；若反复出现请联系维护者。',
   internal: 'AI 服务内部错误，请稍后重试。',
+  // 与「模型不可用」分开：模型这次是正常返回的，只是回答里的日期/条件/数字核不到出处。
+  // 用户可执行的下一步也不是「重试模型」，而是查看这份资料自己的原文摘录。
+  citation_unverified: '这条回答没能核对上官方原文的出处，已改为展示检索到的原文摘录。',
 };
 
 /** 文案覆盖用的环境变量名（与上面的键一一对应）。 */
@@ -24,6 +27,7 @@ const MESSAGE_ENV: Record<FailureClass, string> = {
   quota_exhausted: 'AI_MSG_QUOTA_EXHAUSTED',
   invalid_request: 'AI_MSG_INVALID_REQUEST',
   internal: 'AI_MSG_INTERNAL',
+  citation_unverified: 'AI_MSG_CITATION_UNVERIFIED',
 };
 
 /**

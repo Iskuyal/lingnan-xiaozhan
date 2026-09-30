@@ -1,0 +1,213 @@
+{
+  "builtAt": "2026-09-30",
+  "frozenAt": "2026-09-30",
+  "note": "M2 独立题集：13 道题在本文件写入即冻结（题目、出处、标准答案、判定规则写入后不再改动），用于「升学问答模型版」的第一次真实模型评测。这些题**未参与模型版任何调参**（提示词、引用校验与检索规则都按原 20 题和历史语料开发）。全部为**维护者设计题**（按学生可能问法设计），本轮没有获许可的真实学生提问样本——这一点如实登记，不以合成题冒充真实提问，也不开展公开招募。",
+  "questionSources": {
+    "maintainer_design": "维护者设计题：维护者按学生常见问法设计，尚无真实学生提问样本",
+    "consented_student": "获许可的真实学生提问：需注明来源与许可方式（本轮为 0 条）"
+  },
+  "judgeRules": {
+    "frozenAt": "2026-09-30",
+    "factual": [
+      "命中：模型答案里出现该题 mustContain 的全部关键串，或在报告中贴出被判定等价的原文句子（等价判定必须引用该句，便于复核；不得事后追加 expectedPassages 或放宽 mustContain）。",
+      "引用支持：由 dist/cloudfunctions/ai/advancement.js 的 verifyAdvancementAnswer 确定性判定——含日期/数字或官方事实关键词的句子必须带指向可信段落的标记 [Sn]，且数字与日期必须逐字出现在所引段落里；未通过的句子计入「未支持的官方事实断言」。",
+      "计为「模型答案正确」须同时满足：命中 + 引用校验通过 + 没有未支持的官方事实断言。",
+      "降级（模型失败或引用校验未过、页面改为展示本地原文摘录）单独统计：摘录含关键串时记为「可用（降级）」，**不计入**模型答案正确率。"
+    ],
+    "guard": [
+      "守门题（clarify / refuse）不产生模型调用：页面行为与本题 behavior 一致即通过；行为不一致（例如给了事实答案）即不通过，不因答案「看起来合理」而算过。"
+    ]
+  },
+  "wordingAdjustments": [
+    {
+      "id": "n04",
+      "before": "三二分段专升本转段的报考费是多少？",
+      "after": "三二分段转段每科报考费是多少？",
+      "when": "2026-09-30，冻结前的本地检索复测（模型调用之前）",
+      "reason": "原题面下检索 top-1 是 gd-segmented-2026#target（三二分段专升本 字样与目标段落重叠最多），#fee 只排到第 2；改题面为口语问法后 #fee 排到 top-1。**只改题面，未改检索算法与阈值**。这条观察本身记入评测报告：短问句里「三二分段专升本」会压过具体考点段落。"
+    },
+    {
+      "id": "n05",
+      "before": "三二分段专升本转段的报名流程是怎样走的？",
+      "after": "转段招生怎么报名，要不要审核？",
+      "when": "2026-09-30，冻结前的本地检索复测（模型调用之前）",
+      "reason": "同上：原题面 top-1 是 #target 而非 #register；改题面后 #register 排到 top-1。"
+    }
+  ],
+  "questions": [
+    {
+      "id": "n01",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "2026年广东普通专升本网上缴费截止到什么时候？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-zsb-2026#fee-deadline"],
+      "expectedAnswer": "网上缴费截止时间为1月23日17:00（文号粤招办普〔2025〕51号）",
+      "mustContain": ["1月23日17:00"],
+      "basis": ["gd-zsb-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n02",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "2026年广东普通专升本，还在停考期内的人员可以报考吗？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-zsb-2026#not-eligible"],
+      "expectedAnswer": "不可以：被给予暂停参加普通专升本招生考试处理且在停考期内的人员属于不能报考的情形之一",
+      "mustContain": ["停考期内"],
+      "basis": ["gd-zsb-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n03",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "2026年广东普通专升本，退役大学生士兵要不要参加文化课考试？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-zsb-2026#vet-soldier"],
+      "expectedAnswer": "退役大学生士兵可申请参加免文化课考试的专升本招生，具体办法另见粤招办普〔2025〕50号",
+      "mustContain": ["免文化课考试"],
+      "basis": ["gd-zsb-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n04",
+      "source": "maintainer_design",
+      "type": "fact_转段",
+      "question": "三二分段转段每科报考费是多少？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-segmented-2026#fee"],
+      "expectedAnswer": "报考费按普通高等学校普通专升本报名考试收费标准执行，每科40元",
+      "mustContain": ["每科40元"],
+      "basis": ["gd-segmented-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n05",
+      "source": "maintainer_design",
+      "type": "fact_转段",
+      "question": "转段招生怎么报名，要不要审核？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-segmented-2026#register"],
+      "expectedAnswer": "网上预报名、网上审核和网上缴费；提交预报名资料后48小时内由对口试点本科高校完成审核，审核通过才能缴费",
+      "mustContain": ["48小时"],
+      "basis": ["gd-segmented-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n06",
+      "source": "maintainer_design",
+      "type": "fact_就业",
+      "question": "2026年广东给高校毕业生提供多少公务员岗位？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-employment-2026#civil-servant"],
+      "expectedAnswer": "全省提供公务员岗位不少于1.5万个（2026年广东省高校毕业生就业创业十大行动方案）",
+      "mustContain": ["1.5万个"],
+      "basis": ["gd-employment-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n07",
+      "source": "maintainer_design",
+      "type": "fact_就业",
+      "question": "2026年广东的国有企业要招用多少高校毕业生？",
+      "behavior": "answer",
+      "scope": { "year": 2026, "region": "广东省" },
+      "expectedPassages": ["gd-employment-2026#soe"],
+      "expectedAnswer": "力争招用高校毕业生不少于1.7万人",
+      "mustContain": ["1.7万人"],
+      "basis": ["gd-employment-2026"],
+      "citationRequired": true
+    },
+    {
+      "id": "n08",
+      "source": "maintainer_design",
+      "type": "unknown_year_年份不明",
+      "question": "普通专升本的加分政策是什么？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "先确认年份与地区（语料只收录 2026 年广东省），确认前不给日期或条件答案",
+      "mustContain": [],
+      "basis": ["gd-zsb-2026"],
+      "citationRequired": false
+    },
+    {
+      "id": "n09",
+      "source": "maintainer_design",
+      "type": "unknown_year_地区不明",
+      "question": "2026年普通专升本什么时候网上报名？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "先确认地区：语料只收录广东省资料，未确认前不套用广东的日期作答",
+      "mustContain": [],
+      "basis": ["gd-zsb-2026"],
+      "citationRequired": false
+    },
+    {
+      "id": "n10",
+      "source": "maintainer_design",
+      "type": "cross_跨类型",
+      "question": "中职的三二分段和高职的三二分段是一回事吗？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：中高职贯通三二分段（中职升高职）不在收录范围，不能用高职升本科的转段资料回答",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "n11",
+      "source": "maintainer_design",
+      "type": "stale_过期年份",
+      "question": "2027年三二分段转段什么时候报名？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：语料只收录 2026 年文件，不把 2026 年的时间当 2027 年答案",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "n12",
+      "source": "maintainer_design",
+      "type": "stale_过期年份",
+      "question": "2025年普通专升本报名时间是什么时候？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：语料只收录 2026 年文件，2025 年未收录，不沿用旧年份",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    },
+    {
+      "id": "n13",
+      "source": "maintainer_design",
+      "type": "no_source_无来源",
+      "question": "2026年广东普通专升本录取名单什么时候公布？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实：语料不含录取名单这类数据，给官方入口自行查询",
+      "mustContain": [],
+      "basis": [],
+      "citationRequired": false
+    }
+  ],
+  "gaps": [
+    "来源冲突（两份官方材料对同一事实给出不同日期或条件）：当前 4 份语料的 25 个段落没有互相冲突的事实，无法构造真实冲突样本；检索与守门也没有「冲突检测」能力，未覆盖。",
+    "真实学生提问分布：本轮 13 题全部是维护者设计题，没有获许可的真实学生提问；真实提问的措辞与分布仍是缺口。",
+    "学校层面实施细则（各校转段考核方案）、岗位与薪资、分数线：来源目录已明确不收录，不作为题目。"
+  ]
+}

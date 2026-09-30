@@ -17,7 +17,9 @@
     "smoke:ai:vision": "node scripts/smoke-ai-vision.cjs",
     "eval:lost-found": "node scripts/eval-lost-found.cjs",
     "eval:department-rag": "node scripts/eval-department-rag.cjs",
+    "eval:advancement": "npm run build && node scripts/eval-advancement-model.cjs",
     "verify:campus-tools": "node scripts/verify-campus-tools.cjs",
+    "verify:advancement": "node scripts/verify-advancement-model.cjs",
     "poc:advancement": "npm run build && node scripts/advancement-poc.cjs"
   },
   "engines": {
