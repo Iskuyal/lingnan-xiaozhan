@@ -2,6 +2,8 @@
 
 2026-09-18 起由负责人确认的拆分，共 11 票。编号用于引用；开工顺序由实现依赖和决策关卡共同决定。票内保留阶段过程与当时测试数字；**2026-09-24 的跨票代码、部署、验收口径见[项目状态](../../status.md)**，不得从早期失败描述推断当前代码仍失败。
 
+09-30 补充：课表、设置、图片归属已获[负责人确认](../../testing/manual-acceptance.md#ownership-confirmation-2026-09-30)通过；当前下一阶段为[升学模型版与真实引用评测](../../planning/next-phase-advancement-model.md)，失物招领后续暂缓。票内旧日期段落继续作为历史记录。
+
 跨票的未完成项、决策关卡与人工验收前置条件集中在[待办总表](../pending.md)。
 
 拆分依据：[开发规格](../../product/spec.md)、[开发阶段](../../development/phases.md)、[候选场景对比](../../archive/scenario-comparison.md)（MVP 与 AI 落点的定案记录）。
@@ -31,7 +33,7 @@
 | --- | --- | --- | --- | --- |
 | 01 | [AI 服务端基础设施](01-ai-foundation.md) | in-progress | SEC-01/02 代码整改见[记录](../../review/security-remediation-2026-09-24.md)；云端部署与真实效果复测待完成 | — |
 | 02 | [首页资讯入口与分页](02-home-news-entry-and-paging.md) | done | 真实多页数据的补验归入 04 | — |
-| 03 | [Excel 导入与周课表](03-timetable-excel-import.md) | in-progress | 两个微信号隔离；新版设置接口云端回读 | — |
+| 03 | [Excel 导入与周课表](03-timetable-excel-import.md) | in-progress | 主体功能及课表/设置/图片归属已获负责人确认通过；原始证据归档与后续批次变更云端复验另计 | — |
 | 04 | [资讯同步扩展与定时](04-expand-sync-and-daily-schedule.md) | in-progress | SEC-03 代码仅允许定时触发；仍需部署后验证触发器、目标栏目全量和真实多页 | — |
 | 05 | [截图识别与校对](05-timetable-screenshot-import.md) | in-progress | 真实课表截图准确率与保存流程 | 01、03 的代码已有；需真实验收 |
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | in-progress | 固定 10 题、失败降级、真机 | 01、03 的代码已有；需真实验收 |
