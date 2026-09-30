@@ -1,0 +1,170 @@
+/*
+ * nutui-port 共享版式与组件层。
+ *
+ * 这是 campus-refresh 的视觉语言（方角、纸白、品牌红、无全局磨砂与大面积渐变）
+ * 套上 NutUI 的**组件解剖与尺寸阶梯**后的结果。每个组件的注释里写明它吸收了
+ * NutUI 的哪一个令牌，便于评审时逐条比对。
+ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 390px; }
+body {
+  color: var(--text);
+  background: var(--paper);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  -webkit-font-smoothing: antialiased;
+}
+button { margin: 0; padding: 0; border: 0; background: transparent; font: inherit; color: inherit; }
+
+/* ---------- 系统壳：状态栏与导航栏（沿用 campus-refresh，不属于设计语言） ---------- */
+.statusbar {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--sp-4) var(--sp-1); background: var(--brand); color: #fff;
+  font-size: var(--fs-sm); font-weight: 600;
+}
+.status-icons { display: flex; align-items: center; gap: var(--sp-1); }
+.signal { display: flex; align-items: end; gap: 2px; height: 12px; }
+.signal i { display: block; width: 3px; background: #fff; }
+.signal i:nth-child(1) { height: 4px; }
+.signal i:nth-child(2) { height: 7px; }
+.signal i:nth-child(3) { height: 9px; }
+.signal i:nth-child(4) { height: 12px; }
+.wifi { width: 12px; height: 8px; border: 1.5px solid #fff; border-bottom: 0; border-radius: 12px 12px 0 0; }
+.battery { width: 19px; height: 10px; border: 1px solid #fff; border-radius: 2px; position: relative; }
+.battery::before { content: ""; position: absolute; right: -3px; top: 2px; width: 2px; height: 4px; background: #fff; }
+.battery::after { content: ""; position: absolute; inset: 2px 5px 2px 2px; background: #fff; }
+.navbar { height: 40px; display: flex; align-items: center; padding: 0 var(--sp-3); background: var(--brand); color: #fff; }
+.nav-back { width: 36px; font-size: 23px; line-height: 1; }
+.nav-title { flex: 1; text-align: center; font-size: var(--fs-lg); font-weight: 600; }
+.nav-capsule {
+  width: 82px; height: 29px; border: 1px solid rgba(255,255,255,.65); border-radius: var(--r-capsule);
+  display: flex; align-items: center; justify-content: center; gap: 9px; font-size: var(--fs-sm);
+}
+.nav-capsule i { width: 4px; height: 4px; background: #fff; border-radius: 50%; }
+.nav-capsule b { width: 13px; height: 13px; border: 1px solid #fff; border-radius: 50%; }
+
+/* ---------- 版式 ---------- */
+.page { padding: var(--sp-5) 18px 40px; }
+.eyebrow { font-size: var(--fs-cap); line-height: 1.4; letter-spacing: .2px; color: var(--text-3); }
+.page-title { margin: var(--sp-1) 0 0; color: var(--brand-deep); font-size: var(--fs-title); line-height: var(--lh-tight); font-weight: 700; }
+.display { font-family: "Songti SC", "STSong", "SimSun", serif; font-weight: 600; }
+.copy { color: var(--text-2); font-size: var(--fs-base); line-height: var(--lh-copy); }
+.quiet { color: var(--text-3); font-size: var(--fs-sm); line-height: 1.65; }
+.hairline { height: 1px; background: rgba(43,36,34,.15); }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: var(--sp-5) 0 var(--sp-3); }
+.section-title { font-size: var(--fs-lg); line-height: 1.4; font-weight: 700; color: var(--brand-deep); }
+.section-note { color: var(--text-3); font-size: var(--fs-sm); }
+.surface { background: rgba(255,255,255,.62); border: 1px solid rgba(43,36,34,.13); border-radius: var(--r-cell); }
+
+/* ---------- Cell：吸收 NutUI --nut-cell-padding 13px 16px / --nut-cell-line-height 20px
+ *            / --nut-cell-after-right 16px（右侧箭头位）/ 1px 分隔线。
+ *            外观仍是 campus-refresh 的方角纸面，不用 NutUI 的白底投影卡片。 ---------- */
+.cell-group { border: 1px solid rgba(43,36,34,.15); border-radius: var(--r-cell); background: rgba(255,255,255,.54); overflow: hidden; }
+.cell-group + .cell-group { margin-top: var(--sp-3); }
+.cell-group-label { padding: var(--sp-3) var(--cell-pad-x) 0; color: var(--brand-deep); font-size: var(--fs-lg); font-weight: 700; }
+.cell {
+  min-height: var(--h-control); padding: var(--cell-pad-y) var(--cell-pad-x);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  line-height: var(--cell-line); text-align: left; width: 100%;
+}
+.cell + .cell { border-top: 1px solid rgba(43,36,34,.12); }
+.cell-main { flex: 1; min-width: 0; }
+.cell-title { display: block; color: var(--text); font-size: var(--fs-base); }
+.cell-desc { display: block; margin-top: 2px; color: var(--text-3); font-size: var(--fs-sm); }
+.cell-value { color: var(--text-2); font-size: var(--fs-sm); white-space: nowrap; }
+.cell-arrow { width: 16px; flex: none; text-align: right; color: var(--text-3); font-size: 17px; line-height: 1; }
+
+/* ---------- Divider：NutUI --nut-divider-margin: 16px 0 ---------- */
+.divider { margin: var(--divider-gap) 0; display: flex; align-items: center; gap: var(--sp-4); color: var(--text-3); font-size: var(--fs-sm); }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(43,36,34,.15); }
+
+/* ---------- 按钮阶梯：吸收 NutUI --nut-button-{large,default,small,mini}-height 48/38/28/24px。
+ *            圆角与配色仍按 campus-refresh（5px 方角、品牌红），不采用 NutUI 的 25px 胶囊与渐变。 ---------- */
+.btn {
+  min-height: var(--h-btn); padding: 0 var(--sp-4); display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  border: 1px solid rgba(43,36,34,.2); border-radius: var(--r-control); background: transparent;
+  color: var(--brand-ink); font-size: var(--fs-sm); font-weight: 600;
+}
+.btn-lg { min-height: var(--h-btn-lg); font-size: var(--fs-base); }
+.btn-sm { min-height: var(--h-btn-sm); padding: 0 var(--sp-3); }
+.btn-mini { min-height: var(--h-btn-mini); padding: 0 var(--sp-2); font-size: var(--fs-cap); }
+.btn-block { display: flex; width: 100%; }
+.btn-primary { border-color: var(--brand); background: var(--brand); color: #fff; font-weight: 700; }
+.btn-ghost { border-color: rgba(122,26,18,.38); color: var(--brand-ink); }
+
+/* ---------- 分段控件：课表 / 列表 切换（尺寸取自 NutUI button 小档） ---------- */
+.segmented { display: flex; border: 1px solid rgba(43,36,34,.17); border-radius: var(--r-control); overflow: hidden; }
+.segmented span { min-height: var(--h-btn-sm); padding: 0 var(--sp-3); display: flex; align-items: center; color: var(--text-2); font-size: var(--fs-cap); }
+.segmented .on { background: var(--brand); color: #fff; }
+
+/* ---------- 标签：NutUI --nut-tag-font-size 12px ---------- */
+.chip {
+  display: inline-flex; align-items: center; min-height: 22px; padding: 2px var(--sp-2);
+  border: 1px solid rgba(43,36,34,.15); border-radius: var(--r-tag); color: var(--text-2);
+  font-size: var(--fs-cap); line-height: 1.3; background: rgba(255,255,255,.5);
+}
+.chip-gold { color: var(--brand-ink); border-color: rgba(198,154,40,.55); background: rgba(198,154,40,.12); }
+.chip-warn { color: var(--warn); border-color: var(--warn-line); background: var(--warn-soft); }
+
+/* ---------- 提示块：沿用 campus-refresh，失败与待核对只用琥珀 ---------- */
+.warn-block {
+  padding: var(--sp-3); color: var(--warn); background: var(--warn-soft);
+  border: 1px solid var(--warn-line); border-left: 4px solid #c68a32; border-radius: var(--r-tag);
+  font-size: var(--fs-sm); line-height: 1.7;
+}
+
+/* ---------- 空态：NutUI --nut-empty-padding 32px 0 / 描述 14px、20px 行高、左右 40px ---------- */
+.empty { padding: var(--empty-pad-y) 0; text-align: center; }
+.empty-mark {
+  width: 56px; height: 56px; margin: 0 auto var(--sp-4); display: grid; place-items: center;
+  border: 1px solid rgba(198,154,40,.55); color: var(--gold-deep); font-size: 25px; border-radius: var(--r-tag);
+}
+.empty-desc { margin-top: var(--sp-1); padding: 0 40px; color: var(--text-2); font-size: var(--fs-base); line-height: var(--empty-desc-lh); }
+
+/* ---------- 选择组：吸收 NutUI --nut-radio-button-padding 5px 18px / --nut-radio-button-font-size 12px
+ *            的内距与字号节奏；形状仍是方角（不采用 NutUI 的 15px 胶囊档）。 ---------- */
+.choice-group { display: flex; gap: var(--sp-1); }
+.choice {
+  flex: 1; min-height: var(--h-control); padding: 5px var(--sp-3); display: grid; place-items: center;
+  border: 1px solid rgba(43,36,34,.16); border-radius: var(--r-tag); color: var(--text-2);
+  font-size: var(--fs-sm); text-align: center;
+}
+.choice.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+/* ---------- 折叠：分组标题 + 展开态（吸收 NutUI Collapse 的「标题行 + 内容区」解剖） ---------- */
+.collapse { border-top: 1px solid rgba(43,36,34,.12); }
+.collapse-head { min-height: var(--h-control); padding: var(--sp-1) 2px; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); width: 100%; text-align: left; }
+.collapse-head strong { color: var(--brand-ink); font-size: var(--fs-sm); }
+.collapse-head span { color: var(--text-3); font-size: var(--fs-cap); white-space: nowrap; }
+.collapse.open > .collapse-head { border-left: 3px solid var(--gold); padding-left: var(--sp-2); }
+
+/* ---------- 表单字段（NutUI Cell 内距 + 标签在上） ---------- */
+.field { margin-top: var(--sp-3); }
+.field-label { margin-bottom: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); }
+.field-value {
+  min-height: var(--h-control); padding: var(--sp-2) var(--sp-3); display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid rgba(43,36,34,.2); border-radius: var(--r-tag); background: var(--paper);
+  color: var(--text-2); font-size: var(--fs-sm);
+}
+
+/* ---------- 页脚操作栏 ----------
+ * 实现里该栏固定在视口底部；设计图是静态评审件且不写 JS，
+ * 因此这里按 campus-refresh 的做法画成页面末尾的静态栏（用 position:sticky 会在
+ * 全页截图里浮到视口中部压住内容——本主题第一版即踩到，已回退）。 ---------- */
+.bottom-bar { margin: var(--sp-5) -18px -40px; padding: var(--sp-3) 18px var(--sp-5); background: var(--paper); border-top: 1px solid rgba(43,36,34,.16); }
+
+/* ---------- 课程色板：单一来源 services/timetable/palette.ts ---------- */
+.c1 { --course: var(--c1); --course-bg: var(--c1-bg); --course-line: var(--c1-line); }
+.c2 { --course: var(--c2); --course-bg: var(--c2-bg); --course-line: var(--c2-line); }
+.c3 { --course: var(--c3); --course-bg: var(--c3-bg); --course-line: var(--c3-line); }
+.c4 { --course: var(--c4); --course-bg: var(--c4-bg); --course-line: var(--c4-line); }
+.c5 { --course: var(--c5); --course-bg: var(--c5-bg); --course-line: var(--c5-line); }
+.c6 { --course: var(--c6); --course-bg: var(--c6-bg); --course-line: var(--c6-line); }
+.c7 { --course: var(--c7); --course-bg: var(--c7-bg); --course-line: var(--c7-line); }
+.c8 { --course: var(--c8); --course-bg: var(--c8-bg); --course-line: var(--c8-line); }
+.course-swatch { color: var(--course); border-color: var(--course-line); background: var(--course-bg); }
+
+/* 像素门楼：首页唯一的主视觉，其他页不重复这套形状语言 */
+.pixel-gate { width: 144px; height: 96px; image-rendering: pixelated; }
+.back-link { margin-top: var(--sp-5); text-align: center; color: var(--brand-ink); font-size: var(--fs-sm); }

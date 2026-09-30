@@ -1,0 +1,86 @@
+/*
+ * nutui-port 主题令牌。
+ *
+ * 来源分两段，必须分清：
+ *   1) 颜色段：逐条抄自 miniprogram/app.wxss（品牌色一字不改）。改色时两处必须同名同值。
+ *      课程色 --c1..--c8 的单一来源是 miniprogram/services/timetable/palette.ts。
+ *   2) 尺度段（本主题新增）：移植 NutUI 的令牌阶梯，**不含任何 NutUI 颜色**。
+ *      NutUI 源：jd-opensource/nutui @ 212c7c3af6d0c3b5bc5cdfe00c7eaf8dd86a78cf
+ *               src/packages/styles/variables.scss（693 个令牌，666 个已是 CSS 自定义属性）
+ *      这些令牌定稿后写入 miniprogram/app.wxss；在此之前不进实现。
+ */
+:root {
+  /* ---- 颜色：与 app.wxss 同名同值，一字未改 ---- */
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* ---- 课程色：单一来源 palette.ts，与 campus-refresh/_tokens.css 一致 ---- */
+  --c1: #2f5f9e;  --c1-bg: rgba(47,95,158,0.13);  --c1-line: rgba(47,95,158,0.30);
+  --c2: #1f7fa8;  --c2-bg: rgba(31,127,168,0.13); --c2-line: rgba(31,127,168,0.30);
+  --c3: #147a70;  --c3-bg: rgba(20,122,112,0.13); --c3-line: rgba(20,122,112,0.30);
+  --c4: #2e8b57;  --c4-bg: rgba(46,139,87,0.13);  --c4-line: rgba(46,139,87,0.30);
+  --c5: #4f8a2b;  --c5-bg: rgba(79,138,43,0.14);  --c5-line: rgba(79,138,43,0.32);
+  --c6: #6b7a2a;  --c6-bg: rgba(107,122,42,0.14); --c6-line: rgba(107,122,42,0.32);
+  --c7: #6a5aa8;  --c7-bg: rgba(106,90,168,0.13); --c7-line: rgba(106,90,168,0.30);
+  --c8: #a8478f;  --c8-bg: rgba(168,71,143,0.12); --c8-line: rgba(168,71,143,0.28);
+
+  /* ---- 字号阶梯（NutUI --nut-font-size-0..4 = 10/12/14/16/18px 为骨架） ----
+   * campus-refresh 里散落的 9/10/11/12/13/14/15/16/18/20/21 收敛到下列档位。
+   * 实现换算：1px = 1.923rpx（750rpx = 390px）。 */
+  --fs-cap: 10px;    /* 22rpx  节次、时间戳、脚注 */
+  --fs-sm: 12px;     /* 23rpx  次要正文、标签、列表副标题 */
+  --fs-base: 14px;   /* 27rpx  正文 */
+  --fs-lg: 16px;     /* 31rpx  小节标题 */
+  --fs-xl: 18px;     /* 35rpx  区块引导语 */
+  /* 以下两级是页面级标题：NutUI 是组件库，其阶梯只到 18px，
+   * 这两档沿用 campus-refresh 的现行值并纳入同一张表，避免继续散落 20/21/25px。 */
+  --fs-display: 21px;/* 40rpx  首页主标题、入口主标题 */
+  --fs-title: 27px;  /* 52rpx  页面主标题 */
+  --lh-tight: 1.25;
+  --lh-base: 1.5;    /* NutUI --nut-line-height-base */
+  --lh-copy: 1.8;
+
+  /* ---- 间距：4px 栅格（NutUI cell padding 13px 16px、divider 16px 0 归到该栅格） ---- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* ---- 圆角：沿用 campus-refresh「方角、小圆角优先」，只取 NutUI 的小档 ----
+   * NutUI 的胶囊档（button 25px / popup 20px / switch 21px）**不采用**，见 README「不吸收」。 */
+  --r-tag: 3px;      /* 标签（campus-refresh 现行；NutUI tag 为 4px，差异列入待拍板） */
+  --r-cell: 6px;     /* NutUI --nut-cell-border-radius；campus-refresh .surface 原为 7px，收敛到 6px */
+  --r-control: 5px;  /* 按钮与输入控件（campus-refresh 现行） */
+  --r-panel: 8px;    /* 弹层与分组面板 */
+  --r-capsule: 15px; /* 仅微信胶囊，属系统壳不算设计语言 */
+
+  /* ---- 组件尺度：NutUI 尺寸阶梯 ---- */
+  --h-btn-lg: 48px;   /* NutUI --nut-button-large-height / block-height */
+  --h-btn: 38px;      /* NutUI --nut-button-default-height */
+  --h-btn-sm: 28px;   /* NutUI --nut-button-small-height */
+  --h-btn-mini: 24px; /* NutUI --nut-button-mini-height */
+  --h-control: 44px;  /* 本项目触控下限，高于 NutUI 默认档 */
+  --cell-pad-y: 13px; /* NutUI --nut-cell-padding: 13px 16px */
+  --cell-pad-x: 16px;
+  --cell-line: 20px;  /* NutUI --nut-cell-line-height */
+  --divider-gap: 16px;/* NutUI --nut-divider-margin: 16px 0 */
+  --empty-pad-y: 32px;/* NutUI --nut-empty-padding: 32px 0 */
+  --empty-desc-lh: 20px;
+
+  /* ---- 动效：NutUI --nut-animation-duration / --nut-animation-timing-fun ---- */
+  --dur: 0.25s;
+  --ease: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}

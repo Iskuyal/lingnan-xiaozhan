@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课表设置</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    /* 引导条：campus-refresh 的金色左边线保留；字号走 nutui-port 阶梯（lead 用 --fs-xl） */
+    .settings-head { margin: 2px 0 var(--sp-4); padding-left: var(--sp-3); display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); border-left: 4px solid var(--gold); }
+    .settings-head-copy { flex: 1; }
+    .settings-lead { color: var(--brand-deep); font-size: var(--fs-xl); line-height: 1.35; font-weight: 700; }
+    .settings-note { margin-top: 3px; color: var(--text-2); font-size: var(--fs-sm); }
+    .settings-back { min-height: var(--h-control); padding: 0 var(--sp-1); display: flex; align-items: center; color: var(--brand-ink); font-size: var(--fs-cap); white-space: nowrap; }
+
+    /* 分组内容区：左右内距对齐 NutUI --nut-cell-padding 的 16px */
+    .group-body { padding: var(--sp-3) var(--cell-pad-x) var(--sp-4); }
+    .settings-preview { margin-top: var(--sp-3); padding: var(--sp-3); background: var(--paper-shade); color: var(--text-2); font-size: var(--fs-sm); border-radius: var(--r-tag); }
+
+    /* 作息行：标签列 45px + 两个时刻输入，行高按 --h-control */
+    .time-row { min-height: var(--h-control); display: grid; grid-template-columns: 45px 1fr 16px 1fr; gap: var(--sp-2); align-items: center; border-bottom: 1px solid rgba(43,36,34,.12); font-size: var(--fs-sm); }
+    .time-row span:first-child { color: var(--text-2); }
+    .time-input { min-height: 33px; padding: var(--sp-1); display: grid; place-items: center; border: 1px solid rgba(43,36,34,.18); border-radius: var(--r-tag); color: var(--text-3); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课表设置</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <header class="settings-head">
+      <div class="settings-head-copy">
+        <div class="settings-lead">先定学期，再补作息</div>
+        <div class="settings-note">日期和时刻只显示你亲自确认的内容。</div>
+      </div>
+      <div class="settings-back">返回课表</div>
+    </header>
+
+    <section class="cell-group">
+      <div class="cell-group-label">学期</div>
+      <div class="group-body">
+        <div class="field"><div class="field-label">学期名称</div><div class="field-value">2026-2027 学年第一学期</div></div>
+        <div class="field"><div class="field-label">第一周的星期一</div><div class="field-value">选择日期 <span class="cell-arrow">›</span></div></div>
+        <div class="field">
+          <div class="field-label">总周数</div>
+          <div class="field-value">20 周</div>
+          <div class="choice-group" style="margin-top:8px"><span class="choice">18</span><span class="choice on">20</span><span class="choice">22</span></div>
+        </div>
+        <div class="settings-preview">开学日设置后，课表会显示当前周次和日期；不设置时按第 1 周查看。</div>
+      </div>
+    </section>
+
+    <section class="cell-group">
+      <div class="cell-group-label">作息时间</div>
+      <div class="group-body">
+        <div class="warn-block">学校作息表尚未核实，不预置默认时刻。只有你填写并保存后，课表才显示对应时刻。</div>
+
+        <div class="collapse open">
+          <div class="collapse-head"><strong>上午 第 1-4 节</strong><span>收起 −</span></div>
+          <div class="time-row"><span>第 1 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+          <div class="time-row"><span>第 2 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+          <div class="time-row"><span>第 3 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+          <div class="time-row"><span>第 4 节</span><span class="time-input">设置开始</span><span>至</span><span class="time-input">设置结束</span></div>
+        </div>
+        <div class="collapse"><div class="collapse-head"><strong>下午 第 5-10 节</strong><span>6 节 · 展开 +</span></div></div>
+        <div class="collapse"><div class="collapse-head"><strong>晚上 第 11-12 节</strong><span>2 节 · 展开 +</span></div></div>
+        <div class="quiet" style="margin-top:12px">已填写时刻的分组会自动展开；清空某一节不会删除课程数据。</div>
+      </div>
+    </section>
+
+    <div class="bottom-bar"><button class="btn btn-lg btn-primary btn-block">保存设置</button></div>
+  </main>
+</body>
+</html>
