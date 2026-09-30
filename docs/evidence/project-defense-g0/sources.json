@@ -58,14 +58,14 @@
       "id": "TP-2",
       "name": "Microsoft 4-typing-game 章节 README 与 assignment.md",
       "url": "https://github.com/microsoft/Web-Dev-For-Beginners/blob/main/4-typing-game/README.md",
-      "object": "章节 README、typing-game/README.md、assignment.md",
+      "object": "4-typing-game/README.md；4-typing-game/typing-game/README.md；4-typing-game/typing-game/assignment.md；4-typing-game/solution/index.js",
       "license": "随仓库 MIT；章节 README 无独立许可声明",
       "checkedAt": "2026-09-30",
       "attributionRequired": "仅复制时需保留声明",
       "shareAlike": false,
       "nonCommercial": false,
       "usage": "mechanism-reference-only",
-      "usageDetail": "章节 README 顶部与底部均已核对，无独立许可条款，底部仅为作者署名行（Credits，非许可条款）。assignment.md 本身要求学员「design and build your own keyboard-based game」——与本次自编定位一致。未复制其代码块、图片或 Sherlock Holmes 引文数组（该选取与编排属微软表达）。",
+      "usageDetail": "章节 README 顶部与底部均已核对，无独立许可条款，底部仅为作者署名行（Credits：「Written with ♥️ by Christopher Harrison」，非许可条款）。assignment.md 位于 4-typing-game/typing-game/ 子目录（不是 4-typing-game/ 根下），原文要求学员「You'll design and build your own keyboard-based game」——与本次自编定位一致。未复制其代码块、图片或引文数组（4-typing-game/solution/index.js 内有 7 条 Sherlock Holmes 引文的数组，其选取与编排属微软表达）。",
       "verdict": "首版无需动作。措辞应写「受事件驱动编程教学范围启发」，不得写「基于 / 改编自 Microsoft 课程」，避免暗示背书。",
       "verified": true,
       "verificationGap": null
@@ -156,6 +156,59 @@
       "verificationGap": "原交互工具是否仍可用未验证。"
     }
   ],
+  "liveReverification": {
+    "note": "G0 交付后（2026-09-30）对第三方许可账逐条做联网复核：直接取官方原始文本或官方页面，记录结论与原文引句。这是对 checkedAt 当日结论的复核，不改变「首版零复制 ⇒ 无需署名」的判定。",
+    "date": "2026-09-30",
+    "method": "取自官方原始来源（raw.githubusercontent.com 上的许可证与章节文件、ocw.mit.edu 使用条款页、swcarpentry 许可页、microsoft.com 商标政策页、anthropic.com 官方发布页、blog.google 官方文章）。未使用第三方镜像或个人转载。",
+    "results": [
+      {
+        "id": "TP-1",
+        "status": "confirmed",
+        "evidence": "LICENSE 首行「MIT License」，第 3 行「Copyright (c) Microsoft Corporation.」",
+        "note": "与登记一致。"
+      },
+      {
+        "id": "TP-2",
+        "status": "confirmed-with-path-fix",
+        "evidence": "章节 README 无许可小节，底部仅「Written with ♥️ by Christopher Harrison」署名行；assignment.md 原文「You'll design and build your own keyboard-based game that demonstrates your understanding of event handling, DOM manipulation, and user interaction patterns.」；solution/index.js 含 7 条 Sherlock Holmes 引文数组。",
+        "note": "结论不变。**路径已修正**：assignment.md 在 4-typing-game/typing-game/ 子目录下，原登记的 object 未写明子目录，易被读成 4-typing-game/assignment.md（该路径 404）。"
+      },
+      {
+        "id": "TP-3",
+        "status": "confirmed",
+        "evidence": "「Many uses, including our logos, app and product icons, and other designs, will require a license first.」「our logos, app and product icons, illustrations, photographs, videos, and designs can never be used without an express license.」「Microsoft's logos, designs, and icons can never be used as your app icon」",
+        "note": "与登记一致。该页未说明其与 MIT 等开源代码许可的关系，本次未据此推断。"
+      },
+      {
+        "id": "TP-4",
+        "status": "confirmed",
+        "evidence": "许可为「Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)」，含 NonCommercial 与 ShareAlike；「MIT」「Massachusetts Institute of Technology」及徽标为商标，除许可要求的署名外须「prior written consent of MIT」，且不得暗示背书。",
+        "note": "与登记一致，首版仍不使用。"
+      },
+      {
+        "id": "TP-5",
+        "status": "confirmed",
+        "evidence": "教材为 CC BY 4.0（链接指向 creativecommons.org/licenses/by/4.0/），示例软件为 MIT；页脚「Template licensed under CC-BY 4.0」其链接却指向 by-sa/4.0。",
+        "note": "页脚许可表述自相矛盾一项**复核成立**，仍作为来源瑕疵记录，首版不依赖。"
+      },
+      {
+        "id": "TP-6",
+        "status": "confirmed",
+        "evidence": "页面描述 Learning mode：引导学生先思考而非直接给答案、苏格拉底式提问（举例「What evidence supports your conclusion?」）、强调核心概念。页面未给出复用其内容、图片或品牌的许可声明。",
+        "note": "「仅机制参考、未核实开放许可」与登记一致。"
+      },
+      {
+        "id": "TP-7",
+        "status": "partial",
+        "evidence": "2022 年官方文章确认：实时转写、检测「insights」（常用词与覆盖的 talking points），并明确「Your responses aren't graded or judged and you can answer questions as many times as you want.」",
+        "note": "文章部分复核成立。**旧入口可用性仍无法复核**：本次执行环境对 grow.google 连通失败（curl 在 443 超时、抓取工具 10 秒超时），无法确认 https://grow.google/interview-warmup/ 当前返回内容。该 verificationGap 保持打开。"
+      }
+    ],
+    "stillOpen": [
+      "TP-7 旧交互入口当前是否可用：执行环境网络无法到达 grow.google，未复核。",
+      "研究文档引用的 artifacts/project-defense-research/.firecrawl/ 一手抓取仍未落盘（见 sourceTraceabilityGap）。本次复核取的是官方来源的即时文本，不等同于核查当日抓取的原文。"
+    ]
+  },
   "brandAssets": {
     "copied": [],
     "note": "首版未复制 MIT OCW 内容，也未复制任何第三方品牌图片或标识。"
@@ -216,6 +269,12 @@
       "全盘查找 *firecrawl* 无匹配。"
     ],
     "impact": "许可结论无法回核到仓库内的一手抓取记录，只能依赖核查当日对官方来源的重新取证。这不影响「首版零复制 ⇒ 无需署名」的结论，但该结论的可复核性依赖联网，不依赖仓库内证据。",
-    "actionForG1": "如 G1 或 G4 需要逐文件许可复核，应把抓取原文重新落盘到随仓库提交的位置，或在执行记录中保留可访问的 URL 与日期。"
+    "reverification": {
+      "date": "2026-09-30",
+      "result": "已对 TP-1…TP-7 逐条联网复核（见 liveReverification）：6 条 confirmed、1 条 partial（TP-7 仅旧入口可用性未复核）。许可结论本身**不再只依赖未落盘的抓取**——每条都有官方原始文本的引句与本次日期可查。",
+      "narrowed": "「许可结论无法复核」已收窄为「核查当日的抓取原文未落盘」。前者已解决，后者仍在。",
+      "stillOpen": "① 当日 .firecrawl 抓取原文仍未落盘；② TP-7 旧交互入口的当前可用性未复核（执行环境无法到达 grow.google）。"
+    },
+    "actionForG1": "如 G1 或 G4 需要逐文件许可复核，应把抓取原文重新落盘到随仓库提交的位置，或在执行记录中保留可访问的 URL 与日期。本次复核的引句与日期已记入 liveReverification，可直接作为该记录使用；仍在 open 的两项须在首次引用 TP-7 或需要一手抓取时补做。"
   }
 }

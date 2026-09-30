@@ -16,7 +16,7 @@
 
 | 文件 | 内容 |
 | --- | --- |
-| [sources.json](sources.json) | 素材登记、基线、第三方许可账（TP-1…TP-7）、证据映射、可追溯性缺口 |
+| [sources.json](sources.json) | 素材登记、基线、第三方许可账（TP-1…TP-7）、联网复核（`liveReverification`）、证据映射、可追溯性缺口 |
 | [fact-card-1-timetable.md](fact-card-1-timetable.md) | FC-1 事实卡：不变量 INV-1…INV-3、事实 F1…F9 |
 | [fact-card-2-typing-game.md](fact-card-2-typing-game.md) | FC-2 设计事实卡：不变量 INV-A…INV-B、设计事实 D1…D8（D7 为故意保留的未测试边界） |
 | [samples-development.json](samples-development.json) | 6 个开发样例（每卡 3 类），允许用于 G1 前调整 |
@@ -51,7 +51,10 @@
    - `docs/evidence/cloud-recheck/README.md` 称导入页「没有存在性兜底」，而 `miniprogram/pages/timetable/import/index.ts:174` 就是该兜底且有测试覆盖；
    - `docs/evidence/p4-b/README.md` 一处记某轮 `verify:wechat`「20 项全过」，而入库的 `verification.json` 是**更晚一轮**（21 项，`2026-09-19T17:22:47.280Z`，含 09-20 才新增的「不写学分」项）；README 未标注该 JSON 属更晚轮次。**这不是事实矛盾，是可追溯性问题。**
 6. **`verify:wechat` 项数有三个轮次，且最新一轮未入库**：`p4-b/README.md` 记 20 项（`2026-09-19T13:49:27.777Z`），入库 `p4-b/verification.json` 为 21 项（`17:22:47.280Z`），而 `docs/evidence/timetable-ui-rework/README.md` 记录**更晚一轮 24 项全过**（21 项原有 + 3 项新增），其 `verification.json` 位于被 gitignore 的 `artifacts/verify/`。因此 21 项只能表述为「已入库 JSON 中最新的一轮」，**不能**说成「最近一次验收」。引用项数时须连轮次一起说。
-7. **来源可追溯性缺口**：`docs/planning/project-defense-examples-and-materials-2026-09-30.md` 引用的原始抓取位于 `artifacts/project-defense-research/.firecrawl/`，而 `artifacts/` 被 `.gitignore`（第 18 行）忽略，原检出目录下也只有 `department-rag`、`lost-found`、`verify`。因此许可结论依赖联网重新取证，无法回核仓库内一手记录。详见 `sources.json` 的 `sourceTraceabilityGap`。
+7. **来源可追溯性——已联网复核，仍有两项未落盘**：`docs/planning/project-defense-examples-and-materials-2026-09-30.md` 引用的原始抓取位于 `artifacts/project-defense-research/.firecrawl/`，而 `artifacts/` 被 `.gitignore`（第 18 行）忽略，原检出目录下也没有 `project-defense-research`。
+   - **已收窄（2026-09-30 联网复核）**：对 `TP-1`…`TP-7` 逐条取官方原始来源复核，结论为 6 条 confirmed、1 条 partial，每条的引句与日期记入 `sources.json` 的 `liveReverification`。**「许可结论无法复核」这一项已解决**；「首版零复制 ⇒ 无需署名」的判定不变。
+   - **仍在 open**：① 核查当日的 `.firecrawl` 抓取原文仍未落盘；② `TP-7` 的旧交互入口 `https://grow.google/interview-warmup/` 当前是否可用**未复核**——本次执行环境对该域连通失败（curl 443 超时、抓取工具 10 秒超时）。
+   - 附带修正：`TP-2` 的 `assignment.md` 实际在 `4-typing-game/typing-game/` 子目录下，原登记未写明子目录（`4-typing-game/assignment.md` 是 404）；已改正。
 8. **异常样例只有要求、没有样例**：G0 要求把空 / 长 / 无关 / 指令注入等异常写入要求，已落实在 [abnormal-cases.md](abnormal-cases.md)（含 `AX-1`…`AX-6` 六类与逐条判据）。但冻结的 6+2 样例里**不包含**异常样例，其首次结果必须由 **G1** 实际构造并单列记录；在此之前不得声称异常路径已验证。
 9. **留出样例只有 2 个**：按阶段方案的首批规模执行，样本量不足以支撑任何泛化结论。
 
@@ -85,12 +88,12 @@ G0 交付后的独立事实核对（逐条回核仓库代码、测试与证据�
 
 | 检查项 | 结果 |
 | --- | --- |
-| 每条事实有依据或显式「待验证」/「待核实」 | 通过（并已在验收前独立回核，修正 3 处不准确表述） |
+| 每条事实有依据或显式「待验证」/「待核实」 | 通过（并已在验收前独立回核，修正 3 处不准确表述；许可账 7 条另做联网复核，6 confirmed / 1 partial） |
 | 引用 id 正确（校验脚本 0 错误） | 通过 |
 | 自编材料不冒充真实学生 / 不冒充已有功能 | 通过（`FC-2` 标 `isFiction: true`） |
-| 另一执行者可复查 | 通过（文件、冻结日期、判定理由、依据映射齐备；修正记录与原表述一并留档） |
+| 另一执行者可复查 | 通过（文件、冻结日期、判定理由、依据映射、联网复核引句齐备；修正记录与原表述一并留档） |
 | 材料长度合规 | 通过（FC-1 1195 字、FC-2 668 字，上限 1200） |
-| 首版不复制 MIT OCW 内容与品牌图片 | 通过（零复制） |
+| 首版不复制 MIT OCW 内容与品牌图片 | 通过（零复制，且已联网复核各来源的许可边界） |
 | 异常样例要求（空 / 超长 / 无关 / 注入） | 要求已写入 [abnormal-cases.md](abnormal-cases.md)；**样例与首次结果未完成**，须在 G1 补齐 |
 | 真实模型可行 | **未完成**——G0 不做真实调用，G1 待配额与执行 |
 
@@ -105,5 +108,7 @@ G0 交付后的独立事实核对（逐条回核仓库代码、测试与证据�
 - `npm test`（构建 + 全量测试）：**671 项全过、0 失败**；其中本包新增 15 项。
 - `npm run docs:check`：**126 个 Markdown、853 个本地引用、0 个错误**。
 - `git diff --check`：无输出（无空白错误）。
+
+另有**一次联网复核**（不是离线检查，也不调用模型）：对第三方许可账 `TP-1`…`TP-7` 逐条取官方原始来源核对，结果 6 条 `confirmed`、1 条 `partial`，引句与日期记入 `sources.json` 的 `liveReverification`。仍未复核的两项（当日 `.firecrawl` 抓取原文、`TP-7` 旧入口可用性）见上方待验证问题第 7 条。
 
 注：worktree 中 `node_modules` 以目录联接复用主工作区同一提交的依赖（`node_modules/` 被 `.gitignore` 忽略，不随提交）。本包**未修改任何业务代码**，因此未补构建/行为回归；`npm test` 的 671 项是既有回归的复核，不是本包带来的新增覆盖。
