@@ -29,7 +29,7 @@
 
 ## 项目讲解与答辩练习的执行入口（09-30）
 
-已按本轮要求完成实例/素材研究、方向确定、阶段任务与[授权PPT首版](../competition/principal-2026-10-08/README.md)。下一位执行者从[Issue #111的G0提示词](project-defense-g0-prompt.md)开始，只准备素材和评价；G1–G4依[阶段方案](../planning/project-defense-stages-2026-09-30.md)逐关解锁，真实调用与升学共用配额。新增功能的素材包、PoC、设计、实现和效果/真机仍未完成，不因规划与PPT交付销项。
+已按本轮要求完成实例/素材研究、方向确定、阶段任务与[授权PPT首版](../competition/principal-2026-10-08/README.md)。**G0 素材已交付**：[素材包](../evidence/project-defense-g0/README.md)（两份事实卡、6+2 冻结样例、评价表、许可账与离线校验，PR #118）——**等负责人验收，未标完成**。G1 起用 [G1 提示词](project-defense-g1-prompt.md)，依[阶段方案](../planning/project-defense-stages-2026-09-30.md)逐关解锁，真实调用与升学共用配额。新增功能的 PoC、设计、实现和效果/真机仍未完成，不因规划、PPT 或素材包交付销项；G1 的「真实模型可行」在未实际调用前保持未完成。
 
 ## 一、需要负责人决定
 
