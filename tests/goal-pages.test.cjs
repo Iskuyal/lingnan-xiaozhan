@@ -4,6 +4,8 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createRequire } = require('node:module');
+// 首页入口带的剩余天数只能按当前日历日现算（那条路径没有「现在」注入口），所以这里要用服务层。
+const dates = require('../dist/services/dates/index.js');
 
 // 目标日两个页面（Issue #90）的行为测试：与 tests/timetable-manage-page.test.cjs 同一套骨架——
 // 用 vm 加载构建产物里的页面定义，把 wx 的本机存储与弹窗换成桩，只验证页面编排。
@@ -269,7 +271,9 @@ test('首页入口带：显示最近一条目标日与剩余天数，没有时�
   home.onShow();
   assert.equal(home.data.goalStrip.hasGoal, true);
   assert.equal(home.data.goalStrip.name, '计算机二级考试');
-  assert.equal(home.data.goalStrip.value, String(Math.round((Date.UTC(2099, 11, 5) - Date.UTC(2026, 8, 29)) / 86400000)));
+  // 期望值按当前上海日历日现算：`onShow()` 不接参数，页面走的是真实的 `Date.now()`，
+  // 写死某个日期会让这条断言只在写入当天通过。日历日算法本身由 tests/goals.test.cjs 钉住。
+  assert.equal(home.data.goalStrip.value, String(dates.diffDays(dates.shanghaiToday(), '2099-12-05')));
   assert.equal(home.data.goalStrip.unit, '天后');
   home.openGoals();
   assert.deepEqual(stub.calls.navigate, ['/pages/goals/index']);
