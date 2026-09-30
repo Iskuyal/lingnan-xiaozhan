@@ -29,7 +29,7 @@
 
 ## 项目讲解与答辩练习的执行入口（09-30）
 
-已按本轮要求完成实例/素材研究、方向确定、阶段任务与[授权PPT首版](../competition/principal-2026-10-08/README.md)。下一位执行者从[Issue #111的G0提示词](project-defense-g0-prompt.md)开始，只准备素材和评价；G1–G4依[阶段方案](../planning/project-defense-stages-2026-09-30.md)逐关解锁，真实调用与升学共用配额。新增功能的素材包、PoC、设计、实现和效果/真机仍未完成，不因规划与PPT交付销项。
+已按本轮要求完成实例/素材研究、方向确定、阶段任务与[授权PPT首版](../competition/principal-2026-10-08/README.md)。**09-30 状态**：G0 素材包已产出（[PR #118](https://github.com/Iskuyal/wx-match/pull/118) 仍 OPEN、Issue #111 仍 OPEN，未验收未合入）；G1 按冻结提示词的守卫只交付了**离线部分**——维护者脚本 `scripts/poc-project-defense.cjs` 的 `--plan` 装配自检（0 错误、装配指纹 `64b4d06b`）、13 项负例离线测试与逐例记录骨架，[真实模型评测未完成](../evidence/project-defense-g1/README.md)。G1–G4 依[阶段方案](../planning/project-defense-stages-2026-09-30.md)逐关解锁，真实调用与升学共用配额。**解锁前置**：先验收并合入 #118（真实评测需在该素材包上首次运行，留出样例独立性尚未消耗）。新增功能的样本包、页面设计、业务代码、真实模型与真机验收仍未完成，不因规划与 PPT 交付销项。
 
 ## 一、需要负责人决定
 
