@@ -863,7 +863,7 @@ async function runBatch({ requests, pkg, outBase, allowSpend, maxCalls, tag }) {
 }
 
 function parseArgs(argv) {
-  const options = { mode: 'plan', out: '', allowSpend: false, maxCalls: MAX_CLOUD_REQUESTS_PER_BATCH, tag: '', feature: DEFAULT_FEATURE, packageDir: PACKAGE_DIR, emitRuns: '' };
+  const options = { mode: 'plan', out: '', allowSpend: false, maxCalls: MAX_CLOUD_REQUESTS_PER_BATCH, tag: '', feature: DEFAULT_FEATURE, packageDir: PACKAGE_DIR, emitRuns: '', setFilter: 'all' };
   for (const arg of argv) {
     if (arg === '--plan') options.mode = 'plan';
     else if (arg === '--usage') options.mode = 'usage';
@@ -877,10 +877,16 @@ function parseArgs(argv) {
     else if (arg.startsWith('--feature=')) options.feature = arg.slice(10);
     else if (arg.startsWith('--package=')) options.packageDir = arg.slice(10);
     else if (arg.startsWith('--emit-runs=')) options.emitRuns = arg.slice(12);
+    else if (arg.startsWith('--set=')) options.setFilter = arg.slice(6);
     else throw new Error(`未知参数：${arg}`);
   }
   if (!Number.isInteger(options.maxCalls) || options.maxCalls < 0 || options.maxCalls > MAX_CLOUD_REQUESTS_PER_BATCH) {
     throw new Error(`--max-calls 必须是 0 到 ${MAX_CLOUD_REQUESTS_PER_BATCH} 之间的整数（每批上限）`);
+  }
+  // `--set` 只对 `--samples` 有意义：调参后复测**只能重跑开发样例**，
+  // 反复跑留出样例会把它变成事实上的调参集（rubric.md 明令不得用于调整）。
+  if (!['all', 'development', 'heldout'].includes(options.setFilter)) {
+    throw new Error('--set 只接受 all / development / heldout');
   }
   return options;
 }
@@ -971,7 +977,17 @@ async function run() {
     process.exitCode = 1;
     return;
   }
-  const requests = options.mode === 'session' ? plan.sessionRequests : options.mode === 'samples' ? plan.sampleRequests : plan.abnormalRequests;
+  const all = options.mode === 'session' ? plan.sessionRequests : options.mode === 'samples' ? plan.sampleRequests : plan.abnormalRequests;
+  // `--set` 只在 samples 模式下生效：第一次评测跑 all（开发 + 留出**同批**产生首次结果），
+  // 调参后的复测用 --set=development，不再重复消耗留出样例。
+  const requests = options.mode === 'samples' && options.setFilter !== 'all'
+    ? all.filter((request) => request.set === options.setFilter)
+    : all;
+  if (requests.length === 0) {
+    console.error(`--set=${options.setFilter} 在 ${options.mode} 模式下没有匹配的请求。`);
+    process.exitCode = 1;
+    return;
+  }
   const stamp = new Date().toISOString().replace(/[:.]/gu, '-');
   const outBase = options.out === '' ? path.resolve(`artifacts/verify/defense-g1-${options.mode}-${stamp}`) : path.resolve(options.out);
   const result = await runBatch({ requests, pkg: plan.pkg, outBase, allowSpend: options.allowSpend, maxCalls: options.maxCalls, tag: options.tag });

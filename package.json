@@ -25,6 +25,7 @@
     "poc:defense": "node scripts/poc-project-defense.cjs --plan",
     "poc:defense:session": "npm run build && node scripts/poc-project-defense.cjs --session",
     "poc:defense:samples": "npm run build && node scripts/poc-project-defense.cjs --samples",
+    "poc:defense:dev": "npm run build && node scripts/poc-project-defense.cjs --samples --set=development",
     "poc:defense:abnormal": "npm run build && node scripts/poc-project-defense.cjs --abnormal",
     "poc:defense:usage": "node scripts/poc-project-defense.cjs --usage"
   },

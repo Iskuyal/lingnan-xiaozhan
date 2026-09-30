@@ -311,3 +311,17 @@ test('会话口径：三轮 + 复盘 + 重答，且请求数不超过 5', async 
   assert.equal(result.sessionRequests[3].stepKind, 'review');
   assert.equal(result.sessionRequests[4].stepKind, 'reanswer');
 });
+
+test('--set 能只重跑开发样例（调参后复测不得反复消耗留出样例）', async () => {
+  assert.equal(poc.parseArgs(['--samples']).setFilter, 'all');
+  assert.equal(poc.parseArgs(['--samples', '--set=development']).setFilter, 'development');
+  assert.throws(() => poc.parseArgs(['--samples', '--set=everything']), /--set 只接受/u);
+
+  const result = await poc.planCheck({ packageDir: REAL_PACKAGE });
+  const devOnly = result.sampleRequests.filter((request) => request.set === 'development');
+  const heldOnly = result.sampleRequests.filter((request) => request.set === 'heldout');
+  assert.equal(devOnly.length, 6);
+  assert.equal(heldOnly.length, 2);
+  // 第一次评测必须把开发集与留出集放在同一批，留出样例的首次结果才在调参之前产生。
+  assert.deepEqual(result.sampleRequests.map((item) => item.id), ['CS1-1', 'CS1-2', 'CS1-3', 'CS2-1', 'CS2-2', 'CS2-3', 'HS-1', 'HS-2']);
+});

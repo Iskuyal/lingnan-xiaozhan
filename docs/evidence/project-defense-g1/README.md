@@ -25,7 +25,7 @@
 | 做了 | 没做 |
 | --- | --- |
 | 新增维护者脚本 `scripts/poc-project-defense.cjs`（含 `--plan` 只装配不调用模式） | 未发起任何真实模型调用（0 次） |
-| 新增离线自检与 13 项负例测试 `tests/defense-g1.test.cjs` | 未部署云函数、未 download 回读、未改云端配置 |
+| 新增离线自检与 14 项负例测试 `tests/defense-g1.test.cjs` | 未部署云函数、未 download 回读、未改云端配置 |
 | 装配三批请求（样例 8 / 会话 5 / 异常 6）并逐条守门 | 未改任何环境变量（未调额、未关 `AI_MODERATE_OUTPUT`、未动 `AI_SAFETY_FAIL_MODE`） |
 | 写出逐例记录骨架 `runs.json`（全部 `not_executed`） | 未新增页面、未改业务代码、未新增服务端 feature 约束 |
 | 记录基线、取用件 SHA 与冻结件哈希 | 未做设计图、未扩语音 / 图片 / RAG / 评分 |
@@ -62,7 +62,8 @@
 | `npm run poc:defense`（= `--plan [--emit-runs=<file>]`） | 离线装配自检：装配三批请求并逐条守门，写 `runs.json` 骨架 | **0**：不触网、不调用模型、不消耗内容安全配额与个人日额度 |
 | `npm run poc:defense:usage`（= `--usage`） | 维护者只读动作读回当月累计 | **0**：服务端只做 `assertAdmin`，不消耗个人日额度、不触发内容安全 |
 | `npm run poc:defense:session`（= `--session`） | 完整三轮 + 复盘 + 一次重答（5 次请求） | 真实计费；需 `--allow-spend` |
-| `npm run poc:defense:samples`（= `--samples`） | 6 开发样例 + 2 留出样例逐例首评（8 次请求） | 真实计费；需 `--allow-spend` |
+| `npm run poc:defense:samples`（= `--samples`） | 6 开发样例 + 2 留出样例逐例首评（8 次请求，**同一批**，保证留出首次结果早于任何调参） | 真实计费；需 `--allow-spend` |
+| `npm run poc:defense:dev`（= `--samples --set=development`） | 调参后**只重跑开发样例**（6 次请求），不重复消耗留出样例 | 真实计费；需 `--allow-spend` |
 | `npm run poc:defense:abnormal`（= `--abnormal`） | `AX-1`…`AX-6`（6 次请求） | 真实计费；需 `--allow-spend` |
 
 **记账用 feature：`defense-practice`**（可用 `--feature=` 覆盖）。不复用 `advancement-qa`——那会触发升学问答的服务端约束与语料检索。
@@ -199,13 +200,13 @@ node scripts/poc-project-defense.cjs --plan
 | 命令 | 结果 |
 | --- | --- |
 | `node scripts/poc-project-defense.cjs --plan` | **0 个错误、1 个已记录的拆批警告**；装配指纹 `64b4d06b911e4022` |
-| `node --test tests/defense-g1.test.cjs` | **13 项全过、0 失败**（含 8 组负例：超窗 / 超条数 / 非法角色 / 未知条目 id / 跨卡引用 / 样例数量 / 留出被调参 / 提示词掺样例 / 三类文案重复） |
-| `npm test`（构建 + 全量） | **684 项全过、0 失败**（G0 的 671 项 + 本阶段 13 项） |
+| `node --test tests/defense-g1.test.cjs` | **14 项全过、0 失败**（含 8 组负例：超窗 / 超条数 / 非法角色 / 未知条目 id / 跨卡引用 / 样例数量 / 留出被调参 / 提示词掺样例 / 三类文案重复） |
+| `npm test`（构建 + 全量） | **685 项全过、0 失败**（G0 的 671 项 + 本阶段 14 项） |
 | `npm run check:defense-g0` | **0 个错误、4 个已记录的未引用警告**；`FC-1` 1195 字、`FC-2` 668 字 |
-| `npm run docs:check` | 126 个 Markdown、853 个本地引用、**0 个错误** |
+| `npm run docs:check` | 128 个 Markdown、859 个本地引用、**0 个错误** |
 | `git diff --check` | 无输出（无空白错误） |
 
-本阶段**未修改任何业务代码或页面**，因此未补构建 / 行为回归；684 项是既有回归的复核 + 本阶段 13 项新增离线覆盖。
+本阶段**未修改任何业务代码或页面**，因此未补构建 / 行为回归；685 项是既有回归的复核 + 本阶段 14 项新增离线覆盖。
 
 ### 落盘位置
 
@@ -228,6 +229,8 @@ node scripts/poc-project-defense.cjs --plan
 5. **未跑真机、无真实学生样本、无教师评价**——这些本来就不属于 G1 的范围，仍全部为缺口。
 
 **解锁后即可执行（脚本已就绪）**：先 `npm run poc:defense:usage` 读回当月累计与告警状态，再 `npm run build` 并启动开发者工具自动化端口，然后按批跑 `--session` → `--samples` → `--abnormal`（每批 ≤12，逐次记录耗时 / token / 费用），最后按 `rubric.md` 的四步顺序逐例人工判定并回填 `runs.json` 的 `verdict`，同时把留出样例首次结果单列。
+
+**交接提示词**：[G1 真实评测续跑提示词](../../tasks/project-defense-g1-resume-prompt.md)——可直接复制给其他执行者，里面写明了固定顺序：**留出样例 `HS-1`/`HS-2` 的首次结果必须早于任何提示词调整**（`--samples` 把开发 6 例与留出 2 例放在同一批），调参后复测只用 `--set=development`，不得反复重跑留出样例。
 
 ## 十二、不得据此声称
 

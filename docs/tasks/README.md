@@ -5,6 +5,7 @@
 | 入口 | 用途 |
 | --- | --- |
 | [项目答辩练习G0提示词](project-defense-g0-prompt.md) | 交给其他执行者准备事实卡、冻结样例与评价规则；Issue #111 |
+| [项目答辩练习G1真实评测续跑提示词](project-defense-g1-resume-prompt.md) | 离线部分已交付后，接力跑真实调用与逐例判定；Issue #112 |
 | [升学模型阶段提示词](advancement-model-prompt.md) | 新会话执行下一阶段模型版与真实引用评测 |
 | [待办总表](pending.md) | 未决事项、未完成项、证据归档与负责人前置 |
 | [11 张执行 Ticket](tickets/README.md) | 逐票的状态、依赖、验收标准和历史成果 |
