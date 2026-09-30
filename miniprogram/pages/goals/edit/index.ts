@@ -151,8 +151,10 @@ Page({
     } catch (error) {
       wx.showModal({ title: '保存失败', content: problemOf(error), showCancel: false });
     }
-    this.setData({ saving: false });
-    if (!saved) return;
+    if (!saved) {
+      this.setData({ saving: false });
+      return;
+    }
     wx.showToast({ title: this.data.mode === 'edit' ? '已保存' : '已添加', icon: 'success' });
     setTimeout(() => this.goBack(), 400);
   },

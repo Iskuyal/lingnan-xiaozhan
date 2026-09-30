@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>升学问答 · 年份与地区确认</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .qa-question { margin-top:20px; padding:11px 12px; background:var(--brand-deep); color:#fff; font-size:14px; line-height:1.6; }
+    .qa-guard { margin-top:10px; padding:12px; border:1px solid var(--warn-line); border-left:4px solid #c68a32; background:var(--warn-soft); }
+    .qa-guard-label { color:var(--warn); font-size:10px; font-weight:700; }
+    .qa-guard-text { margin-top:6px; color:var(--warn); font-size:13.5px; line-height:1.8; }
+    .qa-choices { margin-top:10px; display:flex; flex-direction:column; gap:7px; }
+    .qa-choice { min-height:44px; padding:0 12px; display:flex; align-items:center; border:1px solid rgba(43,36,34,.2); background:rgba(255,255,255,.7); color:var(--brand-ink); font-size:13px; }
+    .qa-hint { margin-top:8px; color:var(--text-3); font-size:11px; line-height:1.7; }
+    .qa-code { margin-top:8px; padding:9px 11px; border:1px dashed rgba(43,36,34,.25); color:var(--text-2); font-size:11.5px; line-height:1.7; }
+    .qa-foot { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">升学与实习问答</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">只答官方原文里写过的事 · 语料 4 份 / 25 个段落 · 核查 2026-09-29</div>
+    <h1 class="page-title">升学与实习问答</h1>
+
+    <div class="qa-question">普通专升本什么时候报名？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">需要先确认适用范围</div>
+      <div class="qa-guard-text">请先确认你要查的年份和地区。当前语料收录的是 2026 年广东省资料，不会自动把它当成其他年份或地区的答案。</div>
+    </div>
+    <div class="qa-choices"><div class="qa-choice">2026 年广东省</div></div>
+    <div class="qa-hint">选择后保留原问题，并明确记录适用范围；提交新问题时清空之前的选择。</div>
+
+    <div class="qa-question">2027专升本什么时候报名？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">无法核实：年份未收录</div>
+      <div class="qa-guard-text">语料只收录 2026 年文件，2027 年尚未收录，不拿 2026 年的日期作答。</div>
+    </div>
+    <div class="qa-question">2026年湖南普通专升本什么时候报名？</div>
+    <div class="qa-guard">
+      <div class="qa-guard-label">无法核实：地区未收录</div>
+      <div class="qa-guard-text">当前只有广东省资料，无法核实湖南省安排。请查相应地区官方公告。</div>
+    </div>
+    <div class="quiet qa-foot">
+      澄清与拒答都是固定话术，由规则触发（类别不明、年份或地区不明、适用范围未收录、问岗位或分数线），不是模型自由发挥。
+    </div>
+  </main>
+</body>
+</html>

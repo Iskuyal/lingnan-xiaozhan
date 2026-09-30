@@ -10,10 +10,10 @@
  */
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const { mkdirSync, writeFileSync, rmSync } = require('node:fs');
+const { mkdirSync, writeFileSync } = require('node:fs');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
-const output = path.resolve('docs/evidence/campus-tools');
+const output = path.resolve(process.env.WECHAT_VERIFY_OUTPUT || 'artifacts/verify/campus-tools');
 
 /** 与实现独立的日期计算：北京时间今天与某天的天数差。 */
 function shanghaiToday(now = Date.now()) {
@@ -29,7 +29,6 @@ function diffDays(fromText, toText) {
 }
 
 async function run() {
-  rmSync(output, { recursive: true, force: true });
   mkdirSync(output, { recursive: true });
   const mini = await connectMini();
   const checks = [];
@@ -104,7 +103,7 @@ async function run() {
     assert.equal(clipboard, 'https://cet.neea.edu.cn/html1/report/2609/1-1.htm', `剪贴板里不是官方公告链接：${clipboard}`);
     checks.push('复制原文链接把官方公告地址写进了剪贴板');
 
-    await mini.pageScrollTo({ scrollTop: 100000 });
+    await mini.pageScrollTo(100000);
     await calendar.waitFor(400);
     await shot('02-calendar-pending');
 
@@ -149,29 +148,26 @@ async function run() {
     checks.push('体测估算：七项齐全时给出总分 100、等级「优秀」与 7 行明细');
     await shot('04-fitness-result');
 
-    // 改成超重（BMI 26.1）与缺项：不给总分与等级，缺项说明可见
-    await mini.pageScrollTo({ scrollTop: 0 });
+    // 超重正常计 80 分：其他六项仍在 100 分档，总分为 97。
+    await mini.pageScrollTo(0);
     await fitness.waitFor(300);
     await fill('#fit-weight', 80);
     await (await fitness.$('#fit-calc')).tap();
     await fitness.waitFor(600);
-    assert.ok(await fitness.$('.fit-warn'), '超重时应当有琥珀提示条');
-    const warnText = await (await fitness.$('.fit-warn')).text();
-    assert.match(warnText, /没有给出学年总分与等级/, `提示条文案不对：${warnText}`);
-    // BMI 那一行要写清「原表未给分」，这是本票最要紧的一句说明（它是明细表的第一行）
-    const bmiNote = await (await fitness.$('.fit-item-note')).text();
-    assert.ok(
-      bmiNote.includes('没有给出单项得分'),
-      `BMI 行没有写明「原表未给分」：${bmiNote}`,
-    );
-    assert.equal((await fitness.$$('.fit-total')).length, 0, '不完整时不该出现总分大数字');
-    const partial = await (await fitness.$('.fit-total-partial')).text();
-    assert.match(partial, /^\d/, `加权标准分应当是数字：${partial}`);
-    const missing = await (await fitness.$('.fit-missing, .fit-notes')).text();
-    assert.ok(missing.length > 0, '缺少说明文字');
-    checks.push(`体测估算：BMI 超重（26.1）时不给总分与等级，改为显示加权标准分 ${partial} 并说明原因`);
+    assert.equal(await (await fitness.$('.fit-total')).text(), '97');
+    assert.equal((await fitness.data('result')).items[0].score, 80);
+    checks.push('体测估算：BMI 超重 26.1 按 80 分计，其余六项满分时总分 97');
 
-    await mini.pageScrollTo({ scrollTop: 100000 });
+    // 真正缺项才不给总分，不再把 BMI 超重当作无分项。
+    await fill('#fit-vital', '');
+    await (await fitness.$('#fit-calc')).tap();
+    await fitness.waitFor(600);
+    assert.equal((await fitness.$$('.fit-total')).length, 0);
+    assert.deepEqual((await fitness.data('result')).missing, ['肺活量']);
+    assert.equal((await fitness.data('result')).standardScore, 82);
+    checks.push('体测估算：仅肺活量缺失时不给总分，BMI 仍计分；加权标准分为 82');
+
+    await mini.pageScrollTo(100000);
     await fitness.waitFor(400);
     await shot('05-fitness-incomplete');
 

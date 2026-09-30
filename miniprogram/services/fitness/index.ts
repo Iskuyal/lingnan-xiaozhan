@@ -2,8 +2,8 @@
  * 体测估算：按《国家学生体质健康标准（2014年修订）》大学组评分表算单项分与总分。
  *
  * 三条纪律（对应 Issue #92 的验收标准）：
- * 1. **只算不算猜**：分数只来自 `standard.ts` 的表；表里没有的档位不给分（例如 BMI「超重」
- *    一档在原表中单项得分就是空的），并说明原因，不替学生填一个数。
+ * 1. **只算不算猜**：分数来自标准原表；BMI 的低体重与超重共用 80 分合并单元格。
+ *    缺项或非法输入不给分，并说明原因，不替学生填一个数。
  * 2. **不冒充结果**：输出是「按所选标准的估算分」，不是学校正式成绩，也不给是否合格的结论；
  *    学校实际采用规则未核实时在说明里写明。
  * 3. **不落盘、不联网**：本模块是纯函数，输入只在内存里参与计算，调用方不得持久化或上传。
@@ -118,8 +118,7 @@ function thresholdOf(row: ScoreBreakpoint, band: GradeBand): number {
 }
 
 /**
- * 单项得分。返回 null 表示该表给不出分数（目前只有 BMI 的「超重」档）。
- * `belowLowest` 用来区分「低于最低档按 0 分」与「不在表内」。
+ * 单项得分；低于最低档按 0 分的估算口径在结果中说明。
  */
 function scoreFromTable(table: ItemTable, value: number, band: GradeBand): number | null {
   for (const row of table.rows) {
@@ -130,17 +129,17 @@ function scoreFromTable(table: ItemTable, value: number, band: GradeBand): numbe
   return 0;
 }
 
-/** BMI 一档：正常 100、低体重 80、肥胖 60；**超重一档原表未给分**，这里返回 null。 */
-function bmiScore(bmi: number, sex: Sex): { score: number | null; label: string; note: string } {
+/** BMI 原表：正常 100，低体重/超重共用 80 分合并单元格，肥胖 60。 */
+function bmiScore(bmi: number, sex: Sex): { score: number; label: string; note: string } {
   const normalLow = sex === 'male' ? 17.9 : 17.2;
   const normalHigh = 23.9;
   if (bmi >= normalLow && bmi <= normalHigh) return { score: 100, label: '正常', note: '' };
   if (bmi < normalLow) return { score: 80, label: '低体重', note: '' };
   if (bmi >= 28.0) return { score: 60, label: '肥胖', note: '' };
   return {
-    score: null,
+    score: 80,
     label: '超重',
-    note: '标准评分表的「超重」一档没有给出单项得分（原文该格为空），本估算器不替你填分；请以学校体测成绩为准',
+    note: '',
   };
 }
 

@@ -119,8 +119,9 @@ export async function feedbackMatch(
   matchId: string,
   feedback: 'helpful' | 'irrelevant' | 'misleading',
   ctx: { now: number },
-  openid?: string,
+  openid: string,
 ): Promise<LostFoundResponse> {
+  if (typeof openid !== 'string' || openid === '') return fail('forbidden', '无法取得用户身份');
   if (feedback !== 'helpful' && feedback !== 'irrelevant' && feedback !== 'misleading') {
     return fail('invalid_request', '反馈类型非法');
   }
@@ -132,16 +133,14 @@ export async function feedbackMatch(
     return fail('not_found', '候选不存在');
   }
   // 归属校验:只有候选所属帖子的发布者可以给反馈(领域权限矩阵)。
-  if (openid !== undefined) {
-    try {
-      const sourceDoc = await db.collection(POSTS).doc(match.sourcePostId).get();
-      const source = sourceDoc.data as PostRecord;
-      if (source.ownerOpenId !== openid) return fail('forbidden', '只能反馈自己帖子的候选');
-    } catch {
-      return fail('not_found', '候选来源帖子不存在');
-    }
+  try {
+    const sourceDoc = await db.collection(POSTS).doc(match.sourcePostId).get();
+    const source = sourceDoc.data as PostRecord;
+    if (source.ownerOpenId !== openid) return fail('forbidden', '只能反馈自己帖子的候选');
+  } catch {
+    return fail('not_found', '候选来源帖子不存在');
   }
   await db.collection(MATCHES).doc(matchId).update({ data: { feedback } });
-  await record(db, { actorOpenId: openid ?? '', action: 'feedbackMatch', postId: match.sourcePostId, summary: '候选反馈:' + feedback });
+  await record(db, { actorOpenId: openid, action: 'feedbackMatch', postId: match.sourcePostId, summary: '候选反馈:' + feedback });
   return ok({ matchId, feedback });
 }

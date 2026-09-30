@@ -50,7 +50,7 @@ test('低于表中最低档按 0 分计，并在该项说明里写清楚', () =>
   assert.ok(result.notes.some((note) => note.includes('按 0 分计')));
 });
 
-test('BMI：正常/低体重/肥胖有分，超重一档原表未给分（不给分也不猜）', () => {
+test('BMI：按原表合并单元格，低体重与超重均计 80 分', () => {
   const normal = fitness.estimate({ sex: 'male', band: 'freshman', height: 175, weight: 61.3 });
   assert.equal(scoreOf(normal, 'bmi').score, 100);
   assert.match(scoreOf(normal, 'bmi').valueText, /^20(\.\d)?（175 厘米 \/ 61\.3 千克）$/);
@@ -60,15 +60,22 @@ test('BMI：正常/低体重/肥胖有分，超重一档原表未给分（不给
   const obese = fitness.estimate({ sex: 'male', band: 'freshman', height: 175, weight: 86 }); // 28.1
   assert.equal(scoreOf(obese, 'bmi').score, 60);
   const fat = fitness.estimate({ sex: 'male', band: 'freshman', height: 175, weight: 80 }); // 26.1 → 超重
-  assert.equal(scoreOf(fat, 'bmi').score, null);
-  assert.match(scoreOf(fat, 'bmi').note, /没有给出单项得分/);
-  assert.ok(fat.missing.includes('BMI（超重）'));
-  assert.equal(fat.total, null, 'BMI 没分时不给总分');
-  assert.equal(fat.grade, null, '不给等级评定');
+  assert.equal(scoreOf(fat, 'bmi').score, 80);
+  assert.match(scoreOf(fat, 'bmi').note, /超重/);
+  assert.equal(fat.missing.some((name) => name.includes('BMI')), false);
+  assert.equal(scoreOf(fitness.estimate({ sex: 'female', band: 'senior', height: 175, weight: 80 }), 'bmi').score, 80);
 
   // 女生的正常下限不同：17.2 起（男生是 17.9）
   assert.equal(scoreOf(fitness.estimate({ sex: 'female', band: 'freshman', height: 160, weight: 44 }), 'bmi').score, 100); // 17.2
   assert.equal(scoreOf(fitness.estimate({ sex: 'female', band: 'freshman', height: 160, weight: 43.5 }), 'bmi').score, 80); // 17.0
+});
+
+test('BMI 超重且七项完整时可给总分，175cm/80kg 的已核对样例为 81 分', () => {
+  const result = fitness.estimate({ sex: 'male', band: 'freshman', height: 175, weight: 80,
+    vitalCapacity: 4300, sprint50: 7, sitAndReach: 17.7, standingLongJump: 248, strength: 15, distanceRunSeconds: 222 });
+  assert.equal(result.total, 81);
+  assert.equal(result.grade, '良好');
+  assert.deepEqual(result.missing, []);
 });
 
 test('附加分：引体向上/仰卧起坐按超过的次数，长跑按快的秒数，各自上限 10 分', () => {

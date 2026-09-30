@@ -1,0 +1,31 @@
+{
+  "verifiedAt": "2026-09-30T02:46:57.105Z",
+  "baseCommit": "8691d03cef0ff94600e470c026269cea49fd97cd",
+  "workingTree": "审查修复补丁未提交时验证，最终提交引用本记录",
+  "realDevice": false,
+  "checks": [
+    "S1/S2：年份简写、异省和中职自然长句拒答、无错误引用",
+    "S1：年份地区不明先确认，选择 2026 年广东省后给原文出处",
+    "S2：比较题逐步确认后可回答，原问题不拼接、新题不沿用范围",
+    "S2：选择未收录的中职升高职明确拒答，不混入专升本转段",
+    "R1：BMI 26.1 计 80 分，七项完整总分 81、等级良好",
+    "R1：清空肺活量仅缺肺活量，BMI 不再被误列无分",
+    "R5：真实页面连续保存只生成一条目标日，重进列表可读",
+    "R4：模拟器注入本机读取异常后保存被阻止，旧目标完整保留",
+    "R4：读取恢复后可再次保存，不丢失已有目标",
+    "校历与考试日期卡数据自检仍通过"
+  ],
+  "screenshots": [
+    "01-qa-region-refusal.png",
+    "02-qa-scope-confirm.png",
+    "03-qa-cited.png",
+    "04-qa-category-refusal.png",
+    "05-fitness-bmi-total.png",
+    "06-goal-reopen.png"
+  ],
+  "result": "passed",
+  "platform": "devtools",
+  "model": "iPhone 12/13 (Pro)",
+  "SDKVersion": "3.17.2",
+  "originalGoalStorageRestored": true
+}
