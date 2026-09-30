@@ -26,13 +26,13 @@
 | 目标日（本机倒计时） | [PR #95](https://github.com/Iskuyal/wx-match/pull/95) 合入：本机存储、Asia/Shanghai 日历日、未到期/今天/已过期三组与编辑页；设计图 5 张、模拟器验收 9 项、整机回归 25 项，见[证据](evidence/goal-days/README.md) | 设计图仍是**待评审**（4 条待拍板项）；真机未测；`realDevice: false` |
 | 校历与考试日期卡 | [PR #102](https://github.com/Iskuyal/wx-match/pull/102) 合入：版本化人工核准数据（四六级 4 条有官方日期）、无日期事项的三种降级、`validateEvents()` 自检；模拟器 6 项，见[证据](evidence/campus-tools/README.md) | 报名截止不显示（公告写明各考点自定）；学校校历与普通话只有官方入口；设计图待评审；真机未测 |
 | 体测估算 | [PR #102](https://github.com/Iskuyal/wx-match/pull/102) 合入：按《国家学生体质健康标准（2014年修订）》大学组评分表本地计算，附加分与等级、缺项说明；来源核验见[文档](product/sources/fitness-standard.md) | 09-30 纠正 BMI 合并单元格误读：超重计 80 分、七项齐全可给总分；「低于最低档按 0 分」是估算器口径、待拍板；学校实际采用规则未核实；真机未测 |
-| 升学 / 实习问答 | [PR #97](https://github.com/Iskuyal/wx-match/pull/97) 合入来源目录与 20 题检索 PoC（[报告](evidence/advancement-poc/README.md)：来源约束检索 20 题全过、关键词检索在 7 道守门题上 0%）；[PR #103](https://github.com/Iskuyal/wx-match/pull/103) 合入本地演示页。**2026-09-30 完成模型版与首次真实题集评测**（见[证据](evidence/advancement-model/README.md)）：`ai` 云函数新增 `advancement-qa`（可信段落服务端校验 + 逐句出处校验 + 新失败分类 `citation_unverified`），页面按「模型解释 / 澄清 / 拒答 / 原文降级」四态展示，语料补全两段缺主语/小标题的摘录；**真实模型调用 4 轮共 29 次**（模型 `deepseek/deepseek-v4.1-flash`、约 0.0054 元）：新题首评事实题 3/7、守门 6/6，修复后复测新题 7/7、历史 20 题回归模型解释 11/13 且全部通过出处校验、守门 7/7。设计图 04–07（模型态/生成中/降级/拒答）已渲染 | **独立效果估计未达标**：新题首评 43%（<80%），修复后只能算回归，需要用又一批没见过的题复测；真实学生提问样本仍为 0（13 道新题全是维护者设计题）；来源冲突场景无样本可测；当日个人日额度（30 次/天）已被评测用满；**端上模型解释截图是回放当天真实响应**（当日额度用尽，无法再现场调用）；真机未测；设计图待负责人拍板 |
+| 升学 / 实习问答 | [PR #97](https://github.com/Iskuyal/wx-match/pull/97)与[PR #103](https://github.com/Iskuyal/wx-match/pull/103)合入来源与演示页；[PR #110](https://github.com/Iskuyal/wx-match/pull/110)模型版在分支待合并。原4轮29次真实调用见[历史报告](evidence/advancement-model/README.md)。09-30审查修复数字、拒答和条件引用闸，当前保守模式为模型选择/排列完整原句、改写降级；修复版已部署，全部15个JS回读一致，656/656测试。04–07设计图已由负责人确认定稿 | **当前独立效果与语义引用验收未完成（NO-GO）**；旧校验器两处一致不能证明支持100%。第二批14题已冻结，本地13/14（b03被类别规则拒答），真实首评第一题被个人日额度拦截后停止，无模型输出。新版现场截图未取得、真机未测；真实学生样本0，来源冲突无样本。时延门槛已定端到端≤8秒、保留超时降级。详见[审查与实际证据](review/advancement-model-2026-09-30.md) |
 | 失物招领（负责人 2026-09-30 要求暂缓） | 非 AI 基线（发布、规则找线索、人工认领的五页面与 `lost-found` 云函数）连同设计图与离线评测集已随 [PR #76](https://github.com/Iskuyal/wx-match/pull/76) 合入，评测见[阶段证据](evidence/lost-found/README.md) | 范围本身尚未纳入已确认首版（[框架](planning/lost-found-framework.md)的决策关卡 D1–D3 待负责人）；09-30 修复完成交接重试越权和候选反馈漏传身份，入口回归通过。**后续开发、云端部署和相关验收暂缓，不列入当前演示收尾要求**；已有代码保留。AI 图文匹配（LF-4）未开始、设计图待评审、`lost-found` 云端部署与真机回归未做 |
 | 校园通知 RAG、OCR | [Ticket 10](tasks/tickets/10-campus-rag-qa.md) 有语料 PoC；[Ticket 11](tasks/tickets/11-ocr-document-parsing.md) 有 OCR 清单与脚本 | 尚未形成可对学生开放的 RAG 问答或已抽检入库的 OCR 语料；国赛版方向，不能计入省赛已完成能力 |
 | 课程项目答辩陪练 | [规划](planning/ai-project-defense-plan.md)已合入 | 样本、设计、代码、真实模型与真机验收均未完成，不能列为已实现能力 |
 | 参赛材料 | [七项材料模板](competition/submission.md)与历史截图存在 | 正式作品名、校内收口日期、真机录屏、效果评估、七项完整正文、提交回执 |
 
-[开发规格](product/spec.md)里的 AI 单次响应 ≤2 秒是原验收目标，已有文字冒烟约 4.6 秒；本轮逐次耗时尚未归档，不能写成已达标。负责人仍需决定是否调整分场景目标。
+[开发规格](product/spec.md)里的 AI 单次响应 ≤2 秒是原验收目标，已有文字冒烟约 4.6 秒；本轮逐次耗时尚未归档，不能写成已达标。09-30 负责人已确认升学问答 ≤8 秒（端到端）并保留超时降级；其他场景仍按 D1 决定。
 
 ## 使用真实学生数据前的关口
 

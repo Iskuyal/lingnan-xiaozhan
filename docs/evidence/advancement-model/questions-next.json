@@ -1,0 +1,29 @@
+{
+  "datasetId": "heldout-20260930-b",
+  "frozenAt": "2026-09-30",
+  "status": "frozen_not_run",
+  "note": "新题面在本轮修复完成后冻结；全部是代理协助维护者设计题，真实学生样本为0。题面未用于提示词、检索或校验调参；有限语料与历史题共享来源与主题，因此只能估计同一资料范围中新问法的效果，不能代表全校真实用户或新资料泛化。运行后不得修改题面刷分。",
+  "gaps": ["无真实学生提问", "无真实来源冲突样本", "共享既有语料主题"],
+  "judgeRules": {
+    "fact": "正确率分母为全部8道可回答题；模型上屏、回答题目要求、每条事实与引用的主语/否定/条件/比较词/日期/单位吻合才计正确。降级与拒答不计正确。关键串与同一校验器复算不能代替逐句语义复核。",
+    "citation": "逐句记录实际原句、引用段落、事实支持与判定理由；不能只贴verified=true。",
+    "gate": "事实题≥80%、6道守门题全部正确、事实引用支持100%、未支持官方断言为0；失败保留首评，调参后只能标回归。",
+    "latency": "升学问答小程序发起请求到收到响应≤8000ms，服务端耗时另列；未知不算达标。"
+  },
+  "questions": [
+    {"id":"b01","source":"maintainer_design","type":"fact_就业","question":"2026年广东的事业单位岗位，全年计划提供的最低数量是多少？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-employment-2026#public-institution"],"expectedAnswer":"全年全省提供事业单位岗位不少于5万个","mustContain":["事业单位岗位","不少于","5万"]},
+    {"id":"b02","source":"maintainer_design","type":"fact_就业","question":"2026年广东科研助理岗位计划开发多少个以上？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-employment-2026#research-assistant"],"expectedAnswer":"全省开发1万个以上科研助理岗位","mustContain":["1万","以上","科研助理岗位"]},
+    {"id":"b03","source":"maintainer_design","type":"fact_就业","question":"2026年广东普通专升本计划招生总量是多少万人？","behavior":"answer","scope":{"year":2026,"region":"广东省","category":"internship_实习招聘"},"expectedPassages":["gd-employment-2026#upgrade-plan"],"expectedAnswer":"普通专升本计划招生6.5万人","mustContain":["计划招生","6.5万"]},
+    {"id":"b04","source":"maintainer_design","type":"fact_转段","question":"2026年广东三二分段转段考核是三个部分吗，分别有哪些？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-segmented-2026#parts"],"expectedAnswer":"转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。","mustContain":["公共课程","基本素质","专业能力","三个部分"]},
+    {"id":"b05","source":"maintainer_design","type":"fact_转段","question":"2026年广东三二分段转段毕业证书会写什么，毕业后就业办法如何？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-segmented-2026#graduation"],"expectedAnswer":"转入本科专业三年级学习，毕业证书标注“专科起点本科学习”；毕业后就业办法与普通高校本科毕业生相同","mustContain":["专科起点本科学习","就业办法","相同"]},
+    {"id":"b06","source":"maintainer_design","type":"fact_转段","question":"2026年广东三二分段转段，基本素质考核不合格的学生能报考吗？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-segmented-2026#quality-check"],"expectedAnswer":"基本素质考核“不合格”的学生，不得报考。","mustContain":["不合格","不得报考"]},
+    {"id":"b07","source":"maintainer_design","type":"fact_专升本","question":"2026年广东普通专升本职教师资专业，职业资格证书要在什么环节之前取得？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-zsb-2026#vocational-teacher"],"expectedAnswer":"必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书","mustContain":["志愿填报开始前","中级及以上"]},
+    {"id":"b08","source":"maintainer_design","type":"fact_专升本","question":"2026年广东普通专升本志愿，是考前填报还是考后知分填报？","behavior":"answer","scope":{"year":2026,"region":"广东省"},"expectedPassages":["gd-zsb-2026#volunteer"],"expectedAnswer":"2026年普通专升本实行考后知分填报志愿","mustContain":["考后知分填报志愿"]},
+    {"id":"b09","source":"maintainer_design","type":"guard_缺年份","question":"广东普通专升本志愿填报方式是什么？","behavior":"clarify","scope":{},"expectedPassages":[],"expectedAnswer":"须先确认年份","mustContain":[]},
+    {"id":"b10","source":"maintainer_design","type":"guard_缺地区","question":"2026年普通专升本有哪些报考条件？","behavior":"clarify","scope":{},"expectedPassages":[],"expectedAnswer":"须先确认地区","mustContain":[]},
+    {"id":"b11","source":"maintainer_design","type":"guard_过期年份","question":"2024年广东普通专升本志愿可以填几个？","behavior":"refuse","scope":{},"expectedPassages":[],"expectedAnswer":"2024年资料未收录，不以2026年资料替代","mustContain":[]},
+    {"id":"b12","source":"maintainer_design","type":"guard_未来年份","question":"2028年广东普通专升本缴费截止到哪天？","behavior":"refuse","scope":{},"expectedPassages":[],"expectedAnswer":"2028年资料未收录","mustContain":[]},
+    {"id":"b13","source":"maintainer_design","type":"guard_无来源","question":"2026年广东普通专升本最低录取分数线到底是多少？","behavior":"refuse","scope":{},"expectedPassages":[],"expectedAnswer":"语料没有最低录取分数线，不能补猜","mustContain":[]},
+    {"id":"b14","source":"maintainer_design","type":"guard_类别混淆","question":"2026年广东中职升高职报考费是多少？","behavior":"refuse","scope":{},"expectedPassages":[],"expectedAnswer":"中职升高职不在当前语料范围","mustContain":[]}
+  ]
+}

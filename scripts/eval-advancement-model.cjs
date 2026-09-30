@@ -6,8 +6,8 @@
  *    守门题（澄清/拒答）到这里就结束——它们本来就不产生模型调用。
  * 2. **真实模型调用**（小程序端发起）：事实题按产品页面同一路径组装事件，经开发者工具的
  *    模拟器调用 `ai` 云函数（云调用必须由小程序端触发，见 docs/development/cloud/ai.md）。
- * 3. **独立复核**：拿服务端回传的段落与模型回答，在 Node 侧用云函数同一份 `verifyAdvancementAnswer`
- *    再算一遍引用支持，和服务端的结论对照——两处不一致会写进记录。
+ * 3. **一致性复算**：拿服务端回传的段落与模型回答，在 Node 侧用云函数同一份 `verifyAdvancementAnswer`
+ *    再算一遍校验结论——一致不等于事实支持，逐句语义复核单独记录。
  *
  * 用法：
  *   node scripts/eval-advancement-model.cjs --plan                     # 只看本地守门与检索（不花额度）
@@ -26,6 +26,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const { createHash } = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
@@ -43,14 +44,14 @@ const POLL_INTERVAL_MS = 1500;
  * 一分钟最多 5 次，留一次余量。
  */
 const PACE_MS = Number(process.env.ADV_EVAL_PACE_MS || 12000);
-/** 撞上分钟限额时的等待与重试次数（限额按分钟窗口算，等 65 秒必然换窗口）。 */
-const MINUTE_LIMIT_WAIT_MS = 65000;
+/** 撞上分钟限额时的等待与重试次数（限额按分钟窗口算，等 60 秒后进入下一分钟窗口）。 */
+const MINUTE_LIMIT_WAIT_MS = 60000;
 const MINUTE_LIMIT_RETRIES = 3;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function parseArgs(argv) {
-  const options = { set: 'all', only: [], plan: false, resume: false, maxCalls: 30, out: '', tag: '' };
+  const options = { set: 'all', only: [], plan: false, resume: false, maxCalls: 30, out: '', tag: '', questions: '' };
   for (const arg of argv) {
     if (arg === '--plan') options.plan = true;
     else if (arg === '--resume') options.resume = true;
@@ -59,9 +60,13 @@ function parseArgs(argv) {
     else if (arg.startsWith('--max-calls=')) options.maxCalls = Number(arg.slice(12));
     else if (arg.startsWith('--out=')) options.out = arg.slice(6);
     else if (arg.startsWith('--tag=')) options.tag = arg.slice(6);
+    else if (arg.startsWith('--questions=')) { options.questions = arg.slice(12); options.set = 'fresh'; }
     else throw new Error(`未知参数：${arg}`);
   }
-  if (!['all', 'new', 'legacy'].includes(options.set)) throw new Error('--set 只接受 all / new / legacy');
+  if (!['all', 'new', 'legacy', 'fresh'].includes(options.set)) throw new Error('--set 只接受 all / new / legacy，独立新题用 --questions=<文件>');
+  if (options.set === 'fresh' && options.questions === '') throw new Error('fresh 题集须提供 --questions=<文件>');
+  if (!Number.isInteger(options.maxCalls) || options.maxCalls < 0) throw new Error('--max-calls 必须是非负整数');
+  if (options.resume && options.out === '') throw new Error('--resume 必须提供原轮次的 --out');
   return options;
 }
 
@@ -92,12 +97,13 @@ function loadQuestions(options) {
       });
     }
   }
-  if (options.set === 'all' || options.set === 'new') {
-    const fresh = JSON.parse(fs.readFileSync(NEW_SET, 'utf8'));
+  if (options.set === 'all' || options.set === 'new' || options.set === 'fresh') {
+    const fresh = JSON.parse(fs.readFileSync(options.questions || NEW_SET, 'utf8'));
+    if (options.set === 'fresh' && (!fresh.datasetId || !fresh.frozenAt)) throw new Error('独立题集须有 datasetId 与 frozenAt');
     for (const question of fresh.questions) {
       list.push({
-        key: `new:${question.id}`,
-        set: 'new',
+        key: `${options.set === 'fresh' ? fresh.datasetId : 'new'}:${question.id}`,
+        set: options.set === 'fresh' ? fresh.datasetId : 'new',
         id: question.id,
         type: question.type,
         question: question.question,
@@ -110,8 +116,12 @@ function loadQuestions(options) {
       });
     }
   }
-  if (options.only.length === 0) return list;
-  return list.filter((item) => options.only.includes(item.id) || options.only.includes(item.key));
+  for (const wanted of options.only) {
+    if (!list.some((item) => item.id === wanted || item.key === wanted)) throw new Error(`找不到题号：${wanted}`);
+  }
+  const selected = options.only.length === 0 ? list : list.filter((item) => options.only.includes(item.id) || options.only.includes(item.key));
+  if (selected.length === 0) throw new Error('题集为空，未执行评测');
+  return selected;
 }
 
 /** 本地检索（复用产品里的守门与检索，不复制规则）。 */
@@ -175,6 +185,7 @@ function summarizeCall(state) {
     detail: typeof result.detail === 'string' ? result.detail : '',
     model: typeof result.model === 'string' ? result.model : '',
     elapsedMs: result.elapsedMs ?? state.elapsedMs ?? null,
+    clientElapsedMs: state.elapsedMs ?? null,
     usage: result.usage ?? null,
     capWarning: typeof result.capWarning === 'string' ? result.capWarning : '',
     warnings: Array.isArray(result.warnings) ? result.warnings : [],
@@ -192,10 +203,9 @@ function summarizeCall(state) {
   };
 }
 
-/** 独立复核：用云函数里同一份校验器，在 Node 侧对模型回答再算一次。 */
+/** 一致性复算：沿用历史字段 independentVerify，不作为独立事实证据。 */
 function independentVerify(verifier, call) {
   if (call.invoked !== true || call.ok !== true || call.advancement === null) return null;
-  if (call.advancement.refused) return { refused: true, violations: [] };
   const verdict = verifier.verifyAdvancementAnswer(call.text, call.advancement.sources);
   return { refused: verdict.refused, violations: verdict.violations };
 }
@@ -227,6 +237,15 @@ function passageIdsLocal(result) {
   return result.citations.map((citation) => citation.passageId);
 }
 
+/** 额度失败、传输故障和未调用的题保留记录但允许续跑。 */
+function isCompleteRecord(record) {
+  if (record.expectedBehavior !== 'answer') return typeof record.guardCorrect === 'boolean';
+  if (!record.modelCall) return record.error === '答案题没有可交给模型的段落（canAskModel=false）';
+  return record.modelCall.invoked === true && record.modelCall.failureClass !== 'quota_exhausted';
+}
+
+function hashFile(file) { return createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
+
 async function run() {
   let options;
   try {
@@ -250,6 +269,9 @@ async function run() {
     tag: options.tag,
     topN: TOP_N,
     questions: questions.length,
+    questionSetHashes: Object.fromEntries((options.questions ? [options.questions] : [LEGACY_SET, NEW_SET]).map((file) => [file, hashFile(file)])),
+    buildHashes: Object.fromEntries(['index.js', 'advancement.js', 'advancement-corpus.js'].map((file) => [file, hashFile(path.resolve('dist/cloudfunctions/ai', file))])),
+    latencyBudgetMs: 8000,
   };
   console.log(`题集：${options.set}（${questions.length} 题）｜Git ${meta.gitSha.slice(0, 7)}`);
 
@@ -259,8 +281,10 @@ async function run() {
       const ids = passageIdsLocal(local);
       const hit = question.behavior !== 'answer' || question.expectedPassages.every((id) => ids.includes(id));
       const top1 = question.behavior !== 'answer' || ids[0] === question.expectedPassages[0];
+      const correct = hit && top1 && local.behavior === question.behavior;
+      if (!correct) process.exitCode = 2;
       console.log([
-        hit && top1 ? 'OK ' : 'BAD',
+        correct ? 'OK ' : 'BAD',
         question.key,
         `[${local.behavior}/${question.behavior}]`,
         ids.length > 0 ? ids.join(' ') : '(无段落)',
@@ -268,7 +292,7 @@ async function run() {
       if (!hit || !top1) console.log(`     期望 ${question.expectedPassages.join(' ')}｜实际 ${ids.join(' ')}`);
     }
     const answers = questions.filter((item) => item.behavior === 'answer').length;
-    console.log(`本地复测完成：答案题 ${answers} 道（将产生 ${answers} 次模型调用）、守门题 ${questions.length - answers} 道（不调用模型）`);
+    console.log(`本地复测完成：答案题 ${answers} 道（实际可调用题须通过检索与范围检查）、守门题 ${questions.length - answers} 道（不调用模型）`);
     return;
   }
 
@@ -276,20 +300,26 @@ async function run() {
   const jsonlPath = `${outBase}.jsonl`;
   const jsonPath = `${outBase}.json`;
   const done = new Set();
+  const previous = new Map();
+  const fingerprint = JSON.stringify([meta.questionSetHashes, meta.buildHashes]);
   if (options.resume && fs.existsSync(jsonlPath)) {
     for (const line of fs.readFileSync(jsonlPath, 'utf8').split('\n')) {
       if (line.trim() === '') continue;
       try {
         const record = JSON.parse(line);
-        if (record.done === true) done.add(record.key);
-      } catch { /* 半行写坏就重跑这一题 */ }
+        if (record.fingerprint !== fingerprint) throw new Error('续跑题集或构建版本已变；请保留原轮次并创建新输出文件');
+        previous.set(record.key, record);
+      } catch (error) {
+        if (!(error instanceof SyntaxError)) throw error;
+      }
     }
+    for (const record of previous.values()) if (record.done === true && isCompleteRecord(record)) done.add(record.key);
     console.log(`续跑：已完成 ${done.size} 题将被跳过`);
   }
 
   let mini = null;
-  const records = [];
-  let modelCalls = 0;
+  const records = [...previous.values()];
+  let cloudAttempts = 0;
   let exitCode = 0;
   try {
     mini = await connectMini();
@@ -322,7 +352,8 @@ async function run() {
           note: local.note,
           resolvedScope: local.resolvedScope ?? null,
         },
-        done: true,
+        done: false,
+        fingerprint,
       };
 
       if (question.behavior !== 'answer') {
@@ -335,10 +366,11 @@ async function run() {
         record.error = '答案题没有可交给模型的段落（canAskModel=false）';
         exitCode = Math.max(exitCode, 2);
         console.log(`✘ ${question.key} 未能构成模型请求：${record.error}`);
-      } else if (modelCalls >= options.maxCalls) {
+      } else if (cloudAttempts >= options.maxCalls) {
         record.modelCall = null;
         record.error = `达到本次 --max-calls=${options.maxCalls} 上限，未调用`;
         console.log(`… ${question.key} 未调用（上限）`);
+        exitCode = Math.max(exitCode, 1);
       } else {
         const event = model.advancementChatEvent(question.question, local.resolvedScope, local.citations);
         record.event = {
@@ -349,9 +381,9 @@ async function run() {
           passageIds: event.passageIds,
           maxTokens: event.maxTokens,
         };
-        modelCalls += 1;
-        console.log(`调用 ${question.key}（第 ${modelCalls} 次）…`);
-        if (modelCalls > 1) await sleep(PACE_MS);
+        cloudAttempts += 1;
+        console.log(`调用 ${question.key}（第 ${cloudAttempts} 次）…`);
+        if (cloudAttempts > 1) await sleep(PACE_MS);
         let state = await startCall(mini, event);
         let call = summarizeCall(state);
         // 分钟限额是可恢复的：等一个窗口再试同一题；日额度/检测配额用尽则停止整轮。
@@ -359,14 +391,17 @@ async function run() {
           const minuteLimited = call.invoked === true && call.failureClass === 'quota_exhausted'
             && (call.message.includes('分钟') || call.detail.includes('本分钟'));
           if (!minuteLimited) break;
+          if (cloudAttempts >= options.maxCalls) break;
           console.log(`  撞上分钟限额，等 ${Math.round(MINUTE_LIMIT_WAIT_MS / 1000)} 秒后重试同一题…`);
           await sleep(MINUTE_LIMIT_WAIT_MS);
+          cloudAttempts += 1;
           state = await startCall(mini, event);
           call = summarizeCall(state);
         }
         record.modelCall = call;
         record.independentVerify = independentVerify(verifier, call);
         record.judge = judgeAnswer(question, local, call);
+        if (record.judge.delivery !== 'model_answer' || !record.judge.mustContainInModel || !record.judge.expectedPassageInTopN) exitCode = Math.max(exitCode, 2);
         process.stdout.write([
           `  → ${record.judge.delivery}`,
           call.ok ? 'ok' : `failureClass=${call.failureClass}`,
@@ -377,6 +412,8 @@ async function run() {
         if (call.invoked === true && call.failureClass === 'quota_exhausted') {
           console.log('额度/配额用尽，停止本轮（已完成的题已落盘，可 --resume 续跑）');
           fs.appendFileSync(jsonlPath, `${JSON.stringify(record)}\n`);
+          const oldIndex = records.findIndex((item) => item.key === record.key);
+          if (oldIndex >= 0) records.splice(oldIndex, 1);
           records.push(record);
           exitCode = Math.max(exitCode, 1);
           break;
@@ -390,23 +427,33 @@ async function run() {
           exitCode = Math.max(exitCode, 2);
         }
       }
+      record.done = isCompleteRecord(record);
       fs.appendFileSync(jsonlPath, `${JSON.stringify(record)}\n`);
+      const oldIndex = records.findIndex((item) => item.key === record.key);
+      if (oldIndex >= 0) records.splice(oldIndex, 1);
       records.push(record);
     }
 
-    const answers = records.filter((record) => record.expectedBehavior === 'answer' && record.modelCall !== null);
+    const answers = records.filter((record) => record.expectedBehavior === 'answer' && record.modelCall != null);
     const guards = records.filter((record) => record.expectedBehavior !== 'answer');
     const summary = {
       ...meta,
       finishedAt: new Date().toISOString(),
       jsonl: path.relative(process.cwd(), jsonlPath),
-      modelCalls,
+      cloudAttempts,
+      completed: records.filter((record) => record.done === true).length,
+      pending: questions.filter((question) => !records.some((record) => record.key === question.key && record.done === true)).map((question) => question.key),
+      proofBoundary: '同一校验器复算仅为一致性检查；关键串命中仅为候选正确，事实与引用须逐句独立核对',
+      humanFactReview: 'pending',
+      goNoGo: 'no_go_pending_fact_review',
       guards: {
-        total: guards.length,
+        total: questions.filter((question) => question.behavior !== 'answer').length,
+        attempted: guards.length,
         correct: guards.filter((record) => record.guardCorrect === true).length,
       },
       answers: {
-        total: answers.length,
+        total: questions.filter((question) => question.behavior === 'answer').length,
+        attempted: answers.length,
         modelAnswer: answers.filter((record) => record.judge.delivery === 'model_answer').length,
         refused: answers.filter((record) => record.judge.delivery === 'model_refused').length,
         fallback: answers.filter((record) => record.judge.delivery === 'fallback_sources').length,
@@ -416,20 +463,27 @@ async function run() {
         expectedPassageInTopN: answers.filter((record) => record.judge.expectedPassageInTopN === true).length,
       },
       cost: {
-        modelCalls,
+        cloudAttempts,
+        basis: '逐题最新结果的已知费用；完整重复尝试费用须核对JSONL与云端账目',
         totalTokens: answers.reduce((sum, record) => sum + Number(record.modelCall?.usage?.totalTokens ?? 0), 0),
-        costYuan: Number(answers.reduce((sum, record) => sum + Number(record.modelCall?.usage?.costYuan ?? 0), 0).toFixed(6)),
+        costYuan: answers.some((record) => record.modelCall?.usage?.costYuan == null && !['quota_exhausted', 'invalid_request'].includes(record.modelCall?.failureClass)) ? null : Number(answers.reduce((sum, record) => sum + Number(record.modelCall?.usage?.costYuan ?? 0), 0).toFixed(6)),
       },
       failures: answers
         .filter((record) => record.judge.delivery === 'fallback_sources' || record.judge.delivery === 'transport_failed')
         .map((record) => ({ key: record.key, failureClass: record.modelCall?.failureClass ?? 'transport', violations: record.modelCall?.advancement?.violations ?? [] })),
     };
+    summary.latency = {
+      budgetMs: 8000,
+      measured: answers.filter((record) => Number.isFinite(record.modelCall.clientElapsedMs)).length,
+      withinBudget: answers.filter((record) => Number.isFinite(record.modelCall.clientElapsedMs) && record.modelCall.clientElapsedMs <= 8000).length,
+    };
+    if (summary.pending.length > 0) exitCode = Math.max(exitCode, 1);
     fs.writeFileSync(jsonPath, JSON.stringify({ ...summary, records }, null, 2));
     console.log('');
     console.log(`守门题：${summary.guards.correct}/${summary.guards.total} 符合预期`);
     console.log(`事实题：模型解释 ${summary.answers.modelAnswer}、模型拒答 ${summary.answers.refused}、降级 ${summary.answers.fallback}、传输失败 ${summary.answers.transportFailed}`);
     console.log(`关键事实命中（模型回答内）：${summary.answers.mustContainHitInModel}/${summary.answers.total}｜预期段落在 top-${TOP_N}：${summary.answers.expectedPassageInTopN}/${summary.answers.total}`);
-    console.log(`本次模型调用 ${summary.cost.modelCalls} 次、${summary.cost.totalTokens} token、${summary.cost.costYuan} 元`);
+    console.log(`本次云请求 ${summary.cost.cloudAttempts} 次（不等于模型调用数）、${summary.cost.totalTokens} token、${summary.cost.costYuan} 元`);
     console.log(`逐题记录：${path.relative(process.cwd(), jsonlPath)}`);
     console.log(`汇总：${path.relative(process.cwd(), jsonPath)}`);
   } catch (error) {
@@ -444,7 +498,10 @@ async function run() {
   process.exitCode = exitCode;
 }
 
-run().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+module.exports = { parseArgs, loadQuestions, judgeAnswer, independentVerify, delivery, isCompleteRecord };
+if (require.main === module) {
+  run().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

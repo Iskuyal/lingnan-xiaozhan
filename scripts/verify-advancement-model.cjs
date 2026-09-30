@@ -13,6 +13,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const { createHash } = require('node:crypto');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
 const MODEL_WAIT_MS = 45000;
@@ -26,6 +27,9 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * 与「现场再调一次模型」区分开记录（`source: 'replay'` vs `'live'`）。
  */
 function recordedResponse() {
+  const verifier = require(path.resolve('dist/cloudfunctions/ai/advancement.js'));
+  const buildHashes = Object.fromEntries(['index.js', 'advancement.js', 'advancement-corpus.js'].map((file) => [file,
+    createHash('sha256').update(fs.readFileSync(path.resolve('dist/cloudfunctions/ai', file))).digest('hex')]));
   const dir = path.resolve('artifacts/verify');
   if (!fs.existsSync(dir)) return null;
   const files = fs.readdirSync(dir)
@@ -40,6 +44,11 @@ function recordedResponse() {
       const call = record.modelCall;
       if (!call || call.ok !== true || !call.advancement || call.advancement.refused !== false || call.advancement.verified !== true) continue;
       if (record.id !== 'n01' && record.id !== 'q01') continue;
+      // 旧版响应不得冒充当前构建的回放；同语料版本不等于同代码版本。
+      let recordedHashes;
+      try { recordedHashes = JSON.parse(record.fingerprint)[1]; } catch { continue; }
+      if (JSON.stringify(recordedHashes) !== JSON.stringify(buildHashes)) continue;
+      if (verifier.verifyAdvancementAnswer(call.text, call.advancement.sources).violations.length > 0) continue;
       return {
         file,
         response: {
@@ -74,6 +83,7 @@ async function waitPhase(page, phase, timeoutMs = MODEL_WAIT_MS) {
   for (;;) {
     const current = await page.data('modelPhase');
     if (current === phase) return current;
+    if (phase === 'ready' && (current === 'fallback' || current === 'refused')) throw new Error(`模型未生成可核对回答，进入 ${current}`);
     if (Date.now() > deadline) throw new Error(`等待 modelPhase=${phase} 超时，当前 ${current}`);
     await page.waitFor(300);
   }
@@ -127,6 +137,7 @@ async function run() {
         pass: (await page.data('modelPhase')) === 'fallback',
       });
       await shot(mini, '01a-quota-fallback');
+      if (process.argv.includes('--require-live')) throw new Error(`本轮要求现场模型响应，实际未取得：${liveNote}`);
       const replay = recordedResponse();
       if (replay === null) throw new Error('没有可回放的真实响应记录，无法验证模型解释的渲染');
       await mini.evaluate((serialized) => {

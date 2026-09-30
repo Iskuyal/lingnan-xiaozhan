@@ -1,5 +1,7 @@
 # 升学问答模型版与真实题集评测（2026-09-30）
 
+**当前复核更正（2026-09-30）**：下文保留最初四轮的原报告。审查复现了数字后缀/数量级、拒答前缀绕过及反义条件三类漏洞；同一校验器两处复算一致只能证明一致性，**不能据此确认语义引用支持100%或零未支持事实**。当前已收紧为模型选取/排列完整原句、改写降级；原18条成功不能直接证明修复版效果达标。新冻结题面、当前部署与实际阻塞见[第二批题集](questions-next.json)和[审查与修复记录](../../review/advancement-model-2026-09-30.md)。负责人已接受04–07设计图，并确认升学端到端时延≤8秒、保留超时降级。历史文件不改写。
+
 对应 [Issue #94](https://github.com/Iskuyal/wx-match/issues/94) 与[下一阶段目标](../../planning/next-phase-advancement-model.md)的 M1/M2。
 **本次是真实模型调用**（小程序端 → `ai` 云函数 → 中转模型 `deepseek/deepseek-v4.1-flash`），逐题记录见
 [`runs.json`](runs.json)；原始的逐题 JSONL 与汇总留在执行机的 `artifacts/verify/advancement-model-*.{jsonl,json}`（未入库）。

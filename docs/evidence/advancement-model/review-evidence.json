@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-30",
+  "reviewedHead": "843af64",
+  "deployedBuild": {
+    "env": "cloudbase-d2gjtbbwu3575cd7b",
+    "verifiedAt": "2026-09-30T08:15:42.045Z",
+    "files": [
+      {
+        "file": "access.js",
+        "before": "f296aedfb728c62e4e04499667b95a9295825e7d488113d7c045491718544a9b",
+        "local": "f296aedfb728c62e4e04499667b95a9295825e7d488113d7c045491718544a9b",
+        "after": "f296aedfb728c62e4e04499667b95a9295825e7d488113d7c045491718544a9b"
+      },
+      {
+        "file": "advancement-corpus.js",
+        "before": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd",
+        "local": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd",
+        "after": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd"
+      },
+      {
+        "file": "advancement.js",
+        "before": "3bb88e29c53b731b4842059e84ea6c4b8be72855d09cb2e4eb688f2ced480a7f",
+        "local": "aa5fa06e0ce3f1f03e361f43de3c686b92a81f75a942a0e9916a019f6352e5c1",
+        "after": "aa5fa06e0ce3f1f03e361f43de3c686b92a81f75a942a0e9916a019f6352e5c1"
+      },
+      {
+        "file": "config.js",
+        "before": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+        "local": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+        "after": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39"
+      },
+      {
+        "file": "department-corpus.js",
+        "before": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+        "local": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+        "after": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e"
+      },
+      {
+        "file": "errors.js",
+        "before": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+        "local": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+        "after": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f"
+      },
+      {
+        "file": "http.js",
+        "before": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+        "local": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+        "after": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741"
+      },
+      {
+        "file": "index.js",
+        "before": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942",
+        "local": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942",
+        "after": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942"
+      },
+      {
+        "file": "probe.js",
+        "before": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+        "local": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+        "after": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c"
+      },
+      {
+        "file": "providers.js",
+        "before": "b449dea33317998f2ad819a8eb35071fe0c9e3c84f16e7c91c2e7b4aa142558a",
+        "local": "b449dea33317998f2ad819a8eb35071fe0c9e3c84f16e7c91c2e7b4aa142558a",
+        "after": "b449dea33317998f2ad819a8eb35071fe0c9e3c84f16e7c91c2e7b4aa142558a"
+      },
+      {
+        "file": "rag.js",
+        "before": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+        "local": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+        "after": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08"
+      },
+      {
+        "file": "safety.js",
+        "before": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+        "local": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+        "after": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301"
+      },
+      {
+        "file": "types.js",
+        "before": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+        "local": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+        "after": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230"
+      },
+      {
+        "file": "usage.js",
+        "before": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+        "local": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+        "after": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e"
+      },
+      {
+        "file": "vision.js",
+        "before": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8",
+        "local": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8",
+        "after": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+      }
+    ],
+    "allJsMatch": true
+  },
+  "heldoutAttempt": {
+    "dataset": "heldout-20260930-b",
+    "questionSetHashes": {
+      "docs/evidence/advancement-model/questions-next.json": "1f2c9de7c822e7cc10f864c0a93463324a7e99914c8c1999cbc40907564d0983"
+    },
+    "buildHashes": {
+      "index.js": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942",
+      "advancement.js": "aa5fa06e0ce3f1f03e361f43de3c686b92a81f75a942a0e9916a019f6352e5c1",
+      "advancement-corpus.js": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd"
+    },
+    "key": "heldout-20260930-b:b01",
+    "done": false,
+    "failureClass": "quota_exhausted",
+    "message": "今日 AI 调用次数已达上限，请稍后再试。",
+    "serverElapsedMs": 372,
+    "clientElapsedMs": 880,
+    "modelOutputPresent": false,
+    "completed": 0,
+    "pending": [
+      "heldout-20260930-b:b01",
+      "heldout-20260930-b:b02",
+      "heldout-20260930-b:b03",
+      "heldout-20260930-b:b04",
+      "heldout-20260930-b:b05",
+      "heldout-20260930-b:b06",
+      "heldout-20260930-b:b07",
+      "heldout-20260930-b:b08",
+      "heldout-20260930-b:b09",
+      "heldout-20260930-b:b10",
+      "heldout-20260930-b:b11",
+      "heldout-20260930-b:b12",
+      "heldout-20260930-b:b13",
+      "heldout-20260930-b:b14"
+    ]
+  },
+  "ui": {
+    "startedAt": "2026-09-30T08:15:32.003Z",
+    "checks": [
+      {
+        "id": "M0",
+        "name": "现场调用未拿到模型解释时的降级（如实记录原因）",
+        "phase": "fallback",
+        "note": "今日 AI 调用次数已达上限，请稍后再试。 下面是检索到的官方原文（未改写），可以自己核对。",
+        "pass": true
+      }
+    ],
+    "shots": [],
+    "passed": false,
+    "env": {
+      "platform": "devtools",
+      "model": "iPhone 12/13 (Pro)",
+      "SDKVersion": "3.17.2"
+    },
+    "route": "pages/advancement/index",
+    "error": "timeout waiting for automator response",
+    "finishedAt": "2026-09-30T08:15:48.444Z"
+  },
+  "boundary": "配额拒绝与UI降级不是模型效果证据；截图失败、真机未测、独立效果未完成"
+}

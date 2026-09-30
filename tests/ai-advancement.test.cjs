@@ -148,6 +148,34 @@ test('advancement-qa：段落与声明范围不符时拒绝（类别 / 年份 / 
 
 // ---------- 出处校验（回答上屏前的最后一道闸） ----------
 
+test('出处闸拒绝数字后缀、数量级移位、元信息冒充费用和反义条件', () => {
+  const verifier = require(path.resolve('dist/cloudfunctions/ai/advancement.js'));
+  const corpus = require(CORPUS_FILE);
+  const cases = [
+    ['gd-segmented-2026#fee', '每科报考费为140元[S1]。'],
+    ['gd-employment-2026#civil-servant', '全省提供公务员岗位不少于15万个[S1]。'],
+    [FEE, '缴费费用为2026元[S1]。'],
+    ['gd-zsb-2026#not-eligible', '停考期内可以报考[S1]。'],
+    [FEE, '无需缴费[S1]。'],
+    [FEE, '报名一定能成功。'],
+  ];
+  for (const [id, text] of cases) {
+    const document = corpus.documents.find((item) => item.passages.some((p) => p.id === id));
+    const scope = { category: document.category, year: 2026, region: '广东省' };
+    const { sources } = verifier.resolveAdvancementSources(corpus, [id], scope);
+    const verdict = verifier.verifyAdvancementAnswer(text, sources);
+    assert.ok(verdict.violations.length > 0, `不得放行：${text}`);
+  }
+});
+
+test('拒答只接受完整固定短语，拒答前缀之后的编造不返回客户端', async () => {
+  const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse('无法核实。不过报名截止时间是2027年12月31日。') });
+  const result = await harness.main(advancementEvent());
+  assert.equal(result.ok, false);
+  assert.equal(result.failureClass, 'citation_unverified');
+  assert.equal(result.text, '');
+});
+
 test('advancement-qa：句中的日期/数字在语料里找不到 → citation_unverified，且不返回该回答', async () => {
   const harness = createHarness({
     security: wechatOk(),
