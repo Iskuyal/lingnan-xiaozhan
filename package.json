@@ -20,7 +20,8 @@
     "eval:advancement": "npm run build && node scripts/eval-advancement-model.cjs",
     "verify:campus-tools": "node scripts/verify-campus-tools.cjs",
     "verify:advancement": "node scripts/verify-advancement-model.cjs",
-    "poc:advancement": "npm run build && node scripts/advancement-poc.cjs"
+    "poc:advancement": "npm run build && node scripts/advancement-poc.cjs",
+    "check:defense-g0": "node scripts/check-defense-g0.mjs"
   },
   "engines": {
     "node": ">=22"

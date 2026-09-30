@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "stage": "G0",
+  "frozenAt": "2026-09-30",
+  "repository": "Iskuyal/wx-match",
+  "baseline": {
+    "branch": "main",
+    "commit": "42cfd3208deaa83cf0715663edd51ad48df5b2b6",
+    "mergeCommitOf": "PR #117",
+    "note": "与 G0 分支 codex/project-defense-g0 的起点一致。"
+  },
+  "materials": [
+    {
+      "id": "FC-1",
+      "title": "wx-match 课表导入与校对流程",
+      "kind": "own-project",
+      "origin": "本项目仓库自有材料，由维护者从已合入 main 的代码、测试与证据文档提炼。",
+      "isFiction": false,
+      "representsExistingFeature": true,
+      "bodyFile": "fact-card-1-timetable.md",
+      "maxBodyChars": 1200,
+      "containsPersonalData": false,
+      "personalDataNote": "刻意不转载真实教师姓名、班级人数、个人课表内容、openid、AppID 或密钥。仓库内 tests/fixtures/timetable/ 与 docs/evidence/p4-b/README.md 确实含真实教师姓名（fixtures README 的「注意」一节注明含有真实教师姓名与班级人数、打包前按 Ticket 09 处理），本素材包不复制这些内容，只引用路径。",
+      "evidenceNote": "每条事实的仓库路径与状态见 fact-card-1-timetable.md 的 F1–F9 与不变量 INV-1…INV-3；逐条路径另见本文件 evidenceMap。"
+    },
+    {
+      "id": "FC-2",
+      "title": "打字练习小游戏（维护者设计情景）",
+      "kind": "designed-scenario",
+      "origin": "维护者原创设计，不来自仓库已有功能，也不来自任何第三方代码或文字。",
+      "isFiction": true,
+      "representsExistingFeature": false,
+      "bodyFile": "fact-card-2-typing-game.md",
+      "maxBodyChars": 1200,
+      "containsPersonalData": false,
+      "personalDataNote": "纯自编，无个人信息。",
+      "evidenceNote": "设计事实见 fact-card-2-typing-game.md 的 D1–D8 与不变量 INV-A…INV-B；D7 为故意保留的未测试边界，D8 为其他未测试项。"
+    }
+  ],
+  "thirdPartyLedger": [
+    {
+      "id": "TP-1",
+      "name": "Microsoft Web-Dev-For-Beginners",
+      "url": "https://github.com/microsoft/Web-Dev-For-Beginners",
+      "object": "仓库根 LICENSE",
+      "license": "MIT License, Copyright (c) Microsoft Corporation.",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": "仅复制或使用实质部分时需保留版权与许可声明",
+      "shareAlike": false,
+      "nonCommercial": false,
+      "usage": "not-copied",
+      "usageDetail": "仅在设计层面参考其「小项目应覆盖事件 / 计时 / 输入校验 / 测试」的范围划分。未复制任何代码、文本、图片或数据集。",
+      "verdict": "首版无需动作：零复制 ⇒ 不触发 MIT 声明义务。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-2",
+      "name": "Microsoft 4-typing-game 章节 README 与 assignment.md",
+      "url": "https://github.com/microsoft/Web-Dev-For-Beginners/blob/main/4-typing-game/README.md",
+      "object": "章节 README、typing-game/README.md、assignment.md",
+      "license": "随仓库 MIT；章节 README 无独立许可声明",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": "仅复制时需保留声明",
+      "shareAlike": false,
+      "nonCommercial": false,
+      "usage": "mechanism-reference-only",
+      "usageDetail": "章节 README 顶部与底部均已核对，无独立许可条款，底部仅为作者署名行（Credits，非许可条款）。assignment.md 本身要求学员「design and build your own keyboard-based game」——与本次自编定位一致。未复制其代码块、图片或 Sherlock Holmes 引文数组（该选取与编排属微软表达）。",
+      "verdict": "首版无需动作。措辞应写「受事件驱动编程教学范围启发」，不得写「基于 / 改编自 Microsoft 课程」，避免暗示背书。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-3",
+      "name": "Microsoft Trademark and Brand Guidelines",
+      "url": "https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks",
+      "object": "品牌与商标政策（独立于 MIT 许可）",
+      "license": "专有商标政策，非开源许可",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": null,
+      "shareAlike": null,
+      "nonCommercial": null,
+      "trademarkException": "是：Logo、应用与产品图标等使用需事先获得许可。",
+      "usage": "not-used",
+      "usageDetail": "未使用任何 Microsoft 名称、Logo、图标或品牌资产。",
+      "verdict": "无需动作；同时不得暗示微软背书或合作关系。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-4",
+      "name": "MIT OCW 6.0001 Introduction to Computer Science and Programming in Python",
+      "url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+      "object": "课程页、作业下载入口与 OCW 使用条款",
+      "license": "CC BY-NC-SA 4.0（含 ShareAlike 传染）",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": true,
+      "shareAlike": true,
+      "nonCommercial": true,
+      "trademarkException": "是：MIT 名称、校名、Logo 与校徽为商标，除许可要求的署名称谓外需事先书面同意，禁暗示关系或背书。",
+      "usage": "not-used",
+      "usageDetail": "首版不使用，不复制课程内容、作业 PDF、代码或图片。",
+      "verdict": "不采用。本次核查中限制最严格的来源：非商业 + 同许可 + 名称需书面同意。与参赛及后续用途的相容性不在本阶段认定。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-5",
+      "name": "Software Carpentry — Programming with Python",
+      "url": "https://swcarpentry.github.io/python-novice-inflammation/",
+      "object": "教材内容与示例软件",
+      "license": "教材 CC BY 4.0（明文允许商用）；示例软件 MIT",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": true,
+      "shareAlike": false,
+      "nonCommercial": false,
+      "trademarkException": "是：The Carpentries / Software Carpentry / Data Carpentry / Library Carpentry 及徽标为注册商标。",
+      "usage": "not-used",
+      "usageDetail": "首版不使用。示例涉及炎症数据，不适合作为本项目材料。",
+      "verdict": "不采用。无商业禁止；如未来采用，署名即可，但须逐文件登记来源、许可与修改说明。另注：该站点页脚模板的许可表述自相矛盾（写 CC BY 4.0、链接指向 by-sa），属来源瑕疵，首版不依赖。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-6",
+      "name": "Anthropic Claude for Education — Learning mode",
+      "url": "https://www.anthropic.com/news/introducing-claude-for-education",
+      "object": "官方功能介绍页",
+      "license": "未核实开放许可",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": null,
+      "shareAlike": null,
+      "nonCommercial": null,
+      "trademarkException": "未核实。",
+      "usage": "mechanism-reference-only",
+      "usageDetail": "仅借鉴「先问依据、针对说法追问、再给建议」的教学机制用于评价表设计。未复制其宣传文字、界面或素材包。",
+      "verdict": "仅作机制参考，不复制任何素材；引用其公开页面时保留 URL 与核查日期。",
+      "verified": true,
+      "verificationGap": null
+    },
+    {
+      "id": "TP-7",
+      "name": "Google Interview Warmup",
+      "url": "https://blog.google/company-news/outreach-and-initiatives/grow-with-google/interview-warmup/",
+      "object": "2022 年官方介绍文章",
+      "license": "未核实开放许可",
+      "checkedAt": "2026-09-30",
+      "attributionRequired": null,
+      "shareAlike": null,
+      "nonCommercial": null,
+      "trademarkException": "未核实。",
+      "usage": "mechanism-reference-only",
+      "usageDetail": "仅借鉴「反馈落在可观察的回答特征、允许反复练习、不对回答评分」的机制。未复制素材。",
+      "verdict": "仅作历史机制参考。2026-09-30 抓取时旧入口已不可用，不得写成当前可体验的对标产品。",
+      "verified": true,
+      "verificationGap": "原交互工具是否仍可用未验证。"
+    }
+  ],
+  "brandAssets": {
+    "copied": [],
+    "note": "首版未复制 MIT OCW 内容，也未复制任何第三方品牌图片或标识。"
+  },
+  "evidenceMap": {
+    "FC-1": {
+      "F1": "miniprogram/pages/timetable/import/index.ts；docs/product/spec.md；tests/timetable-pages.test.cjs",
+      "F2": "cloudfunctions/timetable/index.ts（handleImportDraft）；cloudfunctions/timetable/parse.ts；tests/miniprogram-modules.test.cjs",
+      "F3": "docs/product/spec.md 解析策略；tests/fixtures/timetable/README.md",
+      "F4": "cloudfunctions/timetable/parse.ts 与 types.ts；docs/product/spec.md",
+      "F5": "miniprogram/pages/timetable/import/index.ts（confirmSave / abandon）；docs/evidence/p4-b/README.md",
+      "F6": "cloudfunctions/timetable/index.ts；tests/timetable-flow.test.cjs",
+      "F7": "tests/fixtures/timetable/；docs/evidence/p4-b/README.md；docs/evidence/p4-b/verification.json",
+      "F8": "docs/evidence/p4-b/README.md（未覆盖 / 仍未验证）",
+      "F9": "docs/evidence/p4-b/README.md；docs/evidence/cloud-recheck/README.md；package.json；cloudfunctions/timetable/package.json"
+    },
+    "FC-2": {
+      "note": "设计情景，无仓库证据；D1–D8 均为维护者本次编写。",
+      "D7": "故意保留的未测试边界，G1 前保持未验证。"
+    }
+  },
+  "sourceTraceabilityGap": {
+    "issue": "docs/planning/project-defense-examples-and-materials-2026-09-30.md 引用的原始网页抓取位于 artifacts/project-defense-research/.firecrawl/，但这些文件在本素材包冻结时无法取得。",
+    "checked": [
+      "artifacts/ 被 .gitignore 第 18 行忽略，因此不随 git 分发，新 worktree 与克隆中必然不存在。",
+      "原检出目录 artifacts/ 下只有 department-rag、lost-found、verify 三个子目录，没有 project-defense-research。",
+      "全盘查找 *firecrawl* 无匹配。"
+    ],
+    "impact": "许可结论无法回核到仓库内的一手抓取记录，只能依赖核查当日对官方来源的重新取证。这不影响「首版零复制 ⇒ 无需署名」的结论，但该结论的可复核性依赖联网，不依赖仓库内证据。",
+    "actionForG1": "如 G1 或 G4 需要逐文件许可复核，应把抓取原文重新落盘到随仓库提交的位置，或在执行记录中保留可访问的 URL 与日期。"
+  }
+}
