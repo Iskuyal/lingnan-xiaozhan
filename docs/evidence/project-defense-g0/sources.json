@@ -167,15 +167,46 @@
       "F3": "docs/product/spec.md 解析策略；tests/fixtures/timetable/README.md",
       "F4": "cloudfunctions/timetable/parse.ts 与 types.ts；docs/product/spec.md",
       "F5": "miniprogram/pages/timetable/import/index.ts（confirmSave / abandon）；docs/evidence/p4-b/README.md",
-      "F6": "cloudfunctions/timetable/index.ts；tests/timetable-flow.test.cjs",
-      "F7": "tests/fixtures/timetable/；docs/evidence/p4-b/README.md；docs/evidence/p4-b/verification.json",
-      "F8": "docs/evidence/p4-b/README.md（未覆盖 / 仍未验证）",
-      "F9": "docs/evidence/p4-b/README.md；docs/evidence/cloud-recheck/README.md；package.json；cloudfunctions/timetable/package.json"
+      "F6": "cloudfunctions/timetable/index.ts；tests/timetable-flow.test.cjs；miniprogram/services/news/index.ts（客户端对公共资讯的直连路径，用于界定「课表路径不直连」的适用范围）",
+      "F7": "tests/fixtures/timetable/；docs/tasks/tickets/03-timetable-excel-import.md；docs/evidence/p4-b/README.md；docs/evidence/p4-b/verification.json；docs/evidence/timetable-ui-rework/README.md（更晚的 24 项轮，JSON 被 gitignore）",
+      "F8": "docs/evidence/p4-b/README.md（未覆盖 / 仍未验证）；docs/status.md；docs/testing/manual-acceptance.md（A4 界面隔离的负责人确认与「服务端越权另计」）",
+      "F9": "docs/evidence/p4-b/README.md；docs/evidence/cloud-recheck/README.md；docs/development/cloud/timetable.md；package.json；cloudfunctions/timetable/package.json；tests/security-dependencies.test.cjs"
     },
     "FC-2": {
       "note": "设计情景，无仓库证据；D1–D8 均为维护者本次编写。",
       "D7": "故意保留的未测试边界，G1 前保持未验证。"
     }
+  },
+  "preG1Corrections": {
+    "note": "G0 尚未验收、模型从未运行，冻结仍然有效；以下修正发生在首次调用之前，属验收前复查的独立事实核对结果，不是冻结后的规则变更。",
+    "date": "2026-09-30",
+    "corrections": [
+      {
+        "target": "FC-1 F8 ①",
+        "before": "两个真实微信号的隔离（仅桩测试）",
+        "after": "双账号界面隔离已由负责人确认通过（2026-09-27，原始记录待归档）；服务端越权隔离仍只有桩测试、缺独立证据",
+        "reason": "原表述取自 docs/evidence/p4-b/README.md（2026-09-18/20 的记录），但更新的 docs/status.md 与 docs/testing/manual-acceptance.md A4 已记录负责人 2026-09-27 确认双账号界面隔离通过。原表述把已确认项写成完全未验证，属过期记录导致的低估。修正后仍保留「记录待归档」与「服务端越权隔离待验证」，未把确认扩大为整体通过。"
+      },
+      {
+        "target": "FC-1 F7「最近一次验收」",
+        "before": "最近一次验收 verification.json 为 21 项全过",
+        "after": "入库 p4-b/verification.json 为 21 项全过（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README，其 JSON 被 gitignore",
+        "reason": "docs/evidence/timetable-ui-rework/README.md 记录了更晚一轮 verify:wechat 24 项全过（21 项原有 + 3 项新增），其 verification.json 位于被 gitignore 的 artifacts/verify/。21 项只是「已入库 JSON 中最新的一轮」，不是「最近一次验收」，原说法会让人误以为没有更新的轮次。"
+      },
+      {
+        "target": "FC-1 F9 ①、F6",
+        "before": "F9①「而代码与两份 package.json 均为 0.20.3」；F6「客户端不直连数据库」",
+        "after": "F9① 指出 parse.ts 只 import、不声明版本，并补记第三处过期位置 docs/development/cloud/timetable.md:60；F6 将结论限定在个人课表路径（公共资讯另有客户端直连）",
+        "reason": "parse.ts 无版本声明，原句「代码…均为 0.20.3」不准确；同一过期版本号另有第三处。F6 的「客户端不直连数据库」仅对个人课表成立，miniprogram/services/news/index.ts 对公共资讯直连，需限定范围以免被读成仓库级结论。"
+      }
+    ],
+    "propagatedTo": [
+      "fact-card-1-timetable.md（INV-1/INV-2/INV-3、F1、F4–F9；顺带压缩措辞以回到 1200 字以内，未删事实）",
+      "samples-development.json（CS1-1、CS1-3）",
+      "samples-heldout.json（HS-1）",
+      "rubric.md（冻结记录）",
+      "README.md（待验证问题与验证记录）"
+    ]
   },
   "sourceTraceabilityGap": {
     "issue": "docs/planning/project-defense-examples-and-materials-2026-09-30.md 引用的原始网页抓取位于 artifacts/project-defense-research/.firecrawl/，但这些文件在本素材包冻结时无法取得。",
