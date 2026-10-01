@@ -146,6 +146,28 @@ test('留出样例的 8 个请求里只出现它自己的回答', async () => {
   }
 });
 
+test('重答步骤的空文本消息由运行时守卫替换为显式占位（负例）', async () => {
+  const result = await poc.planCheck({ packageDir: REAL_PACKAGE });
+  const reanswer = result.sessionRequests.find((item) => item.step === 'R5');
+  // 已知缺陷留档：装配阶段 R5 会带一条 text 为空串的 assistant 消息，
+  // 服务端对空 text 一律拒绝，因此这一步只要执行就必然 invalid_request。
+  const emptyBefore = reanswer.event.messages.filter((message) => message.text.trim() === '');
+  assert.equal(emptyBefore.length, 1, 'R5 应当保留一条空文本消息，否则本条负例失去意义');
+  assert.deepEqual(poc.checkEnvelope(reanswer.event), [], '本地 checkEnvelope 不会拦空 text——这正是缺陷逃过离线自检的原因');
+
+  // 运行时守卫必须把它换成非空占位；且不得改动原 event（装配指纹覆盖装配阶段）。
+  const guard = poc.sanitizeEventMessages(reanswer.event);
+  assert.equal(guard.replaced, 1);
+  assert.ok(guard.messages.every((message) => message.text.trim() !== ''));
+  assert.equal(guard.messages.length, reanswer.event.messages.length);
+  assert.ok(guard.messages.some((message) => message.text === poc.EMPTY_REPLY_PLACEHOLDER));
+  assert.equal(reanswer.event.messages.filter((message) => message.text.trim() === '').length, 1, '守卫不得就地改写装配阶段的消息');
+
+  // 正常请求不该被守卫改动。
+  const untouched = poc.sanitizeEventMessages(result.sampleRequests[0].event);
+  assert.equal(untouched.replaced, 0);
+});
+
 test('checkEnvelope 会拒绝超窗、超条数与非法角色（负例）', () => {
   const base = () => ({ action: 'chat', system: '系统', messages: [{ role: 'user', text: '问题' }] });
   assert.deepEqual(poc.checkEnvelope(base()), []);
