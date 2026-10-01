@@ -1,0 +1,156 @@
+<!-- 项目讲解与答辩练习：八个状态同页切换，见 docs/design/project-defense/ -->
+<view class="defense">
+
+  <!-- 材料确认 -->
+  <block wx:if="{{phase === 'materials'}}">
+    <view class="eyebrow">两份冻结材料 · 只依据材料里的条目 · 不联网找资料</view>
+    <view class="defense-title">先选一份材料</view>
+    <view class="note">这项练习让你把课程项目讲清楚，并逐句看到依据从哪来。它不输出职业能力等级、官方成绩、录用或面试保证，也不评价你的表达能力。</view>
+
+    <view class="section-head"><text class="section-title">可用材料</text><text class="section-note">2 份</text></view>
+    <view
+      wx:for="{{materials}}"
+      wx:key="id"
+      class="card material"
+      hover-class="pressed"
+      data-id="{{item.id}}"
+      bindtap="onPickMaterial"
+    >
+      <view class="material-head">
+        <text class="material-name">{{item.name}}</text>
+        <text class="pick">选择</text>
+      </view>
+      <view class="chip {{item.kind === 'owned' ? 'chip-gold' : 'chip-warn'}}">{{item.kindLabel}}</view>
+      <view wx:for="{{item.facts}}" wx:for-item="fact" wx:key="*this" class="fact">{{fact}}</view>
+      <view class="quiet">{{item.note}}</view>
+    </view>
+
+    <view class="section-head"><text class="section-title">这次会话的边界</text></view>
+    <view class="bound">最多三轮提问，之后一次复盘与一次重答；不做无限对话。</view>
+    <view class="bound">每轮回答 20–500 字。说得短但有依据，不会被扣分。</view>
+    <view class="bound">反馈里的每个条目编号都要能在材料里回核；回核不到就不上屏。</view>
+    <view class="bound">会话只留在本页内存里，退出后不保存；失败会保留你已写的内容。</view>
+    <view class="quiet">练习对象是维护者编写的材料，不是真实学生项目，也不能证明学习效果。</view>
+  </block>
+
+  <!-- 作答（第 1–3 轮 与 重答） -->
+  <block wx:elif="{{phase === 'practice' || phase === 'reanswer'}}">
+    <view class="eyebrow">材料：{{materialName}} · {{materialKindLabel}}</view>
+    <view class="section-head">
+      <text class="section-title">{{phase === 'reanswer' ? '重答一处薄弱项' : '第 ' + round + ' 轮 / 共 3 轮'}}</text>
+      <text class="section-note">{{phase === 'reanswer' ? '全流程仅一次' : dimension}}</text>
+    </view>
+
+    <view class="question">
+      <text class="question-tag">{{phase === 'reanswer' ? '重答' : '第 ' + round + ' 轮 · ' + dimension}}</text>
+      <text class="question-text">{{question}}</text>
+    </view>
+
+    <textarea
+      class="answer-input"
+      value="{{answer}}"
+      maxlength="{{maxChars}}"
+      placeholder="按材料里的条目说，不确定的就写「还没验证」"
+      bindinput="onAnswerInput"
+    />
+    <view class="input-foot">
+      <text>已写 {{answerCount}} 字 / 最多 {{maxChars}} 字</text>
+      <text>草稿留在本页</text>
+    </view>
+
+    <view class="cheat">
+      <text class="cheat-title">材料速查（可引用的条目编号）</text>
+      <view class="cheat-list">
+        <text wx:for="{{materialEntries}}" wx:key="*this" class="cheat-chip">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="hint" wx:if="{{hint !== ''}}">{{hint}}</view>
+
+    <button class="primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，拿反馈与追问</button>
+    <view class="quiet">提交后会调用一次模型（实测 12–23 秒），期间可以取消并保留上面的草稿。</view>
+  </block>
+
+  <!-- 等待与取消 -->
+  <block wx:elif="{{phase === 'pending'}}">
+    <view class="eyebrow">已提交到云端 · 这一步只做「按材料逐句核对」</view>
+    <view class="defense-title">正在核对你的回答</view>
+    <view class="pending">
+      <text class="pending-title">在等什么</text>
+      <text class="pending-body">模型要读完这份材料的所有条目，再逐句对照你写的 {{answerCount}} 字。实测需要 12–23 秒，比普通问答慢：它要输出四节内容。</text>
+      <view class="progress"><view class="progress-bar"></view></view>
+      <view class="pending-foot"><text>通常 12–23 秒</text><text>已等 {{pendingSeconds}} 秒</text></view>
+    </view>
+    <view class="note">现在取消不会丢东西：你写的内容仍在输入框里，回到上一页可以继续改或复制出来。</view>
+    <button class="secondary" hover-class="pressed" bindtap="onCancelPending">取消这次核对</button>
+    <view class="note">直接退出则本次会话不保存：材料选择、三轮回答、反馈与复盘都会清空。</view>
+    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+  </block>
+
+  <!-- 四节反馈 -->
+  <block wx:elif="{{phase === 'feedback'}}">
+    <view class="eyebrow">依据材料：{{materialName}} · {{safetyNote}}</view>
+    <view class="defense-title">这一轮的依据核对</view>
+
+    <view wx:for="{{sections}}" wx:key="title" class="card frame">
+      <text class="frame-title">{{item.title}}</text>
+      <text class="frame-body">{{item.body}}</text>
+    </view>
+
+    <view class="ask" wx:if="{{ask !== ''}}">
+      <text class="ask-label">追问 · 请在第 {{round + 1}} 轮回答</text>
+      <text class="ask-text">{{ask}}</text>
+    </view>
+
+    <view class="note">这条反馈只把材料和你写的句子对着看。它不给你打分、不评价表达，也不会因为练过一次就把材料里的「待验证」变成「已完成」。</view>
+    <button class="primary" hover-class="pressed" bindtap="onNextRound">用这个追问开始第 {{round + 1}} 轮</button>
+    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+  </block>
+
+  <!-- 复盘 -->
+  <block wx:elif="{{phase === 'review'}}">
+    <view class="eyebrow">材料：{{materialName}} · 三轮已提交 · 本次会话不长期保存</view>
+    <view class="defense-title">你讲到哪一步了</view>
+    <view wx:for="{{reviewRows}}" wx:key="dimension" class="card dim">
+      <view class="dim-head">
+        <text class="dim-name">{{item.dimension}}</text>
+        <text class="chip {{item.status === '已反馈' ? 'chip-gold' : 'chip-warn'}}">{{item.status}}</text>
+      </view>
+      <text class="dim-body" wx:if="{{item.excerpt !== ''}}">待验证保留：{{item.excerpt}}</text>
+    </view>
+    <view class="note">复盘只列「哪个维度拿到了反馈」和「该轮保留了哪些待验证」，不判断你的项目好不好，也不把「下一步计划」算成「已经验证」。</view>
+    <button class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
+    <button class="primary" hover-class="pressed" bindtap="onStartReanswer">重答一处薄弱项</button>
+    <view class="quiet">重答只有一次；重答必须由你自己新写，不能用同一段文字再提交一遍。</view>
+  </block>
+
+  <!-- 重答后的收尾 -->
+  <block wx:elif="{{phase === 'done'}}">
+    <view class="eyebrow">重答已完成 · 本次会话结束</view>
+    <view class="defense-title">这次练习到这里</view>
+    <view wx:for="{{sections}}" wx:key="title" class="card frame">
+      <text class="frame-title">{{item.title}}</text>
+      <text class="frame-body">{{item.body}}</text>
+    </view>
+    <view class="note">重答的判定只看有没有新增可回核的条目编号；把句子写长、写得更流畅不算改善。</view>
+    <button class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
+    <button class="primary" hover-class="pressed" bindtap="goHome">回到首页</button>
+  </block>
+
+  <!-- 失败 / 额度 -->
+  <block wx:elif="{{phase === 'failure'}}">
+    <view class="eyebrow">你的回答已保留 · 失败不计作「没讲清楚」</view>
+    <view class="defense-title">这一轮没能完成</view>
+    <view class="fail">
+      <text class="fail-title">{{failureTitle}}</text>
+      <text class="fail-body">{{failureBody}}</text>
+    </view>
+    <view class="card kept">
+      <text class="quiet">保留的回答</text>
+      <text class="kept-text">{{answer}}</text>
+    </view>
+    <button class="primary" wx:if="{{failureRetryable}}" hover-class="pressed" bindtap="onRetry">重试这一次核对</button>
+    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+  </block>
+
+</view>
