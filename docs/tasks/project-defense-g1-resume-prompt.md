@@ -2,7 +2,9 @@
 
 关联任务：[Issue #112](https://github.com/Iskuyal/wx-match/issues/112)（Blocked by [#111](https://github.com/Iskuyal/wx-match/issues/111)）。前一阶段产物：[G1 离线部分与逐例记录骨架](../evidence/project-defense-g1/README.md)（[PR #120](https://github.com/Iskuyal/wx-match/pull/120)）。G0 素材包：[PR #118](https://github.com/Iskuyal/wx-match/pull/118)（分支 `codex/project-defense-g0`，tip `210cd8fee867c17d2514431f9ebac0e04991f48a`，截至本文写作**尚未合入 `main`**；Issue #111 仍 OPEN）。
 
-状态：供另一位执行者完成 **G1 的真实模型评测**。上一轮已交付离线部分（装配自检、13 项负例测试、`runs.json` 骨架），**一次真实调用都没有发**；本提示词补的正是那一步。新增业务功能尚未实现，本阶段不新增页面、不做设计图、不改动产品功能代码路径。
+状态：供另一位执行者完成 **G1 的真实模型评测**。上一轮已交付离线部分（装配自检、负例测试、`runs.json` 骨架），**本文写作时（2026-09-30 21:5x）尚未发起任何真实调用**；本提示词补的正是那一步。新增业务功能尚未实现，本阶段不新增页面、不做设计图、不改动产品功能代码路径。
+
+> **本提示词已被取代（2026-10-01）**：写作时的「尚未发起真实调用」状态已改变——两轮共 7 次真实调用已执行并记入 [G1 证据](../evidence/project-defense-g1/README.md)（结果不可判定、G1 整体仍未完成）。接力执行前请先读该证据的「最新状态」，并先由负责人修复阻断项。**下文的 ①–⑥ 执行顺序已不再适用**，有效顺序以该证据 §十「解锁后即可执行」为准。
 
 ## 执行前必须知道的三件事
 
@@ -16,23 +18,23 @@
 
 ## 与 #119 的关系
 
-[PR #119](https://github.com/Iskuyal/wx-match/pull/119) 的 `docs/tasks/project-defense-g1-prompt.md` 是**开启** G1 的提示词（从零开始，含「前置未满足就只交离线」的守卫）；本文件是**续跑**提示词，假定离线部分已经交付，只做真实评测那一段。两者不冲突：先合 #118，再合 #119 与 #120，然后按本文件执行。
+[PR #119](https://github.com/Iskuyal/wx-match/pull/119) 的 `docs/tasks/project-defense-g1-prompt.md` 是**开启** G1 的提示词（从零开始，含「前置未满足就只交离线」的守卫）；本文件是**续跑**提示词，假定离线部分已经交付，只做真实评测那一段。两者不冲突：按栈顺序先合 #118，再合 #119/#120，最后合 [#121](https://github.com/Iskuyal/wx-match/pull/121)（head 即本阶段的 `codex/project-defense-g1-eval`）；本文件执行部分的 ①–⑥ 顺序已被 2026-10-01 的实测取代，见顶部横幅。
 
 以下整段可以复制给其他执行者：
 
 ```text
 你在 wx-match（原生微信小程序 + TypeScript，GitHub 仓库 Iskuyal/wx-match）项目工作。现在只执行“项目讲解与答辩练习”G1 的**真实模型评测**部分（Issue #112）。
 
-上一轮已交付离线部分：维护者脚本 scripts/poc-project-defense.cjs、离线装配自检（0 错误）、13 项负例测试、逐例记录骨架 docs/evidence/project-defense-g1/runs.json，全部 19 例都是 not_executed。**一次真实调用都没有发。** 你这一步就是把它跑出来。
+上一轮已交付离线部分：维护者脚本 scripts/poc-project-defense.cjs、离线装配自检（0 错误）、负例测试（写作时 13 项，其后增至 14 项）、逐例记录骨架 docs/evidence/project-defense-g1/runs.json，写作时全部 19 例都是 not_executed、**尚未发起任何真实调用**。你这一步就是把它跑出来。（写作后的实况：两轮共 7 次真实调用已执行、5 例转为 executed，结果仍不可判定——见 docs/evidence/project-defense-g1/README.md。）
 
-不覆盖共享工作区的未提交改动。本机主检出为 E:\wx-match-main\wx-match-main；本阶段的 worktree 是 E:\wx-match-main\g1-defense-poc（分支 codex/project-defense-g1-poc，node_modules 以目录联接复用主检出）。若 #118 已合入 main，可以从最新 main 另建 worktree 并把本阶段提交摘过去；若仍未合入，就在现有 worktree 上继续，并记录确切 SHA。
+不覆盖共享工作区的未提交改动。阶段 worktree 位于仓库外（分支 codex/project-defense-g1-poc，node_modules 以目录联接复用主检出），具体绝对路径不入库。若 #118 已合入 main，可以从最新 main 另建 worktree 并把本阶段提交摘过去；若仍未合入，从该分支 tip 取包并在**新建 worktree**上继续（**原阶段 worktree 与 `artifacts/` 在复核机上已不存在**，见 G1 证据 §十），并记录确切 SHA。
 
 阅读：AGENTS.md、docs/agents/issue-tracker.md、docs/evidence/project-defense-g1/README.md、docs/evidence/project-defense-g0/（README、rubric.md、abnormal-cases.md、budget.md、两份事实卡、samples-development.json、samples-heldout.json）、docs/development/cloud/ai.md（尤其「内容安全适配层」「失败分类与默认文案」）、docs/development/local-setup.md。只追读本任务引用的必要文件。
 
 **成功标准**：真实跑通至少一次完整三轮加一次重答；6 个开发样例、2 个留出样例、6 个异常样例都有逐字原始响应与逐例判定；6 个开发样例至少 5 个体现对应回答的有效反馈；引用编号与原句 100% 对应；无把待验证说成已完成；留出样例首次结果单列。额度不足时只交付能交付的部分，把真实评测如实记为未完成，不伪造、不为赶进度包装成功。
 
 1. 前置核对（不满足就先停下并报告，不要先花额度）：
-   - GitHub 状态：Issue #112、#111，PR #118、#119、#120 各自的实际状态；
+   - GitHub 状态：Issue #112、#111，PR #118、#119、#120、#121 各自的实际状态；
    - 开发者工具已登录并启用 CLI 服务端口；dist 已 `npm run build`；`ai` 云函数已部署且与本地构建一致（能 download 回读就回读并留档哈希）；**新版 ai 必须与新版客户端一起发**，旧客户端在长对话里会被“输入过长”拒绝；
    - `node scripts/poc-project-defense.cjs --plan` 必须 0 错误；装配指纹应与上一轮一致（64b4d06b…，冻结件未改则不变）。
 

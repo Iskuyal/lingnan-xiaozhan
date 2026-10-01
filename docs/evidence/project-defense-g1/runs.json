@@ -2,13 +2,20 @@
   "schemaVersion": 1,
   "stage": "G1",
   "issue": 112,
-  "generatedAt": "2026-09-30T13:48:52.131Z",
-  "mode": "offline_only",
+  "generatedAt": "2026-09-30T16:01:46.153Z",
+  "mode": "blocker_recheck_failed_stopped_before_first_evaluation",
   "baseline": {
     "main": "42cfd3208deaa83cf0715663edd51ad48df5b2b6",
     "branch": "codex/project-defense-g1-poc",
     "head": "210cd8fee867c17d2514431f9ebac0e04991f48a",
-    "g0Source": "origin/codex/project-defense-g0（PR #118 未合入 main）"
+    "g0Source": "origin/codex/project-defense-g0（PR #118 未合入 main）",
+    "thisRun": {
+      "branch": "codex/project-defense-g1-eval",
+      "head": "0a93a7c602ceaae84c4985408617895f11a7bcdf",
+      "worktree": "(仓库外阶段 worktree；绝对路径不入库)",
+      "recordedAt": "2026-09-30T16:01:46.153Z",
+      "note": "PR #118 仍未合入 main，故按续跑提示词留在现有 worktree 继续，并记录确切 SHA。"
+    }
   },
   "g0Package": {
     "dir": "docs/evidence/project-defense-g0",
@@ -198,11 +205,31 @@
   "quota": {
     "readBefore": {
       "status": "unverified",
-      "reason": "本次未启动开发者工具，未执行维护者 usage 动作；不得用旧读数代替"
+      "reason": "维护者 usage 动作被白名单拒绝（failureClass=invalid_request、detail=「这项 AI 维护操作仅向维护者开放」），即本次登录账号不在 ai 云函数的 AI_ADMIN_OPENIDS 里；小程序端直读 ai_usage_monthly 也被 DATABASE_PERMISSION_DENIED 拒绝。两条只读通道都取不到，故记「未核实」，不写 0。",
+      "attemptedReads": [
+        {
+          "how": "npm run poc:defense:usage（= --usage，服务端只做 assertAdmin）",
+          "result": "被拒：assertAdmin 不通过，未消耗个人日额度、未触发内容安全"
+        },
+        {
+          "how": "小程序端只读云数据库 ai_usage_monthly（limit:day:* 计数器与月度汇总同集合）",
+          "result": "被拒：Permission denied（DATABASE_PERMISSION_DENIED）"
+        }
+      ]
     },
     "readAfter": {
-      "status": "not_applicable",
-      "reason": "未发生真实调用"
+      "status": "unverified",
+      "reason": "同 readBefore：两条只读通道都不可用。调用后未再取到任何服务端读数，不用估算冒充实测。"
+    },
+    "actualSpend": {
+      "cloudRequests": 6,
+      "cloudRequestsBreakdown": "② 会话批次 5 次 + 输出预算诊断探针 1 次",
+      "failedFirstAttemptRequests": 0,
+      "failedFirstAttemptNote": "第一次跑 --session 时自动化桥返回 timeout waiting for automator response，云请求 0 次（脚本已落盘 0 条记录）。",
+      "totalTokens": 3726,
+      "knownCostYuan": 0.000932,
+      "costBasis": "只有 R2 一次返回了用量（3726 token / 0.000932 元）；其余请求无用量记录，未知不记成 0，故本次总花费为「至少 0.000932 元」。",
+      "moderationCalls": "未实测（服务端未回读）；按 envelope 估算约 6 请求 × (输入 3 片) ≈ 18 次输入检测，另 R2 输出可能 1 片。"
     },
     "lastKnownServerReading": {
       "asOf": "2026-09-29",
@@ -214,42 +241,91 @@
       "warnThresholdYuan": 40,
       "capWarning": false,
       "source": "docs/tasks/pending.md 的 V3 行（2026-09-29 维护者 usage 动作读回）"
+    },
+    "thisRound": {
+      "recordDate": "2026-10-01",
+      "readBefore": {
+        "status": "unverified",
+        "attemptedAt": "2026-10-01T00:00:20+08:00",
+        "channel": "npm run poc:defense:usage（= --usage，服务端只做 assertAdmin）",
+        "result": "被拒：ok=false、failureClass=invalid_request、detail=「这项 AI 维护操作仅向维护者开放」、elapsedMs=1；即本账号仍不在 ai 云函数的 AI_ADMIN_OPENIDS 里。未消耗个人日额度、未触发内容安全。",
+        "conclusion": "读不到，记「未核实」，不写 0。"
+      },
+      "readAfter": {
+        "status": "unverified",
+        "reason": "本轮未再尝试第二次只读；调用后同样没有可用的服务端读数通道，不用估算冒充实测。"
+      },
+      "actualSpend": {
+        "cloudRequests": 1,
+        "cloudRequestsBreakdown": "阻断项单点复核探针 1 次（开发样例 CS1-1，走既有 ai 云函数 chat 链路）",
+        "failedFirstAttemptRequests": 0,
+        "totalTokens": null,
+        "knownCostYuan": null,
+        "costBasis": "该次请求服务端未回传用量（usage=null），未知不记成 0，故本轮花费记为「未知」。",
+        "moderationCalls": "未实测（服务端未回读）；该请求 envelope 为输入 4365 字 / 3 片、输出为空 / 0 片，故估算约 3 次输入检测。这是估算不是实测。",
+        "quotaGate": "未撞任何闸：safety.errcode=0（内容安全池可用）、未出现 45009、个人日额度未报错。"
+      },
+      "lastKnownServerReadingUnchanged": {
+        "asOf": "2026-09-29",
+        "isCurrent": false,
+        "note": "沿用上一轮入库的历史读数（当月 790 次 / 212,525 token / 0.0531 元）；它不是本轮读数，本轮仍为「未核实」。"
+      }
     }
   },
   "summary": {
     "development": {
       "total": 6,
-      "executed": 0,
-      "passed": null,
-      "target": "至少 5 个体现对应回答的有效反馈"
+      "executed": 1,
+      "passed": 0,
+      "target": "至少 5 个体现对应回答的有效反馈",
+      "note": "会话里用过 CS1-1/CS1-2/CS1-3，其中只有 CS1-2 返回了内容且被截断；这不是按 rubric 的逐例首评，样本批次未执行。"
     },
     "heldout": {
       "total": 2,
       "executed": 0,
       "firstResult": null,
-      "note": "首次结果单列，不并入开发样例通过率，不得用于调参"
+      "note": "首次结果仍未产生；本次没有对留出样例发起任何调用，也未据留出样例做任何调整，独立性未被消耗。"
     },
     "abnormal": {
       "total": 6,
       "executed": 0,
-      "criteriaChecked": null
+      "criteriaChecked": null,
+      "note": "未执行。AX-4/AX-5 的判据要看模型实际反应，而本链路多数请求返回空内容，此时执行得不到有效判定。"
     },
     "session": {
       "total": 5,
-      "executed": 0,
-      "completeFlowRan": false
+      "executed": 5,
+      "completeFlowRan": false,
+      "ok": 1,
+      "emptyOrFailed": 4,
+      "note": "5 步都真实发起了云调用，但只有 R2 返回了内容且被截断；R1/R3/R4 返回空内容，R5 被服务端按 invalid_request 拒绝。「至少一次完整三轮加一次重答」**未达成**。"
     }
   },
   "goNoGo": {
     "offlineAssemblyReady": true,
-    "realModelFeasible": "undetermined",
-    "realModelFeasibleReason": "未发起真实调用（G1 前置未满足 + 额度纪律），「真实模型可行」保持未完成",
-    "g1Complete": false
+    "realModelFeasible": "blocked",
+    "realModelFeasibleReason": "真实调用已发起两轮（上一轮 6 次 + 本轮单点复核 1 次）。本条链路在**当前部署配置**下仍产不出可判定的反馈：本轮同一开发样例 CS1-1 单点复核返回空内容、finish_reason=length，detail 与上一轮逐字相同，且当次内容安全 errcode=0（排除配额因素）。根因是模型把输出预算耗在 reasoning_content 上；客户端 maxTokens 已实测无效，只能由负责人改云函数环境变量（如 AI_EXTRA_BODY_JSON 关思考，并评估 AI_TIMEOUT_MS / AI_TOTAL_DEADLINE_MS），本阶段明令不得改环境变量。",
+    "realModelFeasibleIsNot": "不是「模型不可行」的结论，也不是「可行」的结论——是链路在当前部署配置下无法产出可判定的反馈，判据未取到。",
+    "g1Complete": false,
+    "gates": {
+      "反馈中的引用编号与原句 100% 对应当前材料 / 回答": "未评测（唯一的 R2 引用 6/6 成立，但反馈被截断，样本量 1 且非逐例首评）",
+      "无把计划 / 待验证事项说成已完成的断言": "未评测（R2 保留段未发现越界，但整体不完整）",
+      "6 个开发样例中至少 5 个体现对应回答的有效反馈": "未达标（0/6 通过；样例批次未执行）",
+      "材料差异必须提示核对，而不是判学生撒谎": "未评测（差异样例 CS1-3/HS-2 均未得到有效响应）",
+      "2 个留出样例按首次结果单列": "未产生（本轮仍未对留出样例发起任何调用，独立性保留）",
+      "至少一次完整流程可运行": "未达成（本轮未执行会话批次；上一轮 R1/R3/R4 空内容、R5 被拒）",
+      "异常 / 空响应 / 额度失败留实际记录": "部分达成（会话批次 5 条已逐字落盘；异常样例未执行）",
+      "离线装配与离线自检": "通过（本轮复跑 --plan：0 错误、指纹 64b4d06b911e4022 与上一轮一致）"
+    },
+    "blockerStatus": "未修复（本轮实测复核，2026-10-01）"
   },
   "proofBoundary": [
     "维护者自编样例只检验评测机制，不能证明学生学习效果、教学有效性或教师接受度。",
-    "本次未产生任何真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。",
-    "判定依赖人工阅读原始响应；raw 为 null 时不得填写 verdict。"
+    "离线装配（--plan）与桩检查都不产生真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。真实调用的有无以各 case 的 status（executed/not_executed）与 raw 为准。",
+    "判定依赖人工阅读原始响应；raw 为 null 时不得填写 verdict。",
+    "本轮的 1 次请求是**开发样例探针**，不是样例批次结果；不得记成「6 个开发样例已首评」。",
+    "留出样例 HS-1/HS-2 的首次结果**仍未产生**，不得记成已首评、也不得据它们作任何结论。",
+    "本轮花费未知（usage=null），不得写成 0，也不得把「估算约 3 次检测」写成实测。"
   ],
   "cases": [
     {
@@ -275,7 +351,7 @@
         "inputChars": 4365
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -312,7 +388,7 @@
         "inputChars": 4017
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -348,7 +424,7 @@
         "inputChars": 4050
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -384,7 +460,7 @@
         "inputChars": 4143
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -419,7 +495,7 @@
         "inputChars": 3994
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -454,7 +530,7 @@
         "inputChars": 4038
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -490,7 +566,7 @@
         "inputChars": 4209
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -526,7 +602,7 @@
         "inputChars": 4003
       },
       "status": "not_executed",
-      "notExecutedReason": "G1 前置未满足（Issue #111 未验收、PR #118 未合入），本次只交付离线部分，未发起任何真实调用",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -553,19 +629,40 @@
         "messages": 3,
         "inputChars": 4365
       },
-      "status": "not_executed",
-      "notExecutedReason": "同上：真实调用未获授权，会话流程未运行",
-      "raw": null,
+      "status": "executed",
+      "notExecutedReason": "",
+      "raw": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "model_unavailable",
+        "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+        "text": "",
+        "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "serverElapsedMs": 10758,
+        "clientElapsedMs": 11589,
+        "usage": null,
+        "usageSummary": null,
+        "capWarning": "",
+        "warnings": [],
+        "safety": {
+          "provider": "wechat",
+          "api": "security.msgSecCheck",
+          "passed": true,
+          "checked": true,
+          "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+        }
+      },
       "citations": null,
       "verdict": {
-        "citationCheck": null,
-        "correspondsToAnswer": null,
-        "followUpTargeted": null,
-        "unverifiedPreserved": null,
-        "outOfBoundsClaims": null,
+        "citationCheck": "不成立（无引用：响应为空，没有可核对的编号或原句）",
+        "correspondsToAnswer": "否（没有产出任何反馈）",
+        "followUpTargeted": "无（没有产出追问）",
+        "unverifiedPreserved": "未提及",
+        "outOfBoundsClaims": 0,
         "citationSupportRate": null,
-        "pass": null,
-        "reason": ""
+        "pass": false,
+        "reason": "模型返回空内容（OpenAI 兼容格式；content 为空、reasoning_content 有值、finish_reason=length）。无可判定内容，计为未通过；不把空响应当作有效反馈。"
       }
     },
     {
@@ -581,19 +678,67 @@
         "messages": 7,
         "inputChars": 4553
       },
-      "status": "not_executed",
-      "notExecutedReason": "同上：真实调用未获授权，会话流程未运行",
-      "raw": null,
-      "citations": null,
+      "status": "executed",
+      "notExecutedReason": "",
+      "raw": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "【引用核对】\n- 「这个功能挺完整的，学生导进来就能用」——不成立（INV-2：材料写的是「已完成」只表示仓库内有代码或测试记录，不等于真机通过，各轮验收均为 `realDevice: false`；F7 入库记录同样是 `realDevice: false`）。\n- 「我们做了智能识别，能自动处理各种格式，兼容性很好」——不成立（F3：解析对象是特定结构的网格矩阵，前几行元信息、表头「星期一…星期日」；F4：识别不出的只标记不猜、不擅自修复，未识别字段标待核对交由学生在确认页裁决）。\n- 「校对环节也做得比较到位，用户体验流畅」——不成立（F5 状态为「已完成（确认框交互未验证）」；材料中没有关于体验的条目）。\n- 「具体的技术细节我记不太清了」——不成立（无可核对条目：材料中没有涉及学生本人记忆状态的内容，此句不构成可回核的技术断言）。\n- 「整个流程跑下来没什么问题」——不成立（INV-2、F8：材料写的是三项仍待验证，含服务端越权隔离缺独立证据、100 条以上分页读取、上传成功后小程序被直接杀死时云存储可能残留临时文件）。\n\n【是否对应回答】\n本轮反馈针对的是学生实际写出的四句技术性断言：「学生导进来就能用」「能自动处理各种格式，兼容",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "serverElapsedMs": 11201,
+        "clientElapsedMs": 11977,
+        "usage": {
+          "promptTokens": 2701,
+          "completionTokens": 1025,
+          "totalTokens": 3726,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000932,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": null,
+        "capWarning": "",
+        "warnings": [],
+        "safety": {
+          "provider": "wechat",
+          "api": "security.msgSecCheck",
+          "passed": true,
+          "checked": true,
+          "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+        }
+      },
+      "citations": {
+        "ids": [
+          "INV-2",
+          "F7",
+          "F3",
+          "F4",
+          "F5",
+          "F8"
+        ],
+        "unknown": [],
+        "cardOf": {
+          "INV-2": "FC-1",
+          "F7": "FC-1",
+          "F3": "FC-1",
+          "F4": "FC-1",
+          "F5": "FC-1",
+          "F8": "FC-1"
+        }
+      },
       "verdict": {
-        "citationCheck": null,
-        "correspondsToAnswer": null,
-        "followUpTargeted": null,
-        "unverifiedPreserved": null,
-        "outOfBoundsClaims": null,
-        "citationSupportRate": null,
-        "pass": null,
-        "reason": ""
+        "citationCheck": "成立（INV-2、F3、F4、F5、F7、F8 共 6 条，全部存在于 FC-1，且逐条与事实卡一致，未发现说反）",
+        "correspondsToAnswer": "是（逐句针对 CS1-2 实际写出的断言：「这个功能挺完整的，学生导进来就能用」「能自动处理各种格式，兼容性很好」「校对环节也做得比较到位，用户体验流畅」「具体的技术细节我记不太清了，反正整个流程跑下来没什么问题」）",
+        "followUpTargeted": "无（响应在【是否对应回答】一节中途被截断，没有产出追问）",
+        "unverifiedPreserved": "保留（在引用核对里指出「材料写的是三项仍待验证」，含服务端越权隔离缺独立证据、100 条以上分页读取、小程序被杀时的临时文件残留），但四节未写完",
+        "outOfBoundsClaims": 0,
+        "citationSupportRate": 1,
+        "pass": false,
+        "reason": "模型在输出上限处被截断（finish_reason=length），四节格式未写完（正文 529 字，停在「…能自动处理各种格式，兼容」）。引用核对 6/6 成立、反馈确实对应回答，但缺追问、四节不完整，按 rubric.md 不构成完整有效反馈，计为不通过。本条是本次唯一可核对的模型输出，不因引用部分正确就判通过。"
       }
     },
     {
@@ -609,19 +754,40 @@
         "messages": 11,
         "inputChars": 4774
       },
-      "status": "not_executed",
-      "notExecutedReason": "同上：真实调用未获授权，会话流程未运行",
-      "raw": null,
+      "status": "executed",
+      "notExecutedReason": "",
+      "raw": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "model_unavailable",
+        "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+        "text": "",
+        "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "serverElapsedMs": 9830,
+        "clientElapsedMs": 10622,
+        "usage": null,
+        "usageSummary": null,
+        "capWarning": "",
+        "warnings": [],
+        "safety": {
+          "provider": "wechat",
+          "api": "security.msgSecCheck",
+          "passed": true,
+          "checked": true,
+          "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+        }
+      },
       "citations": null,
       "verdict": {
-        "citationCheck": null,
-        "correspondsToAnswer": null,
-        "followUpTargeted": null,
-        "unverifiedPreserved": null,
-        "outOfBoundsClaims": null,
+        "citationCheck": "不成立（无引用：响应为空）",
+        "correspondsToAnswer": "否（没有产出任何反馈）",
+        "followUpTargeted": "无（没有产出追问）",
+        "unverifiedPreserved": "未提及",
+        "outOfBoundsClaims": 0,
         "citationSupportRate": null,
-        "pass": null,
-        "reason": ""
+        "pass": false,
+        "reason": "模型返回空内容（OpenAI 兼容格式；content 为空、reasoning_content 有值、finish_reason=length）。无可判定内容，计为未通过。"
       }
     },
     {
@@ -637,19 +803,40 @@
         "messages": 13,
         "inputChars": 4843
       },
-      "status": "not_executed",
-      "notExecutedReason": "同上：真实调用未获授权，会话流程未运行",
-      "raw": null,
+      "status": "executed",
+      "notExecutedReason": "",
+      "raw": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "model_unavailable",
+        "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+        "text": "",
+        "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "serverElapsedMs": 9555,
+        "clientElapsedMs": 10385,
+        "usage": null,
+        "usageSummary": null,
+        "capWarning": "",
+        "warnings": [],
+        "safety": {
+          "provider": "wechat",
+          "api": "security.msgSecCheck",
+          "passed": true,
+          "checked": true,
+          "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+        }
+      },
       "citations": null,
       "verdict": {
-        "citationCheck": null,
-        "correspondsToAnswer": null,
-        "followUpTargeted": null,
-        "unverifiedPreserved": null,
-        "outOfBoundsClaims": null,
+        "citationCheck": "不成立（无引用：响应为空）",
+        "correspondsToAnswer": "否（复盘未产出）",
+        "followUpTargeted": "无（没有产出追问）",
+        "unverifiedPreserved": "未提及",
+        "outOfBoundsClaims": 0,
         "citationSupportRate": null,
-        "pass": null,
-        "reason": ""
+        "pass": false,
+        "reason": "模型返回空内容（OpenAI 兼容格式；content 为空、reasoning_content 有值、finish_reason=length）。复盘步骤未产出内容，计为未通过。"
       }
     },
     {
@@ -665,19 +852,34 @@
         "messages": 4,
         "inputChars": 4386
       },
-      "status": "not_executed",
-      "notExecutedReason": "同上：真实调用未获授权，会话流程未运行",
-      "raw": null,
+      "status": "executed",
+      "notExecutedReason": "",
+      "raw": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "invalid_request",
+        "message": "AI 请求参数不正确，请重试；若反复出现请联系维护者。",
+        "text": "",
+        "detail": "messages 的每条消息都需要 text（或 content）",
+        "model": "",
+        "serverElapsedMs": 604,
+        "clientElapsedMs": 1503,
+        "usage": null,
+        "usageSummary": null,
+        "capWarning": "",
+        "warnings": [],
+        "safety": null
+      },
       "citations": null,
       "verdict": {
-        "citationCheck": null,
-        "correspondsToAnswer": null,
-        "followUpTargeted": null,
-        "unverifiedPreserved": null,
-        "outOfBoundsClaims": null,
+        "citationCheck": "不成立（无引用：响应为空）",
+        "correspondsToAnswer": "否（重答反馈未产出）",
+        "followUpTargeted": "无（没有产出追问）",
+        "unverifiedPreserved": "未提及",
+        "outOfBoundsClaims": 0,
         "citationSupportRate": null,
-        "pass": null,
-        "reason": ""
+        "pass": false,
+        "reason": "服务端在模型调用前按 invalid_request 拒绝：detail「messages 的每条消息都需要 text（或 content）」。原因是 R4 返回空内容后，脚本仍把该空回复作为 assistant 消息拼进 R5 的上下文——这是 PoC 脚本自身的缺陷（把失败步骤的空回复回灌），不是模型行为。未通过。"
       }
     },
     {
@@ -696,7 +898,7 @@
         "inputChars": 3935
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -720,7 +922,7 @@
         "inputChars": 7171
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -744,7 +946,7 @@
         "inputChars": 3987
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -768,7 +970,7 @@
         "inputChars": 3985
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -792,7 +994,7 @@
         "inputChars": 3985
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -817,7 +1019,7 @@
         "timeoutMs": 1
       },
       "status": "not_executed",
-      "notExecutedReason": "同上：异常样例的首次结果必须由真实调用产生，不得用桩或回放替代",
+      "notExecutedReason": "本次未执行：前置的会话批次暴露出模型输出预算缺陷（见本文件 diagnostics），在这条链路修好前执行会把一次性留出样例烧成非证据，因此按「不得为赶进度包装成功」停在这里。留出样例 HS-1/HS-2 的首次结果仍未产生，独立性未被消耗。",
       "raw": null,
       "citations": null,
       "verdict": {
@@ -825,5 +1027,103 @@
         "reason": ""
       }
     }
-  ]
+  ],
+  "diagnostics": {
+    "title": "模型输出预算缺陷（本次实测，G1 真实评测受阻的直接原因）",
+    "symptom": "failureClass=model_unavailable，detail=「模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present」",
+    "rootCause": "模型把整个输出预算花在 reasoning_content（思考）上，可见 content 为空；即使把上限翻倍也只是思考更久，仍然拿不到正文。",
+    "measuredEvidence": [
+      {
+        "what": "② 会话批次 5 次",
+        "result": "ok 1 / 空内容 3 / invalid_request 1"
+      },
+      {
+        "what": "R2（唯一成功）",
+        "result": "completionTokens=1025（正好顶到默认上限 1024），serverElapsedMs=11201，正文 529 字后被截断"
+      },
+      {
+        "what": "诊断探针（开发样例 CS1-1，maxTokens=2048）",
+        "result": "仍为 finish_reason=length、content 为空，serverElapsedMs=12620 ⇒ 调大输出上限无效"
+      }
+    ],
+    "configFacts": [
+      "cloudfunctions/ai/config.ts:152 `AI_MAX_TOKENS` 默认 1024（钳 1..8192）。",
+      "cloudfunctions/ai/config.ts:126-127 `AI_TOTAL_DEADLINE_MS` 默认 15000、`AI_TIMEOUT_MS` 默认 8000；index.ts:420-428 取 min(请求值, 服务端值, 剩余)。",
+      "cloudfunctions/ai/config.ts:154 `AI_EXTRA_BODY_JSON` 是**唯一**能关思考的入口；providers.ts:125 只在服务端把 extraBody 合并进请求体，事件里没有对应字段。",
+      "cloudfunctions/ai/index.ts:858 事件可以传 `maxTokens`，index.ts:859 可以传 `timeoutMs`，但 `timeoutMs` 被服务端 `AI_TIMEOUT_MS` 钳住，客户端无法放宽。"
+    ],
+    "whyNotClientFixable": "客户端能调的只有 maxTokens（已实测无效）与 timeoutMs（被服务端钳住）。关思考只能改环境变量，本阶段明令不得改任何环境变量。",
+    "g3Inputs": [
+      "在云函数环境里关掉思考或换到正文落 content 的模型（如 AI_EXTRA_BODY_JSON={\"chat_template_kwargs\":{\"thinking\":false}}），并评估是否需要同时放宽 AI_TIMEOUT_MS / AI_TOTAL_DEADLINE_MS；改完必须重跑 G1 首评。",
+      "PoC 脚本自身缺陷（客户端可修、无需环境变量）：会话某步失败返回空内容时，脚本仍把该空回复拼进下一步的 assistant 消息，导致 R5 被服务端按 invalid_request 拒绝。修法是跳过空回复或改写为显式占位。",
+      "「服务端把 content 非空即判 ok」的口径会掩盖截断：R2 实际 finish_reason=length 却 ok=true。建议成功响应也回传 finish_reason，便于识别截断。"
+    ],
+    "probeArtifacts": [
+      "artifacts/verify/defense-g1-session-2026-09-30T14-07-50-096Z.jsonl（② 逐字原始响应，5 条）",
+      "artifacts/verify/defense-g1-session-2026-09-30T14-07-21-923Z.jsonl（第一次会话尝试，桥超时，0 条云请求）",
+      "artifacts/verify/probe-budget.cjs（输出预算诊断探针，未入库）",
+      "artifacts/verify/probe-quota.cjs（只读额度探针，未入库）",
+      "artifacts/verify/deployed-ai/（download 回读的已部署 ai，未入库）",
+      "artifacts/verify/local-ai-build/（本地构建快照，未入库）",
+      "artifacts/verify/defense-g1-blockercheck-2026-09-30T16-00-30-431Z.jsonl（2026-10-01 阻断项单点复核逐字原始响应，1 条，未入库）",
+      "artifacts/verify/defense-g1-blockercheck-2026-09-30T16-00-30-431Z.envelope.json（同上，含服务端原始 result 完整 envelope，未入库）",
+      "artifacts/verify/probe-fix-check.cjs（单点确认探针，含留出样例硬守卫，未入库）",
+      "artifacts/verify/deployed-ai-r2/（本轮 download 回读的已部署 ai，未入库）",
+      "artifacts/verify/deployed-ai-compare-r2.json（15/15 逐文件 SHA-256 比对结果，未入库）"
+    ],
+    "deploymentParity": {
+      "checkedAt": "2026-10-01",
+      "method": "cli cloud functions download --name ai 回读，与本地 npm run build 产物逐文件 SHA-256 比对",
+      "result": "15/15 入口 .js 逐字节一致（含 index.js bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942）",
+      "caveat": "与上一轮哈希相同 ⇒ 云函数**代码**未变。环境变量不在代码里，故本项**不能**证明环境变量是否改过。"
+    },
+    "blockerRecheck": {
+      "title": "阻断项单点复核（执行顺序 ②）：结论是**仍未修复**",
+      "when": "2026-10-01T00:00:30+08:00（UTC+8 日界重置后约 30 秒；个人日额度此时已重置）",
+      "whyThisRound": "负责人无法确认云函数环境变量是否已改（仓库、GitHub、CLI 三条路都读不到环境变量：cloudfunctions/ai/config.json 里没有 envVariables，cli cloud functions info 只回 status/timeout/runtime），故授权用 1 次开发样例做单点探测，以实际行为判定。",
+      "guard": "探针内置硬守卫：样例必须属于 development 集，否则在连模拟器之前就抛错。已实测 HS-1、HS-2 都被拒绝（exit=1、0 次云请求），留出样例未被触碰。",
+      "sampleId": "CS1-1",
+      "set": "development",
+      "cloudRequests": 1,
+      "unchangedFromPreviousRound": true,
+      "result": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "model_unavailable",
+        "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+        "text": "",
+        "textLen": 0,
+        "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "serverElapsedMs": 10607,
+        "clientElapsedMs": 11401,
+        "usage": null,
+        "safety": {
+          "provider": "wechat",
+          "api": "security.msgSecCheck",
+          "passed": true,
+          "checked": true,
+          "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+        },
+        "envelope": {
+          "messages": 3,
+          "inputChars": 4365,
+          "inputChunks": 3
+        }
+      },
+      "verdict": "阻断项未解：仍返回空内容（content 为空、reasoning_content 有值、finish_reason=length），detail 与上一轮三次空响应**逐字相同**。四节（【引用核对】【是否对应回答】【待验证保留】【追问】）一节都没产出。",
+      "notQuotaRelated": "safety.checked=true 且 errcode=0、suggest=pass ⇒ 内容安全检测正常、当日配额可用；失败与配额无关（未出现 45009），不要往额度或密钥方向找。",
+      "cannotDistinguish": "本轮只能观测到「行为未变」。**无法区分**「环境变量根本没改」与「改了但没重新部署 / 未生效」——两者在客户端观测上完全一致。可确定的是：本轮的部署件与上一轮逐字节相同（见 deploymentParity），而环境变量不在代码里，所以部署一致性并不能证明环境变量改过。",
+      "retryPolicy": "负责人授权：仅当撞 45009 才等 ~01:00 重试一次。本次失败类型是 model_unavailable（空内容）而不是 45009，按规则**不重试、不再花额度**，直接停下。",
+      "didNotProceedTo": "③ --session（5 次）、④ --samples（8 次，含留出样例首次结果）、⑤ --abnormal（6 次）**全部未执行**。"
+    }
+  },
+  "firstEvaluation": {
+    "executed": false,
+    "executedAt": null,
+    "reason": "执行顺序 ② 的单点确认未通过（仍为空内容、四节未产出），按纪律立刻停下，不进入 ③④⑤。",
+    "heldoutIndependence": "保留：HS-1/HS-2 至今从未被调用，首次结果仍未产生，独立性未被消耗。",
+    "tuningPerformed": false,
+    "tuningNote": "本轮未做任何提示词或契约调整，也未用任何样例（含异常样例）调参。"
+  }
 }
