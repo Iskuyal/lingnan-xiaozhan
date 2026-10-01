@@ -21,7 +21,13 @@
     "verify:campus-tools": "node scripts/verify-campus-tools.cjs",
     "verify:advancement": "node scripts/verify-advancement-model.cjs",
     "poc:advancement": "npm run build && node scripts/advancement-poc.cjs",
-    "check:defense-g0": "node scripts/check-defense-g0.mjs"
+    "check:defense-g0": "node scripts/check-defense-g0.mjs",
+    "poc:defense": "node scripts/poc-project-defense.cjs --plan",
+    "poc:defense:session": "npm run build && node scripts/poc-project-defense.cjs --session",
+    "poc:defense:samples": "npm run build && node scripts/poc-project-defense.cjs --samples",
+    "poc:defense:dev": "npm run build && node scripts/poc-project-defense.cjs --samples --set=development",
+    "poc:defense:abnormal": "npm run build && node scripts/poc-project-defense.cjs --abnormal",
+    "poc:defense:usage": "node scripts/poc-project-defense.cjs --usage"
   },
   "engines": {
     "node": ">=22"
