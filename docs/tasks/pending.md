@@ -33,6 +33,8 @@
 
 **（2026-10-01 第三轮追加，取代上段里的当前口径）**：上段中「两轮共 7 次真实调用」「token 与金额均仅 1 次回传」只代表当时。真实调用现为**三轮共 9 次云请求**（第一轮 6、第二轮 1、第三轮 2）；第三轮用**入库脚本** `scripts/poc-project-defense.cjs --session --allow-spend` 做阻断项确认（未写临时探针），负责人在该轮确认环境变量已改为 `enable_thinking:false` 并已保存/部署，但 R1 仍返回空内容、`finish_reason=length`（`detail` 与前两轮逐字相同）⇒ **立即停止**，④ `--samples` 与 ⑤ `--abnormal` 未执行，**首评仍未执行**。本轮额度**首次真实可读**：调用前当月 `2026-10` 4 次 / 1 失败 / 0 token / 0 元，调用后 13 次 / 2 失败 / **3,725 token / 0.000931 元**，上限 50 元、告警线 40 元 ⇒ 未告警未超限（服务端不返回剩余额度，故不写剩余值）；**第三轮消耗为实测，第一轮仅 1 次回传（3,726 token / ≥0.000932 元）、第二轮未回传部分仍记「未知、不记成 0」**。留出样例 `HS-1`/`HS-2` **仍从未被调用**，独立性完好。证据与 go/no-go 见 [G1 证据](../evidence/project-defense-g1/README.md) 与 [PR #124](https://github.com/Iskuyal/wx-match/pull/124)。
 
+**（2026-10-01 第四轮追加，最新口径）**：**首评已执行**。经负责人把 `AI_MAX_TOKENS` 提到 4096、`AI_TIMEOUT_MS=40000`、`AI_TOTAL_DEADLINE_MS=50000` 并保存/部署后，用入库脚本完成 19 次真实云请求（③ 会话 5 + ④ 样例 8 含留出 + ⑤ 异常 6）：**开发样例 6/6 通过**（引用核对 100%、越界断言 0）、**留出样例首次结果单列**（`HS-1` 空内容失败、`HS-2` 通过）、异常 6 例中 5 例达标（`AX-6` 端上行为不可验证）。**阻断项已解**，但单次可靠性约 88%（17 次真实模型调用中 2 次空内容）、每次 12–23 秒，属 G3 的降级设计输入。本轮消耗为实测：19 次云请求 / 81 次子调用 / 70,809 token / 0.017704 元；当月累计 94 次子调用 / 74,534 token / 0.018635 元，未告警未超限。**G1 的验收仍待负责人决定（Issue #112 保持 OPEN）**；证据见 [G1 证据](../evidence/project-defense-g1/README.md) 与 [PR #124](https://github.com/Iskuyal/wx-match/pull/124)。
+
 **执行入口的已知缺口**：[G1 首评重跑提示词](https://github.com/Iskuyal/wx-match/blob/docs/project-defense-g1-first-eval-prompt/docs/tasks/project-defense-g1-first-eval-prompt.md)（取代上面两份过期提示词）目前只存在于分支 `docs/project-defense-g1-first-eval-prompt`（提交 `d01380a`），**尚未合入 `main`**；因此 `main` 上的本页「执行入口」仍指向两份写下时顺序已被实测取代的提示词。
 
 ## 一、需要负责人决定
