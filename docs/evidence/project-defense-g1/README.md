@@ -43,7 +43,7 @@
 | PR #118（G0 素材包） | **OPEN**，未合入 `main`，head `210cd8f` | 按 PR 分支 tip 取用素材包并记录确切 SHA（与续跑提示词一致） |
 | PR #119 / #120 | 均 **OPEN**，base 为 `codex/project-defense-g0` | 未合入 |
 | `main` | `42cfd3208deaa83cf0715663edd51ad48df5b2b6` | 与记录一致 |
-| 本阶段 worktree | `E:\wx-match-main\g1-defense-poc`，分支 `codex/project-defense-g1-poc`，HEAD `3816a2c0c57ef8340811afce63bc39c4bbe7247a` | 从 G0 tip 起，工作区干净 |
+| 本阶段 worktree | 仓库外阶段 worktree，分支 `codex/project-defense-g1-poc`，HEAD `3816a2c0c57ef8340811afce63bc39c4bbe7247a` | 从 G0 tip 起，工作区干净 |
 | 冻结件 | **未改写任何冻结件**；`--plan` 装配指纹 `64b4d06b911e4022` 与上一轮一致 | 通过 |
 | 开发者工具 | 已登录（`islogin` → `{"login":true}`），自动化端口 `9420` 已打开，AppID `wxdcef3a86d7e9eeff` | 通过 |
 | `dist/` | `npm run build` 成功 | 通过 |
@@ -58,7 +58,7 @@
 | Issue #112 / #111 | 均 **OPEN**，`closedAt: null` | 仍未验收 |
 | PR #118 / #119 / #120 / #121 | **全部 OPEN**，`mergedAt: null`；#121 的 head 就是本阶段分支 `codex/project-defense-g1-eval` | #118 **仍未合入 `main`** ⇒ 按续跑提示词**留在现有 worktree 继续**，并记录确切 SHA |
 | `main` | `42cfd3208deaa83cf0715663edd51ad48df5b2b6`（未变） | 一致 |
-| 本阶段 worktree | `E:\wx-match-main\g1-defense-poc`，分支 **`codex/project-defense-g1-eval`**，HEAD **`0a93a7c602ceaae84c4985408617895f11a7bcdf`**，工作区**干净** | 与 PR #121 一致 |
+| 本阶段 worktree | 仓库外阶段 worktree，分支 **`codex/project-defense-g1-eval`**，HEAD **`0a93a7c602ceaae84c4985408617895f11a7bcdf`**，工作区**干净** | 与 PR #121 一致 |
 | `--plan` 复跑 | **0 错误**、1 个已记录的拆批警告；装配指纹 **`64b4d06b911e4022`**（与第一轮一致 ⇒ 冻结件未改） | 通过 |
 | `dist/` | `npm run build` 成功；实测**构建字节确定**（重建前后 `index.js` / `app.js` / `timetable/index.js` SHA-256 完全一致） | 通过（故批次间的自动重建不会让模拟器变旧） |
 | 开发者工具 | IDE + `cli auto` 已就绪（HTTP 17602、自动化端口 **9420**）；已按文档执行 `cli cache --clean compile` 并**随后重跑 `cli auto`** | 通过 |
@@ -213,7 +213,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 | 2 个留出样例按首次结果单列 | **未产生**（未对留出样例发起调用；独立性保留） |
 | 至少一次完整流程可运行 | **未达成**（`R1`/`R3`/`R4` 空内容、`R5` 被拒） |
 | 异常 / 空响应 / 额度失败留实际记录 | **部分达成**（会话批次 5 条已逐字落盘；异常样例未执行） |
-| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；13 项负例测试通过） |
+| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；14 项负例测试通过） |
 | **G1「真实模型可行」** | **判据未取到（blocked）**——真实调用已发起，但链路在当前部署配置下产不出可判定的反馈 |
 | **G1 整体** | **未完成** |
 
@@ -271,7 +271,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 
 ## 九、验证记录（本次实际运行）
 
-全部命令在 worktree `E:\wx-match-main\g1-defense-poc`（分支 `codex/project-defense-g1-poc`，HEAD `3816a2c0`）执行：
+全部命令在**仓库外阶段 worktree**（分支 `codex/project-defense-g1-poc`，HEAD `3816a2c0`）执行：
 
 | 命令 | 结果 |
 | --- | --- |
@@ -282,14 +282,14 @@ content=string；reasoning_content=present；error=missing；usage=present
 | `node artifacts/verify/probe-bridge.cjs` | 连通：连接 9ms、`reLaunch` 1042ms、`evaluate` 6ms |
 | `node scripts/poc-project-defense.cjs --session --allow-spend` | **5 次云请求**；`ok` 1 / 空内容 3 / `invalid_request` 1 |
 | `PROBE_MAX_TOKENS=2048 node artifacts/verify/probe-budget.cjs` | **仍返回空内容**（`finish_reason=length`，12620ms） |
-| `node --test tests/defense-g1.test.cjs` | 13 项负例全过、0 失败 |
+| `node --test tests/defense-g1.test.cjs` | 14 项负例全过、0 失败 |
 | `npm run check:defense-g0` | 0 个错误、4 个已记录的未引用警告 |
 | `npm run docs:check` | 见提交前复核 |
 | `git diff --check` | 无输出（无空白错误） |
 
 本阶段**未修改任何业务代码或页面**（`cloudfunctions/ai` 与 `main` 逐字节一致），因此不需要补构建 / 行为回归。
 
-**2026-10-01 第二轮验证记录**（worktree `E:\wx-match-main\g1-defense-poc`，分支 `codex/project-defense-g1-eval`，HEAD `0a93a7c602ceaae84c4985408617895f11a7bcdf`）：
+**2026-10-01 第二轮验证记录**（仓库外阶段 worktree，分支 `codex/project-defense-g1-eval`，HEAD `0a93a7c602ceaae84c4985408617895f11a7bcdf`）：
 
 | 命令 | 结果 |
 | --- | --- |
@@ -310,6 +310,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 2. **额度未核实**：本次登录账号不是 `AI_ADMIN_OPENIDS` 白名单账号，`usage` 与客户端直读都被拒（第二轮再次实测被拒）；服务端读数仍只能走控制台或加白名单。
 3. **模型输出预算缺陷未修（阻断项）**：属环境变量改动，已按纪律记为 G3 输入，未在本阶段执行。**第二轮已用 1 次真实请求实测复核，确认仍未修复**；且**无法区分**「没改」与「改了但未生效」。
 4. **PoC 脚本的空回复回灌缺陷未修**：客户端可修，留待与 G3 一起处理（避免在本阶段改动已交付脚本的行为）。
+5. **第二轮证据在仓库内不可复现（限制，非本次新增缺陷）**：第二轮那 1 次真实调用走的是探针 `artifacts/verify/probe-fix-check.cjs`，`runs.json` 的 `blockerRecheck`/`actualSpend` 等键由 `artifacts/verify/apply-blocker-recheck.cjs` 合并写入——两者都在被 gitignore 的 `artifacts/` 下、**未入库**，且记录中的阶段 worktree 与 `artifacts/` 在复核机上**已不存在**。因此**第二轮的真实调用结果只能按本报告与 `runs.json` 的落盘内容采信，无法在仓库内重跑复现**；后续同批次执行必须改用入库的 `scripts/poc-project-defense.cjs`（它带 `--allow-spend`、离线自检与 ≤12 防误花）。
 
 **解锁后即可执行**：先由负责人在云函数环境关掉思考（或换模型）**并重新部署**，然后**再用一个开发样例做单点确认**（① 仍应四节写完、`content` 非空）→ 跑 `npm run poc:defense:usage` 读回额度（读不到就继续记「未核实」）→ 重跑 `--session` 确认「三轮 + 复盘 + 重答」完整 → 再按冻结顺序跑 `--samples`（开发 6 + **留出 2 同批产生首次结果**）与 `--abnormal` → 按 `rubric.md` 四步顺序逐例判定并回填 `verdict`。
 

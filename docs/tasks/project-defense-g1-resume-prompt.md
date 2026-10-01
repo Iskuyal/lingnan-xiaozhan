@@ -2,7 +2,9 @@
 
 关联任务：[Issue #112](https://github.com/Iskuyal/wx-match/issues/112)（Blocked by [#111](https://github.com/Iskuyal/wx-match/issues/111)）。前一阶段产物：[G1 离线部分与逐例记录骨架](../evidence/project-defense-g1/README.md)（[PR #120](https://github.com/Iskuyal/wx-match/pull/120)）。G0 素材包：[PR #118](https://github.com/Iskuyal/wx-match/pull/118)（分支 `codex/project-defense-g0`，tip `210cd8fee867c17d2514431f9ebac0e04991f48a`，截至本文写作**尚未合入 `main`**；Issue #111 仍 OPEN）。
 
-状态：供另一位执行者完成 **G1 的真实模型评测**。上一轮已交付离线部分（装配自检、13 项负例测试、`runs.json` 骨架），**一次真实调用都没有发**；本提示词补的正是那一步。新增业务功能尚未实现，本阶段不新增页面、不做设计图、不改动产品功能代码路径。
+状态：供另一位执行者完成 **G1 的真实模型评测**。上一轮已交付离线部分（装配自检、负例测试、`runs.json` 骨架），**本文写作时（2026-09-30 21:5x）尚未发起任何真实调用**；本提示词补的正是那一步。新增业务功能尚未实现，本阶段不新增页面、不做设计图、不改动产品功能代码路径。
+
+> **本提示词已被取代（2026-10-01）**：写作时的「尚未发起真实调用」状态已改变——两轮共 7 次真实调用已执行并记入 [G1 证据](../evidence/project-defense-g1/README.md)（结果不可判定、G1 整体仍未完成）。接力执行前请先读该证据的「最新状态」，并先由负责人修复阻断项。
 
 ## 执行前必须知道的三件事
 
@@ -23,9 +25,9 @@
 ```text
 你在 wx-match（原生微信小程序 + TypeScript，GitHub 仓库 Iskuyal/wx-match）项目工作。现在只执行“项目讲解与答辩练习”G1 的**真实模型评测**部分（Issue #112）。
 
-上一轮已交付离线部分：维护者脚本 scripts/poc-project-defense.cjs、离线装配自检（0 错误）、13 项负例测试、逐例记录骨架 docs/evidence/project-defense-g1/runs.json，全部 19 例都是 not_executed。**一次真实调用都没有发。** 你这一步就是把它跑出来。
+上一轮已交付离线部分：维护者脚本 scripts/poc-project-defense.cjs、离线装配自检（0 错误）、负例测试（写作时 13 项，其后增至 14 项）、逐例记录骨架 docs/evidence/project-defense-g1/runs.json，写作时全部 19 例都是 not_executed、**尚未发起任何真实调用**。你这一步就是把它跑出来。（写作后的实况：两轮共 7 次真实调用已执行、5 例转为 executed，结果仍不可判定——见 docs/evidence/project-defense-g1/README.md。）
 
-不覆盖共享工作区的未提交改动。本机主检出为 E:\wx-match-main\wx-match-main；本阶段的 worktree 是 E:\wx-match-main\g1-defense-poc（分支 codex/project-defense-g1-poc，node_modules 以目录联接复用主检出）。若 #118 已合入 main，可以从最新 main 另建 worktree 并把本阶段提交摘过去；若仍未合入，就在现有 worktree 上继续，并记录确切 SHA。
+不覆盖共享工作区的未提交改动。阶段 worktree 位于仓库外（分支 codex/project-defense-g1-poc，node_modules 以目录联接复用主检出），具体绝对路径不入库。若 #118 已合入 main，可以从最新 main 另建 worktree 并把本阶段提交摘过去；若仍未合入，就在现有 worktree 上继续，并记录确切 SHA。
 
 阅读：AGENTS.md、docs/agents/issue-tracker.md、docs/evidence/project-defense-g1/README.md、docs/evidence/project-defense-g0/（README、rubric.md、abnormal-cases.md、budget.md、两份事实卡、samples-development.json、samples-heldout.json）、docs/development/cloud/ai.md（尤其「内容安全适配层」「失败分类与默认文案」）、docs/development/local-setup.md。只追读本任务引用的必要文件。
 
