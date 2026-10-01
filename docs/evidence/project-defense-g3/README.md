@@ -14,7 +14,7 @@
 | `cloudfunctions/ai/defense.ts` | 服务端契约：**固定纪律提示词**（逐字取自 G1 PoC 的 `DISCIPLINE`）、材料加载、四节与引用编号校验 |
 | `cloudfunctions/ai/index.ts` | 接线：`feature=project-defense` 时按 `materialId` 取服务端材料、**覆盖**客户端 `system`；模型返回后校验不过则 `citation_unverified`，**不返回正文**（+44 行纯插入，未改既有分支） |
 | `scripts/lib/generate-defense-materials.cjs` + `scripts/build.mjs` | 构建时把 G0 **冻结件**的正文生成 `dist/cloudfunctions/ai/defense-materials.js` |
-| `tests/defense-g3.test.cjs`、`tests/defense-cloud.test.cjs` | 契约、状态机、页面冒烟、冻结件漂移守卫、服务端校验（共 28 项） |
+| `tests/defense-g3.test.cjs`、`tests/defense-cloud.test.cjs`、`tests/defense-wiring.test.cjs` | 契约、状态机、页面冒烟、冻结件漂移守卫、服务端校验、**服务端接线集成**（共 32 项） |
 
 ## 谁守什么（与 G2 契约一一对应）
 
@@ -31,12 +31,14 @@
 | --- | --- |
 | `npm run build` | 通过；输出含「答辩练习材料已注入 ai 云函数（2 份、3050 字，正文逐字取自 G0 冻结件）」 |
 | `npm run typecheck` | 通过（小程序与云函数两套 `tsc --noEmit`） |
-| `npm test` | **713 / 713 通过、0 失败**（基线 685 + 本阶段新增 28） |
-| `node --test tests/defense-g3.test.cjs tests/defense-cloud.test.cjs` | 28 / 28 |
+| `npm test` | **717 / 717 通过、0 失败**（基线 685 + 本阶段新增 32） |
+| `node --test tests/defense-g3.test.cjs tests/defense-cloud.test.cjs tests/defense-wiring.test.cjs` | 32 / 32 |
 | `npm run docs:check` | 130 个 Markdown、880 个引用、0 错误 |
 | `git diff --check` | 无输出 |
 
 其中与「状态与安全边界」直接相关的用例：四节不齐→失败态且**不上屏**；失败**不推进轮次、不写反馈**；失败后**拿不到旧反馈**；取消**保留草稿**且迟到结果不上屏；退出清空会话；回答过短**不发云调用**；额度用尽**不显示成可重试**；服务端对缺节、顺序错、未知编号（`F99`）分别拒绝；客户端与服务端 feature 名一致；材料正文与 G0 冻结件**逐字一致**（漂移守卫）。
+
+`tests/defense-wiring.test.cjs` 覆盖**服务端接线**：伪造的客户端 `system` 不进模型请求、纪律与材料由服务端注入、未知/缺失 `materialId` 拒绝且不发模型请求、四节不齐与未知编号都不返回正文且文案是答辩练习口径、其他 feature 行为不变。**这一层原先是临时脚本跑出来就删掉的自证**（不可复核），现按仓库惯例入库为测试。
 
 ## 实现中发现并修掉的两个问题（如实记录）
 
@@ -47,7 +49,7 @@
 
 1. **未部署**：`ai` 云函数的这次改动要重新部署才生效；部署属负责人动作，本阶段未做，**线上仍是旧行为**。
 2. **未真机、未真实模型调用**：本阶段只做本地契约与页面；真实调用、内容安全开销与逐例判定属于 G4。
-3. **文案作用域**：服务端 `citation_unverified` 的默认文案仍是升学问答口径（「已改为展示检索到的原文摘录」）；按 G2 定稿第 5 项，答辩练习页面自己映射文案，所以学生看不到那句，但云函数日志/其他调用方看到的仍是原句。若要在服务端区分，需另开票。
+3. **文案作用域（已处理）**：服务端 `citation_unverified` 的**默认**文案仍是升学问答口径；答辩练习分支现已在 `fail(...)` 里传 `options.message`（`DEFENSE_REJECTED_MESSAGE`，分类不变），因此服务端返回给调用方的文案也是答辩练习口径（不提「原文摘录」）。全局默认值未改，升学问答不受影响；`tests/defense-wiring.test.cjs` 锁定了这一点。
 4. **空回答口径差异**：服务端 `empty_answer` 按 `trim() === ''` 判，PoC 的 `AX-1` 样例（只有标点）不会被判空；客户端有 20 字下限，页面路径上到不了这条分支。差异已记录，未擅自扩大服务端判据。
 5. **语义错误仍靠人工**：编号存在不等于说法正确；「把待验证说成已完成」这类越界断言本阶段**没有**自动判定，仍按 rubric 人工判读。
 

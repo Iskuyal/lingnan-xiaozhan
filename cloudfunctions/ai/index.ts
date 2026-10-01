@@ -93,6 +93,14 @@ const MAX_MESSAGE_CHARS = 8000;
 const MAX_DEFENSE_MATERIAL_CHARS = 4000;
 /** 材料 id 的长度上限：id 由服务端登记（`FC-1` / `FC-2`），这里只是别让超长字符串进日志。 */
 const MAX_DEFENSE_MATERIAL_ID_CHARS = 32;
+/**
+ * 答辩练习反馈被拦下时的用户可见文案。
+ *
+ * 不复用 `citation_unverified` 的默认文案：那句说的是「已改为展示检索到的原文摘录」，
+ * 是升学问答的降级形态；答辩练习没有「原文摘录」可退，下一步是重试或补依据。
+ * 分类不变，只覆盖 message（用法同 `errors.ts` 的 `options.message`）。
+ */
+const DEFENSE_REJECTED_MESSAGE = '这次的反馈没有通过引用核对（四节结构或条目编号与材料不符），已拦下不显示。你的回答还在，可以重试。';
 /** 微信 msgSecCheck 的 content 上限是 2500 字；分片检测每次不超过 2000 字。 */
 const MODERATION_CHUNK_CHARS = 2000;
 /** 输入侧最多分几片：2000 字 × 10 = 2 万字。见 `MAX_INPUT_CHARS`。 */
@@ -941,6 +949,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
       fail(
         'citation_unverified',
         `答辩练习的模型回答未通过格式与引用校验（${verdict.problems.join('、')}），已丢弃该回答`,
+        { message: DEFENSE_REJECTED_MESSAGE },
       );
     }
   }
