@@ -68,3 +68,4 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 - [校历与考试（整体待评审）](exam-calendar/README.md)
 - [体测估算（BMI 来源纠错，整体待评审）](fitness-calc/README.md)
 - [升学问答（澄清纠错，整体待评审）](advancement-qa/README.md)
+- [项目讲解与答辩练习（G2 设计图与业务契约，整体待评审）](project-defense/README.md)

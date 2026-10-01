@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 复盘</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-dim { margin-top:10px; }
+    .ff-dim-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .ff-dim-name { color:var(--brand-deep); font-size:13px; font-weight:700; }
+    .ff-dim-body { margin-top:6px; color:var(--text-2); font-size:11.5px; line-height:1.8; }
+    .ff-open { margin-top:6px; padding-left:9px; border-left:2px solid var(--warn-line); color:var(--warn); font-size:11.5px; line-height:1.75; }
+    .ff-actions { margin-top:18px; display:flex; gap:8px; }
+    .ff-actions .secondary, .ff-actions .primary { flex:1; }
+    .ff-actions .primary { justify-content:center; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">三轮复盘</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">材料：课表导入与校对 · 三轮已提交 · 本次会话不长期保存</div>
+    <h1 class="page-title">你讲到哪一步了</h1>
+
+    <div class="ff-steps" style="margin-top:14px"><span class="ff-step done"></span><span class="ff-step done"></span><span class="ff-step done"></span></div>
+    <div class="ff-step-label"><span>问题与目标</span><span>方案及取舍</span><span>验证与限制</span></div>
+
+    <div class="surface ff-dim">
+      <div class="ff-dim-head"><span class="ff-dim-name">问题与目标</span><span class="ff-verdict ff-ok">已说明</span></div>
+      <div class="ff-dim-body">你讲清了对象（学生自己导入）和问题（教务导出的表在手机上不好看），依据是 F1、F2。</div>
+    </div>
+
+    <div class="surface ff-dim" style="margin-top:10px">
+      <div class="ff-dim-head"><span class="ff-dim-name">方案及取舍</span><span class="ff-verdict ff-gap">需补充</span></div>
+      <div class="ff-dim-body">你说了「智能识别、兼容性很好」，但没有落到 F3 的网格矩阵与 F4 的「只标记不猜」。</div>
+      <div class="ff-open">缺什么：解析对象是什么格式、识别不出时程序怎么处理。</div>
+    </div>
+
+    <div class="surface ff-dim" style="margin-top:10px">
+      <div class="ff-dim-head"><span class="ff-dim-name">验证与限制</span><span class="ff-verdict ff-gap">与材料待核对</span></div>
+      <div class="ff-dim-body">你说「整个流程没什么问题」，材料 F8 写的是三项仍待验证；两者需要核对。</div>
+      <div class="ff-open">未解决：F8① 服务端越权隔离、F8② 100 条以上分页、F8③ 临时文件极端残留。</div>
+    </div>
+
+    <div class="ff-note">
+      复盘只列「你说了什么」和「材料写了什么」。它不判断你的项目好不好，也不把「下一步计划」算成「已经验证」。
+    </div>
+
+    <div class="ff-actions">
+      <div class="secondary">复制复盘文字</div>
+      <div class="primary"><span>重答一处薄弱项</span><span class="action-arrow">›</span></div>
+    </div>
+
+    <div class="quiet back-link">重答只有一次；重答必须由你自己新写，不能用同一段文字再提交一遍。</div>
+  </main>
+</body>
+</html>

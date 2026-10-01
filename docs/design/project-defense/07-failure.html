@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 失败与额度</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-fail { margin-top:14px; padding:13px 12px; border:1px solid var(--warn-line); border-left:4px solid #c68a32; background:var(--warn-soft); }
+    .ff-fail-title { color:var(--warn); font-size:13.5px; font-weight:700; }
+    .ff-fail-body { margin-top:6px; color:var(--warn); font-size:12px; line-height:1.8; }
+    .ff-kept { margin-top:10px; padding:10px 12px; border:1px solid rgba(43,36,34,.16); background:#fff; }
+    .ff-kept-label { color:var(--text-3); font-size:10px; }
+    .ff-kept-text { margin-top:5px; color:var(--text); font-size:12.5px; line-height:1.8; }
+    .ff-kept-foot { margin-top:8px; display:flex; align-items:center; justify-content:space-between; }
+    .ff-copy { color:var(--brand-ink); font-size:10.5px; font-weight:700; }
+    .ff-retry { min-height:44px; padding:0 14px; display:inline-flex; align-items:center; border-radius:5px; background:var(--brand); color:#fff; font-size:13px; font-weight:700; }
+    .ff-spec { margin-top:22px; padding-top:12px; border-top:1px solid rgba(43,36,34,.17); }
+    .ff-spec-row { margin-top:8px; padding:9px 10px; border:1px solid rgba(43,36,34,.14); background:rgba(255,255,255,.5); }
+    .ff-spec-kind { color:var(--brand-deep); font-size:11px; font-weight:700; font-family:ui-monospace,Consolas,monospace; }
+    .ff-spec-copy { margin-top:4px; color:var(--text-2); font-size:11.5px; line-height:1.75; }
+    .ff-spec-src { margin-top:4px; color:var(--text-3); font-size:10px; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">第 1 轮 · 没能完成</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">你的回答已保留 · 失败不计作「没讲清楚」</div>
+    <h1 class="page-title">这一轮没能核对</h1>
+
+    <div class="ff-fail" style="margin-top:14px">
+      <div class="ff-fail-title">模型暂时没有返回结果</div>
+      <div class="ff-fail-body">
+        这次核对超时了（等了 12 秒以上没有拿到正文），你的回答没有被判定，也没有产生任何评价。
+        可以直接重试；重试会重新发起一次调用并计入用量。
+      </div>
+    </div>
+
+    <div class="ff-kept">
+      <div class="ff-kept-label">保留的回答（第 1 轮）</div>
+      <div class="ff-kept-text">课表是学生自己从教务系统下载后导入的，不用拿教务账号密码。解决的问题是教务导出的表格在手机上很难直接看，小程序把它整理成一周视图。</div>
+      <div class="ff-kept-foot"><span class="quiet">失败不会清空输入；也不会显示上一轮的旧结果</span><span class="ff-copy">复制我的回答 ›</span></div>
+    </div>
+
+    <div class="ff-retry" style="margin-top:12px">重试这一次核对</div>
+    <div class="secondary" style="margin-top:8px">回到材料页</div>
+
+    <div class="ff-spec">
+      <div class="section-title">四类失败的文案规格</div>
+      <div class="quiet" style="margin-top:4px">同类失败不得合并成一句；下面四条各自独立，页面版式相同，只换标题与说明。</div>
+
+      <div class="ff-spec-row">
+        <div class="ff-spec-kind">model_unavailable</div>
+        <div class="ff-spec-copy">模型暂时没有返回结果。你的回答已保留，可以直接重试——这不代表你没讲清楚。</div>
+        <div class="ff-spec-src">触发：连接失败 / 超时 / 5xx / 返回空内容。现有默认文案提到「课表与部门资料」，对本页不适用，需要独立文案。</div>
+      </div>
+      <div class="ff-spec-row">
+        <div class="ff-spec-kind">content_rejected</div>
+        <div class="ff-spec-copy">这段内容没有通过安全检测，请改一改再试。你的其他内容没有被判定。</div>
+        <div class="ff-spec-src">触发：输入或输出被内容安全判为违规。与「模型不可用」分开，因为下一步不同：改内容 vs 重试。</div>
+      </div>
+      <div class="ff-spec-row">
+        <div class="ff-spec-kind">quota_exhausted</div>
+        <div class="ff-spec-copy">本月 AI 额度已用尽或当日检测配额已满，这项练习暂时无法继续。明天或下月再试；已写的内容仍可复制。</div>
+        <div class="ff-spec-src">触发：月度成本上限、服务商 402、微信内容安全 45009（未上架期 100 次/天）。排障先查 45009。</div>
+      </div>
+      <div class="ff-spec-row">
+        <div class="ff-spec-kind">invalid_request</div>
+        <div class="ff-spec-copy">这次请求没能发出去：回答或材料太长（单条 ≤500 字、合计 ≤12,000 字）。请精简后重试。</div>
+        <div class="ff-spec-src">触发：参数不合法、输入超窗。服务端在内容安全和模型之前就拒绝，不消耗检测配额。</div>
+      </div>
+    </div>
+
+    <div class="ff-note">
+      失败不是学习结果：这四类都不得写成「你的回答有问题」「你没掌握」，
+      也不得把上一轮的反馈当成这一轮的结果继续显示。
+    </div>
+  </main>
+</body>
+</html>

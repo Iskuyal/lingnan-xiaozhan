@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 材料确认</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-choice { margin-top:10px; }
+    .ff-choice-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+    .ff-choice-name { color:var(--brand-deep); font-size:14px; font-weight:700; }
+    .ff-choice-pick { color:var(--brand); font-size:11px; font-weight:700; }
+    .ff-choice-picked { border-color:rgba(196,28,35,.45); box-shadow:0 0 0 1px rgba(196,28,35,.18) inset; }
+    .ff-picked-dot { display:inline-block; width:14px; height:14px; margin-right:6px; border:4px solid var(--brand); border-radius:50%; vertical-align:-2px; }
+    .ff-bounds { margin-top:10px; }
+    .ff-bound { display:flex; gap:8px; color:var(--text-2); font-size:11.5px; line-height:1.75; }
+    .ff-bound i { flex:none; width:4px; height:4px; margin-top:8px; background:var(--gold-deep); border-radius:50%; }
+    .ff-start { margin-top:20px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">项目讲解与答辩练习</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">两份冻结材料 · 只依据材料里的条目 · 不联网找资料</div>
+    <h1 class="page-title">先选一份材料</h1>
+
+    <div class="ff-note" style="margin-top:14px">
+      这项练习只做一件事：让你把课程项目讲清楚，并<b>逐句看到依据从哪来</b>。
+      它不输出职业能力等级、官方成绩、录用或面试保证，也不评价你的表达能力。
+    </div>
+
+    <div class="section-head"><span class="section-title">可用材料</span><span class="section-note">2 份 · 冻结 2026-09-30</span></div>
+
+    <div class="surface ff-choice ff-choice-picked">
+      <div class="ff-choice-head">
+        <span class="ff-choice-name"><span class="ff-picked-dot"></span>课表导入与校对</span>
+        <span class="ff-choice-pick">已选</span>
+      </div>
+      <div class="chip chip-gold" style="margin-top:6px">本项目自有材料</div>
+      <div class="ff-fact" style="margin-top:9px"><b>F1</b> 只能从微信聊天记录里选文件，不能浏览手机本地文件</div>
+      <div class="ff-fact"><b>F4</b> 识别不出的只标记不猜，交给你在确认页裁决</div>
+      <div class="ff-fact"><b>F8</b> 三项仍待验证：服务端越权隔离、100 条以上分页读取、临时文件极端残留</div>
+      <div class="quiet" style="margin-top:8px">9 条事实 + 3 条不变量 · 3 条标为待验证 · 3 处文档待核实</div>
+    </div>
+
+    <div class="surface ff-choice" style="margin-top:10px">
+      <div class="ff-choice-head">
+        <span class="ff-choice-name">打字练习小游戏</span>
+        <span class="ff-choice-pick" style="color:var(--text-3)">选择</span>
+      </div>
+      <div class="chip chip-warn" style="margin-top:6px">维护者原创设计情景 · 不是已有功能</div>
+      <div class="ff-fact" style="margin-top:9px"><b>D3</b> 计时以第一次键入为起点，不是点「开始」的时刻</div>
+      <div class="ff-fact"><b>D7</b> 按住不放只计一次错误：希望如此，但<b>未测试</b>、实现方式未定</div>
+      <div class="quiet" style="margin-top:8px">8 条设计事实 + 2 条不变量 · 没有任何代码或测试记录</div>
+    </div>
+
+    <div class="section-head"><span class="section-title">这次会话的边界</span></div>
+    <div class="ff-bounds">
+      <div class="ff-bound"><i></i><span>最多三轮提问，之后是一次复盘与<b>一次</b>重答；不做无限对话。</span></div>
+      <div class="ff-bound"><i></i><span>每轮回答 20–500 字。说得短但有依据，不会被扣分。</span></div>
+      <div class="ff-bound"><i></i><span>反馈里的每个条目编号都要能在材料里回核；回核不到就不上屏。</span></div>
+      <div class="ff-bound"><i></i><span>会话只留在本页内存里，退出后不保存；失败会保留你已写的内容。</span></div>
+    </div>
+
+    <div class="primary ff-start"><span>用这份材料开始（约 5 分钟）</span><span class="action-arrow">›</span></div>
+    <div class="quiet back-link">练习对象是维护者编写的材料，不是真实学生项目，也不能证明学习效果。</div>
+  </main>
+</body>
+</html>

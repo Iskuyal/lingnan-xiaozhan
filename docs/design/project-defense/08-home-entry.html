@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 首页入口（待拍板）</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-home { margin-top:12px; padding:12px; border:1px solid rgba(43,36,34,.13); border-radius:7px; background:rgba(255,255,255,.62); }
+    .ff-home-title { color:var(--brand-deep); font-size:15px; font-weight:700; }
+    .ff-entry { margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px 12px; border:1px solid rgba(122,26,18,.30); border-radius:5px; background:rgba(196,28,35,.04); }
+    .ff-entry-main { flex:1; min-width:0; }
+    .ff-entry-name { color:var(--brand-ink); font-size:13.5px; font-weight:700; }
+    .ff-entry-desc { margin-top:3px; color:var(--text-2); font-size:11px; line-height:1.65; }
+    .ff-entry-arrow { flex:none; color:var(--brand); font-size:20px; line-height:1; }
+    .ff-alt { margin-top:10px; padding:10px 12px; border:1px dashed rgba(43,36,34,.22); background:rgba(255,255,255,.5); }
+    .ff-alt-name { color:var(--text); font-size:11.5px; font-weight:700; }
+    .ff-alt-desc { margin-top:4px; color:var(--text-3); font-size:10.5px; line-height:1.7; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back"></span><span class="nav-title">校园工具</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">本图是首页局部，只画新增入口；其余区域不动</div>
+    <h1 class="page-title">校园工具</h1>
+
+    <div class="ff-home">
+      <div class="ff-home-title">今天要用的</div>
+
+      <div class="ff-entry">
+        <div class="ff-entry-main">
+          <div class="ff-entry-name">项目讲解与答辩练习</div>
+          <div class="ff-entry-desc">拿一份课程项目，按材料逐句核对你的讲解；三轮一次复盘，可重答一处</div>
+        </div>
+        <span class="ff-entry-arrow">›</span>
+      </div>
+
+      <div class="quiet" style="margin-top:8px">放在「课表 / 升学与实习问答」之后，整宽次级入口；不做成第 4 个宫格。</div>
+    </div>
+
+    <div class="section-head"><span class="section-title">待拍板的三种入口形态</span><span class="section-note">需负责人择一</span></div>
+
+    <div class="ff-alt">
+      <div class="ff-alt-name">A · 整宽次级入口（本图）</div>
+      <div class="ff-alt-desc">与「升学与实习问答」同层级。改动最小；缺点是长标题会挤，需要容许两行。</div>
+    </div>
+    <div class="ff-alt" style="margin-top:8px">
+      <div class="ff-alt-name">B · 并进「校历与考试 / 体测估算」的四格</div>
+      <div class="ff-alt-desc">四格更整齐；但这一项是「练习」而不是「查询」，性质不同，混在一起会让用户以为是查资料。</div>
+    </div>
+    <div class="ff-alt" style="margin-top:8px">
+      <div class="ff-alt-name">C · 先不加首页入口</div>
+      <div class="ff-alt-desc">G3 期间只用开发者工具直达页面；演示前再定入口。风险是评审当天「找不到功能」。</div>
+    </div>
+
+    <div class="ff-note" style="margin-top:14px">
+      入口文案里不写「AI 打分」「能力评级」「模拟面试」——本功能不输出职业等级、官方成绩或录用保证。
+    </div>
+  </main>
+</body>
+</html>

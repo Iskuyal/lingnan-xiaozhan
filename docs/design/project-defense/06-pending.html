@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 等待与取消</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-wait { margin-top:14px; padding:14px 12px; border:1px dashed rgba(43,36,34,.28); background:rgba(255,255,255,.55); }
+    .ff-wait-title { color:var(--brand-deep); font-size:13.5px; font-weight:700; }
+    .ff-wait-body { margin-top:6px; color:var(--text-2); font-size:11.5px; line-height:1.8; }
+    .ff-wait-foot { margin-top:8px; display:flex; align-items:center; justify-content:space-between; color:var(--text-3); font-size:10px; }
+    .ff-cancel { min-height:37px; padding:0 12px; display:inline-flex; align-items:center; border:1px solid rgba(122,26,18,.38); border-radius:4px; color:var(--brand-ink); font-size:12px; font-weight:600; }
+    .ff-keepdraft { margin-top:12px; padding:10px 12px; border-left:3px solid var(--gold); background:var(--paper-shade); color:var(--text-2); font-size:11.5px; line-height:1.75; }
+    .ff-exit { margin-top:20px; padding:12px; border:1px solid rgba(43,36,34,.14); background:rgba(255,255,255,.5); }
+    .ff-exit-title { color:var(--brand-deep); font-size:12.5px; font-weight:700; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">正在核对第 1 轮</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">已提交到云端 · 这一步只做「按材料逐句核对」</div>
+    <h1 class="page-title">正在核对你的回答</h1>
+
+    <div class="ff-wait">
+      <div class="ff-wait-title">在等什么</div>
+      <div class="ff-wait-body">
+        模型要读完这份材料的 9 条事实 + 3 条不变量，再逐句对照你写的 68 字。
+        实测这一步需要 <b>12–23 秒</b>，比普通问答慢：它要输出四节内容，而且思考过程不计入正文。
+      </div>
+      <div class="ff-progress" style="margin-top:10px"><i style="width:58%"></i></div>
+      <div class="ff-wait-foot"><span>通常 12–23 秒</span><span>已等 9 秒</span></div>
+    </div>
+
+    <div class="ff-keepdraft">
+      现在取消不会丢东西：你写的那 68 字仍在输入框里，回到上一页就能继续改或复制出来。
+    </div>
+
+    <div class="ff-cancel" style="margin-top:14px">取消这次核对</div>
+
+    <div class="ff-exit">
+      <div class="ff-exit-title">如果直接退出</div>
+      <div class="quiet" style="margin-top:4px">
+        本次会话只留在内存里，退出后不保存：材料选择、三轮回答、反馈与复盘都会清空，
+        下次进来从材料选择重新开始。已经产生的用量仍按既有口径记账（不记材料正文）。
+      </div>
+      <div class="secondary" style="margin-top:10px">退出练习</div>
+    </div>
+
+    <div class="quiet source-block">
+      等待态必须给出口：超时或长时间无响应时，页面按「模型暂时不可用」处理，并保留你已写的内容（见 07 号图）。
+    </div>
+  </main>
+</body>
+</html>
