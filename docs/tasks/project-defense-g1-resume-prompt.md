@@ -18,7 +18,7 @@
 
 ## 与 #119 的关系
 
-[PR #119](https://github.com/Iskuyal/wx-match/pull/119) 的 `docs/tasks/project-defense-g1-prompt.md` 是**开启** G1 的提示词（从零开始，含「前置未满足就只交离线」的守卫）；本文件是**续跑**提示词，假定离线部分已经交付，只做真实评测那一段。两者不冲突：按栈顺序先合 #118，再合 #119/#120，最后合 [#121](https://github.com/Iskuyal/wx-match/pull/121)（head 即本阶段的 `codex/project-defense-g1-eval`）；本文件执行部分的 ①–⑥ 顺序已被 2026-10-01 的实测取代，见顶部横幅。
+[PR #119](https://github.com/Iskuyal/wx-match/pull/119) 的 `docs/tasks/project-defense-g1-prompt.md` 是**开启** G1 的提示词（从零开始，含「前置未满足就只交离线」的守卫）；本文件是**续跑**提示词，假定离线部分已经交付，只做真实评测那一段。两者不冲突：按栈顺序 #118 → #119/#120 → [#121](https://github.com/Iskuyal/wx-match/pull/121)（head 即本阶段的 `codex/project-defense-g1-eval`），**四者已于 2026-10-01 全部合入 `main`**（Issue #111/#112 仍未验收）；本文件执行部分的 ①–⑥ 顺序已被 2026-10-01 的实测取代，见顶部横幅。
 
 以下整段可以复制给其他执行者：
 

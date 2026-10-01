@@ -6,6 +6,8 @@
 
 ## 最新状态：2026-10-01 阻断项单点复核（**未通过**）
 
+> **合入状态更新（2026-10-01 追加）**：[PR #118](https://github.com/Iskuyal/wx-match/pull/118)、[#119](https://github.com/Iskuyal/wx-match/pull/119)、[#120](https://github.com/Iskuyal/wx-match/pull/120)、[#121](https://github.com/Iskuyal/wx-match/pull/121) **已全部合入 `main`**（#121 含本记录及其状态口径整改）；**Issue #111、#112 仍未验收（OPEN）**。下文第「一」至「十一」中出现的「PR #118 仍 OPEN／未合入 `main`」「#119/#120 未合入」等，均为**当时（2026-09-30／2026-10-01）的实测**，保留原样作为历史；**当前合入与验收状态以本行为准**。
+
 > 本节是全文的**当前状态**；下面「一」至「十一」是第一轮（2026-09-30）的实测记录，保留原样作为历史。
 
 **为什么要做这次复核**：阻断项要求「关掉思考」只能改云函数环境变量（执行者不得自行更改，属负责人决定项）。负责人**无法确认**该变量是否已改——仓库、GitHub、CLI 三条路都读不到环境变量：`cloudfunctions/ai/config.json` 里**没有** `envVariables` 字段，`cli cloud functions info` 只回 `status`/`timeout`/`runtime`，环境变量只存在于云控制台。故负责人授权用 **1 次开发样例**做单点探测（执行顺序 ②），以**实际行为**判定，而不是靠推测。
