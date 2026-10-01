@@ -213,7 +213,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 | 2 个留出样例按首次结果单列 | **未产生**（未对留出样例发起调用；独立性保留） |
 | 至少一次完整流程可运行 | **未达成**（`R1`/`R3`/`R4` 空内容、`R5` 被拒） |
 | 异常 / 空响应 / 额度失败留实际记录 | **部分达成**（会话批次 5 条已逐字落盘；异常样例未执行） |
-| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；14 项测试（含 8 项负例）通过） |
+| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；14 项测试通过（8 项标题含负例）） |
 | **G1「真实模型可行」** | **判据未取到（blocked）**——真实调用已发起，但链路在当前部署配置下产不出可判定的反馈 |
 | **G1 整体** | **未完成** |
 
@@ -282,7 +282,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 | `node artifacts/verify/probe-bridge.cjs` | 连通：连接 9ms、`reLaunch` 1042ms、`evaluate` 6ms |
 | `node scripts/poc-project-defense.cjs --session --allow-spend` | **5 次云请求**；`ok` 1 / 空内容 3 / `invalid_request` 1 |
 | `PROBE_MAX_TOKENS=2048 node artifacts/verify/probe-budget.cjs` | **仍返回空内容**（`finish_reason=length`，12620ms） |
-| `node --test tests/defense-g1.test.cjs` | 14 项全过（含 8 项负例）、0 失败 |
+| `node --test tests/defense-g1.test.cjs` | 14 项全过（8 项标题含负例）、0 失败 |
 | `npm run check:defense-g0` | 0 个错误、4 个已记录的未引用警告 |
 | `npm run docs:check` | 见提交前复核 |
 | `git diff --check` | 无输出（无空白错误） |
