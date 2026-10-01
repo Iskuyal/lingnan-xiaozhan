@@ -92,4 +92,22 @@ cpSync(resolve(root, 'project.config.json'), join(output, 'project.config.json')
   }
 }
 
+// 答辩练习材料注入：客户端只发 materialId，材料正文由云函数从这份构建产物里取。
+// 与升学语料一样是前提（fail-closed）：生成失败时该功能按 internal 拒绝，
+// 不会退化成「客户端说什么是材料就是什么」。其他 feature 不受影响。
+{
+  const require = createRequire(import.meta.url);
+  try {
+    const { buildDefenseMaterials, renderDefenseMaterialsModule } = require('./lib/generate-defense-materials.cjs');
+    const materials = buildDefenseMaterials(root);
+    const target = join(output, 'cloudfunctions', 'ai', 'defense-materials.js');
+    mkdirSync(join(output, 'cloudfunctions', 'ai'), { recursive: true });
+    writeFileSync(target, renderDefenseMaterialsModule(materials), 'utf8');
+    const chars = materials.reduce((sum, material) => sum + material.text.length, 0);
+    console.log(`答辩练习材料已注入 ai 云函数（${materials.length} 份、${chars} 字，正文逐字取自 G0 冻结件）`);
+  } catch (error) {
+    console.warn(`答辩练习材料生成失败，该功能将按 internal 拒绝（fail-closed）：${error && error.message ? error.message : error}`);
+  }
+}
+
 console.log('微信小程序已构建至 dist/');
