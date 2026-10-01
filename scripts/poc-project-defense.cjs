@@ -788,6 +788,36 @@ function makeRecord(request, pkg) {
 }
 
 /**
+ * 空回复的显式占位符。
+ *
+ * 背景（2026-10-01 实测复核）：会话「重答」步骤 R5 的消息在**装配阶段**就固化为
+ * `[问题, 首答, {assistant, text: ''}, 重答说明]`——`responsePreview` 初始为空串，
+ * 组装 messages 时被求值一次，之后真实调用回填 preview 也不会再改它。
+ * 服务端要求每条消息都有非空 text（见 `cloudfunctions/ai/index.ts` 的消息校验），
+ * 因此 R5 只要被执行就**必然**被按 `invalid_request` 拒绝（两轮实测都是 480–1193ms、
+ * 未进模型、0 token）。修法：发送前把空 text 换成本占位符。
+ *
+ * 只改**发送时**的消息，不动装配阶段的 event，因此 `--plan` 的装配指纹（冻结守门）
+ * 保持不变；这是刻意的取舍，见 evidence 记录。
+ */
+const EMPTY_REPLY_PLACEHOLDER = '（上一步反馈为空，没有可引用的内容）';
+
+/**
+ * 真实调用前的运行时守卫：任何 text 为空的 `user` / `assistant` / `system` 消息
+ * 都替换为显式占位，避免服务端在模型调用前按 `invalid_request` 拒绝。
+ * 返回替换后的消息与替换条数；调用方负责把替换后的 messages 写回 event。
+ */
+function sanitizeEventMessages(event) {
+  let replaced = 0;
+  const messages = (event.messages ?? []).map((message) => {
+    if (typeof message.text === 'string' && message.text.trim() !== '') return message;
+    replaced += 1;
+    return { ...message, text: EMPTY_REPLY_PLACEHOLDER };
+  });
+  return { messages, replaced };
+}
+
+/**
  * 真实调用一批请求。`allowSpend` 必须显式为 true——默认拒绝，避免误跑花掉额度。
  */
 async function runBatch({ requests, pkg, outBase, allowSpend, maxCalls, tag }) {
@@ -805,7 +835,15 @@ async function runBatch({ requests, pkg, outBase, allowSpend, maxCalls, tag }) {
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
     await sleep(1200);
     for (const request of requests) {
+      // 发送前守卫：空 text 的消息会被服务端按 invalid_request 拒绝（R5 实测两次），
+      // 这里只改发送内容，不回写装配结果，故 --plan 的装配指纹不受影响。
+      const guard = sanitizeEventMessages(request.event);
+      if (guard.replaced > 0) {
+        request.event = { ...request.event, messages: guard.messages };
+        console.log(`  （本步有 ${guard.replaced} 条空文本消息，已替换为显式占位，避免 invalid_request）`);
+      }
       const record = makeRecord(request, pkg);
+      if (guard.replaced > 0) record.messageGuard = { replaced: guard.replaced, placeholder: EMPTY_REPLY_PLACEHOLDER };
       console.log(`调用 ${record.id}（第 ${cloudAttempts + 1} 次）…`);
       if (cloudAttempts > 0) await sleep(PACE_MS);
       cloudAttempts += 1;
@@ -1026,6 +1064,8 @@ module.exports = {
   runBatch,
   summarizeCall,
   makeRecord,
+  EMPTY_REPLY_PLACEHOLDER,
+  sanitizeEventMessages,
   parseArgs,
 };
 
