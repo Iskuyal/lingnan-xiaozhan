@@ -697,7 +697,7 @@ function buildRunsDocument({ plan, packageDir = PACKAGE_DIR, baseline = {}, mode
     },
     proofBoundary: [
       '维护者自编样例只检验评测机制，不能证明学生学习效果、教学有效性或教师接受度。',
-      '本条边界由离线装配（--plan）生成：离线装配本身不产生真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。真实调用的有无以各 case 的 status（executed/not_executed）与 raw 为准。',
+      '离线装配（--plan）与桩检查都不产生真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。真实调用的有无以各 case 的 status（executed/not_executed）与 raw 为准。',
       '判定依赖人工阅读原始响应；raw 为 null 时不得填写 verdict。',
     ],
     cases,

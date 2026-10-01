@@ -12,7 +12,7 @@
     "thisRun": {
       "branch": "codex/project-defense-g1-eval",
       "head": "0a93a7c602ceaae84c4985408617895f11a7bcdf",
-      "worktree": "E:\\wx-match-main\\g1-defense-poc",
+      "worktree": "(仓库外阶段 worktree；绝对路径不入库)",
       "recordedAt": "2026-09-30T16:01:46.153Z",
       "note": "PR #118 仍未合入 main，故按续跑提示词留在现有 worktree 继续，并记录确切 SHA。"
     }
@@ -321,7 +321,7 @@
   },
   "proofBoundary": [
     "维护者自编样例只检验评测机制，不能证明学生学习效果、教学有效性或教师接受度。",
-    "本条边界由离线装配（--plan）生成：离线装配本身不产生真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。真实调用的有无以各 case 的 status（executed/not_executed）与 raw 为准。",
+    "离线装配（--plan）与桩检查都不产生真实模型输出；不得把离线装配、桩检查或规划称为真实模型效果或新功能已上线。真实调用的有无以各 case 的 status（executed/not_executed）与 raw 为准。",
     "判定依赖人工阅读原始响应；raw 为 null 时不得填写 verdict。",
     "本轮的 1 次请求是**开发样例探针**，不是样例批次结果；不得记成「6 个开发样例已首评」。",
     "留出样例 HS-1/HS-2 的首次结果**仍未产生**，不得记成已首评、也不得据它们作任何结论。",

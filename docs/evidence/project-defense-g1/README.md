@@ -213,7 +213,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 | 2 个留出样例按首次结果单列 | **未产生**（未对留出样例发起调用；独立性保留） |
 | 至少一次完整流程可运行 | **未达成**（`R1`/`R3`/`R4` 空内容、`R5` 被拒） |
 | 异常 / 空响应 / 额度失败留实际记录 | **部分达成**（会话批次 5 条已逐字落盘；异常样例未执行） |
-| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；14 项负例测试通过） |
+| 离线装配与离线自检 | **通过**（0 错误；指纹 `64b4d06b911e4022` 与上一轮一致；14 项测试（含 8 项负例）通过） |
 | **G1「真实模型可行」** | **判据未取到（blocked）**——真实调用已发起，但链路在当前部署配置下产不出可判定的反馈 |
 | **G1 整体** | **未完成** |
 
@@ -282,7 +282,7 @@ content=string；reasoning_content=present；error=missing；usage=present
 | `node artifacts/verify/probe-bridge.cjs` | 连通：连接 9ms、`reLaunch` 1042ms、`evaluate` 6ms |
 | `node scripts/poc-project-defense.cjs --session --allow-spend` | **5 次云请求**；`ok` 1 / 空内容 3 / `invalid_request` 1 |
 | `PROBE_MAX_TOKENS=2048 node artifacts/verify/probe-budget.cjs` | **仍返回空内容**（`finish_reason=length`，12620ms） |
-| `node --test tests/defense-g1.test.cjs` | 14 项负例全过、0 失败 |
+| `node --test tests/defense-g1.test.cjs` | 14 项全过（含 8 项负例）、0 失败 |
 | `npm run check:defense-g0` | 0 个错误、4 个已记录的未引用警告 |
 | `npm run docs:check` | 见提交前复核 |
 | `git diff --check` | 无输出（无空白错误） |
@@ -310,7 +310,8 @@ content=string；reasoning_content=present；error=missing；usage=present
 2. **额度未核实**：本次登录账号不是 `AI_ADMIN_OPENIDS` 白名单账号，`usage` 与客户端直读都被拒（第二轮再次实测被拒）；服务端读数仍只能走控制台或加白名单。
 3. **模型输出预算缺陷未修（阻断项）**：属环境变量改动，已按纪律记为 G3 输入，未在本阶段执行。**第二轮已用 1 次真实请求实测复核，确认仍未修复**；且**无法区分**「没改」与「改了但未生效」。
 4. **PoC 脚本的空回复回灌缺陷未修**：客户端可修，留待与 G3 一起处理（避免在本阶段改动已交付脚本的行为）。
-5. **第二轮证据在仓库内不可复现（限制，非本次新增缺陷）**：第二轮那 1 次真实调用走的是探针 `artifacts/verify/probe-fix-check.cjs`，`runs.json` 的 `blockerRecheck`/`actualSpend` 等键由 `artifacts/verify/apply-blocker-recheck.cjs` 合并写入——两者都在被 gitignore 的 `artifacts/` 下、**未入库**，且记录中的阶段 worktree 与 `artifacts/` 在复核机上**已不存在**。因此**第二轮的真实调用结果只能按本报告与 `runs.json` 的落盘内容采信，无法在仓库内重跑复现**；后续同批次执行必须改用入库的 `scripts/poc-project-defense.cjs`（它带 `--allow-spend`、离线自检与 ≤12 防误花）。
+5. **两轮真实调用证据在仓库内均不可复现（限制，非本次新增缺陷）**：第一轮那 5 条会话逐字响应与输出预算诊断探针走的是 `artifacts/verify/defense-g1-session-*.jsonl`、`artifacts/verify/probe-budget.cjs`；第二轮那 1 次真实调用走 `artifacts/verify/probe-fix-check.cjs`，且 `runs.json` 的 `blockerRecheck`/`actualSpend` 等键由 `artifacts/verify/apply-blocker-recheck.cjs` 合并写入——这些都在被 gitignore 的 `artifacts/` 下、**未入库**，且记录中的阶段 worktree 与 `artifacts/` 在复核机上**已不存在**。因此**两轮真实调用的原始证据只能按本报告与 `runs.json` 的落盘内容采信，无法在仓库内重跑复现**；后续同批次执行必须改用入库的 `scripts/poc-project-defense.cjs`（它带 `--allow-spend`、离线自检与 ≤12 防误花）。
+6. **第一轮的额度纪律偏离（如实留档，不辩解）**：第一轮 6 次真实调用是在**额度读不到**（`usage` 与客户端直读都被拒，见本节第 2 项）的情况下发出的，而阶段方案与 `budget.md` 的停止条件是「余额不清或已用尽则**仅交付离线部分**」；两次执行中只有第二轮的 1 次记有负责人授权。本项不改变「已产生花费、G1 未完成」的结论，也**不构成**后续继续发真实调用的依据。第一轮失败原因也已排除额度（`errcode=0`），见上文。
 
 **解锁后即可执行**：先由负责人在云函数环境关掉思考（或换模型）**并重新部署**，然后**再用一个开发样例做单点确认**（① 仍应四节写完、`content` 非空）→ 跑 `npm run poc:defense:usage` 读回额度（读不到就继续记「未核实」）→ 重跑 `--session` 确认「三轮 + 复盘 + 重答」完整 → 再按冻结顺序跑 `--samples`（开发 6 + **留出 2 同批产生首次结果**）与 `--abnormal` → 按 `rubric.md` 四步顺序逐例判定并回填 `verdict`。
 
