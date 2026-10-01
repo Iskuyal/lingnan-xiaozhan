@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 第 1 轮作答</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-cheat { margin-top:10px; padding:10px 12px; border:1px dashed rgba(43,36,34,.22); background:rgba(255,255,255,.5); }
+    .ff-cheat-title { color:var(--text-2); font-size:11px; font-weight:700; }
+    .ff-cheat-list { margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+    .ff-cheat-chip { min-height:24px; padding:2px 7px; border:1px solid rgba(198,154,40,.5); border-radius:3px; background:rgba(198,154,40,.1); color:var(--brand-ink); font-size:10px; }
+    .ff-submit { margin-top:14px; }
+    .ff-hint { margin-top:10px; color:var(--text-3); font-size:11px; line-height:1.7; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">课表导入与校对 · 练习</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">材料：课表导入与校对（本项目自有材料）</div>
+
+    <div class="section-head" style="margin-top:14px">
+      <span class="section-title">第 1 轮 / 共 3 轮</span>
+      <span class="section-note">维度：问题与目标</span>
+    </div>
+    <div class="ff-steps"><span class="ff-step on"></span><span class="ff-step"></span><span class="ff-step"></span></div>
+    <div class="ff-step-label"><span>问题与目标</span><span>方案及取舍</span><span>验证与限制</span></div>
+
+    <div class="ff-q">
+      <div class="ff-q-tag">第 1 轮 · 问题与目标</div>
+      你的课表功能是给谁、解决什么问题的？请用两三句话说清。
+    </div>
+
+    <div class="ff-input">
+      课表是学生自己从教务系统下载后导入的，不用拿教务账号密码。<br>
+      解决的问题是：教务系统导出的表格在手机上很难直接看，小程序把它整理成一周视图。
+    </div>
+    <div class="ff-input-foot"><span>已写 68 字 / 最多 500 字</span><span>草稿自动留在本页</span></div>
+
+    <div class="ff-cheat">
+      <div class="ff-cheat-title">材料速查（可引用的条目编号）</div>
+      <div class="ff-cheat-list">
+        <span class="ff-cheat-chip">F1 选文件入口</span>
+        <span class="ff-cheat-chip">F2 解析位置</span>
+        <span class="ff-cheat-chip">F3 网格矩阵</span>
+        <span class="ff-cheat-chip">F4 只标记不猜</span>
+        <span class="ff-cheat-chip">F5 确认后才写库</span>
+        <span class="ff-cheat-chip">F6 身份隔离</span>
+        <span class="ff-cheat-chip">F8 三项待验证</span>
+      </div>
+    </div>
+
+    <div class="primary ff-submit"><span>提交这一轮，拿反馈与追问</span><span class="action-arrow">›</span></div>
+
+    <div class="ff-hint">
+      写「还没验证」「不确定」不会被扣分——材料里本来就标了三项待验证（F8）。
+      反过来说，把待验证的事写成「已完成」，会让这一轮直接不通过。
+    </div>
+
+    <div class="quiet source-block">
+      提交后会调用一次模型（实测 12–23 秒），期间可以取消并保留上面的草稿。
+    </div>
+  </main>
+</body>
+</html>

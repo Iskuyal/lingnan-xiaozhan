@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 四节反馈</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-quote { margin-top:6px; padding-left:9px; border-left:2px solid var(--gold); color:var(--text-2); font-size:11.5px; line-height:1.8; }
+    .ff-next { margin-top:18px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">第 1 轮反馈</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">依据材料：课表导入与校对 · 9 条事实 + 3 条不变量 · 3 条待验证</div>
+    <h1 class="page-title">这一轮的依据核对</h1>
+
+    <div class="ff-steps" style="margin-top:14px"><span class="ff-step on"></span><span class="ff-step"></span><span class="ff-step"></span></div>
+    <div class="ff-step-label"><span>第 1 轮已完成</span><span>第 2 轮</span><span>第 3 轮</span></div>
+
+    <div class="ff-frame">
+      <div class="ff-frame-title">引用核对</div>
+      <div class="ff-row">
+        <span class="ff-verdict ff-ok">成立</span><b>「课表是学生自己从教务系统下载后导入的」</b><span class="ff-cite">F1</span>
+        <div class="ff-quote">材料 F1：只能从微信聊天记录里选文件，路径是教务系统下载 → 发到微信 → 小程序里选。</div>
+      </div>
+      <div class="ff-row">
+        <span class="ff-verdict ff-ok">成立</span><b>「不用拿教务账号密码」</b><span class="ff-cite">F6</span>
+        <div class="ff-quote">材料 F6：读写都在云函数内按调用上下文的 openid 过滤，上传路径用 openid 哈希前缀，不接触教务账号。</div>
+      </div>
+      <div class="ff-row">
+        <span class="ff-verdict ff-gap">不成立</span><b>「能自动处理各种格式，兼容性很好」</b><span class="ff-cite">F3</span>
+        <div class="ff-quote">材料 F3 只记录了「一格多门课的单换行与空行两种分隔已实测」，没有「各种格式」或「兼容性很好」的记录。</div>
+      </div>
+      <div class="ff-row">
+        <span class="ff-verdict ff-gap">不成立</span><b>「整个流程跑下来没什么问题」</b><span class="ff-cite">F8</span>
+        <div class="ff-quote">材料 F8 写明三项仍待验证：服务端越权隔离只有桩测试、100 条以上分页读取、临时文件极端残留。</div>
+      </div>
+    </div>
+
+    <div class="ff-frame">
+      <div class="ff-frame-title">是否对应回答</div>
+      <div class="ff-row">反馈针对的是你实际写出的四句断言：导入方式、不用教务账号、自动处理格式、流程没问题。
+        「具体的技术细节我记不太清了」不是关于材料的事实断言，未据此判断。</div>
+    </div>
+
+    <div class="ff-frame">
+      <div class="ff-frame-title">待验证保留</div>
+      <div class="ff-row"><span class="ff-verdict ff-gap">未保留</span><b>F8① 服务端越权隔离</b>（只有桩测试、缺独立证据）——你的「没什么问题」把它覆盖了。</div>
+      <div class="ff-row"><span class="ff-verdict ff-gap">未保留</span><b>F8② 100 条以上的分页读取</b>——未提及。</div>
+      <div class="ff-row"><span class="ff-verdict ff-gap">未保留</span><b>F8③ 上传成功后小程序被直接杀死可能残留临时文件</b>——未提及。</div>
+      <div class="quiet" style="margin-top:8px">材料里标「待验证」的三项，只有你<b>自己保留</b>它们，才不会被这条规则拦下。</div>
+    </div>
+
+    <div class="ff-ask">
+      <div class="ff-ask-label">追问 · 请在第 2 轮回答</div>
+      你说「能自动处理各种格式」——材料 F3 只记录了单换行与空行两种分隔已实测。
+      请指出支持「各种格式」这一说法的条目编号；若找不到对应条目，请说明这个说法依据的是什么记录。
+    </div>
+
+    <div class="ff-note">
+      这条反馈只做一件事：把材料和你写的句子对着看。它不给你打分、不评价你的表达，
+      也不会因为这次练习把材料里的「待验证」变成「已完成」。
+    </div>
+
+    <div class="primary ff-next"><span>用这个追问开始第 2 轮</span><span class="action-arrow">›</span></div>
+    <div class="quiet back-link">本轮耗时 18 秒 · 回复会保留到复盘页，退出后不保存</div>
+  </main>
+</body>
+</html>
