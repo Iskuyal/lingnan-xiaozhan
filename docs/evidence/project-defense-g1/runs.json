@@ -4,6 +4,7 @@
   "issue": 112,
   "generatedAt": "2026-09-30T16:01:46.153Z",
   "mode": "blocker_recheck_failed_stopped_before_first_evaluation",
+  "currentRound": "2026-10-01 第三轮真实调用，见 thirdRound（含本轮真实额度读数与本轮唯一逐字落盘的响应）。下方 baseline / g0Package / assembly / requestBudget / quota / summary / goNoGo / cases / diagnostics / firstEvaluation 是 2026-09-30 至 2026-10-01 第一、二轮的记录，**原样保留为历史**，其中的「未核实」「未执行」只代表当时状态。",
   "baseline": {
     "main": "42cfd3208deaa83cf0715663edd51ad48df5b2b6",
     "branch": "codex/project-defense-g1-poc",
@@ -1125,5 +1126,217 @@
     "heldoutIndependence": "保留：HS-1/HS-2 至今从未被调用，首次结果仍未产生，独立性未被消耗。",
     "tuningPerformed": false,
     "tuningNote": "本轮未做任何提示词或契约调整，也未用任何样例（含异常样例）调参。"
+  },
+  "thirdRound": {
+    "recordDate": "2026-10-01",
+    "recordedAt": "2026-10-01T06:23:00Z（UTC+8 14:23）",
+    "mode": "session_blocker_check_failed_stopped_before_first_evaluation",
+    "title": "第三轮：真实额度可读、首次用入库脚本 --session 做阻断项确认；R1 仍为空内容 ⇒ 立即停止，首评仍未执行",
+    "baseline": {
+      "main": "925cc65b31d250cb5fb454cc448ce8edb097d53c",
+      "branch": "codex/project-defense-g1-first-eval",
+      "headAtStart": "925cc65b31d250cb5fb454cc448ce8edb097d53c",
+      "worktree": "(仓库外阶段 worktree；绝对路径不入库)"
+    },
+    "preconditions": {
+      "issue111": "OPEN（未验收；合入不等于验收）",
+      "issue112": "OPEN（本任务）",
+      "pr118": "MERGED，合并提交 38a87e8 经 git merge-base --is-ancestor 确认为 main 祖先",
+      "pr119_120_121": "CLOSED 且 mergedAt=null，但合并提交 6e5e6a4 / 6976b05 / 61c811e 均为 main 祖先 ⇒ 内容确已在 main（GitHub 因 base 不是 main 而不标 MERGED）",
+      "offlinePlan": "npm run poc:defense：0 个错误、1 个已记录的拆批警告；装配指纹 64b4d06b911e4022（与冻结基线一致 ⇒ 冻结件未被改动）",
+      "blockerEnvVarOwnerConfirmation": "负责人本轮确认：云函数 ai 的环境变量已改为关闭思考的写法 {\"chat_template_kwargs\":{\"enable_thinking\":false}}，并已在云控制台保存/部署。**本条按负责人确认采信，不是执行者实测**——仓库与 CLI 都读不到环境变量（cloudfunctions/ai/config.json 无 envVariables；cli cloud functions info 只回 status/timeout/runtime）。",
+      "automationBridge": "开发者工具已开启 CLI 访问令牌校验；本轮由负责人提供令牌后 cli auto 成功（autoPort 9420、AppID wxdcef3a86d7e9eeff）。令牌本身不写入本仓库任何文件。",
+      "bridgeRebuildTrap": "第一次跑 npm run poc:defense:session 时脚本内的 npm run build 发生在 cli auto 之后，自动化桥失效（timeout waiting for automator response，**0 次云请求**、0 消耗）。按 docs/development/local-setup.md「重新构建后应重新执行 CLI auto」重做：npm run build → cli cache --clean compile → cli auto → 直接跑 node scripts/poc-project-defense.cjs。"
+    },
+    "quota": {
+      "channel": "npm run poc:defense:usage（= --usage，服务端只做 assertAdmin，不消耗个人日额度、不触发内容安全）",
+      "readBefore": {
+        "status": "verified",
+        "readAt": "2026-10-01T06:19:53Z（UTC+8 14:19:53）",
+        "elapsedMs": 110,
+        "month": "2026-10",
+        "calls": 4,
+        "failures": 1,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "costYuan": 0,
+        "capYuan": 50,
+        "warnThresholdYuan": 40,
+        "warn": false,
+        "exceeded": false,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25,
+        "updatedAt": "2026-09-30T16:00:40.707Z",
+        "note": "这是**本次调用前的真实服务端读数**，与上一轮「未核实」不同：本轮该动作未被白名单拒绝。updatedAt 恰为上一轮 10-01 00:00:40（UTC+8）那次单点复核，说明此后无消耗。"
+      },
+      "readAfter": {
+        "status": "verified",
+        "readAt": "2026-10-01T06:23:2xZ（UTC+8 14:23:2x）",
+        "elapsedMs": 60,
+        "month": "2026-10",
+        "calls": 13,
+        "failures": 2,
+        "promptTokens": 2701,
+        "completionTokens": 1024,
+        "totalTokens": 3725,
+        "costYuan": 0.000931,
+        "capYuan": 50,
+        "warnThresholdYuan": 40,
+        "warn": false,
+        "exceeded": false,
+        "updatedAt": "2026-10-01T06:23:20.039Z"
+      },
+      "delta": {
+        "calls": 9,
+        "failures": 1,
+        "totalTokens": 3725,
+        "costYuan": 0.000931,
+        "remainingToCapYuanApprox": "未告警、未超限；上限 50 元与告警线 40 元由服务端回读，剩余额度的精确值未回传，故只写「未告警、未超限」。",
+        "note": "增量为**服务端读数之差**，不是估算。单价按服务端回读的 0.25 元/百万（输入与输出同价）：(2701+1024)×0.25÷1000000 = 0.000931 元，与 costYuan 完全吻合。"
+      },
+      "gate": "两把闸本轮都没触发：safety.checked=true、errcode=0、suggest=pass；未出现 45009；个人日额度未报错。"
+    },
+    "actualSpendThisRound": {
+      "cloudRequestsAttempted": 2,
+      "cloudRequestsBreakdown": "R1（会话第一步，开发样例 CS1-1，逐字落盘）+ R2（会话第二步，开发样例 CS1-2，**正文未落盘**）",
+      "whyR2Happened": "脚本在两次请求之间固定节拍 12 秒；R1 的判定由我轮询 JSONL 得到后发出停止，但 R2 已在停止生效前完成派发。**这是停止动作与固定节拍之间的竞态，如实记录**，不写成「只发了 1 次」。",
+      "r1SubCalls": 4,
+      "r1SubCallsBasis": "R1 自身回传的 usageSummary.calls=8，而调用前读数为 4 ⇒ R1 计 4 次子调用（3 片输入内容安全检测 + 1 次模型调用，模型调用失败）。",
+      "r2SubCalls": 5,
+      "r2SubCallsBasis": "调用后读数 13 − R1 后的 8 = 5 次子调用（3 片输入检测 + 1 次模型调用 + 1 片输出检测）；failures 未增加 ⇒ R2 的模型调用**成功**。",
+      "r2Evidence": "调用后读数新增 3725 token（prompt 2701 + completion 1024）、0.000931 元，且 failures 未增加。completionTokens 恰为 1024 = AI_MAX_TOKENS 默认上限 ⇒ R2 产出了正文但**在输出上限处被截断**。",
+      "r2RawText": null,
+      "r2RawTextNote": "R2 的正文**没有落盘**（进程在写记录前被停止）。**不得据服务端计量反推其文字内容**，也不得记为已获得有效反馈。",
+      "totalTokensVerified": 3725,
+      "totalCostYuanVerified": 0.000931,
+      "moderationCalls": "未实测（服务端不单独回读内容安全用量）；按 envelope 与实际路径估算本批 7 次 msgSecCheck（R1 输入 3 片 + R2 输入 3 片 + R2 输出 1 片）。这是估算不是实测。"
+    },
+    "deploymentParity": {
+      "checkedAt": "2026-10-01T06:2xZ",
+      "method": "cli cloud functions download --name ai --env cloudbase-d2gjtbbwu3575cd7b 回读，与本地 npm run build 产物逐文件 SHA-256 比对",
+      "result": "18/18 函数根目录入口文件逐字节一致（含 config.json / package.json / package-lock.json；前两轮只统计 15 个 .js）",
+      "indexJs": "bfe30a9cc9911bf54ca5ddb2cba1bb4c8b4b3c3f7098b308a491006c20088942",
+      "functionInfo": "status=Active、timeout=60、runtime=Nodejs16.13",
+      "caveat": "index.js 哈希与第一、二轮相同 ⇒ 部署的**代码**未变。环境变量不在代码里，故本项**不能**证明环境变量改过，也不能证明没改。"
+    },
+    "records": [
+      {
+        "id": "R1",
+        "kind": "session",
+        "set": "",
+        "cardId": "",
+        "answerId": "CS1-1",
+        "label": "三轮之一：对第一段回答给反馈与追问",
+        "feature": "defense-practice",
+        "envelope": {
+          "messages": 3,
+          "inputChars": 4365,
+          "inputChunks": 3
+        },
+        "raw": {
+          "invoked": true,
+          "ok": false,
+          "failureClass": "model_unavailable",
+          "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+          "text": "",
+          "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+          "model": "deepseek/deepseek-v4.1-flash",
+          "serverElapsedMs": 13273,
+          "clientElapsedMs": 14089,
+          "usage": null,
+          "usageSummary": {
+            "month": "2026-10",
+            "calls": 8,
+            "failures": 2,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "totalTokens": 0,
+            "costYuan": 0,
+            "capYuan": 50,
+            "warnRatio": 0.8,
+            "warnThresholdYuan": 40,
+            "warn": false,
+            "exceeded": false,
+            "priceInputPerMillion": 0.25,
+            "priceOutputPerMillion": 0.25,
+            "updatedAt": "2026-10-01T06:22:55.691Z"
+          },
+          "capWarning": "",
+          "warnings": [],
+          "safety": {
+            "provider": "wechat",
+            "api": "security.msgSecCheck",
+            "passed": true,
+            "checked": true,
+            "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+          }
+        },
+        "citations": null,
+        "verdict": {
+          "citationCheck": "无法核对：响应为空，反馈里没有任何引用可核对",
+          "correspondsToAnswer": "不适用：没有反馈内容",
+          "followUpTargeted": "无追问",
+          "unverifiedPreserved": "无法判定：没有内容",
+          "outOfBoundsClaims": null,
+          "citationSupportRate": null,
+          "pass": false,
+          "reason": "原始响应为空（content 为空、finish_reason=length），四节一节都没产出；按 rubric.md 不构成有效反馈，不因「未发现越界」而判通过。"
+        },
+        "rawSource": "artifacts/verify/defense-g1-session-r3.jsonl（由入库脚本 scripts/poc-project-defense.cjs 生成，artifacts/ 被 gitignore）"
+      },
+      {
+        "id": "R2",
+        "kind": "session",
+        "answerId": "CS1-2",
+        "status": "not_recorded",
+        "raw": null,
+        "verdict": {
+          "pass": null,
+          "reason": "正文未落盘，无法按 rubric 判定；不得据服务端计量反推内容，也不得记为有效反馈。"
+        }
+      }
+    ],
+    "workflowFacts": {
+      "stoppedAfterR1": true,
+      "stopBasis": "R1 仍为空内容、finish_reason=length（与第一轮三次空响应、第二轮单点复核的 detail 逐字相同）⇒ 按固定顺序 ③ 的停止条件立即停止，不进入 ④ samples 与 ⑤ abnormal。",
+      "didNotRun": [
+        "④ npm run poc:defense:samples（8 次：开发 6 + 留出 2 同批）—— 未执行",
+        "⑤ npm run poc:defense:abnormal（6 次）—— 未执行",
+        "调参后复测 npm run poc:defense:dev —— 本轮未做任何提示词或契约调整，故无此步"
+      ],
+      "noTemporaryProbe": "本轮**没有**写任何临时探针；阻断项确认与首评使用的是入库脚本 scripts/poc-project-defense.cjs，命令可复现。",
+      "noEnvVarChangeByExecutor": "执行者未改任何环境变量、未调额、未关闭内容安全（AI_MODERATE_OUTPUT 未动）、未改 AI_SAFETY_FAIL_MODE、未部署云函数。"
+    },
+    "newFindings": [
+      "本轮首次取到**真实服务端额度读数**（调用前后各一次），因此本轮消耗是**实测**而不是「未知」：2 次云请求、9 次子调用、3725 token、0.000931 元。",
+      "即便在负责人确认已改 enable_thinking:false 之后，R1 仍未产出内容：无法区分「未生效」与「生效但本题形态仍会空内容」；可确定的是**当前部署下首个请求仍产不出可判定反馈**。",
+      "R2 的模型调用成功但 completionTokens 恰好等于默认上限 1024 ⇒ 除「关思考」外，**输出上限（AI_MAX_TOKENS 默认 1024）本身也可能是四节写不完的第二重原因**（第一轮 R2 同样是 completionTokens=1025、正文 529 字后被截断）。这是本轮新增的可观测信号，不是推测。",
+      "docs/development/cloud/ai.md:197-198、215 记录：先前那次「关思考」用的键名是 thinking，而该模型体系常见的开关名是 enable_thinking，文档据此建议改用 {\"chat_template_kwargs\":{\"enable_thinking\":false}}——这正是本轮负责人确认采用的写法。该条为文档既有记录，不是本轮实测。",
+      "口径提示：「立即停止」与脚本 12 秒固定节拍之间存在竞态：停止生效前下一次请求可能已派发。若下一次要严格只发 1 次请求，应先调小 DEFENSE_POC_PACE_MS 或把单点确认独立成 --max-calls=1 的一批（属脚本改动，本轮未做）。"
+    ],
+    "heldoutIndependence": "保留：HS-1 / HS-2 至今从未被调用；本轮样例批次（--samples）未执行，因此留出样例的首次结果仍未产生，独立性未被消耗。",
+    "firstEvaluation": {
+      "executed": false,
+      "reason": "③ 会话批次未显示「四节写完、content 非空」（R1 为空内容），按固定顺序不进入 ④，首评仍未执行。",
+      "tuningPerformed": false
+    },
+    "goNoGo": {
+      "offlineAssemblyReady": true,
+      "realModelFeasible": "blocked",
+      "realModelFeasibleReason": "真实调用已发起三轮（第一轮 6 次 + 第二轮 1 次 + 本轮 2 次）。在负责人确认已改 enable_thinking:false 且已部署之后，本轮首个请求仍返回空内容、finish_reason=length；唯一成功的 R2 也在默认 1024 输出上限处被截断。判据仍未取到。",
+      "g1Complete": false,
+      "blockerStatus": "未解（本轮实测：R1 空内容、finish_reason=length，detail 与前两轮逐字相同）",
+      "gates": {
+        "反馈中的引用编号与原句 100% 对应当前材料 / 回答": "未评测（本轮没有产出可核对的反馈）",
+        "无把计划 / 待验证事项说成已完成的断言": "未评测（同上）",
+        "6 个开发样例中至少 5 个体现对应回答的有效反馈": "未达标（样例批次未执行，逐例首评 0/6）",
+        "材料差异必须提示核对，而不是判学生撒谎": "未评测",
+        "2 个留出样例按首次结果单列": "未产生（HS-1/HS-2 从未被调用，独立性保留）",
+        "至少一次完整流程可运行": "未达成（会话在 R1 处停止）",
+        "异常 / 空响应 / 额度失败留实际记录": "部分达成（本轮 R1 已逐字落盘；R2 正文未落盘并已如实标注；异常样例未执行）",
+        "离线装配与离线自检": "通过（--plan 0 错误、指纹 64b4d06b911e4022 未变）"
+      }
+    }
   }
 }
