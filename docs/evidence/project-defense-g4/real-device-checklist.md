@@ -4,6 +4,47 @@
 - **本页是执行清单，不是结果**。截至 2026-10-02，真机**一次都没跑**，`realDevice` 记为 `false`。
 - 本环境**无法操作物理设备**（需要真人拿手机扫码并点击），因此这一步只能由负责人完成并回传记录。
 
+## 0. 2026-10-02 实测：adb 能做什么、不能做什么
+
+负责人已连接真机并开启 USB 调试，本轮实测了自动化边界（原始设备信息见 [real-device-facts-2026-10-02.json](real-device-facts-2026-10-02.json)）：
+
+**能做的**
+
+| 能力 | 实测 |
+| --- | --- |
+| 识别设备 | `adb devices` 看到真机 `513dcd80`（另有一台 `emulator-5554` 平板模拟器，**必须用 `-s` 指定真机**，否则 adb 报 `more than one device/emulator`） |
+| 读设备信息 | **Xiaomi `25113PN0EC`｜Android 17（SDK 37）｜微信 8.0.78** |
+| 唤醒/解锁 | `input keyevent KEYCODE_WAKEUP` 可用；实测当时 `isKeyguardShowing=false`（未锁屏） |
+| 推送文件 | 可把预览二维码推到手机相册：`/sdcard/Pictures/g4qr.png`，并已广播媒体扫描 |
+| 解出预览链接 | 预览码实为 **JPEG**（尽管扩展名是 `.png`），用 `jpeg-js` + `jsqr` 解出：`https://mp.weixin.qq.com/a/~~<ticket>~~` |
+
+**不能做的（本轮实测确认，别再白试）**
+
+| 限制 | 表现 |
+| --- | --- |
+| **无法从外部打开小程序** | 该短链交给系统后**被浏览器 Via（`mark.via`）抢走**；用 `am start -p com.tencent.mm` 强制指定微信时返回 `unable to resolve Intent` —— **微信不注册 https 的 VIEW 处理器**，外部喂链接这条路不通 |
+| **无法读取/驱动微信界面** | 微信是**自绘 UI**：`uiautomator dump` 对 `com.tencent.mm` 只回 **1 个节点 / 407 字节**，没有文本也没有可点元素。因此**扫一扫、相册选择、以及小程序内部的点击都无法可靠自动化** |
+| 无法用截图辅助 | 执行端模型**不支持图像输入**，看不了截屏 ⇒ 连「盲点 + 截图纠偏」的退路也没有 |
+
+**结论**：真机这条路**必须由人点**，自动化只能帮到「把二维码放进手机相册」为止。
+
+**给负责人的最省事走法（4 步，不用拿相机对着电脑屏幕）**
+
+1. 手机已连电脑且已解开锁屏
+2. 打开微信 →「**+**」→「**扫一扫**」
+3. 右上角「**相册**」→ 选 **`g4qr.png`**（已在 `/sdcard/Pictures/`）
+4. 小程序打开后，按下面第 2 节走 9 步路径
+
+> 预览码有时效。过期后重新生成 + 推送：
+> ```powershell
+> $adb = 'C:\Users\dusta\AppData\Local\Android\Sdk\platform-tools\adb.exe'
+> & '<开发者工具目录>\cli.bat' preview --project '<worktree>\dist' --qr-format image `
+>   --qr-output '<worktree>\artifacts\device\g4-qr.png' --info-output '<worktree>\artifacts\device\g4-qr-info.json'
+> & $adb -s 513dcd80 push '<worktree>\artifacts\device\g4-qr.png' /sdcard/Pictures/g4qr.png
+> & $adb -s 513dcd80 shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/g4qr.png
+> ```
+> （`artifacts/` 是 gitignore 的，临时产物不入库。）
+
 ## 1. 取得预览二维码
 
 预览构建**不消耗 AI 额度**，与真实调用无关，可以提前先生成。已实测可用的命令：

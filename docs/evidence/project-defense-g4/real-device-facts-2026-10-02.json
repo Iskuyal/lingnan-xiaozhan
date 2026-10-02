@@ -1,0 +1,13 @@
+﻿{
+    "capturedAt":  "2026-10-02T13:07:28+08:00",
+    "adbSerial":  "513dcd80",
+    "brand":  "Xiaomi",
+    "model":  "25113PN0EC",
+    "androidRelease":  "17",
+    "androidSdk":  "37",
+    "wechatPackage":  "com.tencent.mm",
+    "wechatVersion":  "8.0.78",
+    "uiAutomation":  "WeChat 为自绘 UI，uiautomator dump 仅 1 个节点，无法读取/驱动微信界面",
+    "qrPushedTo":  "/sdcard/Pictures/g4qr.png",
+    "deviceStillConnected":  "device"
+}
