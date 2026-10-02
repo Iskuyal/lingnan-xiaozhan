@@ -87,6 +87,14 @@ cli cloud functions deploy --env cloudbase-d2gjtbbwu3575cd7b --names ai \
 
 ---
 
+## CI 结果（本轮的判据在 CI 上也过了）
+
+本轮的改动开在 [PR #129](https://github.com/Iskuyal/wx-match/pull/129)。**推送后 CI 全绿**（[run 36978523698](https://github.com/Iskuyal/wx-match/actions/runs/36978523698)）：`npm ci` 两步、文档链接检查、`typecheck`、`npm test`、以及**此前一直让 `main` 变红的「审计锁定依赖」**都通过。⇒ A1 的判据不只是「本地跑过」，**CI 自己也验证了一遍**。
+
+⚠️ 口径：**CI 绿 ≠ 已验收**。Issue #111–#115 仍全部 OPEN，本轮的缺口（真机四项、B1–B6、`newsSync`/`timetable` 未重新部署等）不因 CI 绿而消失。
+
+---
+
 ## A2 `docs:check` 的盲点：链接目标必须能在干净检出里出现
 
 ### 1. 盲点
@@ -168,6 +176,12 @@ D:\MuMu\nx_main\adb.exe devices -l                                  → 空
 ### 2. agent 能做的部分：预览码已生成（未推送、未扫码）
 
 `cli preview --qr-format image` 成功（包体 437.2 KB），预览码写到 **gitignore 的** `artifacts/device/g5-qr.png`（46,426 B）。该路径**不入库、不链**（`artifacts/` 会被 A2 的新判据拦下，本来也不该链）。**没有** `adb push`（无设备）、**没有**扫码验证。
+
+### 3. 模拟器端到端**本轮没有复跑**（额度纪律，如实记）
+
+- G4 已经在模拟器上跑过 `verify-defense-g4-e2e.cjs --phase=happy` **16/16**（含 `H-X`「退出后再进：回到材料选择且会话已清空」）与三条失败路径 **13/13**（[G4 主清单](../project-defense-g4/README.md)）。交接单建议的「用页面内『退出练习』→ 确认弹窗 → 再进入」这条替代路径，**与 `H-X` 是同一段代码路径**（`onExit` → `resetSession` → 重新进入）。
+- 本轮**没有**为了它复跑 e2e：该脚本没有零成本阶段（`--phase` 只有 `failure` / `pending` / `happy` / `all`，最省的 `pending` 也要发一次真实云调用），而当天个人日额度已经吃过紧（G4 记录 12:40 撞过 `AI_USER_DAILY_LIMIT=30`，本轮又用掉 5 次计数）。**A3 的行为回归用单测覆盖**：`tests/defense-timeout.test.cjs`（含页面级失败态与草稿保留）、`tests/defense-g3.test.cjs` 的页面冒烟（`onExit` → 弹窗 + `navigateBack` + 会话清空）、全量 `npm test` **725/725**。
+- ⇒ **结论**：「返回手势后状态不串」这条**没有真实结论**（真机没连、模拟器没复跑），只如实记录代码路径与既有覆盖，不写成已验证。
 
 ### 3. 顺带修正一条 CLI 经验（与 G4 记录不同）
 
