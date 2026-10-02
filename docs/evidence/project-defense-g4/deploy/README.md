@@ -87,6 +87,8 @@ cli cloud functions info --names ai --env cloudbase-d2gjtbbwu3575cd7b --project 
 | timeout | 60 | **60** |
 | runtime | Nodejs16.13 | **Nodejs16.13** |
 
+部署后的原始输出留档：[info-after-2026-10-02.txt](info-after-2026-10-02.txt)（2026-10-02 复读，仍为 Active / 60 / Nodejs16.13）。
+
 ## 5. 部署内容对既有功能的影响（本轮改动面）
 
 部署前/后 `index.js` 的 `git diff --no-index` 结果：**+55 行、-0 行**，全部落在
@@ -97,6 +99,9 @@ cli cloud functions info --names ai --env cloudbase-d2gjtbbwu3575cd7b --project 
 - `runModelAction` 内：声明 `defenseMaterial`、按 feature 注入材料并**覆盖** `system`、模型返回后做格式与引用校验
 
 **升学 / 部门 / 课表 / 资讯路径一行未改**。这解释了为什么部署后既有功能回归通过（见 [主清单](../README.md) 的回归一节）。
+
+补丁原文留档（可直接复核每一行）：[index-js-diff-2026-10-01.patch](index-js-diff-2026-10-01.patch)
+——由归档的 `before-2026-10-01/index.js` 与 `after-2026-10-01/index.js` 直接 `git diff --no-index` 得到，共 84 行输出。
 
 ## 6. 环境变量：未改，但值**读不到**
 

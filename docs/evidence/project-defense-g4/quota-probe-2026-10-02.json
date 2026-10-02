@@ -1,0 +1,51 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-02T02:02:38.368Z",
+  "request": {
+    "action": "chat",
+    "feature": "quota-probe",
+    "messages": [
+      {
+        "role": "user",
+        "text": "quota-probe-2"
+      }
+    ]
+  },
+  "elapsedMs": 1807,
+  "result": {
+    "ok": false,
+    "action": "chat",
+    "failureClass": "quota_exhausted",
+    "message": "内容安全检测的额度已用尽，AI 功能暂时不可用；未上架小程序每天有检测次数上限，通常次日恢复。",
+    "detail": "内容安全检测不可用：v2（scene=1）｜errcode=45009｜errmsg=openapi.security.msgSecCheck:fail reach max api daily quota limit rid: 6abf10b8-7c7fb224-4edbda2b｜接口调用超过当日配额上限（`fail reach max api daily quota limit`）：**已实测（2026-09-19）**，文本与图片两个接口的配额**各自计算**（当天 `msgSecCheck` 报 45009 时 `imgSecCheck` 仍返回 0），次日恢复；默认 `AI_SAFETY_FAIL_MODE=closed` 下会拒绝调用（当天的问答 / 助手 / 识图全部不可用）。排障时看到这个码就不要再查模型或密钥，也不要靠调大超时去试。（AI_SAFETY_FAIL_MODE=closed，拒绝调用）",
+    "feature": "quota-probe",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 140,
+      "failures": 9,
+      "promptTokens": 50543,
+      "completionTokens": 41430,
+      "totalTokens": 91973,
+      "costYuan": 0.022995,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-02T02:02:32.883Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "elapsedMs": 870
+  }
+}
