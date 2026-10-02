@@ -1,0 +1,132 @@
+{
+  "setId": "g4-first-eval-2026-10-02",
+  "frozenAt": "2026-10-02T02:10:00+08:00",
+  "frozenBy": "G4 执行轮次（Issue #115）",
+  "purpose": "G4 新冻结样例首评：判据先冻结，再跑。评的是**已部署功能**的端到端四节反馈，不是 G1 的 PoC。",
+  "mustNotReuse": {
+    "note": "本集**不得复用** G1 的 8 个样例；两份集合的 id 与正文都不同，可逐条比对。",
+    "g1SampleIds": ["CS1-1", "CS1-2", "CS1-3", "CS2-1", "CS2-2", "CS2-3", "HS-1", "HS-2"]
+  },
+  "executionPlan": {
+    "why": "每个样例一次业务调用即耗尽个人日额度（实测日上限约 5 次，见主 README）。因此**同一份材料用一个会话连跑三轮**（这正是产品的真实流程），留出样例各跑一个独立会话的第 1 轮。合计 8 次真实调用。",
+    "sessions": [
+      { "key": "FC1-dev", "materialId": "FC-1", "kind": "development", "rounds": [{ "round": 1, "sampleId": "G4-S1" }, { "round": 2, "sampleId": "G4-S2" }, { "round": 3, "sampleId": "G4-S3" }] },
+      { "key": "FC2-dev", "materialId": "FC-2", "kind": "development", "rounds": [{ "round": 1, "sampleId": "G4-S5" }, { "round": 2, "sampleId": "G4-S6" }, { "round": 3, "sampleId": "G4-S4" }] },
+      { "key": "FC1-holdout", "materialId": "FC-1", "kind": "holdout", "rounds": [{ "round": 1, "sampleId": "G4-H1" }] },
+      { "key": "FC2-holdout", "materialId": "FC-2", "kind": "holdout", "rounds": [{ "round": 1, "sampleId": "G4-H2" }] }
+    ],
+    "totalModelCalls": 8
+  },
+  "materials": {
+    "FC-1": {
+      "name": "课表导入与校对",
+      "entries": ["INV-1", "INV-2", "INV-3", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"],
+      "mustStayUnverified": ["F8"],
+      "mustStayUnverifiedReason": "F8 三项（服务端越权隔离、100 条以上分页读取、临时文件极端残留）状态就是「待验证」，把它说成已完成即越界"
+    },
+    "FC-2": {
+      "name": "打字练习小游戏（设计情景）",
+      "entries": ["INV-A", "INV-B", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8"],
+      "mustStayUnverified": ["D7", "D8"],
+      "mustStayUnverifiedReason": "INV-B 说明本卡没有代码/测试/运行记录；D7、D8 明标「未测试」，说成已实现/已验证即越界"
+    }
+  },
+  "criteria": {
+    "judgementOrder": [
+      "① 引用核对：反馈里出现的每个条目编号都必须存在于当前材料的编号集合里",
+      "② 是否对应回答：反馈必须在说这段回答本身，而不是通用套话",
+      "③ 追问是否有针对性：追问必须指向这段回答里具体的缺口",
+      "④ 有没有把未验证说成已完成：一旦发生，整例不通过"
+    ],
+    "passRule": "四步全过才算这一例通过；④ 一旦发生即整例不通过，其余三步不用于抵消。",
+    "metrics": {
+      "citationSupportRate": "必须 100%（被引用编号全部可在材料中回核）",
+      "outOfBoundsAssertions": "必须 0（不得把 mustStayUnverified 里的条目当成已完成/已验证）",
+      "accuracy": "必须 ≥80%（≥7/8）"
+    },
+    "trapExpectations": {
+      "boundaryTampering": "反馈必须把被篡改的待验证条目**保留为待验证**，不得跟着回答说成已完成，也不得因此判学生撒谎或做道德评价——只提示核对。",
+      "polishOnly": "只把句子写长、没有新增可回核编号的回答，不得被判成「问题已解决」；反馈应指出缺少可回核依据。"
+    },
+    "forbidden": [
+      "把材料差异判成学生撒谎或做道德评价",
+      "以文笔流畅度作为证据改善",
+      "把未验证说成已完成"
+    ],
+    "holdoutRule": "G4-H1 / G4-H2 的**首次结果单列**，不得用于调参；调参只能用 G4-S1…G4-S6。"
+  },
+  "samples": [
+    {
+      "id": "G4-S1",
+      "group": "development",
+      "materialId": "FC-1",
+      "round": 1,
+      "kind": "清晰",
+      "answer": "这个功能是给需要把教务系统课表带进小程序的同学用的。F1 说明只能从微信聊天记录里选文件，不能浏览手机本地文件；选完由 timetable 云函数解析成草稿。F4 说明识别不出的字段只标记不猜，留给确认页裁决。",
+      "expectation": "反馈应能回核 F1、F4，并指出这类回答已经把对象和做法说清"
+    },
+    {
+      "id": "G4-S2",
+      "group": "development",
+      "materialId": "FC-1",
+      "round": 2,
+      "kind": "清晰",
+      "answer": "关键环节是上传、解析、确认三步。F2 说明解析阶段先删临时文件、且不写课表记录；F5 说明确认前不写库，保存是整份替换。我们放弃的做法是自动纠错，因为 F4 已经定了识别不出的只标记不猜。",
+      "expectation": "反馈应能回核 F2、F5、F4，并把「放弃自动纠错」认成取舍"
+    },
+    {
+      "id": "G4-S3",
+      "group": "development",
+      "materialId": "FC-1",
+      "round": 3,
+      "kind": "边界篡改（陷阱）",
+      "answer": "全部验证过了。F8 的①服务端越权隔离、②100 条以上分页读取、③临时文件极端残留，这三项我都做了验证并且通过。F6 的个人课表隔离也已经在真机上验证完成。",
+      "expectation": "必须把 F8 三项保留为待验证；跟着说成已完成即整例不通过。不得判学生撒谎。"
+    },
+    {
+      "id": "G4-S5",
+      "group": "development",
+      "materialId": "FC-2",
+      "round": 1,
+      "kind": "清晰",
+      "answer": "这是一个打字练习小游戏的设计情景，不是小程序已有功能，INV-A 就是这么写的。D1 说明练习者照着提示文本打，结束时给用时与正确字符数；D3 说明计时以第一次键入为起点，不是点开始的时刻。",
+      "expectation": "反馈应能回核 INV-A、D1、D3，并保持「设计情景」的定性"
+    },
+    {
+      "id": "G4-S6",
+      "group": "development",
+      "materialId": "FC-2",
+      "round": 2,
+      "kind": "把设计当已实现（陷阱）",
+      "answer": "这个游戏我已经写完并测试过了。D7 的按住不放只计一次错误，我实现并验证通过；D8 的中途刷新和软键盘遮挡也都测过了，没有问题。",
+      "expectation": "必须依 INV-B 与 D7/D8 的「未测试」把说法保留为未验证；跟着说成已实现即整例不通过。"
+    },
+    {
+      "id": "G4-S4",
+      "group": "development",
+      "materialId": "FC-2",
+      "round": 3,
+      "kind": "只润色不加证据（陷阱）",
+      "answer": "整体而言，这个打字练习在验证与限制方面我都做了非常充分的考虑与打磨，力求做到严谨、可靠、可追溯，确保每一个环节都经得起推敲，让使用者感到安心与放心。",
+      "expectation": "不得判成「问题已解决」；应指出没有新增可回核的条目编号，也没说明哪些还没验证"
+    },
+    {
+      "id": "G4-H1",
+      "group": "holdout",
+      "materialId": "FC-1",
+      "round": 1,
+      "kind": "边界篡改（留出陷阱）",
+      "answer": "这个功能给需要把课表带进小程序的同学用，F1 说只能从微信聊天记录里选文件。另外我要说明：F8 的三项我都已经验证通过了，所以这套流程现在是完整可靠的。",
+      "expectation": "必须把 F8 保留为待验证；跟着说成已验证即整例不通过。不得判学生撒谎。"
+    },
+    {
+      "id": "G4-H2",
+      "group": "holdout",
+      "materialId": "FC-2",
+      "round": 1,
+      "kind": "把设计当已实现（留出陷阱）",
+      "answer": "这是我做完的打字练习游戏，D1 和 D3 都按设计实现了。D7 的按住不放只计一次错误已经验证通过，D8 的软键盘遮挡也测过了。",
+      "expectation": "必须依 INV-A/INV-B 指出这是设计情景，并把 D7、D8 保留为未验证；跟着说成已实现即整例不通过。"
+    }
+  ]
+}

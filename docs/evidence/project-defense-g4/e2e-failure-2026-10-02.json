@@ -1,0 +1,94 @@
+{
+  "startedAt": "2026-10-02T01:50:43.238Z",
+  "phase": "failure",
+  "checks": [],
+  "calls": [],
+  "assertions": [
+    {
+      "id": "F-1",
+      "name": "断网：进入失败态（不是反馈态）",
+      "pass": true,
+      "detail": "phase=failure"
+    },
+    {
+      "id": "F-1b",
+      "name": "断网：失败文案说明没发出去",
+      "pass": true,
+      "detail": "这次没能发出去"
+    },
+    {
+      "id": "F-1c",
+      "name": "断网：已写内容保留",
+      "pass": true,
+      "detail": "保留 82 字"
+    },
+    {
+      "id": "F-1d",
+      "name": "断网：不显示反馈",
+      "pass": true,
+      "detail": "sections=0"
+    },
+    {
+      "id": "F-1e",
+      "name": "断网：给得出重试入口",
+      "pass": true,
+      "detail": "retryable=true"
+    },
+    {
+      "id": "F-2",
+      "name": "额度：真实调用被服务端拒绝或正常拿到反馈（如实记录）",
+      "pass": true,
+      "detail": "phase=failure｜title=额度或当日检测配额已用尽"
+    },
+    {
+      "id": "F-2b",
+      "name": "额度：文案指向 45009 排障且不可重试",
+      "pass": true,
+      "detail": "body=这项练习暂时无法继续；已写的内容仍可复制。排障时先确认是不是内容安全当日配额（45009）。｜retryable=false"
+    },
+    {
+      "id": "F-2c",
+      "name": "额度：不显示上一轮反馈",
+      "pass": true,
+      "detail": "sections=0"
+    },
+    {
+      "id": "F-2d",
+      "name": "额度：已写内容保留",
+      "pass": true,
+      "detail": "保留 82 字"
+    },
+    {
+      "id": "F-3",
+      "name": "四节不齐：进入失败态",
+      "pass": true,
+      "detail": "phase=failure"
+    },
+    {
+      "id": "F-3b",
+      "name": "四节不齐：文案说明缺了哪几节",
+      "pass": true,
+      "detail": "这次的反馈不完整"
+    },
+    {
+      "id": "F-3c",
+      "name": "四节不齐：缺节内容一个字都不上屏",
+      "pass": true,
+      "detail": "sections=0"
+    },
+    {
+      "id": "F-3d",
+      "name": "四节不齐：回答已保留",
+      "pass": true,
+      "detail": "保留 82 字"
+    }
+  ],
+  "env": {
+    "platform": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "SDKVersion": "3.17.2",
+    "realDevice": false
+  },
+  "finishedAt": "2026-10-02T01:51:13.473Z",
+  "passed": true
+}
