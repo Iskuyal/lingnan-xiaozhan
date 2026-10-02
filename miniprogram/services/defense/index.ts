@@ -291,12 +291,20 @@ export function currentFeedback(session: DefenseSession): string | null {
 /**
  * 发起一次核对。返回 `{ call, transportNote }`；**不抛错**，传输层失败用 `call: null` 表达。
  * 取消由调用方用「请求代号」判断（仓库惯例，见 pages/advancement）。
+ *
+ * `timeoutMs` 不传就用 `services/ai.ts` 的 {@link AI_CALL_TIMEOUT_MS}（75 秒，高于实测上界）；
+ * 超时由那一层返回 `model_unavailable`，到这里就是一次普通失败：**保留草稿 + 可重试**，
+ * 不推进轮次、不产生反馈。参数只为测试留口子（用小阈值验证超时路径）。
  */
-export async function requestFeedback(session: DefenseSession, question: string): Promise<{ call: AiCallResult | null; transportNote: string }> {
+export async function requestFeedback(
+  session: DefenseSession,
+  question: string,
+  timeoutMs?: number,
+): Promise<{ call: AiCallResult | null; transportNote: string }> {
   const material = materialById(session.materialId);
   if (material === null) return { call: null, transportNote: '材料不存在，请回到材料页重新选择。' };
   try {
-    const call = await callAi(defenseChatEvent(material.id, question, session.draft));
+    const call = await callAi(defenseChatEvent(material.id, question, session.draft), timeoutMs);
     return { call, transportNote: '' };
   } catch (error) {
     const note = transportMessage(error);

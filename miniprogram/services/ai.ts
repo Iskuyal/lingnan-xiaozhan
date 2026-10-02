@@ -371,10 +371,74 @@ export function advancementOf(value: unknown): AdvancementCallReport | null {
   };
 }
 
-/** 调用 ai 云函数；调用本身失败（未部署/超时/权限）时抛错，由 transportMessage 转文案。 */
-export async function callAi(data: Record<string, unknown>): Promise<AiCallResult> {
+/**
+ * 客户端云调用超时（毫秒）。**阈值必须高于实测的正常时延上界**。
+ *
+ * 由来：设计契约 5.1 原写「超过 30 秒未返回，按 `model_unavailable` 结束本次并保留输入」。
+ * 但 30 秒写在「12–23 秒」的年代；G4 实测（2026-10-02）正常时延已到 20–45 秒（真机 ≲45 秒/轮），
+ * **照 30 秒实现会把正常请求砍掉**。这里取 75 秒：高于实测上界，也高于平台云调用超时（约 60 秒）。
+ *
+ * 定位是**兜底**而不是主路径：真机断网实测约 60 秒才失败，是平台先失败；服务端另有自己的
+ * 总预算（`AI_TOTAL_DEADLINE_MS`）。这一层的价值是让「等待有上界」不再依赖平台行为。
+ * 正常路径（20–45 秒内返回）**行为完全不变**。
+ */
+export const AI_CALL_TIMEOUT_MS = 75000;
+
+/** 客户端超时标记（写在 `warnings` 里）：把「我们没等到」与「服务端说失败」分开排查。 */
+export const CLIENT_TIMEOUT_WARNING = 'client_timeout';
+
+/** 超时哨兵：只在本模块内部流转，不传给调用方。 */
+const TIMED_OUT = Symbol('ai-call-timeout');
+
+/** 给云调用套一层客户端超时；`timeoutMs` 非正数时不设超时（留给直接观察原 promise 的场景）。 */
+function withTimeout<T>(call: Promise<T>, timeoutMs: number): Promise<T | typeof TIMED_OUT> {
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return call;
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve(TIMED_OUT), timeoutMs);
+    call.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (error: unknown) => { clearTimeout(timer); reject(error); },
+    );
+  });
+}
+
+/**
+ * 超时后的返回：与 `model_unavailable` 走**同一条处置路径**（保留输入 + 可重试）。
+ *
+ * 契约要求超时「按 `model_unavailable` 结束」，所以这里不抛错：抛错会走 transportMessage 那套
+ * 「没能发出去」的文案，而契约要的是「模型没有返回结果」这一条。
+ */
+function timedOutResult(): AiCallResult {
+  return {
+    ok: false,
+    failureClass: 'model_unavailable',
+    message: '',
+    text: '',
+    capWarning: '',
+    safety: null,
+    warnings: [CLIENT_TIMEOUT_WARNING],
+    citations: [],
+    advancement: null,
+  };
+}
+
+/**
+ * 调用 ai 云函数；调用本身失败（未部署/权限/网络）时抛错，由 transportMessage 转文案。
+ *
+ * **超过 {@link AI_CALL_TIMEOUT_MS} 未返回时不抛错**，而是返回 `model_unavailable` 的结果——
+ * 页面据此进失败态、保留草稿、给重试入口（答辩练习的契约见 `services/defense/index.ts`）。
+ *
+ * `timeoutMs` 默认就是生产阈值；留出这个参数只为让测试用很小的阈值验证这条路径，
+ * 业务代码不要传别的值（那等于把契约阈值改在各个调用点上）。
+ */
+export async function callAi(data: Record<string, unknown>, timeoutMs: number = AI_CALL_TIMEOUT_MS): Promise<AiCallResult> {
   requireCloud();
-  const response = await wx.cloud.callFunction({ name: AI_FUNCTION, data });
+  const response = await withTimeout(wx.cloud.callFunction({ name: AI_FUNCTION, data }), timeoutMs);
+  if (response === TIMED_OUT) {
+    // 平台调用无法取消：晚到的结果被丢掉（调用方另有请求代号，拦截过期结果上屏）。
+    console.warn(`AI 调用超过 ${timeoutMs} 毫秒仍未返回，按 model_unavailable 结束`);
+    return timedOutResult();
+  }
   const result = response === null || response === undefined ? undefined : response.result;
   if (result === null || result === undefined || typeof result !== 'object') {
     throw new Error('AI 服务返回了无法识别的结果');

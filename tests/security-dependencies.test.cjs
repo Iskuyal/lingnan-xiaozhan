@@ -30,6 +30,8 @@ test('处理用户课表的 SheetJS 使用已修复版本，根项目与云函�
 });
 
 test('CloudBase 传递依赖固定到无已知漏洞版本，安全 set 不允许污染原型', () => {
+  // 四份**有锁文件、且被 CI 审计**的清单。`cloudfunctions/lost-found` 既没有锁文件也没进 CI 的
+  // npm audit 步骤，因此这里不把它算作「已固定」——那是记录在案的缺口，不是本用例的通过项。
   const manifests = [
     readJson('package.json'),
     readJson('cloudfunctions/ai/package.json'),
@@ -38,12 +40,14 @@ test('CloudBase 传递依赖固定到无已知漏洞版本，安全 set 不允�
   ];
 
   for (const manifest of manifests) {
-    assert.equal(manifest.overrides.axios, '0.33.0');
+    // 0.34.0 是 0.x 线上修复 GHSA-9fr6-4gfg-395g / GHSA-x97p-jq2g-jp4f 的版本
+    // （0.27.2–0.33.0 全在公告范围内）；1.x 的要求与本项目运行时（Nodejs16.13）无关，故只在 0.x 内升级。
+    assert.equal(manifest.overrides.axios, '0.34.0');
     assert.equal(manifest.overrides['lodash.set'], 'npm:set-value@4.1.0');
     assert.equal(manifest.overrides['lodash.unset'], '4.18.0');
   }
 
-  assert.ok(versionAtLeast(require('axios/package.json').version, '0.33.0'));
+  assert.ok(versionAtLeast(require('axios/package.json').version, '0.34.0'));
   assert.ok(versionAtLeast(require('lodash.unset/package.json').version, '4.18.0'));
 
   const safeSetPath = require.resolve('lodash.set', {
