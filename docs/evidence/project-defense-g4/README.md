@@ -36,6 +36,7 @@
 ### 2. 既有功能回归——**已执行并通过**
 
 - [x] 部署后跑 `scripts/verify-advancement-model.cjs --require-live`（真实模型调用）：**M1 / M2 / M3 / M4 / M4b 全部通过**，退出码 0。
+      原始报告（`passed: true`、M1 的 `source: "live"` 与逐字模型输出）留档 [regression-advancement-2026-10-02.json](regression-advancement-2026-10-02.json)。
       升学问答的现场模型解释、出处标记与卡片一一对应、缺失年份先澄清不调用模型、语料不含则拒答给官方入口、传输失败降级为原文摘录并给重试入口，均未被本次部署改动。
 - [x] `npm run poc:defense:usage` 返回 `ok:true`，说明 `AI_EXTRA_BODY_JSON` 仍是**合法 JSON**（非法时 `ai` 会全动作 fail-closed）。
 - 佐证「不是侥幸」：部署前后 `index.js` 的 diff 为 **+55 行 / −0 行**，全部在 `DEFENSE_FEATURE` 守卫内，既有功能路径一行未改。
@@ -63,7 +64,7 @@
 ### 4. 真实设备——**未执行（已把执行件备好）**
 
 - [ ] 真机走通同一路径、记录机型与基础库：**未执行**。本环境**无法操作物理设备**（需要真人扫码操作）；负责人已选择「自己跑并回传记录」，本轮**尚未回传**。
-- [x] **已生成预览二维码**（2026-10-02，`cli preview`，**不消耗 AI 额度**）：`√ preview`、退出码 0、包体 **436.4 KB**（446,921 字节）、AppID `wxdcef3a86d7e9eeff`。二维码与 info 落在 `artifacts/verify/`（gitignore，不入库），**预览码有时效、过期重跑同一条命令即可**。
+- [x] **已生成预览二维码**（2026-10-02，`cli preview`，**不消耗 AI 额度**）：`√ preview`、退出码 0、包体 **436.4 KB**（446,921 字节）、AppID `wxdcef3a86d7e9eeff`。二维码与 info 落在 `artifacts/verify/`（gitignore，不入库），**预览码有时效、过期重跑同一条命令即可**。构建信息留档 [preview-build-2026-10-02.json](preview-build-2026-10-02.json)。
 - [x] 逐项执行清单（扫码 → 9 步路径 → 必须回传的字段 → 专项观察 → 额度提示）：[real-device-checklist.md](real-device-checklist.md)。
 - **`realDevice` 记为 `false`**（本阶段所有结果都来自模拟器）。**不得写「真机已通过」**。
 - 阻塞叠加：真机同样吃**内容安全 100 次/天**（全部功能共用）与个人日上限，**一条完整路径（约 15–20 次检测）就会占掉当天可观份额**，清单里给了「真机优先只跑一轮」的折中顺序。
