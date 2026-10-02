@@ -121,15 +121,47 @@ async function runPageMode(options) {
 async function runDirectMode(payload) {
   const mini = await connectMini();
   try {
-    // 先 reLaunch：保证 app 已初始化（`wx.cloud.init` 在 app 生命周期里执行），
-    // 否则 evaluate 里直接调 `wx.cloud` 可能拿到未初始化的实例。
-    await mini.reLaunch('/pages/home/index');
-    await sleep(1500);
+    // 先热身再 reLaunch：连上≠app 就绪。直发模式原来缺这一步，会在
+    // `wx.cloud.callFunction` 上偶发 `timeout waiting for automator response`
+    // （同一条命令手工分步执行就能过，属工具侧时序）。这里补上并加重试。
+    await mini.currentPage().catch(() => undefined);
+    await sleep(2000);
+    let launched = false;
+    for (let attempt = 1; attempt <= 3 && !launched; attempt += 1) {
+      try {
+        await mini.reLaunch('/pages/home/index');
+        launched = true;
+      } catch {
+        await sleep(2000);
+      }
+    }
+    if (!launched) throw new Error('reLaunch 重试 3 次仍失败');
+    // app 初始化与云环境就绪需要时间；太早发调用会拿不到响应。
+    await sleep(3000);
     const startedAt = Date.now();
-    const result = await mini.evaluate(async (data) => {
-      const response = await wx.cloud.callFunction({ name: 'ai', data });
-      return response.result;
+    // **不要在 evaluate 里 await 云调用**：内容安全换成第三方审核后单次调用变长，
+    // automator 的 evaluate 会先超时，表现为 `timeout waiting for automator response`
+    // ——看起来像桥坏了，其实是等得不够。改成「先发出去、结果挂 globalThis、再轮询」。
+    await mini.evaluate((data) => {
+      globalThis.__rawResult = null;
+      globalThis.__rawError = null;
+      wx.cloud.callFunction({ name: 'ai', data })
+        .then((response) => { globalThis.__rawResult = response && response.result ? response.result : null; })
+        .catch((error) => { globalThis.__rawError = String(error && error.message ? error.message : error); });
+      return true;
     }, payload);
+    const deadline = Date.now() + 120000;
+    let result = null;
+    let callError = null;
+    while (Date.now() < deadline) {
+      await sleep(1500);
+      const snapshot = await mini.evaluate(() => ({ result: globalThis.__rawResult, error: globalThis.__rawError }));
+      result = snapshot.result;
+      callError = snapshot.error;
+      if (result !== null || callError !== null) break;
+    }
+    if (result === null && callError === null) throw new Error('轮询 120 秒仍未拿到云函数返回');
+    if (callError !== null) throw new Error(callError);
     return {
       mini,
       record: { mode: 'direct', requestedAt: new Date().toISOString(), request: payload, elapsedMs: Date.now() - startedAt, result },
