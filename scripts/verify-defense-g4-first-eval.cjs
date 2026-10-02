@@ -106,6 +106,20 @@ async function main() {
     stoppedOnQuota: false,
   };
 
+  // 断点续跑：个人日额度一次大约只够跑一个会话，而**留出样例的首次结果不能重来**。
+  // 传入上一次的报告（`--resume=<文件>`）后，整段「样例都已判定过」的会话直接跳过——
+  // 否则中途被打断后重跑，会把已经判定过的留出样例烧成第二次结果，那就不再是「首次」了。
+  const doneSampleIds = new Set();
+  if (typeof options.resume === 'string') {
+    const resumePath = path.resolve(options.resume);
+    const prior = JSON.parse(fs.readFileSync(resumePath, 'utf8'));
+    for (const item of prior.results ?? []) {
+      if (item.phase === 'feedback') doneSampleIds.add(item.sampleId);
+    }
+    report.resumedFrom = path.relative(process.cwd(), resumePath).replace(/\\/gu, '/');
+    report.alreadyEvaluated = [...doneSampleIds];
+  }
+
   const mini = await connectMini();
   let aborted = null;
   try {
@@ -115,6 +129,11 @@ async function main() {
     report.env = { platform: system.platform, model: system.model, SDKVersion: system.SDKVersion, realDevice: system.platform !== 'devtools' };
 
     for (const session of frozen.executionPlan.sessions) {
+      // 整段会话都已判定过 → 跳过。会话内必须按轮次顺序提交，无法只跳过中间某一轮。
+      if (session.rounds.every((step) => doneSampleIds.has(step.sampleId))) {
+        report.sessions.push({ key: session.key, materialId: session.materialId, kind: session.kind, rounds: [], skipped: '本次运行前已判定，不重复消耗额度（留出样例的首次结果不可重来）' });
+        continue;
+      }
       const sessionRecord = { key: session.key, materialId: session.materialId, kind: session.kind, rounds: [] };
       report.sessions.push(sessionRecord);
 
