@@ -103,6 +103,7 @@
 | `scripts/verify-defense-g4-first-eval.cjs` | 冻结样例首评：校验冻结哈希 → 逐例取回四节原始反馈 → 自动判①、落盘供人判②③④ |
 | `scripts/probe-ai-raw-response.cjs` | 读回 `ai` 的**原始返回**（不经页面文案映射），直发或页面两种模式 |
 | `scripts/defense-g4-deploy-readback.cjs` | 部署回读比对：本地构建 vs 线上 `download` 逐文件比 SHA-256，生成 `deploy/manifest.json` |
+| `scripts/verify-defense-g4-comparison.cjs` | 对照实验：同一材料与回答，固定检查表 vs 通用 AI 提示，两边都落盘逐字输出与耗时 |
 
 **没有**使用未入库的临时脚本；以上证据都能由这三个脚本 + 章节里的 CLI 命令复现。
 
