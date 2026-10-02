@@ -138,7 +138,67 @@
 | `scripts/defense-g4-deploy-readback.cjs` | 部署回读比对：本地构建 vs 线上 `download` 逐文件比 SHA-256，生成 `deploy/manifest.json` |
 | `scripts/verify-defense-g4-comparison.cjs` | 对照实验：同一材料与回答，固定检查表 vs 通用 AI 提示，两边都落盘逐字输出与耗时 |
 
-**没有**使用未入库的临时脚本；以上证据都能由这三个脚本 + 章节里的 CLI 命令复现。
+**没有**使用未入库的临时脚本；以上证据都能由这五个脚本 + 本文各节的 CLI 命令复现。
+
+## 续跑手册（额度恢复后照做，顺序不要改）
+
+**0. 开桥（先 build 再开桥；反过来会让自动化桥失效，表现为 `timeout waiting for automator response`、0 次云请求）**
+
+```powershell
+npm run build                                                   # 需要重建时才跑
+& '<开发者工具目录>\cli.bat' cache --clean compile --project '<worktree>\dist'
+& '<开发者工具目录>\cli.bat' auto --project '<worktree>\dist' --auto-port 9421 --trust-project
+```
+
+**看 `auto` 输出的 `autoPort`**：被占用时工具会**自动换端口**，脚本（`WECHAT_AUTO_PORT`）必须与它一致，否则会连到旧构建。连接偶发 `Uncaught [object Object]`，重开 `auto` 即可。
+
+**1. 补完端到端 happy path**（约 1–2 次调用）
+
+```powershell
+$env:WECHAT_AUTO_PORT='9421'
+node scripts/verify-defense-g4-e2e.cjs --phase=happy --out=docs/evidence/project-defense-g4/e2e-happy-<日期>.json
+```
+
+预期：`H-A`（重答→`done`）与 `H-X`（退出后再进会话清空）。**跑完把 JSON 入库**——这正是目前缺的那一份。
+
+**2. 新冻结样例首评**（8 次调用，跨天跑；**先跑开发样例，留出样例最后**）
+
+```powershell
+node scripts/verify-defense-g4-first-eval.cjs `
+  --samples=docs/evidence/project-defense-g4/samples/frozen-2026-10-02.json `
+  --expect-hash=71ffad8b6897652b738ee10f44c8f7d6aca9d72584903747434b6707e571bf3d `
+  --out=docs/evidence/project-defense-g4/first-eval-<日期>.json
+# 被额度打断后，下次带上已完成的那份，整段已判定会话会被跳过：
+#   --resume=docs/evidence/project-defense-g4/first-eval-<上次日期>.json
+```
+
+- **`--expect-hash` 不符会拒绝开跑**（判据被改过就不跑）。
+- ① 引用核对脚本自动判；**②③④ 必须人读**：`judgement.step2/3/4` 的 `verdict` 留空待填，填完才算判定完成。
+- 留出样例 `G4-H1`/`G4-H2` 的**首次结果单列**，**不得用于调参**。
+
+**3. 对照实验**（2 次调用）
+
+```powershell
+node scripts/verify-defense-g4-comparison.cjs --material=FC-1 --out=docs/evidence/project-defense-g4/comparison-<日期>.json
+```
+
+`humanScoring` 的四项（完成步骤 / 定位依据是否方便 / 有效建议数 / 完成时间）同样**留给人填**。
+
+**4. 每次跑完读一次额度并存证**（只读、不花钱）
+
+```powershell
+npm run poc:defense:usage | Out-File docs/evidence/project-defense-g4/usage-<日期>.json -Encoding utf8
+```
+
+**5. 判据回填后收口**
+
+```powershell
+npm run docs:check; npm test; npm run typecheck; git diff --check
+```
+
+把逐例判定、留出首次结果、对照结果回填本文件，更新 [docs/status.md](../../status.md) 的答辩练习行（**只改当前状态；带日期的历史实测表保留原样，需要更正时新加带日期的说明**），然后提交并推到 PR #127（**不关闭任何 Issue**）。
+
+**6. 真机**：按 [real-device-checklist.md](real-device-checklist.md) 执行；`realDevice` **按实际记录**，没跑就写 `false`。
 
 ## 不得据此声称
 
