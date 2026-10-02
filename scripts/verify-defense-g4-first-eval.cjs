@@ -114,7 +114,10 @@ async function main() {
     const resumePath = path.resolve(options.resume);
     const prior = JSON.parse(fs.readFileSync(resumePath, 'utf8'));
     for (const item of prior.results ?? []) {
-      if (item.phase === 'feedback') doneSampleIds.add(item.sampleId);
+      // 一轮提交完成后页面停在 `feedback`；**该会话最后一轮**提交完会直接推进到 `review`。
+      // 两者都代表「这一轮真的拿到过反馈」，漏掉 `review` 会让每个会话的第 3 例永远不被算作已判定，
+      // 于是整段会话被重跑——2026-10-02 第一次续跑就因为这个 bug 白跑了 6 次调用。
+      if (item.phase === 'feedback' || item.phase === 'review') doneSampleIds.add(item.sampleId);
     }
     report.resumedFrom = path.relative(process.cwd(), resumePath).replace(/\\/gu, '/');
     report.alreadyEvaluated = [...doneSampleIds];

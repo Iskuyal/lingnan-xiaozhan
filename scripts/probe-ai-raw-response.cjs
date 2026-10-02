@@ -24,7 +24,7 @@
  * 产出：stdout 打印原始记录；`--out=<文件>` 时同时写入 JSON。
  * 退出码：0 = 拿到了原始返回；1 = 没跑起来（桥不通 / 参数错）。
  */
-const { writeFileSync } = require('node:fs');
+const fs = require('node:fs');
 const path = require('node:path');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
@@ -176,14 +176,19 @@ async function main() {
   let handle;
   if (typeof options.route === 'string') {
     handle = await runPageMode(options);
+  } else if (typeof options['payload-file'] === 'string') {
+    // 用文件传 payload：内联 JSON 在各 shell 里极易被引号规则改坏（PowerShell 尤甚），
+    // 长提示词更是不可能安全内联。文件走 UTF-8，不经过 shell 的转义。
+    handle = await runDirectMode(JSON.parse(fs.readFileSync(path.resolve(options['payload-file']), 'utf8')));
   } else if (typeof options.payload === 'string') {
     handle = await runDirectMode(JSON.parse(options.payload));
   } else if (typeof options.text === 'string') {
     const payload = { action: 'chat', feature: options.feature || '', messages: [{ role: 'user', text: options.text }] };
     if (typeof options['material-id'] === 'string') payload.materialId = options['material-id'];
+    if (typeof options['max-tokens'] === 'string') payload.maxTokens = Number(options['max-tokens']);
     handle = await runDirectMode(payload);
   } else {
-    console.error('用法见文件头注释：需要 --route=<页面> 或 --payload=<JSON> 或 --feature=<feature> --text="<问题>"');
+    console.error('用法见文件头注释：需要 --route=<页面> 或 --payload-file=<JSON文件> 或 --payload=<JSON> 或 --feature=<feature> --text="<问题>"');
     process.exit(1);
   }
 
@@ -192,7 +197,7 @@ async function main() {
   console.log(JSON.stringify(record, null, 2));
   if (typeof options.out === 'string') {
     const file = path.resolve(options.out);
-    writeFileSync(file, `${JSON.stringify(record, null, 2)}\n`, 'utf8');
+    fs.writeFileSync(file, `${JSON.stringify(record, null, 2)}\n`, 'utf8');
     console.error(`已写入 ${file}`);
   }
   if (record.error) process.exit(1);

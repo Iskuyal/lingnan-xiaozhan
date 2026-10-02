@@ -105,7 +105,8 @@ cli cloud functions info --names ai --env cloudbase-d2gjtbbwu3575cd7b --project 
 
 ## 6. 环境变量：未改，但值**读不到**
 
-- 本轮**没有修改任何环境变量**，没有调高限额、没有关闭 `AI_MODERATE_OUTPUT`、没有改 `AI_SAFETY_FAIL_MODE`。
+- **部署当时没有修改任何环境变量**，没有调高限额、没有关闭 `AI_MODERATE_OUTPUT`、没有改 `AI_SAFETY_FAIL_MODE`。
+- ⚠️ **后续变化（2026-10-02 10:30 左右）**：为绕开微信内容安全当日配额（45009），**负责人**在云开发控制台把 `AI_SAFETY_PROVIDER` 等 5 个变量改成第三方审核（见 [safety-provider-switch-2026-10-02.md](../safety-provider-switch-2026-10-02.md)）。因此**本文件上述「回读 20/20 一致」的代码结论仍然成立**（只换了环境变量，没有重新部署代码），但**「环境变量未改」只适用于 2026-10-01 部署那一刻**，不要再拿它描述今天的线上状态。
 - 但**值读不到**：`cloudfunctions/ai/config.json` 里没有 `envVariables` 字段，`cli cloud functions info` 只回 `status`/`timeout`/`runtime`（与 [G1 证据](../../project-defense-g1/README.md) 记的一致，环境变量只在云控制台）。
 - 因此「环境变量未改」是**执行事实**（本次没有执行任何改环境变量的动作），**不是**从 CLI 读回来的核对结论。
 - 配置仍然**功能正常**的间接证据：部署后 `poc:defense:usage` 返回 `ok:true`（`AI_EXTRA_BODY_JSON` 非法时 `ai` 会全动作 fail-closed），且升学与答辩练习都能真实调用模型（见主清单）。

@@ -131,13 +131,33 @@ async function main() {
       });
       const prompt = GENERIC_PROMPT.replace('{{MATERIAL}}', materialText);
       const startB = Date.now();
-      const result = await mini.evaluate(async (text) => {
-        const response = await wx.cloud.callFunction({
+      // **不要在 evaluate 里 await 云调用**：换第三方审核后单次调用变长，
+      // automator 的 evaluate 会先超时（`timeout waiting for automator response`）。
+      // 先发出去把结果挂 globalThis，再轮询——与 probe 脚本同一套做法。
+      await mini.evaluate((text) => {
+        globalThis.__g4BenchResult = null;
+        globalThis.__g4BenchError = null;
+        wx.cloud.callFunction({
           name: 'ai',
-          data: { action: 'chat', feature: 'benchmark-generic', messages: [{ role: 'user', text }] },
-        });
-        return response.result;
+          // 给 B 臂一个与 A 臂可比的输出预算：A 臂的四节反馈约 600–900 token，
+          // 而自由发挥的点评容易写成几千字，会先撞 AI_TIMEOUT_MS=40000 变成
+          // `model_unavailable`（2026-10-02 第一次跑就是这样，B 臂 38 秒拿不到输出）。
+          // 限长不是为了弱化对照——两臂比的都是内容质量，不是篇幅。
+          data: { action: 'chat', feature: 'benchmark-generic', messages: [{ role: 'user', text }], maxTokens: 1200 },
+        })
+          .then((response) => { globalThis.__g4BenchResult = response && response.result ? response.result : null; })
+          .catch((error) => { globalThis.__g4BenchError = String(error && error.message ? error.message : error); });
+        return true;
       }, prompt);
+      let result = null;
+      const benchDeadline = Date.now() + 180000;
+      while (Date.now() < benchDeadline) {
+        await sleep(2000);
+        const snapshot = await mini.evaluate(() => ({ result: globalThis.__g4BenchResult, error: globalThis.__g4BenchError }));
+        if (snapshot.error !== null) throw new Error(`B 臂调用失败：${snapshot.error}`);
+        if (snapshot.result !== null) { result = snapshot.result; break; }
+      }
+      if (result === null) throw new Error('B 臂轮询 180 秒仍未拿到返回');
       const elapsedB = Date.now() - startB;
       report.arms.genericPrompt = {
         elapsedMs: elapsedB,

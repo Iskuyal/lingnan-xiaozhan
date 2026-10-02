@@ -73,5 +73,10 @@
 ## 7. 截至本文的状态
 
 - 预验证**已做完**（本文 + 同目录 JSON）。
-- 环境变量**尚未修改**：2026-10-02 10:28 实测仍是 `wechat` 路径（`detail` 显示 `v2（scene=1）｜errcode=45009`）。
-- 因此 G4 剩余 4 项（重答收尾、8 例首评、对照实验、真机）**仍未执行**。
+- ✅ **环境变量已由负责人设置，切换已生效**：2026-10-02 10:35 实测返回
+  `safety: {"provider":"openai","api":"text-moderation","passed":true,"checked":true}`，
+  且微信 `errcode=45009` 不再出现（原文见 [provider-switch-verify 记录](../../../artifacts/verify/provider-switch-verify.json)，该文件在 gitignore 的 `artifacts/` 下，不入库）。
+- **本批次的界定**：**2026-10-02 10:35 之后**执行的端到端完整路径、8 例首评、对照实验**全部跑在第三方审核下**。它们与默认 `wechat` 配置下的历史结果**不可混算**。
+- ✅ 顺带读到一条仓库一直没读到过的值：撞**个人日上限**时的原始 `detail` 是「今日调用次数超过 **30** 次」⇒ `AI_USER_DAILY_LIMIT` 生效值就是**默认 30**。
+- **仍未执行**：真机验收（`realDevice: false`），以及首评的独立双人复核。
+- 回滚：把 `AI_SAFETY_PROVIDER` 改回 `wechat`（或删掉这 5 条）。回滚后微信 45009 会随当日配额恢复情况重新出现。
