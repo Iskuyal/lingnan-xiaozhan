@@ -68,7 +68,7 @@
     <view class="hint" wx:if="{{hint !== ''}}">{{hint}}</view>
 
     <button class="primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，拿反馈与追问</button>
-    <view class="quiet">提交后会调用一次模型（实测 12–23 秒），期间可以取消并保留上面的草稿。</view>
+    <view class="quiet">提交后会调用一次模型（实测 20–45 秒），期间可以取消并保留上面的草稿。</view>
   </block>
 
   <!-- 等待与取消 -->
@@ -77,9 +77,9 @@
     <view class="defense-title">正在核对你的回答</view>
     <view class="pending">
       <text class="pending-title">在等什么</text>
-      <text class="pending-body">模型要读完这份材料的所有条目，再逐句对照你写的 {{answerCount}} 字。实测需要 12–23 秒，比普通问答慢：它要输出四节内容。</text>
+      <text class="pending-body">模型要读完这份材料的所有条目，再逐句对照你写的 {{answerCount}} 字。实测需要 20–45 秒，比普通问答慢：它要输出四节内容。</text>
       <view class="progress"><view class="progress-bar"></view></view>
-      <view class="pending-foot"><text>通常 12–23 秒</text><text>已等 {{pendingSeconds}} 秒</text></view>
+      <view class="pending-foot"><text>通常 20–45 秒</text><text>已等 {{pendingSeconds}} 秒</text></view>
     </view>
     <view class="note">现在取消不会丢东西：你写的内容仍在输入框里，回到上一页可以继续改或复制出来。</view>
     <button class="secondary" hover-class="pressed" bindtap="onCancelPending">取消这次核对</button>
