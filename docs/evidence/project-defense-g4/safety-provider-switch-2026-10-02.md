@@ -75,7 +75,8 @@
 - 预验证**已做完**（本文 + 同目录 JSON）。
 - ✅ **环境变量已由负责人设置，切换已生效**：2026-10-02 10:35 实测返回
   `safety: {"provider":"openai","api":"text-moderation","passed":true,"checked":true}`，
-  且微信 `errcode=45009` 不再出现（原文见 [provider-switch-verify 记录](../../../artifacts/verify/provider-switch-verify.json)，该文件在 gitignore 的 `artifacts/` 下，不入库）。
+  且微信 `errcode=45009` 不再出现。
+  ⚠️ **该次探针的原始返回（`artifacts/verify/provider-switch-verify.json`）在仓库内不可复现**：它落在 gitignore 的 `artifacts/` 下、**未入库**；上面引的就是它的关键字段逐字内容，要重跑用 `node scripts/probe-ai-raw-response.cjs --feature=quota-probe --text="..."`。**不链该目录**——链出去在 CI 的干净检出里会 404。
 - **本批次的界定**：**2026-10-02 10:35 之后**执行的端到端完整路径、8 例首评、对照实验**全部跑在第三方审核下**。它们与默认 `wechat` 配置下的历史结果**不可混算**。
 - ✅ 顺带读到一条仓库一直没读到过的值：撞**个人日上限**时的原始 `detail` 是「今日调用次数超过 **30** 次」⇒ `AI_USER_DAILY_LIMIT` 生效值就是**默认 30**。
 - **仍未执行**：真机验收（`realDevice: false`），以及首评的独立双人复核。

@@ -11,6 +11,17 @@
 
 **G4 的结论已转成 G5 能直接用的输入**：[g5-inputs-2026-10-02.md](g5-inputs-2026-10-02.md)（时延口径已失效需降级、两个额度上限的演示编排、上台前必须确认的审核配置、以及能上台的硬材料清单）。下一轮交接见 [`docs/tasks/project-defense-g4-resume-prompt.md`](../../tasks/project-defense-g4-resume-prompt.md)。
 
+### ⚠️ 一条踩坑记录：`docs:check` 查不出「指向 gitignore 文件的链接」
+
+PR #127 的 CI 曾因 `docs:check` 失败被拦下，报的是两处「目标不存在」：
+
+- `comparison-2026-10-02.md` → `../../../artifacts/verify/armB-raw.json`
+- `safety-provider-switch-2026-10-02.md` → `../../../artifacts/verify/provider-switch-verify.json`
+
+**原因**：这两处链到了 gitignore 的 `artifacts/`。**本地 `docs:check` 只看文件在磁盘上是否存在**，本地有（我跑过就在），CI 的干净检出里没有 ⇒ 本地绿、CI 红。
+**已修**：不再链该目录，改成文字说明 + **明写「本项在仓库内不可复现」**（符合仓库规则）。
+**教训**：**链接的目标必须是「被 git 跟踪」的文件**，不是「本地存在」的文件。指向 `artifacts/`、`dist/` 这类目录的链接一律不要写。
+
 **额度过拦的过程（关系到 10-08 演示）**：2026-10-02 上午先被**微信内容安全当日配额（`errcode=45009`）**拦死；负责人批准换成**第三方审核**后才跑通（该批次已单独标注）。随后又撞上**个人日调用上限**——本轮**首次读到它的真实值：`AI_USER_DAILY_LIMIT=30`（默认值）**，失败原文「今日调用次数超过 30 次」。这两条都是演示当天的现实约束，须预排调用次数。
 
 ## 逐项清单

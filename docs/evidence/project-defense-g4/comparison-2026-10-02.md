@@ -1,7 +1,8 @@
 # G4 · 对照实验：固定检查表 vs 通用 AI 提示（2026-10-02）
 
 - 对应 [Issue #115](https://github.com/Iskuyal/wx-match/issues/115)；脚本 `scripts/verify-defense-g4-comparison.cjs`。
-- 原始记录：[comparison-2026-10-02.json](comparison-2026-10-02.json)；通用提示两轮失败的原始返回：[artifacts/verify/armB-raw.json](../../../artifacts/verify/armB-raw.json)、`armB-raw2.json`（这两个在 gitignore 的 `artifacts/` 下，**不入库**，键结论已抄进本页）。
+- 原始记录：[comparison-2026-10-02.json](comparison-2026-10-02.json)（已入库，可复核）。
+- ⚠️ **通用提示两轮失败的原始返回（`artifacts/verify/armB-raw.json`、`armB-raw2.json`）在仓库内不可复现**：它们落在 gitignore 的 `artifacts/` 下，**未入库**（键结论已逐字抄进本页，可直接引用；要重跑请执行本页开头的脚本命令）。**不链该目录**——链出去在 CI 的干净检出里会 404。
 - **对照设置**：同一份材料（`FC-1`）、同一段回答、**同一个模型**（`deepseek/deepseek-v4.1-flash`）、同一套安全配置。两臂唯一的差别是**提示词形态**。
 
 ## 结果
