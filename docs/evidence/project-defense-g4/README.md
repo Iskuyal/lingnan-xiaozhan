@@ -26,7 +26,8 @@
 - [x] 部署前 `download` 留档（旧版）、部署后 `download` 回读，**函数根目录入口文件 20/20 逐字节一致**（`index.js` 更新为 55,204 B，新增 `defense.js` / `defense-materials.js`）。
 - [x] `info` 回读：**Active / timeout 60 / Nodejs16.13**（与部署前一致）——原始输出留档 [deploy/info-after-2026-10-02.txt](deploy/info-after-2026-10-02.txt)。
 - [x] 部署前后 `index.js` 的差异留档为可复核的补丁：[deploy/index-js-diff-2026-10-01.patch](deploy/index-js-diff-2026-10-01.patch)（由归档的两个 `index.js` 直接 `git diff --no-index` 生成，**+55 / −0 行**、全部落在 `DEFENSE_FEATURE` 守卫内）。
-- [ ] 环境变量核对：**未改**（本轮没有执行任何改环境变量的动作），但**值读不到**——`info` 只回 status/timeout/runtime。**不写成「已从 CLI 核对」**。
+- [x] 环境变量：**部署当时未改**，且**值读不到**（`info` 只回 status/timeout/runtime）——**不写成「已从 CLI 核对」**。
+      ⚠️ **2026-10-02 之后已变化**：负责人为绕开 45009 在控制台改了 5 个 `AI_SAFETY_*`（见下方「额度」一节与 [safety-provider-switch-2026-10-02.md](safety-provider-switch-2026-10-02.md)）。本条只描述 **10-01 部署那一刻**，不要拿它描述今天的线上状态。
 - [x] 只部署 `ai`，未动 `newsSync` / `timetable`。
 - 明细与完整哈希表：[deploy/README.md](deploy/README.md)。
 
@@ -54,8 +55,10 @@
   （失败态里没有 `.primary`，取到 `null` 抛错），而那时的异常路径还没有写报告的逻辑。
   因此上面前三轮的结论**只有控制台输出，没有可入库的机器可读记录**，复核时**不能**把它当成「有 artifacts 的实测」。
   脚本**已修**：阶段异常现在会记进 `report.aborted` 并**照常写出已经跑到的那部分**；**下一次运行必然留下 JSON**。
-- [ ] 等待态耗时区间与「取消后草稿还在」：未单独跑（等待态在实际调用中出现过，未单独断言）。
-- [ ] 云数据库 `ai_usage_records` / `ai_usage_monthly` 不含材料或回答正文：**未核对**。
+- [x] 等待态与取消：**已单独验证，8/8 通过**（[e2e-pending-2026-10-02.json](e2e-pending-2026-10-02.json)）——等待态显示「在等什么」与耗时区间、秒数在走（1→4）、有取消入口；**取消后回到作答态、草稿 82 字保留、不显示反馈**。
+      ⚠️ **顺带发现页面文案已失真**：等待态写的是「实测需要 **12–23 秒**／通常 12–23 秒」，而换第三方审核后实测约 **35 秒/次**。这是 G2 设计稿与 G5 演示口径的问题——**要么改文案，要么在演示里说明**，否则学生/评委看到的预期与实际不符。
+- [x] 云数据库不含正文：**代码层已核对**——`cloudfunctions/ai/usage.ts` 的 `recordSubCall` 只写 `USAGE_RECORD_FIELDS` 白名单的 18 个字段（`requestId`/`userKey`/`feature`/`action`/`kind`/`provider`/`model`/`ok`/`failureClass`/`durationMs`/三类 token/`estimated`/`usageUnknown`/`costYuan`/`month`/`createdAt`），**没有任何正文、材料或回答字段**；月度汇总 8 个字段同理；`tests/ai-flow.test.cjs` **锁定这两个形状**，字段悄悄改名会挂测试。
+      **仍未做的是「数据库实读」**：两个集合规则是「所有用户不可读写」，客户端读不到，CLI 也没有数据库命令 ⇒ 需要控制台查询。**本项是代码层证据，不是数据库实读，别写成「已抽检」**。
 
 ### 4. 真实设备——**未执行（已把执行件备好）**
 

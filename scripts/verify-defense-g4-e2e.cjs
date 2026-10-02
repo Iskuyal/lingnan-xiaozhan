@@ -243,9 +243,54 @@ async function main() {
       check('H-X', '退出后再进：回到材料选择且会话已清空', fresh.phase === 'materials' && String(fresh.answer || '') === '', `phase=${fresh.phase}`);
     };
 
+    // ---------------------------------------------------------------- 等待态与取消
+    // 判据来自 G4 清单：「等待态显示『在等什么』与耗时区间；取消后草稿还在，且不产生反馈」。
+    const runPendingPhase = async () => {
+      const page = await enterDefense();
+      const materials = await page.$$('.material');
+      await materials[0].tap();
+      await sleep(800);
+      const input = await page.$('.answer-input');
+      if (input === null) throw new Error('找不到作答输入框');
+      await input.input(ANSWERS[1]);
+      await sleep(300);
+      const startedAt = Date.now();
+      const submit = await page.$('.primary');
+      if (submit === null) throw new Error('找不到提交按钮');
+      await submit.tap();
+      await sleep(1500);
+
+      let data = await page.data();
+      check('P-1', '提交后进入等待态', data.phase === 'pending', `phase=${data.phase}`);
+
+      // 等待态文案：小程序里没有 DOM，用元素 text() 读渲染结果。
+      const pendingEl = await page.$('.pending');
+      const pendingText = pendingEl === null ? '' : String(await pendingEl.text());
+      check('P-2', '等待态说明「在等什么」', pendingText.includes('在等什么'), pendingText.replace(/\s+/gu, ' ').slice(0, 70));
+      const rangeMatch = /(\d+)\s*[–\-~]\s*(\d+)\s*秒/u.exec(pendingText);
+      check('P-3', '等待态给出耗时区间', rangeMatch !== null, rangeMatch === null ? '(未找到区间文案)' : rangeMatch[0]);
+
+      const firstTick = Number(data.pendingSeconds);
+      await sleep(3200);
+      data = await page.data();
+      check('P-4', '等待秒数在走', Number(data.pendingSeconds) > firstTick, `${firstTick} -> ${data.pendingSeconds}`);
+
+      const secondaries = await page.$$('.secondary');
+      check('P-5', '等待态给出取消入口', secondaries.length >= 1, `secondary 按钮 ${secondaries.length} 个`);
+      await secondaries[0].tap();
+      await sleep(1200);
+      data = await page.data();
+      report.pendingElapsedMs = Date.now() - startedAt;
+      check('P-6', '取消后回到作答态', data.phase === 'practice', `phase=${data.phase}`);
+      check('P-7', '取消后草稿还在', String(data.answer).trim() === ANSWERS[1].trim(), `保留 ${String(data.answer).length} 字`);
+      check('P-8', '取消后不显示反馈', (data.sections || []).length === 0, `sections=${(data.sections || []).length}`);
+      report.pendingRangeCopy = rangeMatch === null ? null : rangeMatch[0];
+    };
+
     // 阶段异常也要把**已经跑到的部分**写进报告：中途抛错时最需要看的就是前面几条断言的结果。
     try {
       if (phase === 'failure' || phase === 'all') await runFailurePhase();
+      if (phase === 'pending' || phase === 'all') await runPendingPhase();
       if (phase === 'happy' || phase === 'all') await runHappyPhase();
     } catch (error) {
       report.aborted = error instanceof Error ? error.message : String(error);
