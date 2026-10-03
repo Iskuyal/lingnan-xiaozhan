@@ -44,14 +44,11 @@ const POLL_INTERVAL_MS = 1500;
  * 一分钟最多 5 次，留一次余量。
  */
 const PACE_MS = Number(process.env.ADV_EVAL_PACE_MS || 12000);
-/** 撞上分钟限额时的等待与重试次数（限额按分钟窗口算，等 60 秒后进入下一分钟窗口）。 */
-const MINUTE_LIMIT_WAIT_MS = 60000;
-const MINUTE_LIMIT_RETRIES = 3;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function parseArgs(argv) {
-  const options = { set: 'all', only: [], plan: false, resume: false, maxCalls: 30, out: '', tag: '', questions: '' };
+  const options = { set: 'all', only: [], plan: false, resume: false, maxCalls: 30, out: '', tag: '', questions: '', budget: '' };
   for (const arg of argv) {
     if (arg === '--plan') options.plan = true;
     else if (arg === '--resume') options.resume = true;
@@ -60,6 +57,7 @@ function parseArgs(argv) {
     else if (arg.startsWith('--max-calls=')) options.maxCalls = Number(arg.slice(12));
     else if (arg.startsWith('--out=')) options.out = arg.slice(6);
     else if (arg.startsWith('--tag=')) options.tag = arg.slice(6);
+    else if (arg.startsWith('--budget=')) options.budget = arg.slice(9);
     else if (arg.startsWith('--questions=')) { options.questions = arg.slice(12); options.set = 'fresh'; }
     else throw new Error(`未知参数：${arg}`);
   }
@@ -126,8 +124,12 @@ function loadQuestions(options) {
 
 /** 本地检索（复用产品里的守门与检索，不复制规则）。 */
 function localAsk(product, question) {
+  // 明确题面走页面的自动范围判定。冻结旧题中的 category 是当时的材料归类提示，
+  // 不是学生本轮点击的澄清选项；仍原样归档，不用它覆盖明确的题面类别。
+  const detected = product.classify(question.question);
   const scope = question.behavior === 'answer'
-    ? { year: question.scope.year, region: question.scope.region, ...(question.scope.category ? { category: question.scope.category } : {}) }
+    ? { year: question.scope.year, region: question.scope.region,
+      ...(question.scope.category && detected.kind !== 'single' ? { category: question.scope.category } : {}) }
     : {};
   return product.ask(question.question, TOP_N, scope);
 }
@@ -190,6 +192,7 @@ function summarizeCall(state) {
     capWarning: typeof result.capWarning === 'string' ? result.capWarning : '',
     warnings: Array.isArray(result.warnings) ? result.warnings : [],
     safety: result.safety ?? null,
+    timings: result.timings ?? null,
     advancement: advancement === null
       ? null
       : {
@@ -242,6 +245,30 @@ function isCompleteRecord(record) {
   if (record.expectedBehavior !== 'answer') return typeof record.guardCorrect === 'boolean';
   if (!record.modelCall) return record.error === '答案题没有可交给模型的段落（canAskModel=false）';
   return record.modelCall.invoked === true && record.modelCall.failureClass !== 'quota_exhausted';
+}
+
+/** 不自动重试额度、审核配额或记账故障；原始失败照常落盘。 */
+function stopReason(call) {
+  if (call.failureClass === 'quota_exhausted') return 'quota_exhausted';
+  const diagnostic = [call.detail ?? '', ...(call.warnings ?? [])].join(' ');
+  if (/记账|accounting|审核.*配额|检测.*配额/iu.test(diagnostic)) return 'accounting_or_safety_quota';
+  return '';
+}
+
+function validateBudget(file, maxCalls) {
+  if (!file) throw new Error('真实调用前须 --budget=<预算JSON>，登记用量快照、个人日余量与本批预算');
+  const budget = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (!budget.usageSnapshot || !budget.registeredAt || !Number.isInteger(budget.maxCloudCalls)
+    || budget.maxCloudCalls < maxCalls || !budget.personalDailyLimit || budget.safetyQuota === undefined) {
+    throw new Error('预算登记不完整或 --max-calls 超过预算');
+  }
+  const daily = budget.personalDailyLimit;
+  if (!Number.isInteger(daily.remaining) || daily.remaining < maxCalls) throw new Error('个人日余量不足本批预算，停止真实调用');
+  const snapshot = JSON.parse(fs.readFileSync(budget.usageSnapshot, 'utf8'));
+  const actual = snapshot.result;
+  if (actual?.ok !== true || actual.usageSummary?.exceeded || actual.capWarning || actual.userDailyLimit?.day !== daily.day
+    || actual.userDailyLimit?.remaining !== daily.remaining) throw new Error('预算与真实用量快照不一致或月度告警，停止真实调用');
+  return budget;
 }
 
 function hashFile(file) { return createHash('sha256').update(fs.readFileSync(file)).digest('hex'); }
@@ -297,6 +324,8 @@ async function run() {
   }
 
   fs.mkdirSync(path.dirname(outBase), { recursive: true });
+  const budget = validateBudget(options.budget, options.maxCalls);
+  meta.budget = budget;
   const jsonlPath = `${outBase}.jsonl`;
   const jsonPath = `${outBase}.json`;
   const done = new Set();
@@ -321,6 +350,7 @@ async function run() {
   const records = [...previous.values()];
   let cloudAttempts = 0;
   let exitCode = 0;
+  let stopped = '';
   try {
     mini = await connectMini();
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
@@ -366,9 +396,10 @@ async function run() {
         record.error = '答案题没有可交给模型的段落（canAskModel=false）';
         exitCode = Math.max(exitCode, 2);
         console.log(`✘ ${question.key} 未能构成模型请求：${record.error}`);
-      } else if (cloudAttempts >= options.maxCalls) {
+      } else if (stopped || cloudAttempts >= options.maxCalls) {
         record.modelCall = null;
-        record.error = `达到本次 --max-calls=${options.maxCalls} 上限，未调用`;
+        record.error = stopped ? `停止条件 ${stopped}，未调用` : `达到本次 --max-calls=${options.maxCalls} 上限，未调用`;
+        record.judge = { delivery: 'not_called' };
         console.log(`… ${question.key} 未调用（上限）`);
         exitCode = Math.max(exitCode, 1);
       } else {
@@ -384,20 +415,10 @@ async function run() {
         cloudAttempts += 1;
         console.log(`调用 ${question.key}（第 ${cloudAttempts} 次）…`);
         if (cloudAttempts > 1) await sleep(PACE_MS);
-        let state = await startCall(mini, event);
-        let call = summarizeCall(state);
-        // 分钟限额是可恢复的：等一个窗口再试同一题；日额度/检测配额用尽则停止整轮。
-        for (let retry = 0; retry < MINUTE_LIMIT_RETRIES; retry += 1) {
-          const minuteLimited = call.invoked === true && call.failureClass === 'quota_exhausted'
-            && (call.message.includes('分钟') || call.detail.includes('本分钟'));
-          if (!minuteLimited) break;
-          if (cloudAttempts >= options.maxCalls) break;
-          console.log(`  撞上分钟限额，等 ${Math.round(MINUTE_LIMIT_WAIT_MS / 1000)} 秒后重试同一题…`);
-          await sleep(MINUTE_LIMIT_WAIT_MS);
-          cloudAttempts += 1;
-          state = await startCall(mini, event);
-          call = summarizeCall(state);
-        }
+        let state;
+        try { state = await startCall(mini, event); }
+        catch (error) { state = { invoked: false, err: error.message, elapsedMs: null }; }
+        const call = summarizeCall(state);
         record.modelCall = call;
         record.independentVerify = independentVerify(verifier, call);
         record.judge = judgeAnswer(question, local, call);
@@ -409,14 +430,10 @@ async function run() {
           call.usage ? `${call.usage.totalTokens ?? 0} token / ${call.usage.costYuan ?? 0} 元` : '用量未知',
         ].join(' '));
         console.log('');
-        if (call.invoked === true && call.failureClass === 'quota_exhausted') {
-          console.log('额度/配额用尽，停止本轮（已完成的题已落盘，可 --resume 续跑）');
-          fs.appendFileSync(jsonlPath, `${JSON.stringify(record)}\n`);
-          const oldIndex = records.findIndex((item) => item.key === record.key);
-          if (oldIndex >= 0) records.splice(oldIndex, 1);
-          records.push(record);
+        stopped = stopReason(call);
+        if (stopped) {
+          console.log(`停止后续真实调用：${stopped}；继续登记未调用题与本地守门结果`);
           exitCode = Math.max(exitCode, 1);
-          break;
         }
         if (call.invoked === true && call.ok === true && call.advancement !== null
           && call.advancement.verified && record.independentVerify !== null
@@ -441,6 +458,7 @@ async function run() {
       finishedAt: new Date().toISOString(),
       jsonl: path.relative(process.cwd(), jsonlPath),
       cloudAttempts,
+      stopped,
       completed: records.filter((record) => record.done === true).length,
       pending: questions.filter((question) => !records.some((record) => record.key === question.key && record.done === true)).map((question) => question.key),
       proofBoundary: '同一校验器复算仅为一致性检查；关键串命中仅为候选正确，事实与引用须逐句独立核对',
@@ -458,6 +476,7 @@ async function run() {
         refused: answers.filter((record) => record.judge.delivery === 'model_refused').length,
         fallback: answers.filter((record) => record.judge.delivery === 'fallback_sources').length,
         transportFailed: answers.filter((record) => record.judge.delivery === 'transport_failed').length,
+        notCalled: records.filter(record => record.expectedBehavior === 'answer' && !record.modelCall).length,
         mustContainHitInModel: answers.filter((record) => record.judge.mustContainInModel === true).length,
         mustContainHitInSources: answers.filter((record) => record.judge.mustContainInSources === true).length,
         expectedPassageInTopN: answers.filter((record) => record.judge.expectedPassageInTopN === true).length,
@@ -498,7 +517,7 @@ async function run() {
   process.exitCode = exitCode;
 }
 
-module.exports = { parseArgs, loadQuestions, judgeAnswer, independentVerify, delivery, isCompleteRecord };
+module.exports = { parseArgs, loadQuestions, localAsk, summarizeCall, judgeAnswer, independentVerify, delivery, isCompleteRecord, stopReason, validateBudget };
 if (require.main === module) {
   run().catch((error) => {
     console.error(error);

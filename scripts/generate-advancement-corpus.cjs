@@ -29,6 +29,8 @@ export interface AdvancementPassage {
   text: string;
   /** 只用于检索打分的关键词标签，不是原文。 */
   context: string;
+  /** 段落明确涉及的附加主题；不改变发布文件的类别或逐字原文。 */
+  categories?: AdvancementDocument['category'][];
 }
 
 export interface AdvancementDocument {
@@ -62,7 +64,8 @@ const documents = corpus.documents.map((document) => ({
   applicableAudience: document.applicableAudience,
   sourceUrl: document.sourceUrl,
   collectedAt: document.collectedAt,
-  passages: document.passages.map((passage) => ({ id: passage.id, text: passage.text, context: passage.context })),
+  passages: document.passages.map((passage) => ({ id: passage.id, text: passage.text, context: passage.context,
+    ...(passage.categories ? { categories: passage.categories } : {}) })),
 }));
 
 fs.writeFileSync(target, header + JSON.stringify(documents, null, 2) + ';\n');

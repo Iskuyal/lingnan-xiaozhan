@@ -36,7 +36,8 @@ function buildAdvancementPayload(corpus) {
     applicableAudience: document.applicableAudience,
     sourceUrl: document.sourceUrl,
     collectedAt: document.collectedAt,
-    passages: document.passages.map((passage) => ({ id: passage.id, text: passage.text })),
+    passages: document.passages.map((passage) => ({ id: passage.id, text: passage.text,
+      ...(passage.categories ? { categories: passage.categories } : {}) })),
   }));
   const version = `adv-corpus-${crypto.createHash('sha256').update(JSON.stringify(documents)).digest('hex').slice(0, 12)}`;
   return {

@@ -95,6 +95,23 @@ export async function consumeUserLimits(db: UsageDb, openid: string, now: Date, 
   await consumeCounter(db, `limit:day:${key}:${day}`, positiveLimit(env, 'AI_USER_DAILY_LIMIT', 30), now, '今日');
 }
 
+/** 只读本人当前日计数，不占调用额度；仅由已有维护者 usage 动作返回。 */
+export async function readUserDailyLimit(db: UsageDb, openid: string, now: Date, env: NodeJS.ProcessEnv = process.env): Promise<{ day: string; used: number; limit: number; remaining: number }> {
+  requireOpenid(openid);
+  const day = new Date(now.getTime() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  const limit = positiveLimit(env, 'AI_USER_DAILY_LIMIT', 30);
+  let used = 0;
+  try {
+    const result = await db.collection(USAGE_MONTH_COLLECTION).doc(`limit:day:${userKey(openid)}:${day}`).get();
+    const count = (result.data as { count?: unknown } | undefined)?.count;
+    if (!Number.isInteger(count) || (count as number) < 0) fail('internal', '个人日计数无法确认');
+    used = count as number;
+  } catch (error) {
+    if (!isMissingDocumentError(error)) throw error;
+  }
+  return { day, used, limit, remaining: Math.max(0, limit - used) };
+}
+
 /** 探测每 10 分钟至多一次（所有维护者共用），先占窗口再调用微信接口。 */
 export async function consumeProbeWindow(db: UsageDb, now: Date): Promise<void> {
   const id = `probe:${Math.floor(now.getTime() / (10 * 60000))}`;

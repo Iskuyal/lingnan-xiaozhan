@@ -137,7 +137,9 @@ for (const grams of PASSAGE_GRAMS) {
 /** idf 之和，按段落长度开方归一（不归一的话长段落会压过精确命中的短段落）。 */
 function score(query: string, index: number): number {
   let total = 0;
-  for (const gram of new Set(bigrams(query))) {
+  // 地方常用别名只用于检索，不改问题范围或展示原文。
+  const normalized = query.replace(/专插本/gu, '普通专升本');
+  for (const gram of new Set(bigrams(normalized))) {
     if (!PASSAGE_GRAMS[index].has(gram)) continue;
     const df = DOCUMENT_FREQUENCY.get(gram) ?? 1;
     total += Math.log(1 + PASSAGES.length / df);
@@ -219,7 +221,8 @@ export function classify(question: string): Classification {
 export function coveredYears(category: AdvancementDocument['category']): number[] {
   const years = new Set<number>();
   for (const document of ADVANCEMENT_DOCUMENTS) {
-    if (document.category === category && document.applicableYear > 0) years.add(document.applicableYear);
+    if ((document.category === category || document.passages.some(p => p.categories?.includes(category)))
+      && document.applicableYear > 0) years.add(document.applicableYear);
   }
   return [...years].sort();
 }
@@ -340,7 +343,8 @@ export function ask(question: string, topN: number = 2, scope: AskScope = {}): A
     return scopeQuestion('请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。', options);
   }
 
-  const pool = PASSAGES.filter((passage) => passage.document.category === classification.category
+  const pool = PASSAGES.filter((passage) => (passage.document.category === classification.category
+    || passage.categories?.includes(classification.category))
     && (passage.document.applicableYear === year || passage.document.applicableYear === 0)
     && passage.document.applicableRegion === region);
   const ranked = pool

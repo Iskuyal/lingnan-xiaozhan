@@ -169,7 +169,10 @@
         {
           "id": "gd-employment-2026#upgrade-plan",
           "text": "普通专升本计划招生6.5万人",
-          "context": "就业行动 普通专升本 计划招生 6.5万人"
+          "context": "就业行动 普通专升本 计划招生 6.5万人",
+          "categories": [
+            "ordinary_专升本"
+          ]
         }
       ]
     },

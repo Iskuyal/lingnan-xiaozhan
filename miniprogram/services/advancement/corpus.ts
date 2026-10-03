@@ -13,6 +13,8 @@ export interface AdvancementPassage {
   text: string;
   /** 只用于检索打分的关键词标签，不是原文。 */
   context: string;
+  /** 段落明确涉及的附加主题；不改变发布文件的类别或逐字原文。 */
+  categories?: AdvancementDocument['category'][];
 }
 
 export interface AdvancementDocument {
@@ -194,7 +196,10 @@ export const ADVANCEMENT_DOCUMENTS: AdvancementDocument[] = [
       {
         "id": "gd-employment-2026#upgrade-plan",
         "text": "普通专升本计划招生6.5万人",
-        "context": "就业行动 普通专升本 计划招生 6.5万人"
+        "context": "就业行动 普通专升本 计划招生 6.5万人",
+        "categories": [
+          "ordinary_专升本"
+        ]
       }
     ]
   },
