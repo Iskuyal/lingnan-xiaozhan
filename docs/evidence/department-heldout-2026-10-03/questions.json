@@ -1,0 +1,297 @@
+{
+  "datasetId": "department-heldout-20261003-a",
+  "frozenAt": "2026-10-03T08:45:19.700Z",
+  "status": "frozen_not_run",
+  "source": "maintainer_design",
+  "realStudentSamples": 0,
+  "sourceSnapshotSha256": "2b7b9c1353249152d1dbf008c335cd1485eb90d7db2bfebe6764d9a1d8170607",
+  "judgeRules": {
+    "supportedAnswer": "逐题回答全部子问，事实有冻结来源支持；来源不足时有明确对应的有限范围说明。只有安全标题或相关命中不能自动计问题正确。分母为全部14题，未执行分数null。",
+    "missingExplained": "对missingFields登记的缺失项明确解释当前标题/快照未提供或无法核实；不把快照缺失写成官网/现实不存在。仅列标题而未说明所问缺失范围不自动正确。",
+    "unsupportedDisplay": "逐项核对上屏正文、警示、标题/日期/链接及来源条，任何来源不能支持的主语、角色、细节、时间或最新进度断言记为存在无依据事实。安全与有用分别记录。",
+    "rawModel": "原始模型独立留档，未上屏错误不能宣称原模型防幻觉通过。",
+    "independence": "首次结果产生后不改题面/预期/判据。若用于修复，本批仅回归，另冻结新批才重新估计独立效果。"
+  },
+  "questions": [
+    {
+      "id": "d01",
+      "kind": "base",
+      "q": "校学生会采用什么组织架构，资料中列出的五个工作部门分别是什么？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "回答主席团+工作部门及权益部、文娱部、器材部、体育部、学创部，不增加部门。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "unitNote",
+          "value": "组织架构为“主席团+工作部门”模式，设 5 大部门。"
+        },
+        {
+          "departmentId": "student-union",
+          "field": "units",
+          "value": [
+            "权益部",
+            "文娱部",
+            "器材部",
+            "体育部",
+            "学创部"
+          ]
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d02",
+      "kind": "base",
+      "q": "校学生社团管理部在学生社团管理方面承担哪些已列明的职责？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "按简介回答注册登记、备案年审、组织建设、活动管理、工作保障等，不补学校办理流程。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "introduction",
+          "value": "校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。"
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d03",
+      "kind": "base",
+      "q": "退役军人事务服务部由哪类学生组成，资料列出哪两个职能部门？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "由退役大学生组成，宣秘团、督勤部两个职能部门。",
+      "sourceRefs": [
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "introduction",
+          "value": "退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。"
+        },
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "units",
+          "value": [
+            "宣秘团",
+            "督勤部"
+          ]
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d04",
+      "kind": "base",
+      "q": "校学生团委的已核实资料里有没有公开联系电话或电子邮箱？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "明确已核实资料未提供电话/邮箱；不提供号码，不把快照缺失外推成全网永久没有。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "contacts",
+          "value": []
+        }
+      ],
+      "missingFields": [
+        "公开联系电话",
+        "电子邮箱"
+      ]
+    },
+    {
+      "id": "d05",
+      "kind": "activity",
+      "q": "校学生会资料里有哪条关于2025年大学生体质健康测试工作的动态，官网发布时间是什么？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "引用我为同学做实事 校学生会助力2025年大学生体质健康测试工作，官网发布时间2026-03-06；标题中的助力不改成主办。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "我为同学做实事 校学生会助力2025年大学生体质健康测试工作",
+            "publishedAt": "2026-03-06",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_26964"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d06",
+      "kind": "activity",
+      "q": "青年志愿者联合会资料快照里，岭南热血 双城同心这条动态的标题和官网发布时间是什么？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "引用“青”志愿｜岭南热血 双城同心，官网发布时间2026-03-10；不增加献血人数。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "“青”志愿｜岭南热血 双城同心",
+            "publishedAt": "2026-03-10",
+            "sourceUrl": "https://lnc.edu.cn/tw/lnpp/zyhd/content_27022"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d07",
+      "kind": "organizer_unknown",
+      "q": "2026清远马拉松赛志愿服务复盘总结大会这份标题条目，能确认主办方和承办方吗？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "当前标题/发布时间资料不足以确认主办与承办，组织资料归属不等于举办角色；可以提供原条目但不可指认举办组织。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行",
+            "publishedAt": "2026-04-15",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27865"
+          }
+        }
+      ],
+      "missingFields": [
+        "主办方",
+        "承办方"
+      ]
+    },
+    {
+      "id": "d08",
+      "kind": "detail_missing",
+      "q": "校学生团委青马工程培训班推荐名单的公示条目，能提供学员姓名、推荐人数和入选条件吗？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "标题只证明存在推荐名单公示；当前资料未提供姓名、人数、入选条件，无法核实这些细节。不宣称官网没有名单。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "activities",
+          "value": {
+            "title": "关于2026年广东大学生“青马工程” 培训班学员推荐名单的公示",
+            "publishedAt": "2026-06-18",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/tqsd/content_29791"
+          }
+        }
+      ],
+      "missingFields": [
+        "学员姓名",
+        "推荐人数",
+        "入选条件"
+      ]
+    },
+    {
+      "id": "d09",
+      "kind": "latest_unknown",
+      "q": "截至今天，学生社团进社区活动目前办到第几期？请区分资料快照和当前最新进度。",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "不能确认今天最新期数；快照收录第三期条目不等于现在只办到第三期。可以引用快照条目，但需明确最新进度无法据此核实。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "activities",
+          "value": {
+            "title": "学生社团进社区 第三期圆满落幕，下期未完待续！",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27005"
+          }
+        }
+      ],
+      "missingFields": [
+        "当前最新期数"
+      ]
+    },
+    {
+      "id": "d10",
+      "kind": "event_date_unknown",
+      "q": "第十四次学生代表大会条目中的官网发布时间2026年3月9日，能直接当成会议召开日期吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "可核对条目官网发布时间2026-03-09；当前标题级资料无法由发布时间推出召开日期，不断言两日期一定相同或不同。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "广东岭南职业技术学院第十四次学生代表大会顺利召开",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27001"
+          }
+        }
+      ],
+      "missingFields": [
+        "会议召开日期"
+      ]
+    },
+    {
+      "id": "d11",
+      "kind": "activity",
+      "q": "校学生社团管理部资料中，学生社团进社区第二期的原始标题与官网发布时间是什么？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "引用学生社团进社区｜第二期圆满落幕，下期敬请期待！，官网发布时间2026-03-09。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "activities",
+          "value": {
+            "title": "学生社团进社区｜第二期圆满落幕，下期敬请期待！",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_26999"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "d12",
+      "kind": "organizer_unknown",
+      "q": "在第四届校园提案大赛的现有标题资料中，能确定校学生会就是主办方吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "资料条目归属校学生会不能证明主办方，当前标题级材料未提供主办角色，无法确认；不下肯定或否定举办归属结论。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "第四届校园提案大赛圆满结束",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27004"
+          }
+        }
+      ],
+      "missingFields": [
+        "主办方"
+      ]
+    },
+    {
+      "id": "d13",
+      "kind": "no_hit",
+      "q": "量子黑洞研讨公告在当前部门资料快照中有收录依据吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "当前随包资料未收录这份公告，明确在此范围内无法核实；不声称学校没有举办此事，不用无关条目当答案。",
+      "sourceRefs": [],
+      "missingFields": [
+        "这份公告的收录依据"
+      ]
+    },
+    {
+      "id": "d14",
+      "kind": "detail_missing",
+      "q": "2026清远马拉松赛志愿服务复盘总结大会有多少人参加，志愿者名单是什么？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "标题与官网发布时间未提供参会人数和志愿者名单，明确当前资料无法核实，不能补数字或姓名。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行",
+            "publishedAt": "2026-04-15",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27865"
+          }
+        }
+      ],
+      "missingFields": [
+        "参会人数",
+        "志愿者名单"
+      ]
+    }
+  ]
+}

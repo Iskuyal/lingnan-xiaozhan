@@ -439,7 +439,11 @@ export async function callAi(data: Record<string, unknown>, timeoutMs: number = 
     console.warn(`AI 调用超过 ${timeoutMs} 毫秒仍未返回，按 model_unavailable 结束`);
     return timedOutResult();
   }
-  const result = response === null || response === undefined ? undefined : response.result;
+  return aiResultOf(response === null || response === undefined ? undefined : response.result);
+}
+
+/** 产品页与评测重放共用返回解析，保证上屏来源经过同一字段筛选。 */
+export function aiResultOf(result: unknown): AiCallResult {
   if (result === null || result === undefined || typeof result !== 'object') {
     throw new Error('AI 服务返回了无法识别的结果');
   }
