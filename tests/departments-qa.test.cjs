@@ -226,7 +226,10 @@ test('AI 服务:callAi 透传 safety/warnings,未知分类收敛成空串', asyn
   const saved = globalThis.wx;
   globalThis.wx = wx;
   try {
-    const { callAi } = loadWithGlobals('dist/services/ai.js', { wx });
+    // 小程序运行时有 setTimeout/clearTimeout；vm 的新上下文默认不带 Node 的定时器，
+    // 而 services/ai.ts 的 callAi 会给云调用套一层客户端超时（AI_CALL_TIMEOUT_MS），
+    // 因此这里必须把定时器显式注入沙箱，否则测的不是小程序的运行环境。
+    const { callAi } = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout });
     const result = await callAi({ action: 'chat' });
     assert.equal(result.ok, true);
     assert.equal(result.failureClass, '', '未知分类不得被当作已知分类');

@@ -8,7 +8,7 @@
     "wx-server-sdk": "4.0.2"
   },
   "overrides": {
-    "axios": "0.33.0",
+    "axios": "0.34.0",
     "lodash.set": "npm:set-value@4.1.0",
     "lodash.unset": "4.18.0"
   }

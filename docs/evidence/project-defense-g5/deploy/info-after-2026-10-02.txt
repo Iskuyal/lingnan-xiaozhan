@@ -1,0 +1,23 @@
+﻿cli.bat : - initialize
+所在位置 行:1 字符: 220
++ ... \g5; $out = & "D:\微信web开发者工具\cli.bat" cloud functions info --names ai ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (- initialize:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+(node:25608) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative inste
+ad.
+(Use `微信开发者工具 --trace-deprecation ...` to show where the warning was created)
+√ IDE server has started, listening on http://127.0.0.1:12904
+- query cloudfunctions info
+- Preparing to fetch cloudfunctions info
+- Fetching info of cloudfunction ai
+√ query cloudfunctions info
+
+┌─────────┬──────────┬─────────┬───────────────┐
+│ (index) │ status   │ timeout │ runtime       │
+├─────────┼──────────┼─────────┼───────────────┤
+│ ai      │ 'Active' │ 60      │ 'Nodejs16.13' │
+└─────────┴──────────┴─────────┴───────────────┘
+
