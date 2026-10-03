@@ -144,6 +144,7 @@ export function buildSystemPrompt(): string {
     '2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；',
     '3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。',
     '4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。',
+    '5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。',
     '',
     buildCorpusText(),
   ].join('\n');
@@ -611,7 +612,34 @@ function warn(message: string, detail: string): void {
  *
  * 替换只改 `text`（学生看到的回答）：模型原话留在 `modelText`，供下一轮历史使用。
  */
-export function guardTurn(answer: string, departmentId: string, question = ''): ChatTurn {
+export function guardTurn(answer: string, departmentId: string, question = '', citations: DepartmentActivityCitation[] = []): ChatTurn {
+  if (citations.length > 0) {
+    // 检索来源身份可核对，不代表自由生成的主办方、详情或最新进度有依据。
+    // 动态来源只含标题：上屏限制为随包资料中的原条目，模型原话另留以便复核。
+    const entries: string[] = [];
+    const seen: string[] = [];
+    const trustedCitations: DepartmentActivityCitation[] = [];
+    for (const citation of citations) {
+      const department = findDepartmentById(citation.departmentId);
+      const activity = department === null ? undefined : department.activities.find((item) =>
+        item.sourceUrl === citation.sourceUrl && item.title === citation.title && item.publishedAt === citation.publishedAt);
+      if (department === null || activity === undefined || seen.includes(activity.sourceUrl)) continue;
+      seen.push(activity.sourceUrl);
+      trustedCitations.push({ ...activity, departmentId: department.id, departmentName: department.name, score: citation.score });
+      entries.push(`${activity.title}\n官网发布时间：${activity.publishedAt}\n来源：${activity.sourceUrl}`);
+      if (entries.length === 3) break;
+    }
+    return {
+      role: 'assistant',
+      text: entries.length > 0
+        ? '当前资料仅提供以下活动条目（标题级原文）；组织角色和其他细节无法据此核实。\n\n' + entries.join('\n\n')
+        : '当前返回的活动来源无法与随包资料核对，请查看官方原文。',
+      warning: `条目来自核查于 ${departmentsSource.verifiedAt} 的资料快照，不代表当前完整活动进度。`,
+      replaced: true,
+      modelText: answer.trim(),
+      citations: trustedCitations,
+    };
+  }
   const guard = guardAnswer(answer, { department: findDepartmentById(departmentId), question });
   const turn: ChatTurn = { role: 'assistant', text: guard.text };
   if (guard.note !== '') turn.warning = guard.note;

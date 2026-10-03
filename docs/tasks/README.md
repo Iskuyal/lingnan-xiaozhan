@@ -1,12 +1,12 @@
 # 任务入口
 
-这里只放可跟踪的执行事项；新增方向与讨论稿放在 [planning/](../planning/README.md)。先核对 [当前状态](../status.md)，再决定下一步；不要从历史 Ticket 的未勾选项推断当前功能尚未实现。
+这里只放可跟踪的执行事项；新增方向与讨论稿放在 [planning/](../planning/README.md)。先核对 [当前状态](../status.md) 与 [待办总表](pending.md)，再决定下一步；G0–G4提示词保留历史，不能当作当前未做事项重新执行；不要从历史 Ticket 的未勾选项推断当前功能尚未实现。
 
 | 入口 | 用途 |
 | --- | --- |
-| [项目答辩练习G0提示词](project-defense-g0-prompt.md) | 交给其他执行者准备事实卡、冻结样例与评价规则；Issue #111 |
-| [项目答辩练习G1提示词](project-defense-g1-prompt.md) | 交给其他执行者跑受控文字 PoC 与首次反馈评测；Issue #112，依赖 #111 |
-| [项目答辩练习G1真实评测续跑提示词](project-defense-g1-resume-prompt.md) | 离线部分已交付后，接力跑真实调用与逐例判定；Issue #112 |
+| [项目答辩练习G0历史提示词](project-defense-g0-prompt.md) | 交给其他执行者准备事实卡、冻结样例与评价规则；Issue #111 |
+| [项目答辩练习G1历史提示词](project-defense-g1-prompt.md) | 交给其他执行者跑受控文字 PoC 与首次反馈评测；Issue #112，依赖 #111 |
+| [项目答辩练习G1历史续跑提示词](project-defense-g1-resume-prompt.md) | 离线部分已交付后，接力跑真实调用与逐例判定；Issue #112 |
 | [项目答辩练习G4部署与真实验收提示词](project-defense-g4-prompt.md) | 合并 PR #124–#126 → 部署回读 → 端到端与真机 → 新冻结样例首评与对照；Issue #115 |
 | [项目答辩练习G4收尾与G5交接提示词](project-defense-g4-resume-prompt.md) | G4 已执行完（PR #127）：收人类复核与待拍板项，把时延/额度/审核配置写成 G5（10-08）输入；Issue #115 / #116 |
 | [升学模型阶段提示词](advancement-model-prompt.md) | 新会话执行下一阶段模型版与真实引用评测 |

@@ -1,0 +1,34 @@
+{
+  "startedAt": "2026-10-03T01:48:34.129Z",
+  "writes": 0,
+  "result": {
+    "done": true,
+    "news": {
+      "count": 10,
+      "firstPage": 10,
+      "secondPage": 0,
+      "ids": [
+        "content_32118",
+        "content_32039",
+        "content_31144",
+        "content_30930",
+        "content_30929",
+        "content_30873",
+        "content_30560",
+        "content_30493",
+        "content_30218",
+        "content_30217"
+      ],
+      "duplicateIds": false
+    },
+    "sync": {
+      "readable": false,
+      "error": "Permission denied 更多错误信息请访问：https://docs.cloudbase.net/error-code/basic/DATABASE_PERMISSION_DENIED"
+    },
+    "timetable": {
+      "ok": true,
+      "count": 51,
+      "error": ""
+    }
+  }
+}

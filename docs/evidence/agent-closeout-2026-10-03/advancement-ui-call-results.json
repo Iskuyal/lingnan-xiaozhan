@@ -1,0 +1,236 @@
+[
+  {
+    "name": "ai",
+    "result": {
+      "ok": false,
+      "action": "chat",
+      "failureClass": "internal",
+      "message": "AI 服务内部错误，请稍后重试。",
+      "detail": "AI 记账闸门正在使用或待核对，已暂停新调用；维护者须确认上笔用量后处理",
+      "feature": "advancement-qa",
+      "provider": "",
+      "model": "",
+      "text": "",
+      "safety": null,
+      "usage": null,
+      "usageSummary": null,
+      "capWarning": "",
+      "warnings": [],
+      "citations": [],
+      "advancement": null,
+      "probe": null,
+      "elapsedMs": 298
+    }
+  },
+  {
+    "name": "ai",
+    "result": {
+      "ok": true,
+      "action": "chat",
+      "failureClass": "",
+      "message": "",
+      "detail": "",
+      "feature": "advancement-qa",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "text": "下面依据官方原文回答\n\n网上预报名时间为2026年1月12日09:00至19日18:00 [S1]",
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为官方预报名时间通知，无违规信息。"
+      },
+      "usage": {
+        "promptTokens": 544,
+        "completionTokens": 31,
+        "totalTokens": 575,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000144,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "usageSummary": {
+        "month": "2026-10",
+        "calls": 349,
+        "failures": 20,
+        "promptTokens": 211644,
+        "completionTokens": 119826,
+        "totalTokens": 331470,
+        "costYuan": 0.082893,
+        "capYuan": 50,
+        "warnRatio": 0.8,
+        "warnThresholdYuan": 40,
+        "warn": false,
+        "exceeded": false,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25,
+        "updatedAt": "2026-10-03T02:04:13.069Z"
+      },
+      "capWarning": "",
+      "warnings": [
+        "升学资料注入 2 段（语料版本 adv-corpus-e6fc53aa80b7）"
+      ],
+      "citations": [],
+      "advancement": {
+        "scope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "sources": [
+          {
+            "id": "gd-zsb-2026#register-time",
+            "documentId": "gd-zsb-2026",
+            "title": "广东省2026年普通高等学校专升本招生工作规定",
+            "documentNumber": "粤招办普〔2025〕51号",
+            "issuer": "广东省教育考试院",
+            "publishedAt": "2025-11-19",
+            "applicableYear": 2026,
+            "applicableRegion": "广东省",
+            "collectedAt": "2026-09-30",
+            "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+            "quote": "网上预报名时间为2026年1月12日09:00至19日18:00"
+          },
+          {
+            "id": "gd-zsb-2026#exam-time",
+            "documentId": "gd-zsb-2026",
+            "title": "广东省2026年普通高等学校专升本招生工作规定",
+            "documentNumber": "粤招办普〔2025〕51号",
+            "issuer": "广东省教育考试院",
+            "publishedAt": "2025-11-19",
+            "applicableYear": 2026,
+            "applicableRegion": "广东省",
+            "collectedAt": "2026-09-30",
+            "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+            "quote": "2026年3月28日（星期六）至29日（星期日）两天"
+          }
+        ],
+        "verified": true,
+        "refused": false,
+        "violations": []
+      },
+      "probe": null,
+      "elapsedMs": 8931
+    }
+  },
+  {
+    "name": "ai",
+    "result": {
+      "ok": false,
+      "action": "chat",
+      "failureClass": "internal",
+      "message": "AI 服务内部错误，请稍后重试。",
+      "detail": "AI 记账闸门正在使用或待核对，已暂停新调用；维护者须确认上笔用量后处理",
+      "feature": "advancement-qa",
+      "provider": "",
+      "model": "",
+      "text": "",
+      "safety": null,
+      "usage": null,
+      "usageSummary": null,
+      "capWarning": "",
+      "warnings": [],
+      "citations": [],
+      "advancement": null,
+      "probe": null,
+      "elapsedMs": 229
+    }
+  },
+  {
+    "name": "ai",
+    "result": {
+      "ok": false,
+      "action": "chat",
+      "failureClass": "model_unavailable",
+      "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "feature": "advancement-qa",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "text": "",
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为官方升学信息问答，无违规内容。"
+      },
+      "usage": {
+        "promptTokens": 544,
+        "completionTokens": 31,
+        "totalTokens": 575,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000144,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "usageSummary": {
+        "month": "2026-10",
+        "calls": 352,
+        "failures": 21,
+        "promptTokens": 212787,
+        "completionTokens": 119999,
+        "totalTokens": 332786,
+        "costYuan": 0.083222,
+        "capYuan": 50,
+        "warnRatio": 0.8,
+        "warnThresholdYuan": 40,
+        "warn": false,
+        "exceeded": false,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25,
+        "updatedAt": "2026-10-03T02:07:06.635Z"
+      },
+      "capWarning": "",
+      "warnings": [
+        "升学资料注入 2 段（语料版本 adv-corpus-e6fc53aa80b7）"
+      ],
+      "citations": [],
+      "advancement": {
+        "scope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "corpusVersion": "adv-corpus-e6fc53aa80b7",
+        "sources": [
+          {
+            "id": "gd-zsb-2026#register-time",
+            "documentId": "gd-zsb-2026",
+            "title": "广东省2026年普通高等学校专升本招生工作规定",
+            "documentNumber": "粤招办普〔2025〕51号",
+            "issuer": "广东省教育考试院",
+            "publishedAt": "2025-11-19",
+            "applicableYear": 2026,
+            "applicableRegion": "广东省",
+            "collectedAt": "2026-09-30",
+            "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+            "quote": "网上预报名时间为2026年1月12日09:00至19日18:00"
+          },
+          {
+            "id": "gd-zsb-2026#exam-time",
+            "documentId": "gd-zsb-2026",
+            "title": "广东省2026年普通高等学校专升本招生工作规定",
+            "documentNumber": "粤招办普〔2025〕51号",
+            "issuer": "广东省教育考试院",
+            "publishedAt": "2025-11-19",
+            "applicableYear": 2026,
+            "applicableRegion": "广东省",
+            "collectedAt": "2026-09-30",
+            "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+            "quote": "2026年3月28日（星期六）至29日（星期日）两天"
+          }
+        ],
+        "verified": false,
+        "refused": false,
+        "violations": []
+      },
+      "probe": null,
+      "elapsedMs": 16292
+    }
+  }
+]

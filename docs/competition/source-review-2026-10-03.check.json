@@ -1,0 +1,12 @@
+{
+  "file": "source-review-2026-10-03.zip",
+  "bytes": 752179,
+  "sha256": "71ebd23c9d3b038a06fcd61efb87549539162c23d14555bc33775573718fd229",
+  "sourceFiles": 230,
+  "crcPassed": true,
+  "pathFilterPassed": true,
+  "under300MB": true,
+  "formalSubmission": false,
+  "manifestSourceCommit": "3dfbfe8c72b23cdc93a302f3d4272df7c5de54a2",
+  "validationScope": "源码可安装、typecheck/build；未附完整测试、七项最终材料或视频，不是正式参赛包"
+}

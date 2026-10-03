@@ -15,6 +15,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 const { connectMini } = require('./lib/mini-connect.cjs');
+const { waitForInitialExample } = require('./lib/advancement-bootstrap.cjs');
 
 const MODEL_WAIT_MS = 45000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -110,6 +111,7 @@ async function run() {
     await sleep(2000);
     const page = await mini.currentPage();
     report.route = page.path;
+    report.initialExamplePhase = await waitForInitialExample(page);
 
     const ask = async (text) => {
       await (await page.$('#qa-input')).input(text);

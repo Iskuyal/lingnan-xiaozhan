@@ -1,0 +1,182 @@
+{
+  "startedAt": "2026-10-03T02:01:05.823Z",
+  "source": "live_regression",
+  "writes": 0,
+  "realDevice": false,
+  "env": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "sending": false,
+  "error": "",
+  "turns": [
+    {
+      "role": "assistant",
+      "text": "你想了解什么部门？我从学校官网已核实的资料里回答，资料里没有的会说「官网未公布」。可以点下面的选项进入对应页面，也可以直接打字问我。"
+    },
+    {
+      "role": "user",
+      "text": "2026清远马拉松赛志愿服务总结大会是哪个组织办的？"
+    },
+    {
+      "role": "assistant",
+      "text": "当前资料仅提供以下活动条目（标题级原文）；组织角色和其他细节无法据此核实。\n\n2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行\n官网发布时间：2026-04-15\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_27865\n\n述职收官，逐光前行 2025-2026学年第一学期学生干部述职大会圆满落幕\n官网发布时间：2026-03-10\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_27039\n\n我校组织参加2026年全省高校无偿献血工作动员视频会议\n官网发布时间：2026-04-30\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_28456",
+      "warning": "条目来自核查于 2026-09-18 的资料快照，不代表当前完整活动进度。",
+      "replaced": true,
+      "modelText": "该条动态在检索结果中归属 **青年志愿者联合会**，标题为《2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行》，官网发布时间为 **2026-04-15**。\n\n但具体由哪个组织**主办或承办**，当前资料未提供，无法核实；不能仅凭动态归属就认定是青年志愿者联合会主办或承办。",
+      "citations": [
+        {
+          "departmentId": "young-volunteers",
+          "departmentName": "青年志愿者联合会",
+          "title": "2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行",
+          "publishedAt": "2026-04-15",
+          "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27865",
+          "score": 40.75
+        },
+        {
+          "departmentId": "veteran-affairs-service",
+          "departmentName": "退役军人事务服务部",
+          "title": "述职收官，逐光前行 2025-2026学年第一学期学生干部述职大会圆满落幕",
+          "publishedAt": "2026-03-10",
+          "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27039",
+          "score": 8.19
+        },
+        {
+          "departmentId": "student-youth-league",
+          "departmentName": "校学生团委",
+          "title": "我校组织参加2026年全省高校无偿献血工作动员视频会议",
+          "publishedAt": "2026-04-30",
+          "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_28456",
+          "score": 7
+        }
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "name": "ai",
+      "result": {
+        "ok": true,
+        "action": "chat",
+        "failureClass": "",
+        "message": "",
+        "detail": "",
+        "feature": "department-qa",
+        "provider": "openai",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "text": "该条动态在检索结果中归属 **青年志愿者联合会**，标题为《2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行》，官网发布时间为 **2026-04-15**。\n\n但具体由哪个组织**主办或承办**，当前资料未提供，无法核实；不能仅凭动态归属就认定是青年志愿者联合会主办或承办。",
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为校园志愿活动总结，无违规信息。"
+        },
+        "usage": {
+          "promptTokens": 1239,
+          "completionTokens": 559,
+          "totalTokens": 1798,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.00045,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 346,
+          "failures": 20,
+          "promptTokens": 210387,
+          "completionTokens": 119605,
+          "totalTokens": 329992,
+          "costYuan": 0.082523,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-03T02:01:28.371Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "部门动态检索命中 3 条（top-3）"
+        ],
+        "citations": [
+          {
+            "departmentId": "young-volunteers",
+            "departmentName": "青年志愿者联合会",
+            "title": "2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行",
+            "publishedAt": "2026-04-15",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27865",
+            "score": 40.75
+          },
+          {
+            "departmentId": "veteran-affairs-service",
+            "departmentName": "退役军人事务服务部",
+            "title": "述职收官，逐光前行 2025-2026学年第一学期学生干部述职大会圆满落幕",
+            "publishedAt": "2026-03-10",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27039",
+            "score": 8.19
+          },
+          {
+            "departmentId": "student-youth-league",
+            "departmentName": "校学生团委",
+            "title": "我校组织参加2026年全省高校无偿献血工作动员视频会议",
+            "publishedAt": "2026-04-30",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_28456",
+            "score": 7
+          }
+        ],
+        "advancement": null,
+        "probe": null,
+        "elapsedMs": 16880
+      }
+    }
+  ],
+  "passed": true,
+  "finishedAt": "2026-10-03T02:01:30.710Z"
+}

@@ -49,6 +49,54 @@ function loadPage(route, wx, stack = [{}, {}]) {
 const qa = () => loadCompiled('dist/pages/departments/qa.js');
 const ai = () => loadCompiled('dist/services/ai.js');
 
+test('动态问答：标题级来源不能被扩写成举办方、官网缺失或最新进度', () => {
+  const { guardTurn } = qa();
+  const departments = require('../dist/services/departments.js').departments;
+  const department = departments.find((d) => d.id === 'student-union');
+  const activity = department.activities.find((a) => a.sourceUrl.endsWith('content_27004'));
+  const citation = { ...activity, departmentId: department.id, departmentName: department.name, score: 1 };
+  const turn = guardTurn('校学生会举办了最新一届校园提案大赛，收录日期2026-03-09；获奖名单官网未公布。', department.id, '校学生会办过校园提案大赛吗？', [citation]);
+  assert.doesNotMatch(turn.text, /举办|最新|收录日期|官网未公布/);
+  assert.ok(turn.text.includes(activity.title));
+  assert.ok(turn.text.includes(`官网发布时间：${activity.publishedAt}`));
+  assert.ok(turn.text.includes(activity.sourceUrl));
+  assert.equal(turn.replaced, true);
+  assert.ok(turn.modelText.includes('举办'), '保留原始模型回答便于复核，不能冒充模型自己答对');
+});
+
+test('动态问答：伪造标题或日期不能进入原文展示，基础问题仍沿用既有守卫', () => {
+  const { guardTurn } = qa();
+  const departments = require('../dist/services/departments.js').departments;
+  const department = departments.find((d) => d.id === 'student-union');
+  const activity = department.activities[0];
+  for (const change of [{ title: '伪造活动' }, { publishedAt: '2099-01-01' }]) {
+    const turn = guardTurn('伪造回答', department.id, '最近什么活动？', [{ ...activity, departmentId: department.id, departmentName: department.name, score: 1, ...change }]);
+    assert.doesNotMatch(turn.text, /伪造活动|2099/);
+    assert.match(turn.text, /无法.*核对/);
+    assert.equal(turn.citations.length, 0, '不合法的来源不能绕过正文校验进入来源条');
+  }
+  assert.equal(guardTurn('校学生会下设权益部。', department.id, '下设什么部门？', []).text, '校学生会下设权益部。');
+});
+
+test('两个部门页面：来源条只展示校验后的唯一条目，不重新填回原始伪造来源',async()=>{
+  const department=require('../dist/services/departments.js').departments.find(d=>d.id==='student-union');
+  const activity=department.activities[0];
+  const valid={...activity,departmentId:department.id,departmentName:department.name,score:1};
+  for(const route of ['departments','departments/detail']){
+    sharedQa().resetAllConversations();
+    const cloud=cloudStub({chat:()=>({...okAnswer('模型自由扩写'),citations:[valid,valid,{...valid,title:'伪造标题',publishedAt:'2099-01-01'}]})});
+    const page=loadPage(route,baseWx(cloud,{}));
+    if(route.endsWith('detail'))page.onLoad({id:department.id});
+    page.openQa();page.onQaInput({detail:{value:'校学生会最近有什么活动？'}});page.sendQuestion();
+    await new Promise(resolve=>setImmediate(resolve));
+    const shown=page.data.qaMessages.at(-1);
+    assert.equal(shown.citations.length,1,route);
+    assert.equal(shown.citations[0].title,activity.title);
+    assert.equal(shown.citations[0].publishedAt,activity.publishedAt);
+    assert.doesNotMatch(JSON.stringify(shown.citations),/伪造标题|2099/);
+  }
+});
+
 const plain = (value) => JSON.parse(JSON.stringify(value));
 
 function cloudStub(handlers) {

@@ -1,3 +1,5 @@
+> 2026-10-03：此件保留为历史执行记录。已完成部分不要重做；当前剩余工作以 [待办总表](pending.md) 和 [收尾证据](../evidence/agent-closeout-2026-10-03/README.md) 为准。
+
 # 项目讲解与答辩练习：G1 真实评测续跑提示词
 
 关联任务：[Issue #112](https://github.com/Iskuyal/wx-match/issues/112)（Blocked by [#111](https://github.com/Iskuyal/wx-match/issues/111)）。前一阶段产物：[G1 离线部分与逐例记录骨架](../evidence/project-defense-g1/README.md)（[PR #120](https://github.com/Iskuyal/wx-match/pull/120)）。G0 素材包：[PR #118](https://github.com/Iskuyal/wx-match/pull/118)（分支 `codex/project-defense-g0`，tip `210cd8fee867c17d2514431f9ebac0e04991f48a`，截至本文写作**尚未合入 `main`**；Issue #111 仍 OPEN）。
