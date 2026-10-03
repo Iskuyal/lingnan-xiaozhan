@@ -488,6 +488,12 @@ async function timed<T>(log: RunLog, step: string, run: () => Promise<T>): Promi
   finally { log.timings[step] = (log.timings[step] ?? 0) + Date.now() - started; }
 }
 
+/** 失败带只读本次响应的计费信息，不读取并行调用共用的 log.usage。 */
+function responseFailureUsage(error: unknown, config: Config): CallUsage | null {
+  if (!(error instanceof ModelResponseFailure)) return null;
+  return error.usage === null ? unknownUsage(0, config) : toCallUsage(error.usage, config);
+}
+
 /** 调用模型并记账：成功与失败都留下记录（失败调用同样是排查线索）。 */
 async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelInvocation): Promise<ModelCallResult> {
   const startedAt = Date.now();
@@ -514,9 +520,10 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
     const failure = toFailure(error);
     log.provider = target.format;
     log.model = target.model;
+    const failureUsage = responseFailureUsage(error, log.config);
     if (error instanceof ModelResponseFailure) {
       log.timings.modelNetworkMs = (log.timings.modelNetworkMs ?? 0) + error.elapsedMs;
-      log.usage = error.usage === null ? toCallUsage({ ...ZERO_USAGE, usageUnknown: true }, log.config) : toCallUsage(error.usage, log.config);
+      log.usage = failureUsage;
       if (error.usage === null) pushWarning(log, '模型无效响应未返回用量，需核账后继续评测');
     }
     await record(log, {
@@ -529,7 +536,7 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
       ok: false,
       failureClass: failure.failureClass,
       durationMs: Date.now() - startedAt,
-      usage: log.usage ?? toCallUsage(ZERO_USAGE, log.config),
+      usage: failureUsage ?? toCallUsage(ZERO_USAGE, log.config),
     });
     throw failure;
   }
@@ -777,14 +784,13 @@ async function runVision(
         failure: null,
       };
     } catch (error) {
-      return { band: { band, ok: false, text: '' }, usage: null, failure: toFailure(error) };
+      return { band: { band, ok: false, text: '' }, usage: responseFailureUsage(error, log.config), failure: toFailure(error) };
     }
   }));
 
   const usages = settled.flatMap((item) => (item.usage === null ? [] : [item.usage]));
-  // 全带都失败时保持 `usage: null`（与单带的失败路径一致）：没有成功的模型调用就没有用量，
-  // 记一个 0 会被读成「这次没花钱」。
-  if (usages.length > 0) log.usage = sumCallUsage(usages, log.config);
+  // 汇总所有已计费子调用，包括空正文失败；全带没有响应计费证据才返回 null。
+  log.usage = usages.length > 0 ? sumCallUsage(usages, log.config) : null;
   for (const item of settled) {
     if (item.failure === null) continue;
     // detail 里可能有上游响应片段：返回值会带上这条告警，因此截断后再拼，不让它无限长。

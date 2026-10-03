@@ -128,3 +128,20 @@ test('实时薪酬的常见表达都拒答，不把相关岗位计划当实时�
     assert.equal(model.canAskModel(result), false);
   }
 });
+
+for (const knownFailure of [false, true]) test(`多带${knownFailure ? '已计费空正文' : 'HTTP失败'}不借用别带用量，响应与账本一致`, async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }), imgSecCheck: async () => ({ errCode: 0 }) }, respond: request => {
+    if (request.body.includes('startSection') && /7[^0-9]+9/u.test(request.body)) return knownFailure
+      ? { status: 200, body: JSON.stringify({ choices: [{ message: { content: '' }, finish_reason: 'length' }], usage: { prompt_tokens: 200, completion_tokens: 600, total_tokens: 800 } }) }
+      : { status: 500, body: 'failure' };
+    return openAiTextResponse('{"courses":[],"problems":[]}', { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 });
+  }});
+  const response = await harness.main({ action: 'vision', feature: 'timetable-vision', image: { base64: Buffer.from('image').toString('base64'), mimeType: 'image/png' }, system: '识别课表', messages: [{ role: 'user', text: '识别课程' }], bands: 4 });
+  assert.equal(response.ok, true, response.detail);
+  const records = harness.records.filter(r => r.kind === 'model');
+  const failed = records.find(r => r.ok === false);
+  assert.ok(failed, '必须复现一带失败');
+  assert.equal(failed.totalTokens, knownFailure ? 800 : 0);
+  assert.equal(records.reduce((n,r)=>n+r.totalTokens,0), knownFailure ? 890 : 90);
+  assert.equal(response.usage.totalTokens, knownFailure ? 890 : 90);
+});
