@@ -103,8 +103,9 @@ function stopReason(result, error = '') {
 function applyResult(row, state, qa) {
     const client = require(path.join(root, 'dist/services/ai.js'));
     row.cloudElapsedMs = Number.isFinite(state.elapsedMs) ? state.elapsedMs : null;
-    row.clientTimedOut = row.cloudElapsedMs !== null && row.cloudElapsedMs >= client.AI_CALL_TIMEOUT_MS;
+    row.clientTimedOut = state.collectorWaitTimedOut === true || row.cloudElapsedMs !== null && row.cloudElapsedMs >= client.AI_CALL_TIMEOUT_MS;
     row.clientElapsedMs = row.clientTimedOut ? client.AI_CALL_TIMEOUT_MS : row.cloudElapsedMs;
+    row.clientElapsedSource = row.clientTimedOut ? 'product_timeout_contract_replay' : row.cloudElapsedMs === null ? 'unknown' : 'miniprogram_callback_measured';
     row.result = state.result || null;
     row.error = state.error || '';
     row.execution = row.clientTimedOut ? 'client_timeout' : row.error ? 'transport_failed' : 'cloud_returned';
@@ -121,16 +122,16 @@ function applyResult(row, state, qa) {
     row.failureMessage = row.done ? '' : normalized ? client.userMessage(normalized) : client.transportMessage(new Error(row.error));
     row.displayProof = 'Node运行产品guardTurn重算页面数据，非真实页面截图或真机';
 }
-async function cloudRequest(mini, event) {
+async function cloudRequest(mini, event, timing = { now: Date.now, pause: sleep }) {
     await mini.evaluate(serialized => { const start = Date.now(); globalThis.__departmentEval = { done: false }; wx.cloud.callFunction({ name: 'ai', data: JSON.parse(serialized) }).then(r => { globalThis.__departmentEval = { done: true, result: r.result, elapsedMs: Date.now() - start }; }, e => { globalThis.__departmentEval = { done: true, error: String(e.errMsg || e.message || e), elapsedMs: Date.now() - start }; }); return 'started'; }, JSON.stringify(event));
-    const deadline = Date.now() + 90000;
+    const deadline = timing.now() + 90000;
     do {
-        await sleep(500);
+        await timing.pause(500);
         const state = await mini.evaluate(() => globalThis.__departmentEval);
         if (state.done)
             return state;
-    } while (Date.now() < deadline);
-    return { error: '90秒内未收到返回，未重试', elapsedMs: null };
+    } while (timing.now() < deadline);
+    return { error: '90秒内未收到返回，未重试', elapsedMs: null, collectorWaitTimedOut: true };
 }
 function validateBudget(file, calls) {
     if (!file)

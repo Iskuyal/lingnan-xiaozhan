@@ -162,3 +162,16 @@ test('75秒后晚到云答案保留原模型与费用，但不能冒充实际客
   assert.equal(row.execution, 'client_timeout');
   assert.ok(row.failureMessage);
 });
+
+test('采集90秒仍无回调按产品75秒超时重放，原始云耗时和费用保持未知', async () => {
+  const clock = [0, 90001];
+  const state = await evaluator.cloudRequest({ evaluate: async (_fn, payload) => payload ? 'started' : { done: false } }, {}, { now: () => clock.shift(), pause: async () => {} });
+  const row = { q: '通用测试', expectedDepartmentId: 'student-union' };
+  evaluator.applyResult(row, state, require('../dist/pages/departments/qa.js'));
+  assert.equal(row.execution, 'client_timeout');
+  assert.equal(row.clientElapsedMs, 75000);
+  assert.equal(row.clientElapsedSource, 'product_timeout_contract_replay');
+  assert.equal(row.cloudElapsedMs, null);
+  assert.equal(row.usage, null);
+  assert.equal(row.displayTurn, null);
+});
