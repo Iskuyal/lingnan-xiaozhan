@@ -305,17 +305,14 @@ export function resolveAdvancementSources(
  */
 export function injectedAdvancementText(sources: AdvancementSource[], scope: AdvancementScope): string {
   const lines: string[] = [
-    '【升学资料检索结果】以下是从官方材料里检索到的段落（逐字原文，标记为出处编号）。',
+    '【升学资料检索结果】官方原文摘录。',
     `适用范围：${scope.category} · ${scope.year} 年 · ${scope.region}。`,
-    '回答纪律：只选直接回答问题的完整原句，每句独占一行，出处编号放在该句句号前；不要写解释、标题或总结。',
-    '可以选取、排列完整原句；不得改写、删去否定词或条件、截断分号列表或补出新结论。原文没有句号时保留整段。',
-    '例如：原句甲[S1]。换行后原句乙[S1]。同段多句也必须逐句标注，不得只在整段末尾标一次。',
-    '允许空格、标点与等值数量写法（1.5万=15000）。',
-    '段落里没有的内容一律不要写；如果这些段落回答不了这个问题，只回复「无法核实」四个字。',
+    '只选择直接回答问题的完整原句，每句独占一行，句号前标出[S1]等出处。同段多句也逐句标注。',
+    '原文没有句号时保留整段。不得改写、删条件/否定词、截断分号列表、补结论或保证个人资格。',
+    '不加解释、标题或总结。允许空格、标点与等值数量（1.5万=15000）。无法回答只回复「无法核实」。',
   ];
   sources.forEach((source, index) => {
     lines.push(`[S${index + 1}] ${source.quote}`);
-    lines.push(`    出处：《${source.title}》${source.documentNumber === '' ? '' : `（${source.documentNumber}）`} ${source.issuer} · ${source.publishedAt} · ${source.sourceUrl}`);
   });
   return lines.join('\n');
 }

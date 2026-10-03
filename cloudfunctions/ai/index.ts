@@ -843,7 +843,8 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
     }
     const sourceOutcome = resolveAdvancementSources(advancementCorpus, event.passageIds, scopeOutcome.scope);
     if ('error' in sourceOutcome) fail('invalid_request', `升学问答资料来源校验未通过：${sourceOutcome.error}`);
-    system = `${system}\n\n${injectedAdvancementText(sourceOutcome.sources, scopeOutcome.scope)}`;
+    // 纪律只保留服务端一份；来源卡片元信息回传给客户端，不重复送进模型与输入审核。
+    system = injectedAdvancementText(sourceOutcome.sources, scopeOutcome.scope);
     log.advancementResult = {
       scope: scopeOutcome.scope,
       corpusVersion: advancementCorpus.version,

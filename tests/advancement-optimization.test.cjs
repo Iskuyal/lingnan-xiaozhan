@@ -76,3 +76,24 @@ test('额度、审核配额与记账故障立即停止，预算缺失不能发�
   assert.equal(evaluator.stopReason({ ok: true, warnings: [] }), '');
   assert.throws(() => evaluator.validateBudget('', 1));
 });
+
+test('续跑指纹覆盖共享范围守门、客户端检索与请求提示词', () => {
+  const hashes = require('../scripts/lib/advancement-build-hashes.cjs').advancementBuildHashes();
+  for (const key of ['access.js','advancement-query.js','advancement-query-corpus.js','client/index.js','client/model.js']) assert.match(hashes[key], /^[0-9a-f]{64}$/u);
+});
+
+test('升学请求只保留一份服务端纪律与完整原文，来源卡片仍完整返回', async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => openAiTextResponse('网上缴费截止时间为1月23日17:00[S1]') });
+  const local = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const event = model.advancementChatEvent('2026年广东普通专升本网上缴费截止时间？', local.resolvedScope, local.citations);
+  event.system = '客户端重复纪律标记'.repeat(20);
+  const response = await harness.main(event);
+  assert.equal(response.ok, true, response.detail);
+  const prompt = JSON.parse(harness.http[0].body).messages[0].content;
+  assert.equal(prompt.includes('客户端重复纪律标记'), false);
+  assert.ok(prompt.length < local.citations.reduce((n,c)=>n+c.quote.length,0) + 300);
+  for (const c of local.citations) {
+    assert.ok(prompt.includes(c.quote));
+    assert.ok(response.advancement.sources.some(s => s.id === c.passageId && s.sourceUrl === c.sourceUrl && s.title === c.title));
+  }
+});

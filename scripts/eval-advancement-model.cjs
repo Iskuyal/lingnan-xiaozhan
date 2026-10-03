@@ -29,6 +29,7 @@ const path = require('node:path');
 const { createHash } = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const { connectMini } = require('./lib/mini-connect.cjs');
+const { advancementBuildHashes } = require('./lib/advancement-build-hashes.cjs');
 
 const LEGACY_SET = 'docs/evidence/advancement-poc/questions.json';
 const NEW_SET = 'docs/evidence/advancement-model/questions.json';
@@ -297,7 +298,7 @@ async function run() {
     topN: TOP_N,
     questions: questions.length,
     questionSetHashes: Object.fromEntries((options.questions ? [options.questions] : [LEGACY_SET, NEW_SET]).map((file) => [file, hashFile(file)])),
-    buildHashes: Object.fromEntries(['index.js', 'advancement.js', 'advancement-corpus.js'].map((file) => [file, hashFile(path.resolve('dist/cloudfunctions/ai', file))])),
+    buildHashes: advancementBuildHashes(),
     latencyBudgetMs: 8000,
   };
   console.log(`题集：${options.set}（${questions.length} 题）｜Git ${meta.gitSha.slice(0, 7)}`);
