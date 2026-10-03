@@ -1,0 +1,23 @@
+{
+  "codeSha": "777d2fe",
+  "typecheck": "passed",
+  "fullTests": {
+    "passed": 743,
+    "failed": 0,
+    "skipped": 0
+  },
+  "collectorTests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "businessCloudCalls": 0,
+  "trueHeldoutFirstRun": "not_executed",
+  "semanticScores": "not_evaluated",
+  "humanReview": "not_performed",
+  "trueDevice": "not_performed",
+  "productPromptRetrievalGuardChanged": false,
+  "modelCloudConfigurationChanged": false,
+  "deploymentPerformed": false,
+  "priorAccountingReconciled": "not_confirmed",
+  "blocker": "前轮升学四条空响应费用待负责人核账；继续任务不作为费用已核账的事实记录"
+}

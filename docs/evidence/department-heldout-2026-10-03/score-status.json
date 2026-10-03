@@ -1,0 +1,206 @@
+{
+  "status": "not_executed",
+  "businessCloudCalls": 0,
+  "answersEvaluated": 0,
+  "questionSetSha256": "758ac27c02e3e8c1c0fef0bf164320de2d7d5270c0b769950a24fb370f7b2ba9",
+  "scores": {
+    "supportedAnswer": {
+      "correct": null,
+      "total": 14
+    },
+    "missingExplained": {
+      "correct": null,
+      "total": 8
+    },
+    "unsupportedDisplay": {
+      "count": null,
+      "total": 14
+    }
+  },
+  "reviewer": "尚无答案，不做AI或人类答案评审；只有预期来源核对",
+  "rows": [
+    {
+      "id": "d01",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d02",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d03",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d04",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d05",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d06",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d07",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d08",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d09",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d10",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d11",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d12",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d13",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    },
+    {
+      "id": "d14",
+      "execution": "not_called",
+      "reason": "previous_accounting_unreconciled",
+      "rawModel": null,
+      "display": null,
+      "citations": null,
+      "elapsedMs": null,
+      "usage": null,
+      "supportedAnswer": null,
+      "missingExplained": null,
+      "unsupportedDisplay": null
+    }
+  ],
+  "boundary": "0次调用不是0分或安全100%；不把预期、脚本测试或标题投影当首次真实结果。"
+}

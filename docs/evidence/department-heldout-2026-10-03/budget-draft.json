@@ -1,0 +1,17 @@
+{
+  "registeredAt": "2026-10-03T08:52:16.964Z",
+  "status": "draft_blocked_not_authorization",
+  "usageSnapshot": "docs/evidence/department-heldout-2026-10-03/usage-before.json",
+  "accountingReconciled": false,
+  "blocker": "前轮升学b02/b04/b05/b08空响应真实费用待负责人核账确认；新任务不绕过共享停止状态",
+  "maxCloudCalls": 14,
+  "maxEstimatedCostYuan": 0.05,
+  "safetyQuota": "上轮产品openai审核；可用配额无独立查询值，未知，出现额度或记账故障停止",
+  "personalDailyLimit": {
+    "day": "2026-10-03",
+    "used": 35,
+    "limit": 60,
+    "remaining": 25
+  },
+  "serialWithAdvancement": true
+}
