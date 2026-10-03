@@ -1,0 +1,17 @@
+题集：fresh（14 题）｜Git bb887be
+OK  heldout-20261003-c:c01 [answer/answer] gd-zsb-2026#register-time gd-zsb-2026#exam-time
+OK  heldout-20261003-c:c02 [answer/answer] gd-zsb-2026#fee-deadline gd-zsb-2026#register-time
+OK  heldout-20261003-c:c03 [answer/answer] gd-zsb-2026#physical-exam gd-zsb-2026#exam-time
+OK  heldout-20261003-c:c04 [answer/answer] gd-segmented-2026#register gd-segmented-2026#target
+OK  heldout-20261003-c:c05 [answer/answer] gd-segmented-2026#fee gd-segmented-2026#target
+BAD heldout-20261003-c:c06 [answer/answer] gd-segmented-2026#target gd-segmented-2026#quality-check
+     期望 gd-segmented-2026#quality-check｜实际 gd-segmented-2026#target gd-segmented-2026#quality-check
+OK  heldout-20261003-c:c07 [answer/answer] gd-employment-2026#soe gd-employment-portal#entry
+OK  heldout-20261003-c:c08 [answer/answer] gd-employment-2026#civil-servant gd-employment-2026#upgrade-plan
+OK  heldout-20261003-c:c09 [clarify/clarify] (无段落)
+OK  heldout-20261003-c:c10 [clarify/clarify] (无段落)
+OK  heldout-20261003-c:c11 [refuse/refuse] (无段落)
+OK  heldout-20261003-c:c12 [refuse/refuse] (无段落)
+OK  heldout-20261003-c:c13 [refuse/refuse] (无段落)
+BAD heldout-20261003-c:c14 [answer/refuse] gd-employment-2026#research-assistant gd-employment-2026#civil-servant
+本地复测完成：答案题 8 道（实际可调用题须通过检索与范围检查）、守门题 6 道（不调用模型）

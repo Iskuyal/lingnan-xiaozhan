@@ -1,0 +1,122 @@
+[
+  {
+    "id": "gd-zsb-2026",
+    "url": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+    "sha256": "584cb550d30f4f718d952ed8ef163dd9c1a0ecbbdea51cfc28b8769c2b85381b",
+    "bytes": 121234,
+    "passages": [
+      {
+        "id": "gd-zsb-2026#register-time",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#fee-deadline",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#exam-time",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#volunteer",
+        "verbatimAfterWhitespaceNormalization": false
+      },
+      {
+        "id": "gd-zsb-2026#admission",
+        "verbatimAfterWhitespaceNormalization": false
+      },
+      {
+        "id": "gd-zsb-2026#vocational-teacher",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#bonus",
+        "verbatimAfterWhitespaceNormalization": false
+      },
+      {
+        "id": "gd-zsb-2026#physical-exam",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#vet-soldier",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-zsb-2026#not-eligible",
+        "verbatimAfterWhitespaceNormalization": false
+      }
+    ]
+  },
+  {
+    "id": "gd-segmented-2026",
+    "url": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+    "sha256": "534800a3149b4a1dd03fc04164aaf43f5256dcf1a30b1eec4423a3002f2fca00",
+    "bytes": 62592,
+    "passages": [
+      {
+        "id": "gd-segmented-2026#target",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#quality-check",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#register",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#fee",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#parts",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#exam-time",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-segmented-2026#exemption",
+        "verbatimAfterWhitespaceNormalization": false
+      },
+      {
+        "id": "gd-segmented-2026#vet-soldier",
+        "verbatimAfterWhitespaceNormalization": false
+      },
+      {
+        "id": "gd-segmented-2026#graduation",
+        "verbatimAfterWhitespaceNormalization": false
+      }
+    ]
+  },
+  {
+    "id": "gd-employment-2026",
+    "url": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
+    "sha256": "64702a4f1c21b02eee09d7bc3dee194f4e4d657dc3cb22715dc2f6b86de12865",
+    "bytes": 46948,
+    "passages": [
+      {
+        "id": "gd-employment-2026#civil-servant",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-employment-2026#public-institution",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-employment-2026#soe",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-employment-2026#research-assistant",
+        "verbatimAfterWhitespaceNormalization": true
+      },
+      {
+        "id": "gd-employment-2026#upgrade-plan",
+        "verbatimAfterWhitespaceNormalization": true
+      }
+    ]
+  }
+]
