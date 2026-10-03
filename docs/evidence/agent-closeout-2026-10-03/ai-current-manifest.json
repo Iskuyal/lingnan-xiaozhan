@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2026-10-03T01:40:22.184Z",
+  "dist": "dist/cloudfunctions/ai",
+  "archive": "artifacts/closeout/cloud/ai",
+  "before": null,
+  "counts": {
+    "local": 20,
+    "remote": 20,
+    "identical": 20,
+    "mismatched": 0
+  },
+  "files": [
+    {
+      "name": "access.js",
+      "local": {
+        "sha256": "f296aedfb728c62e4e04499667b95a9295825e7d488113d7c045491718544a9b",
+        "bytes": 5789
+      },
+      "remote": {
+        "sha256": "f296aedfb728c62e4e04499667b95a9295825e7d488113d7c045491718544a9b",
+        "bytes": 5789
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "advancement-corpus.js",
+      "local": {
+        "sha256": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd",
+        "bytes": 8500
+      },
+      "remote": {
+        "sha256": "3126a6b3957b18b00e79b2845fc10555cd4b859920980877583e4b7e902f69bd",
+        "bytes": 8500
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "advancement.js",
+      "local": {
+        "sha256": "aa5fa06e0ce3f1f03e361f43de3c686b92a81f75a942a0e9916a019f6352e5c1",
+        "bytes": 18388
+      },
+      "remote": {
+        "sha256": "aa5fa06e0ce3f1f03e361f43de3c686b92a81f75a942a0e9916a019f6352e5c1",
+        "bytes": 18388
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "config.js",
+      "local": {
+        "sha256": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+        "bytes": 10240
+      },
+      "remote": {
+        "sha256": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+        "bytes": 10240
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "config.json",
+      "local": {
+        "sha256": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+        "bytes": 117
+      },
+      "remote": {
+        "sha256": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+        "bytes": 117
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "defense-materials.js",
+      "local": {
+        "sha256": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+        "bytes": 7193
+      },
+      "remote": {
+        "sha256": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+        "bytes": 7193
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "defense.js",
+      "local": {
+        "sha256": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+        "bytes": 10557
+      },
+      "remote": {
+        "sha256": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+        "bytes": 10557
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "department-corpus.js",
+      "local": {
+        "sha256": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+        "bytes": 5228
+      },
+      "remote": {
+        "sha256": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+        "bytes": 5228
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "errors.js",
+      "local": {
+        "sha256": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+        "bytes": 8100
+      },
+      "remote": {
+        "sha256": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+        "bytes": 8100
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "http.js",
+      "local": {
+        "sha256": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+        "bytes": 7080
+      },
+      "remote": {
+        "sha256": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+        "bytes": 7080
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "index.js",
+      "local": {
+        "sha256": "73fd785a2f677e5fde63fc7b5e0c5e80af0915979a8bdb48fc87c91198a0302b",
+        "bytes": 55204
+      },
+      "remote": {
+        "sha256": "73fd785a2f677e5fde63fc7b5e0c5e80af0915979a8bdb48fc87c91198a0302b",
+        "bytes": 55204
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "package-lock.json",
+      "local": {
+        "sha256": "f611d6cc854825396fdf31ebca7007a9476bad383ee82c525f4397bcf122dde6",
+        "bytes": 46478
+      },
+      "remote": {
+        "sha256": "f611d6cc854825396fdf31ebca7007a9476bad383ee82c525f4397bcf122dde6",
+        "bytes": 46478
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "package.json",
+      "local": {
+        "sha256": "4e9a22d3d1ced1be6605bde80aef26b93c145b9eefe5b63f3cd5cd9e467e6aed",
+        "bytes": 374
+      },
+      "remote": {
+        "sha256": "4e9a22d3d1ced1be6605bde80aef26b93c145b9eefe5b63f3cd5cd9e467e6aed",
+        "bytes": 374
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "probe.js",
+      "local": {
+        "sha256": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+        "bytes": 9039
+      },
+      "remote": {
+        "sha256": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+        "bytes": 9039
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "providers.js",
+      "local": {
+        "sha256": "b449dea33317998f2ad819a8eb35071fe0c9e3c84f16e7c91c2e7b4aa142558a",
+        "bytes": 14686
+      },
+      "remote": {
+        "sha256": "b449dea33317998f2ad819a8eb35071fe0c9e3c84f16e7c91c2e7b4aa142558a",
+        "bytes": 14686
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "rag.js",
+      "local": {
+        "sha256": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+        "bytes": 7030
+      },
+      "remote": {
+        "sha256": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+        "bytes": 7030
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "safety.js",
+      "local": {
+        "sha256": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+        "bytes": 26122
+      },
+      "remote": {
+        "sha256": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+        "bytes": 26122
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "types.js",
+      "local": {
+        "sha256": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+        "bytes": 77
+      },
+      "remote": {
+        "sha256": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+        "bytes": 77
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "usage.js",
+      "local": {
+        "sha256": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+        "bytes": 17501
+      },
+      "remote": {
+        "sha256": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+        "bytes": 17501
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "vision.js",
+      "local": {
+        "sha256": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8",
+        "bytes": 13537
+      },
+      "remote": {
+        "sha256": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8",
+        "bytes": 13537
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    }
+  ]
+}

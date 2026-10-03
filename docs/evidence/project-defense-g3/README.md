@@ -1,3 +1,5 @@
+> 2026-10-03：本页保留原轮次的历史数字与故障。后续真实执行、整改与当前缺口见 [agent收尾证据](../agent-closeout-2026-10-03/README.md)；不要把本页旧待执行项当作当前入口。
+
 # G3 最小纵向实现（项目讲解与答辩练习）
 
 - 对应 [Issue #114](https://github.com/Iskuyal/wx-match/issues/114)；前置 [Issue #113](https://github.com/Iskuyal/wx-match/issues/113) 的设计与契约已定稿（见 [docs/design/project-defense/](../../design/project-defense/README.md)）。

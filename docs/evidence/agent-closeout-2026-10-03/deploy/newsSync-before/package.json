@@ -1,0 +1,16 @@
+{
+  "name": "newsSync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "抓取官网校园动态并写入 news_articles",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "3.17.2",
+    "wx-server-sdk": "4.0.2"
+  },
+  "overrides": {
+    "axios": "0.33.0",
+    "lodash.set": "npm:set-value@4.1.0",
+    "lodash.unset": "4.18.0"
+  }
+}

@@ -163,7 +163,7 @@ export function checkDocuments({ root, files, visible }) {
       if (visible !== undefined && target !== root) {
         const isDirectory = statSync(target).isDirectory();
         const inGit = isDirectory ? visibleDirectories.has(target) : visibleFiles.has(target);
-        if (!inGit) { error('目标不在 git 里：被 .gitignore 忽略的文件在 CI 的干净检出中不存在'); continue; }
+        if (!inGit) { error('目标未被 git 跟踪：请先 git add；忽略或漏提交的文件在干净检出中不存在'); continue; }
       }
       if (fragment && /\.md$/i.test(target)) {
         if (!anchorCache.has(target)) anchorCache.set(target, headingAnchors(readFileSync(target, 'utf8')));

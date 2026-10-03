@@ -27,19 +27,19 @@
 
 ## 各票一览
 
-状态核对日期：2026-09-24。每张票的历史过程与逐项验收保留在票内；跨票版本边界见[项目状态](../../status.md)。
+状态核对日期：2026-10-03。每张票的历史过程与逐项验收保留在票内；本轮部署、评测与材料见[收尾记录](../../evidence/agent-closeout-2026-10-03/README.md)，跨票版本边界见[项目状态](../../status.md)。
 
 | # | Ticket | 状态 | 尚待完成的核心项 | Blocked by |
 | --- | --- | --- | --- | --- |
-| 01 | [AI 服务端基础设施](01-ai-foundation.md) | in-progress | SEC-01/02 代码整改见[记录](../../review/security-remediation-2026-09-24.md)；云端部署与真实效果复测待完成 | — |
+| 01 | [AI 服务端基础设施](01-ai-foundation.md) | in-progress | 部署回读、维护者用量与真实请求已有记录；实际账单、保留策略及当前版本验收归档另计 | — |
 | 02 | [首页资讯入口与分页](02-home-news-entry-and-paging.md) | done | 真实多页数据的补验归入 04 | — |
 | 03 | [Excel 导入与周课表](03-timetable-excel-import.md) | in-progress | 主体功能及课表/设置/图片归属已获负责人确认通过；原始证据归档与后续批次变更云端复验另计 | — |
-| 04 | [资讯同步扩展与定时](04-expand-sync-and-daily-schedule.md) | in-progress | SEC-03 代码仅允许定时触发；仍需部署后验证触发器、目标栏目全量和真实多页 | — |
-| 05 | [截图识别与校对](05-timetable-screenshot-import.md) | in-progress | 真实课表截图准确率与保存流程 | 01、03 的代码已有；需真实验收 |
-| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | in-progress | 固定 10 题、失败降级、真机 | 01、03 的代码已有；需真实验收 |
-| 07 | [部门 AI 问答](07-department-ai-qa.md) | in-progress | 固定 10 题、防幻觉、真机 | 01 的代码已有；需真实验收 |
+| 04 | [资讯同步扩展与定时](04-expand-sync-and-daily-schedule.md) | in-progress | 10-03重新部署并8/8回读一致；实际定时执行记录、范围决策及真实多页仍缺 | — |
+| 05 | [截图识别与校对](05-timetable-screenshot-import.md) | in-progress | 负责人确认验收通过；逐字段准确率、被测版本与原始证据待归档 | 01、03代码已有；当前版本独立证据另计 |
+| 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | in-progress | 负责人确认验收通过；10题明细、取消/确认与设备版本证据待归档 | 01、03代码已有；当前版本独立证据另计 |
+| 07 | [部门 AI 问答](07-department-ai-qa.md) | in-progress | 固定10题云链路已执行，标题级动态已收紧并有真实页面回归；自由模型动态效果与真机另计 | 01代码已有；不重做已交付脚本 |
 | 08 | [发布后单页模式](08-post-publish-single-page-mode.md) | wontfix | 本次参赛不走发布路径，未实测 | 外部发布条件 |
-| 09 | [参赛材料与包](09-p6-submission.md) | needs-info | 正式名称、校内收口、七项材料和回执 | 04、05、06、07 |
+| 09 | [参赛材料与包](09-p6-submission.md) | needs-info | 七项内部稿、PPT与源码审查包已有；正式名称、校内收口、最终真机视频与回执仍缺 | 04、05、06、07的交付验收边界 |
 | 10 | [校园通知 RAG](10-campus-rag-qa.md) | needs-info | 等待可用语料与指标决策；国赛版方向 | 11、语料入库 |
 | 11 | [OCR / 文档解析](11-ocr-document-parsing.md) | in-progress | 外部 OCR 密钥、真实调用和人工抽检 | 外部服务与密钥 |
 
