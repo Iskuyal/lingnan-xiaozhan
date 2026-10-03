@@ -167,6 +167,7 @@ test('文档检查：collectVisibleFiles 用 -z 解析，中文文件名不转�
     'artifacts/out.json': '{}',
   });
   execFileSync('git', ['init', '-q'], { cwd: root });
+  execFileSync('git', ['add', 'README.md', 'docs/中文.md'], { cwd: root });
   const visible = collectVisibleFiles(root);
   assert.ok(visible.has('README.md'));
   // 不带 -z 的默认输出会把中文名转义成 \344\270\255\346\226\207，这里必须拿到原样文件名。
@@ -177,4 +178,18 @@ test('文档检查：collectVisibleFiles 用 -z 解析，中文文件名不转�
   const result = checkDocuments({ root, files: ['README.md'], visible });
   assert.equal(result.errors.length, 1, JSON.stringify(result.errors));
   assert.equal(result.errors[0].url, 'artifacts/out.json');
+});
+
+test('文档检查：未提交目标必须报错，git add 后才可交付', (t) => {
+  const root = fixture(t, {
+    'README.md': '[遗漏文件](docs/new.md)',
+    'docs/new.md': '# 新文档',
+  });
+  execFileSync('git', ['init', '-q'], { cwd: root });
+  execFileSync('git', ['add', 'README.md'], { cwd: root });
+  const result = checkDocuments({ root, files: ['README.md'], visible: collectVisibleFiles(root) });
+  assert.equal(result.errors.length, 1, '磁盘上的未跟踪目标不能冒充可交付文件');
+  assert.equal(result.errors[0].url, 'docs/new.md');
+  execFileSync('git', ['add', 'docs/new.md'], { cwd: root });
+  assert.deepEqual(checkDocuments({ root, files: ['README.md'], visible: collectVisibleFiles(root) }).errors, []);
 });

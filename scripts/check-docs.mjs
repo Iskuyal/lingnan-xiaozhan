@@ -80,19 +80,18 @@ export function collectDocumentationFiles(root) {
 }
 
 /**
- * 收集「git 能看见」的路径：已跟踪（`--cached`）加未被忽略的新文件（`--others --exclude-standard`）。
+ * 收集 Git 索引中的路径；新增链接目标先 `git add`，才能证明交付不会漏文件。
  *
  * 为什么需要：`checkDocuments` 原来只看磁盘，因此**查不出指向 `artifacts/`、`dist/` 这类
  * 被 gitignore 的路径的链接**——本地有文件、CI 的干净检出里没有（PR #127 就是这样被拦下的）。
  *
- * 为什么是「git 能看见」而不是「已跟踪」：`collectDocumentationFiles` 本身包含**未跟踪的新文档**
- * （提交前也要能跑 `docs:check`），若只认已跟踪，新文档之间的互链会在提交前误报。用
- * `--others --exclude-standard` 后，判据恰好是「这份文件会不会出现在干净检出里」。
+ * 文档扫描仍包含未跟踪的新 Markdown，提前发现新文档中的坏链接；但链接目标只认索引，
+ * 未被忽略不代表已提交，不能据此声称它会出现在干净检出里。
  *
  * **必须用 `-z`**：默认输出会把非 ASCII 文件名转义成 `\xxx`，中文文件名会误报。
  */
 export function collectVisibleFiles(root) {
-  const output = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root, encoding: 'utf8' });
+  const output = execFileSync('git', ['ls-files', '--cached', '-z'], { cwd: root, encoding: 'utf8' });
   return new Set(output.split('\0').filter(Boolean));
 }
 

@@ -116,7 +116,7 @@
 - **成本实测**：当月 **278 次 / 266,612 token / 0.066670 元**（[usage-after-realdevice-2026-10-02.json](../../evidence/project-defense-g4/usage-after-realdevice-2026-10-02.json)，读数时间 2026-10-02T05:18Z；[真机记录第 3 节](../../evidence/project-defense-g4/real-device-2026-10-02.md) 记同一个值）；上限 50 元、告警线 40 元 ⇒ **未告警未超限**；**剩余额度读不到，不写剩余值**。
   > **脚注（口径差异，正文不引用）**：[G4 → G5 输入清单](../../evidence/project-defense-g4/g5-inputs-2026-10-02.md) 另记一条更晚的**散文读数**「**282 次 / 275,813 token / 0.068970 元**」，仓库内**无对应 JSON 入库**；[usage-2026-10-02-final.json](../../evidence/project-defense-g4/usage-2026-10-02-final.json) 是更早的一次读数（**255 次 / 234,750 token / 0.058700 元**）。两者都**不是**正文口径。
 - **两个额度上限**：微信内容安全 **100 次/天**（全功能共用，约 5–6 次完整会话打满）；个人日上限 `AI_USER_DAILY_LIMIT` = **30**（约 6 次会话打满，**被拒绝的请求也计数**）。
-- **客户端超时兜底**：〔**本句只在本轮 PR 内成立**〕本轮 PR 给客户端加了超时兜底（阈值 **≥75 秒**，高于实测上界）后进入 `model_unavailable` 失败态并保留草稿 + 给重试入口；**设计契约原写的 30 秒仍标注为"未实现、阈值偏低"**，不能讲成早已验收。
+- **客户端超时兜底**：本轮 PR 加入 75 秒兜底，高于实测上界；超时进入 `model_unavailable` 并保留草稿和重试入口。设计契约已同步为 75 秒，30 秒未实现的描述仅属历史。本地回归已通过，真机超时验收仍未补齐。
 
 **证据文件**：[G4 → G5 输入清单](../../evidence/project-defense-g4/g5-inputs-2026-10-02.md)（时延、额度；**该页的成本散文读数未入库，正文不采用**）；[设计契约 5.1](../../design/project-defense/README.md)；[第三方审核切换记录](../../evidence/project-defense-g4/safety-provider-switch-2026-10-02.md)；[当月用量（真机后读数）](../../evidence/project-defense-g4/usage-after-realdevice-2026-10-02.json)
 

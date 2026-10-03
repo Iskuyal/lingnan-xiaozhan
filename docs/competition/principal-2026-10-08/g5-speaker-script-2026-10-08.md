@@ -151,7 +151,7 @@
 - 出处：时延与额度见 [g5-inputs 第一、二节](../../evidence/project-defense-g4/g5-inputs-2026-10-02.md)、[设计契约 5.1](../../design/project-defense/README.md)（**模拟器 16.9–33.2 秒 / n=10 / 中位 22.9 的出处**）、[真机记录](../../evidence/project-defense-g4/real-device-2026-10-02.md)（**真机 ≤45 秒、重答轮 ≤48 秒**）；成本见 [当月用量（真机后读数）](../../evidence/project-defense-g4/usage-after-realdevice-2026-10-02.json)；配置前提见 [第三方审核切换记录](../../evidence/project-defense-g4/safety-provider-switch-2026-10-02.md)。
 - **成本口径差异（正文不引用）**：[g5-inputs](../../evidence/project-defense-g4/g5-inputs-2026-10-02.md) 另记一条更晚的**散文读数**「282 次 / 275,813 token / 0.068970 元」，仓库内**无对应 JSON 入库**；[usage-2026-10-02-final.json](../../evidence/project-defense-g4/usage-2026-10-02-final.json) 是更早的一次读数（**255 次 / 234,750 token / 0.058700 元**）。两者都不是正文口径——正文的 **278 次 / 266,612 token / 0.066670 元** 只出自 `usage-after-realdevice-2026-10-02.json`。
 - **当前配置状态**：线上跑的是第三方审核（`AI_SAFETY_PROVIDER=openai`），**不是默认 `wechat`**；上台前保留还是回滚**只能由负责人在云开发控制台确认**（CLI 改不了环境变量）。若回滚成 `wechat`，微信 100 次/天会立刻回来，**彩排一遍就可能打满**。
-- **超时兜底一句话**（只在被问到"没返回怎么办"时说）：〔**本轮 PR 的改动**〕**本轮 PR 给客户端加了超时兜底：阈值 ≥75 秒、高于实测上界，超时后进入 `model_unavailable` 失败态并保留草稿、给重试入口**；设计契约里原来写的 30 秒仍是"未实现、阈值偏低"，**不能讲成早已验收**。
+- **超时兜底一句话**（只在被问到"没返回怎么办"时说）：本轮 PR 加入 75 秒兜底，高于实测上界；超时进入 `model_unavailable`，保留草稿和重试入口。设计契约已同步为 75 秒，30 秒未实现的描述仅属历史。本地回归已通过，真机超时验收仍未补齐。
 - ⚠️ 不要说"额度用完了有重试入口"这类笼统说法：`quota_exhausted` 按契约**不给重试入口**（保留草稿、不显示反馈），给重试入口的是 `model_unavailable` / 断网 / 引用被拦（[页面失败文案](../../../miniprogram/services/defense/index.ts)）。**这两条别混**。
 
 ## 06:25–07:35 · P09 内容使用授权申请（约 262 字）
