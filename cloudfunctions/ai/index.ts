@@ -20,7 +20,7 @@ import * as cloud from 'wx-server-sdk';
 import { Config, ModelTarget, loadConfig, resolveModelTarget, secretsOf } from './config';
 import { AiFailure, MessageInputKind, describeError, fail, messageFor, redactSecrets, toFailure } from './errors';
 import { isTimeoutError, withTimeout } from './http';
-import { ModelCallResult, ModelInvocation, callModel } from './providers';
+import { ModelCallResult, ModelInvocation, ModelResponseFailure, callModel } from './providers';
 import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
 import { runProbe } from './probe';
 import { buildActivityContext, DepartmentActivityCorpus, isActivityQuestion, isDepartmentActivityCorpus } from './rag';
@@ -514,6 +514,11 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
     const failure = toFailure(error);
     log.provider = target.format;
     log.model = target.model;
+    if (error instanceof ModelResponseFailure) {
+      log.timings.modelNetworkMs = (log.timings.modelNetworkMs ?? 0) + error.elapsedMs;
+      log.usage = error.usage === null ? toCallUsage({ ...ZERO_USAGE, usageUnknown: true }, log.config) : toCallUsage(error.usage, log.config);
+      if (error.usage === null) pushWarning(log, '模型无效响应未返回用量，需核账后继续评测');
+    }
     await record(log, {
       requestId: log.requestId,
       feature: log.feature,
@@ -524,7 +529,7 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
       ok: false,
       failureClass: failure.failureClass,
       durationMs: Date.now() - startedAt,
-      usage: toCallUsage(ZERO_USAGE, log.config),
+      usage: log.usage ?? toCallUsage(ZERO_USAGE, log.config),
     });
     throw failure;
   }

@@ -97,3 +97,34 @@ test('升学请求只保留一份服务端纪律与完整原文，来源卡片�
     assert.ok(response.advancement.sources.some(s => s.id === c.passageId && s.sourceUrl === c.sourceUrl && s.title === c.title));
   }
 });
+
+test('空正文仍计入中转已返回的真实token费用，不把失败当零消耗', async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => ({ status: 200, body: JSON.stringify({ choices: [{ message: { content: '', reasoning_content: 'PRIVATE_REASONING' }, finish_reason: 'length' }], usage: { prompt_tokens: 200, completion_tokens: 600, total_tokens: 800 } }) }) });
+  const local = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const response = await harness.main(model.advancementChatEvent('2026年广东普通专升本网上缴费截止时间？', local.resolvedScope, local.citations));
+  assert.equal(response.ok, false);
+  assert.equal(response.failureClass, 'model_unavailable');
+  assert.equal(response.text, '');
+  assert.equal(response.usage?.totalTokens, 800);
+  const entry = harness.records.find(r => r.kind === 'model');
+  assert.equal(entry.totalTokens, 800);
+  assert.ok(entry.costYuan > 0);
+  assert.ok(!JSON.stringify(response).includes('PRIVATE_REASONING'));
+});
+
+test('志愿与毕业证语料保留官网完整原句及其前提，不用旧拼接摘要冒充原文', () => {
+  const quote = id => corpus.documents.flatMap(d=>d.passages).find(p=>p.id===id).text;
+  assert.ok(quote('gd-zsb-2026#volunteer').includes('考试成绩公布后，考生根据自身实际，按院校专业组模式进行志愿填报。'));
+  const graduation = quote('gd-segmented-2026#graduation');
+  assert.ok(graduation.includes('复查合格并经注册后，即成为学校的正式学生'));
+  assert.ok(graduation.includes('其毕业证书上标注“在本校xx专业专科起点本科学习”'));
+  assert.ok(graduation.includes('转段学生毕业后的就业办法，与普通高校本科毕业生相同。'));
+});
+
+test('实时薪酬的常见表达都拒答，不把相关岗位计划当实时薪资依据', () => {
+  for (const word of ['月薪','年薪','时薪','薪酬']) {
+    const result = product.ask(`广东2026年实习岗位现在的${word}能有多少？`);
+    assert.equal(result.behavior, 'refuse', word);
+    assert.equal(model.canAskModel(result), false);
+  }
+});

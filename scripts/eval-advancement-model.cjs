@@ -252,7 +252,7 @@ function isCompleteRecord(record) {
 function stopReason(call) {
   if (call.failureClass === 'quota_exhausted') return 'quota_exhausted';
   const diagnostic = [call.detail ?? '', ...(call.warnings ?? [])].join(' ');
-  if (/记账|accounting|审核.*配额|检测.*配额/iu.test(diagnostic)) return 'accounting_or_safety_quota';
+  if (/记账|核账|accounting|审核.*配额|检测.*配额/iu.test(diagnostic)) return 'accounting_or_safety_quota';
   return '';
 }
 
