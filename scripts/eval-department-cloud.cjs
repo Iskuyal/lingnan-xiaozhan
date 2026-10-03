@@ -45,6 +45,13 @@ function loadBank(file, independent, departments) {
         throw Error('独立题集须登记datasetId及有效冻结时间');
     if (independent && (!bank.judgeRules || ['supportedAnswer', 'missingExplained', 'unsupportedDisplay'].some(k => typeof bank.judgeRules[k] !== 'string' || !bank.judgeRules[k].trim())))
         throw Error('须分别登记三项评分判据');
+    if (bank.sourceSnapshotFile !== undefined) {
+        const snapshotFile = path.resolve(path.dirname(file), bank.sourceSnapshotFile);
+        if (path.dirname(snapshotFile) !== path.resolve(path.dirname(file))) throw Error('来源快照必须与题库同目录');
+        if (hash(snapshotFile) !== bank.sourceSnapshotSha256) throw Error('来源快照哈希与实际文件不一致');
+        const snapshot = JSON.parse(fs.readFileSync(snapshotFile, 'utf8'));
+        if (!isDeepStrictEqual(snapshot.departments, departments)) throw Error('来源快照与实际产品资料不一致');
+    }
     const ids = new Set(), kinds = ['base', 'activity', 'organizer_unknown', 'detail_missing', 'latest_unknown', 'no_hit', 'event_date_unknown'];
     for (const q of bank.questions) {
         if (!q || typeof q.id !== 'string' || !q.id.trim() || ids.has(q.id))
@@ -94,17 +101,19 @@ function stopReason(result, error = '') {
     return '';
 }
 function applyResult(row, state, qa) {
-    row.clientElapsedMs = Number.isFinite(state.elapsedMs) ? state.elapsedMs : null;
+    const client = require(path.join(root, 'dist/services/ai.js'));
+    row.cloudElapsedMs = Number.isFinite(state.elapsedMs) ? state.elapsedMs : null;
+    row.clientTimedOut = row.cloudElapsedMs !== null && row.cloudElapsedMs >= client.AI_CALL_TIMEOUT_MS;
+    row.clientElapsedMs = row.clientTimedOut ? client.AI_CALL_TIMEOUT_MS : row.cloudElapsedMs;
     row.result = state.result || null;
     row.error = state.error || '';
-    row.execution = row.error ? 'transport_failed' : 'cloud_returned';
-    row.done = !row.error && row.result?.ok === true;
+    row.execution = row.clientTimedOut ? 'client_timeout' : row.error ? 'transport_failed' : 'cloud_returned';
+    row.done = !row.clientTimedOut && !row.error && row.result?.ok === true;
     row.rawModelText = typeof row.result?.text === 'string' ? row.result.text : '';
     row.serverElapsedMs = row.result?.elapsedMs ?? null;
     row.usage = row.result?.usage ?? null;
     row.rawCitations = row.result?.citations ?? [];
-    const client = require(path.join(root, 'dist/services/ai.js'));
-    const normalized = row.result === null ? null : client.aiResultOf(row.result);
+    const normalized = row.clientTimedOut ? client.timedOutResult() : row.result === null ? null : client.aiResultOf(row.result);
     row.displayTurn = row.done ? qa.guardTurn(normalized.text, row.expectedDepartmentId, row.q, normalized.citations) : null;
     row.displayText = row.displayTurn?.text ?? '';
     row.displayWarning = row.displayTurn?.warning ?? '';
@@ -169,7 +178,7 @@ async function collect(report, o, request, save, qa, pace = sleep) {
         }
         applyResult(row, state, qa);
         row.fingerprint = { questionSetSha256: report.questionSetSha256, collectorSha256: report.collectorSha256, buildHashes: report.buildHashes, deployedCloudHashes: report.deployedCloudHashes };
-        report.stoppedReason = stopReason(row.result, row.error);
+        report.stoppedReason = row.clientTimedOut ? 'client_timeout' : stopReason(row.result, row.error);
         save(row);
         console.log(`  ${row.id}: ${row.done ? 'returned' : row.result?.failureClass || row.error}；端到端${row.clientElapsedMs ?? '未知'}ms，尚未语义评分`);
         if (!report.stoppedReason && Date.now() - start < 12000)

@@ -4,7 +4,7 @@
   "status": "frozen_not_run",
   "source": "maintainer_design",
   "realStudentSamples": 0,
-  "sourceSnapshotSha256": "2b7b9c1353249152d1dbf008c335cd1485eb90d7db2bfebe6764d9a1d8170607",
+  "sourceSnapshotSha256": "b57fec95204b5a227a2c8792f54fa817f4387646698a4c5bf57a58ba5811545c",
   "judgeRules": {
     "supportedAnswer": "逐题回答全部子问，事实有冻结来源支持；来源不足时有明确对应的有限范围说明。只有安全标题或相关命中不能自动计问题正确。分母为全部14题，未执行分数null。",
     "missingExplained": "对missingFields登记的缺失项明确解释当前标题/快照未提供或无法核实；不把快照缺失写成官网/现实不存在。仅列标题而未说明所问缺失范围不自动正确。",
@@ -293,5 +293,7 @@
         "志愿者名单"
       ]
     }
-  ]
+  ],
+  "sourceSnapshotFile": "source-snapshot.json",
+  "sourceSnapshotHashBasis": "raw_bytes_sha256"
 }

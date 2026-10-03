@@ -138,3 +138,27 @@ test('来源字段的JSON键顺序无关紧要，错误字段值仍拒绝', () =
     assert.doesNotThrow(() => evaluator.loadBank(file, true, require('../dist/services/departments.js').departments));
   });
 });
+
+test('来源快照绑定校验实际文件字节及产品资料，错误哈希不能进入采集', () => {
+  withBank(bank => {
+    bank.sourceSnapshotFile = 'source-snapshot.json';
+    bank.sourceSnapshotSha256 = '0'.repeat(64);
+  }, file => {
+    fs.writeFileSync(path.join(path.dirname(file), 'source-snapshot.json'), JSON.stringify({ departments: require('../dist/services/departments.js').departments }));
+    assert.throws(() => evaluator.loadBank(file, true, require('../dist/services/departments.js').departments), /快照哈希/u);
+  });
+});
+
+test('75秒后晚到云答案保留原模型与费用，但不能冒充实际客户端上屏', () => {
+  const row = { q: '校学生会下设哪些部门？', expectedDepartmentId: 'student-union' };
+  evaluator.applyResult(row, { elapsedMs: 80000, result: { ok: true, text: '权益部、文娱部、器材部、体育部、学创部', safety: { checked: true }, usage: { totalTokens: 25 } } }, require('../dist/pages/departments/qa.js'));
+  assert.equal(row.done, false);
+  assert.equal(row.displayTurn, null);
+  assert.equal(row.displayText, '');
+  assert.equal(row.rawModelText.includes('权益部'), true);
+  assert.equal(row.cloudElapsedMs, 80000);
+  assert.equal(row.clientElapsedMs, 75000);
+  assert.equal(row.usage.totalTokens, 25);
+  assert.equal(row.execution, 'client_timeout');
+  assert.ok(row.failureMessage);
+});

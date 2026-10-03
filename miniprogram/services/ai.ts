@@ -408,7 +408,7 @@ function withTimeout<T>(call: Promise<T>, timeoutMs: number): Promise<T | typeof
  * 契约要求超时「按 `model_unavailable` 结束」，所以这里不抛错：抛错会走 transportMessage 那套
  * 「没能发出去」的文案，而契约要的是「模型没有返回结果」这一条。
  */
-function timedOutResult(): AiCallResult {
+export function timedOutResult(): AiCallResult {
   return {
     ok: false,
     failureClass: 'model_unavailable',
