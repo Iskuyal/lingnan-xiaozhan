@@ -1,0 +1,16 @@
+题集：fresh（14 题）｜Git 6a30702
+OK  heldout-20260930-b:b01 [answer/answer] gd-employment-2026#public-institution gd-employment-2026#civil-servant
+OK  heldout-20260930-b:b02 [answer/answer] gd-employment-2026#research-assistant gd-employment-2026#upgrade-plan
+OK  heldout-20260930-b:b03 [answer/answer] gd-employment-2026#upgrade-plan gd-zsb-2026#exam-time
+OK  heldout-20260930-b:b04 [answer/answer] gd-segmented-2026#parts gd-segmented-2026#target
+OK  heldout-20260930-b:b05 [answer/answer] gd-segmented-2026#graduation gd-segmented-2026#target
+OK  heldout-20260930-b:b06 [answer/answer] gd-segmented-2026#quality-check gd-segmented-2026#target
+OK  heldout-20260930-b:b07 [answer/answer] gd-zsb-2026#vocational-teacher gd-zsb-2026#volunteer
+OK  heldout-20260930-b:b08 [answer/answer] gd-zsb-2026#volunteer gd-zsb-2026#exam-time
+OK  heldout-20260930-b:b09 [clarify/clarify] (无段落)
+OK  heldout-20260930-b:b10 [clarify/clarify] (无段落)
+OK  heldout-20260930-b:b11 [refuse/refuse] (无段落)
+OK  heldout-20260930-b:b12 [refuse/refuse] (无段落)
+OK  heldout-20260930-b:b13 [refuse/refuse] (无段落)
+OK  heldout-20260930-b:b14 [refuse/refuse] (无段落)
+本地复测完成：答案题 8 道（实际可调用题须通过检索与范围检查）、守门题 6 道（不调用模型）

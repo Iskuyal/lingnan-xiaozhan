@@ -1,0 +1,77 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-02T07:17:15.799Z",
+  "request": {
+    "action": "chat",
+    "feature": "project-defense",
+    "materialId": "FC-1",
+    "messages": [
+      {
+        "role": "user",
+        "text": "这个功能是给谁、解决什么问题的？请用两三句话说清。"
+      },
+      {
+        "role": "assistant",
+        "text": "课表导入是给本校学生用的：他们从教务系统导出课表后，只能从微信聊天记录里选文件导入，识别不出的格子只标记不猜，交给学生在确认页裁决。"
+      },
+      {
+        "role": "user",
+        "text": "请按服务端下发的四节格式，对上面这段回答给出反馈与一个追问。"
+      }
+    ]
+  },
+  "elapsedMs": 33250,
+  "result": {
+    "ok": true,
+    "action": "chat",
+    "failureClass": "",
+    "message": "",
+    "detail": "",
+    "feature": "project-defense",
+    "provider": "openai",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "text": "【引用核对】\n- 「课表导入是给本校学生用的」——不成立（F1、F4、F5：材料里出现的是「学生」「教务系统」，未出现「本校」这一限定，找不到对应条目）。\n- 「他们从教务系统导出课表后，只能从微信聊天记录里选文件导入」——成立（F1）。\n- 「识别不出的格子只标记不猜」——成立（F4）。\n- 「交给学生在确认页裁决」——成立（F4；F5 另记确认前不写库）。但材料未说明主体是否为「本校」学生。\n\n【是否对应回答】\n反馈针对的是学生写出的四句断言：使用对象（「本校学生」）、输入方式（「只能从微信聊天记录里选文件」）、未识别字段的处理（「只标记不猜」）、裁决环节（「在确认页裁决」）。其中第二、三、四句可回核到 F1、F4；第一句的「本校」这一限定在材料中没有对应条目。\n\n【待验证保留】\n- F5「确认框交互未验证」：学生提到「确认页」，但未称其已验证或已通过，该项保持原状。\n- F8① 「双账号界面隔离已由负责人确认通过（记录待归档）、服务端越权隔离只有桩测试、缺独立证据」：学生未提及隔离，未把任一部分写成已完成，保持原状。\n- F8② 「100 条以上分页读取」、F8③ 「上传成功后小程序被杀死可能残留临时文件」：均未被触及，保持原状。\n- F6「服务端隔离待验证」：未被触及，保持原状。\n\n【追问】\n你写了「交给学生在确认页裁决」，请依据 F5 补充说明：「保存」这一动作对本人已有课表（含手工添加的）具体做了什么？（材料条目号）",
+    "safety": {
+      "provider": "openai",
+      "api": "text-moderation",
+      "passed": true,
+      "checked": true,
+      "detail": "allowed=true｜reason=内容为技术讨论与引用核对，无违规信息。"
+    },
+    "usage": {
+      "promptTokens": 1627,
+      "completionTokens": 2645,
+      "totalTokens": 4272,
+      "estimated": false,
+      "usageUnknown": false,
+      "costYuan": 0.001068,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25
+    },
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 291,
+      "failures": 20,
+      "promptTokens": 175544,
+      "completionTokens": 114500,
+      "totalTokens": 290044,
+      "costYuan": 0.072529,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-02T07:17:10.398Z"
+    },
+    "capWarning": "",
+    "warnings": [
+      "答辩练习材料 FC-1 注入 1820 字，可引用条目 12 条"
+    ],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "elapsedMs": 32146
+  }
+}

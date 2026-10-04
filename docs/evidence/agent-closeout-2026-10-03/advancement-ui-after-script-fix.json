@@ -1,0 +1,90 @@
+{
+  "startedAt": "2026-10-03T02:09:37.351Z",
+  "checks": [
+    {
+      "id": "M1",
+      "name": "事实题：现场真实模型解释 + 出处标记与卡片一一对应",
+      "source": "live",
+      "liveDegradeNote": "",
+      "modelText": "下面依据官方原文回答\n\n网上缴费截止时间为1月23日17:00 [S1]",
+      "label": "AI 解释 · 依据官方原文",
+      "note": "依据下面列出的官方原文 · 内容安全已检测",
+      "citations": [
+        {
+          "passageId": "gd-zsb-2026#fee-deadline",
+          "title": "广东省2026年普通高等学校专升本招生工作规定",
+          "documentNumber": "粤招办普〔2025〕51号"
+        },
+        {
+          "passageId": "gd-zsb-2026#register-time",
+          "title": "广东省2026年普通高等学校专升本招生工作规定",
+          "documentNumber": "粤招办普〔2025〕51号"
+        }
+      ],
+      "markers": [
+        1
+      ],
+      "pass": true
+    },
+    {
+      "id": "M2",
+      "name": "缺失年份：先澄清且不调用模型",
+      "choices": [
+        "2026 年广东省"
+      ],
+      "pass": true
+    },
+    {
+      "id": "M3",
+      "name": "语料不含的数据：拒答并给官方入口",
+      "links": [
+        "广东省教育考试院",
+        "广东学生就业创业网（省教育厅）"
+      ],
+      "pass": true
+    },
+    {
+      "id": "M4",
+      "name": "传输失败：降级为原文摘录并给重试入口",
+      "note": "AI 服务暂时不可用，请稍后重试；下面是检索到的官方原文（未改写），可以自己核对。",
+      "pass": true
+    },
+    {
+      "id": "M4b",
+      "name": "重试后拿到真实模型解释",
+      "pass": true
+    }
+  ],
+  "shots": [
+    {
+      "name": "01-model-answer",
+      "file": "artifacts\\verify\\advancement-model-01-model-answer.png"
+    },
+    {
+      "name": "02-clarify",
+      "file": "artifacts\\verify\\advancement-model-02-clarify.png"
+    },
+    {
+      "name": "03-refuse",
+      "file": "artifacts\\verify\\advancement-model-03-refuse.png"
+    },
+    {
+      "name": "04-fallback",
+      "file": "artifacts\\verify\\advancement-model-04-fallback.png"
+    },
+    {
+      "name": "05-after-retry",
+      "file": "artifacts\\verify\\advancement-model-05-after-retry.png"
+    }
+  ],
+  "passed": true,
+  "env": {
+    "platform": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "SDKVersion": "3.17.2"
+  },
+  "route": "pages/advancement/index",
+  "initialExamplePhase": "ready",
+  "mockNote": "降级检查里的传输失败是模拟器内 mock 出来的（不是真实网络故障），真实额度用尽导致的降级见 M0",
+  "finishedAt": "2026-10-03T02:10:11.795Z"
+}

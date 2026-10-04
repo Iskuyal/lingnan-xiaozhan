@@ -1,14 +1,16 @@
 # 任务入口
 
-这里只放可跟踪的执行事项；新增方向与讨论稿放在 [planning/](../planning/README.md)。先核对 [当前状态](../status.md)，再决定下一步；不要从历史 Ticket 的未勾选项推断当前功能尚未实现。
+这里只放可跟踪的执行事项；新增方向与讨论稿放在 [planning/](../planning/README.md)。先核对 [当前状态](../status.md) 与 [待办总表](pending.md)，再决定下一步；G0–G4提示词保留历史，不能当作当前未做事项重新执行；不要从历史 Ticket 的未勾选项推断当前功能尚未实现。
 
 | 入口 | 用途 |
 | --- | --- |
-| [项目答辩练习G0提示词](project-defense-g0-prompt.md) | 交给其他执行者准备事实卡、冻结样例与评价规则；Issue #111 |
-| [项目答辩练习G1提示词](project-defense-g1-prompt.md) | 历史：开启 G1 的提示词；执行顺序已被 2026-10-01 实测取代 |
-| [项目答辩练习G1首评重跑提示词](project-defense-g1-first-eval-prompt.md) | **当前执行入口**：阻断项修好后执行 G1 真实模型首评重跑；Issue #112 |
-| [项目答辩练习G1真实评测续跑提示词](project-defense-g1-resume-prompt.md) | 历史：上一版续跑提示词；已被首评重跑件取代 |
-| [升学模型阶段提示词](advancement-model-prompt.md) | 新会话执行下一阶段模型版与真实引用评测 |
+| [项目答辩练习G0历史提示词](project-defense-g0-prompt.md) | 交给其他执行者准备事实卡、冻结样例与评价规则；Issue #111 |
+| [项目答辩练习G1历史提示词](project-defense-g1-prompt.md) | 交给其他执行者跑受控文字 PoC 与首次反馈评测；Issue #112，依赖 #111 |
+| [项目答辩练习G1历史续跑提示词](project-defense-g1-resume-prompt.md) | 离线部分已交付后，接力跑真实调用与逐例判定；Issue #112 |
+| [项目答辩练习G4部署与真实验收提示词](project-defense-g4-prompt.md) | 合并 PR #124–#126 → 部署回读 → 端到端与真机 → 新冻结样例首评与对照；Issue #115 |
+| [项目答辩练习G4收尾与G5交接提示词](project-defense-g4-resume-prompt.md) | G4 已执行完（PR #127）：收人类复核与待拍板项，把时延/额度/审核配置写成 G5（10-08）输入；Issue #115 / #116 |
+| [G1首评重跑历史提示词](project-defense-g1-first-eval-prompt.md) | 2026-10-01未合入的历史交接；G1已由后续首评覆盖，当前从待办总表执行 |
+| [升学模型阶段提示词](advancement-model-prompt.md) | 模型已接入；先核账与取得预算配置决定，再恢复真实独立题与引用验收 |
 | [待办总表](pending.md) | 未决事项、未完成项、证据归档与负责人前置 |
 | [11 张执行 Ticket](tickets/README.md) | 逐票的状态、依赖、验收标准和历史成果 |
 | [资讯后续范围](p3-2-news-updates.md) | P3-2 的栏目、全量与增量同步决策 |

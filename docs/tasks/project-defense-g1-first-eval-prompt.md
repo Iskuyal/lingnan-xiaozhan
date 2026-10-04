@@ -1,5 +1,7 @@
 # 项目讲解与答辩练习：G1 首评重跑提示词
 
+> 历史提示词（2026-10-01），2026-10-04整合归档。后续G1真实首评与G3/G4已交付，原文的阻断与未执行状态仅代表当时；当前执行入口见[待办总表](pending.md)和[项目状态](../status.md)。
+
 关联任务：[Issue #112](https://github.com/Iskuyal/wx-match/issues/112)：完成受控文字 PoC 与首次反馈评测（Blocked by [Issue #111](https://github.com/Iskuyal/wx-match/issues/111)）。
 
 状态：**取代** [G1 提示词](project-defense-g1-prompt.md)（开启件）与 [G1 真实评测续跑提示词](project-defense-g1-resume-prompt.md)（续跑件），后两者保留为历史。本件供另一位执行者在**阻断项修好之后**执行 G1 的真实模型首评重跑。阶段范围与关口见[执行方案](../planning/project-defense-stages-2026-09-30.md)；素材与冻结件见 [G0 素材包](../evidence/project-defense-g0/README.md)；上一轮实测与阻塞见 [G1 证据](../evidence/project-defense-g1/README.md)。**本阶段不新增页面、不做设计图、不改产品功能代码**（那是 G3）。

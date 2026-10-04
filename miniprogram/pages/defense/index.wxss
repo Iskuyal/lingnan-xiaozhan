@@ -1,0 +1,120 @@
+/* 项目讲解与答辩练习：数值取自 docs/design/project-defense（390px 图，1px = 1.923rpx）。 */
+
+.defense {
+  min-height: 100vh;
+  padding: 42rpx 35rpx 77rpx;
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.eyebrow { color: var(--text-3, #746760); font-size: 21rpx; line-height: 1.4; }
+.defense-title { margin-top: 8rpx; color: var(--brand-deep, #8c1614); font-size: 52rpx; line-height: 1.25; font-weight: 700; }
+.quiet { color: var(--text-3, #746760); font-size: 21rpx; line-height: 1.65; }
+.note {
+  margin-top: 27rpx; padding: 19rpx 23rpx;
+  border-left: 6rpx solid var(--gold, #c69a28); background: var(--paper-shade, #faeee9);
+  color: var(--text-2, #6b5d57); font-size: 22rpx; line-height: 1.75;
+}
+
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: 46rpx 0 19rpx; }
+.section-title { color: var(--brand-deep, #8c1614); font-size: 31rpx; font-weight: 700; }
+.section-note { color: var(--text-3, #746760); font-size: 21rpx; }
+
+.card {
+  background: rgba(255, 255, 255, 0.62);
+  border: 2rpx solid rgba(43, 36, 34, 0.13);
+  border-radius: 13rpx;
+}
+
+.chip {
+  display: inline-block; padding: 4rpx 15rpx; border-radius: 6rpx;
+  border: 2rpx solid rgba(43, 36, 34, 0.15); background: rgba(255, 255, 255, 0.5);
+  color: var(--text-2, #6b5d57); font-size: 19rpx; line-height: 1.3;
+}
+.chip-gold { color: var(--brand-ink, #7a1a12); border-color: rgba(198, 154, 40, 0.55); background: rgba(198, 154, 40, 0.12); }
+.chip-warn { color: var(--warn, #9a5b1e); border-color: var(--warn-line, rgba(214,160,90,0.55)); background: var(--warn-soft, rgba(255,244,228,0.86)); }
+
+.material { margin-top: 19rpx; padding: 23rpx; border-left: 6rpx solid var(--gold, #c69a28); }
+.material-head { display: flex; align-items: baseline; justify-content: space-between; }
+.material-name { color: var(--brand-deep, #8c1614); font-size: 26rpx; font-weight: 700; }
+.pick { color: var(--brand, #c41c23); font-size: 21rpx; font-weight: 700; }
+.fact {
+  margin-top: 12rpx; padding-left: 17rpx;
+  border-left: 4rpx solid rgba(198, 154, 40, 0.55);
+  color: var(--text-2, #6b5d57); font-size: 22rpx; line-height: 1.75;
+}
+
+.bound { margin-top: 12rpx; padding-left: 23rpx; color: var(--text-2, #6b5d57); font-size: 22rpx; line-height: 1.75; }
+
+.question {
+  margin-top: 27rpx; padding: 21rpx 23rpx; border-radius: 13rpx;
+  background: var(--brand-deep, #8c1614); color: #ffffff;
+}
+.question-tag { display: block; color: rgba(255, 255, 255, 0.82); font-size: 19rpx; }
+.question-text { display: block; margin-top: 9rpx; font-size: 26rpx; line-height: 1.65; }
+
+.answer-input {
+  margin-top: 19rpx; width: 100%; min-height: 227rpx; padding: 21rpx 23rpx;
+  border: 2rpx solid rgba(43, 36, 34, 0.18); border-radius: 13rpx;
+  background: #ffffff; color: var(--text, #2b2422); font-size: 25rpx; line-height: 1.8;
+}
+.input-foot { margin-top: 12rpx; display: flex; align-items: center; justify-content: space-between; color: var(--text-3, #746760); font-size: 19rpx; }
+
+.cheat { margin-top: 19rpx; padding: 19rpx 23rpx; border: 2rpx dashed rgba(43, 36, 34, 0.22); border-radius: 13rpx; }
+.cheat-title { color: var(--text-2, #6b5d57); font-size: 21rpx; font-weight: 700; }
+.cheat-list { margin-top: 12rpx; display: flex; flex-wrap: wrap; }
+.cheat-chip {
+  margin: 0 12rpx 12rpx 0; padding: 4rpx 13rpx; border-radius: 6rpx;
+  border: 2rpx solid rgba(198, 154, 40, 0.5); background: rgba(198, 154, 40, 0.1);
+  color: var(--brand-ink, #7a1a12); font-size: 19rpx;
+}
+
+.hint { margin-top: 19rpx; color: var(--warn, #9a5b1e); font-size: 22rpx; line-height: 1.7; }
+
+.primary {
+  margin-top: 31rpx; width: 100%; min-height: 92rpx; border-radius: 10rpx;
+  background: var(--brand, #c41c23); color: #ffffff; font-size: 27rpx; font-weight: 700;
+}
+.secondary {
+  margin-top: 19rpx; width: 100%; min-height: 85rpx; border-radius: 10rpx;
+  border: 2rpx solid rgba(122, 26, 18, 0.38); background: transparent;
+  color: var(--brand-ink, #7a1a12); font-size: 25rpx; font-weight: 600;
+}
+.pressed { opacity: 0.72; }
+
+.pending { margin-top: 27rpx; padding: 27rpx 23rpx; border: 2rpx dashed rgba(43, 36, 34, 0.28); border-radius: 13rpx; }
+.pending-title { display: block; color: var(--brand-deep, #8c1614); font-size: 26rpx; font-weight: 700; }
+.pending-body { display: block; margin-top: 12rpx; color: var(--text-2, #6b5d57); font-size: 22rpx; line-height: 1.8; }
+.progress { margin-top: 19rpx; height: 6rpx; border-radius: 3rpx; background: rgba(43, 36, 34, 0.14); overflow: hidden; }
+.progress-bar { width: 58%; height: 100%; background: var(--gold, #c69a28); }
+.pending-foot { margin-top: 12rpx; display: flex; align-items: center; justify-content: space-between; color: var(--text-3, #746760); font-size: 19rpx; }
+
+.frame { margin-top: 19rpx; padding: 21rpx 23rpx; }
+.frame-title { display: block; color: var(--brand-deep, #8c1614); font-size: 24rpx; font-weight: 700; }
+.frame-body { display: block; margin-top: 12rpx; color: var(--text-2, #6b5d57); font-size: 23rpx; line-height: 1.8; }
+
+.ask {
+  margin-top: 19rpx; padding: 21rpx 23rpx; border-radius: 10rpx;
+  border: 2rpx solid rgba(140, 22, 20, 0.28); border-left: 6rpx solid var(--brand, #c41c23);
+  background: rgba(196, 28, 35, 0.05);
+}
+.ask-label { display: block; color: var(--brand-ink, #7a1a12); font-size: 19rpx; font-weight: 700; }
+.ask-text { display: block; margin-top: 9rpx; color: var(--text, #2b2422); font-size: 24rpx; line-height: 1.8; }
+
+.dim { margin-top: 19rpx; padding: 19rpx 23rpx; }
+.dim-head { display: flex; align-items: center; justify-content: space-between; }
+.dim-name { color: var(--brand-deep, #8c1614); font-size: 25rpx; font-weight: 700; }
+.dim-body { display: block; margin-top: 12rpx; color: var(--text-2, #6b5d57); font-size: 22rpx; line-height: 1.75; }
+
+.fail {
+  margin-top: 27rpx; padding: 25rpx 23rpx; border-radius: 6rpx;
+  border: 2rpx solid var(--warn-line, rgba(214,160,90,0.55));
+  border-left: 8rpx solid #c68a32; background: var(--warn-soft, rgba(255,244,228,0.86));
+}
+.fail-title { display: block; color: var(--warn, #9a5b1e); font-size: 26rpx; font-weight: 700; }
+.fail-body { display: block; margin-top: 12rpx; color: var(--warn, #9a5b1e); font-size: 23rpx; line-height: 1.8; }
+
+.kept { margin-top: 19rpx; padding: 19rpx 23rpx; }
+.kept-text { display: block; margin-top: 12rpx; color: var(--text, #2b2422); font-size: 24rpx; line-height: 1.8; }

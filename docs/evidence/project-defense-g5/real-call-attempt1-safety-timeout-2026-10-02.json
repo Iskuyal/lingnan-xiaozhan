@@ -1,0 +1,62 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-02T07:16:17.898Z",
+  "request": {
+    "action": "chat",
+    "feature": "project-defense",
+    "materialId": "FC-1",
+    "messages": [
+      {
+        "role": "user",
+        "text": "这个功能是给谁、解决什么问题的？请用两三句话说清。"
+      },
+      {
+        "role": "assistant",
+        "text": "课表导入是给本校学生用的：他们从教务系统导出课表后，只能从微信聊天记录里选文件导入，识别不出的格子只标记不猜，交给学生在确认页裁决。"
+      },
+      {
+        "role": "user",
+        "text": "请按服务端下发的四节格式，对上面这段回答给出反馈与一个追问。"
+      }
+    ]
+  },
+  "elapsedMs": 9065,
+  "result": {
+    "ok": false,
+    "action": "chat",
+    "failureClass": "model_unavailable",
+    "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+    "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+    "feature": "project-defense",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 287,
+      "failures": 20,
+      "promptTokens": 171669,
+      "completionTokens": 111652,
+      "totalTokens": 283321,
+      "costYuan": 0.070848,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-02T07:16:11.267Z"
+    },
+    "capWarning": "",
+    "warnings": [
+      "答辩练习材料 FC-1 注入 1820 字，可引用条目 12 条"
+    ],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "elapsedMs": 6803
+  }
+}

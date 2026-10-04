@@ -1,0 +1,66 @@
+{
+  "startedAt": "2026-10-02T05:57:42.110Z",
+  "phase": "pending",
+  "checks": [],
+  "calls": [],
+  "assertions": [
+    {
+      "id": "P-1",
+      "name": "提交后进入等待态",
+      "pass": true,
+      "detail": "phase=pending"
+    },
+    {
+      "id": "P-2",
+      "name": "等待态说明「在等什么」",
+      "pass": true,
+      "detail": "在等什么模型要读完这份材料的所有条目，再逐句对照你写的 82 字。实测需要 20–45 秒，比普通问答慢：它要输出四节内容。通常 20–45"
+    },
+    {
+      "id": "P-3",
+      "name": "等待态给出耗时区间",
+      "pass": true,
+      "detail": "20–45 秒"
+    },
+    {
+      "id": "P-4",
+      "name": "等待秒数在走",
+      "pass": true,
+      "detail": "1 -> 4"
+    },
+    {
+      "id": "P-5",
+      "name": "等待态给出取消入口",
+      "pass": true,
+      "detail": "secondary 按钮 2 个"
+    },
+    {
+      "id": "P-6",
+      "name": "取消后回到作答态",
+      "pass": true,
+      "detail": "phase=practice"
+    },
+    {
+      "id": "P-7",
+      "name": "取消后草稿还在",
+      "pass": true,
+      "detail": "保留 82 字"
+    },
+    {
+      "id": "P-8",
+      "name": "取消后不显示反馈",
+      "pass": true,
+      "detail": "sections=0"
+    }
+  ],
+  "env": {
+    "platform": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "SDKVersion": "3.17.2",
+    "realDevice": false
+  },
+  "pendingElapsedMs": 5958,
+  "pendingRangeCopy": "20–45 秒",
+  "finishedAt": "2026-10-02T05:57:57.500Z",
+  "passed": true
+}

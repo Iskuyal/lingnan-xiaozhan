@@ -135,9 +135,8 @@ Page({
           this.setData({ qaSending: false, qaError: userMessage(result), qaCapWarning: result.capWarning });
           return;
         }
-        const turn = guardTurn(result.text, departmentId, text);
-        // 检索命中的动态来源挂到这条回答上，模板据此渲染来源条（无命中时不出现）。
-        if (result.citations.length > 0) turn.citations = result.citations;
+        const turn = guardTurn(result.text, departmentId, text, result.citations);
+        // 来源条使用guardTurn已核对的条目，不把原始返回重新填回上屏结果。
         appendTurn(departmentId, turn);
         this.setData({
           qaMessages: conversationOf(departmentId),

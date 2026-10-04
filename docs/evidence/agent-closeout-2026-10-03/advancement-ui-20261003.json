@@ -1,0 +1,22 @@
+{
+  "startedAt": "2026-10-03T02:04:04.106Z",
+  "checks": [
+    {
+      "id": "M0",
+      "name": "现场调用未拿到模型解释时的降级（如实记录原因）",
+      "phase": "fallback",
+      "note": "AI 服务内部错误，请稍后重试。 下面是检索到的官方原文（未改写），可以自己核对。",
+      "pass": true
+    }
+  ],
+  "shots": [],
+  "passed": false,
+  "env": {
+    "platform": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "SDKVersion": "3.17.2"
+  },
+  "route": "pages/advancement/index",
+  "error": "本轮要求现场模型响应，实际未取得：AI 服务内部错误，请稍后重试。 下面是检索到的官方原文（未改写），可以自己核对。",
+  "finishedAt": "2026-10-03T02:04:12.373Z"
+}

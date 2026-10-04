@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-10-03T01:40:22.280Z",
+  "dist": "dist/cloudfunctions/timetable",
+  "archive": "artifacts/closeout/cloud/timetable",
+  "before": null,
+  "counts": {
+    "local": 7,
+    "remote": 7,
+    "identical": 2,
+    "mismatched": 5
+  },
+  "files": [
+    {
+      "name": "index.js",
+      "local": {
+        "sha256": "3138bb51e0e3dba41abea36fad9aa4220e3df366f3776aea516877f3e72d1bab",
+        "bytes": 28204
+      },
+      "remote": {
+        "sha256": "3c59db57a9c217178d2bf2b8cfd38cfd7b4fda1b58909311db8639a6bf45a8bb",
+        "bytes": 28194
+      },
+      "before": null,
+      "identical": false,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "package-lock.json",
+      "local": {
+        "sha256": "ab19f2dfbc43713f0b909f6d89d5b4fdc1bcd9cd750fab425bafccbc92881c40",
+        "bytes": 46965
+      },
+      "remote": {
+        "sha256": "1c01a1bc44adc9fafaa007bdfea5eb8213a7c4827c66f16474f66c9bf07d3ff9",
+        "bytes": 46965
+      },
+      "before": null,
+      "identical": false,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "package.json",
+      "local": {
+        "sha256": "f96921a35378f797c940e15432a7a97ad9781dedff7a3707547a5cd17d13c6fe",
+        "bytes": 432
+      },
+      "remote": {
+        "sha256": "0d73852fc6f6ebae0018b7344785ca5ca4161fbf6fc8195660f33ae527b7de2b",
+        "bytes": 432
+      },
+      "before": null,
+      "identical": false,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "parse.js",
+      "local": {
+        "sha256": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe",
+        "bytes": 25179
+      },
+      "remote": {
+        "sha256": "7a556bb70cba050fb90a6cd6ef623db24f6eea0dd1b1b8ba6a03b6afb70018c6",
+        "bytes": 25183
+      },
+      "before": null,
+      "identical": false,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "record.js",
+      "local": {
+        "sha256": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281",
+        "bytes": 8377
+      },
+      "remote": {
+        "sha256": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281",
+        "bytes": 8377
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "settings.js",
+      "local": {
+        "sha256": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637",
+        "bytes": 7692
+      },
+      "remote": {
+        "sha256": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637",
+        "bytes": 7692
+      },
+      "before": null,
+      "identical": true,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    },
+    {
+      "name": "types.js",
+      "local": {
+        "sha256": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f",
+        "bytes": 1686
+      },
+      "remote": {
+        "sha256": "57a9ea401ad0e9bb219b1b39e17870ebd557ab4bf1087e02e4c22f4db150648c",
+        "bytes": 1690
+      },
+      "before": null,
+      "identical": false,
+      "changedSinceDeploy": "新增（部署前不存在）"
+    }
+  ]
+}

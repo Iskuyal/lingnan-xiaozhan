@@ -79,8 +79,29 @@ export function collectDocumentationFiles(root) {
     .filter((file) => existsSync(path.resolve(root, file))).sort();
 }
 
-/** Validate repository-local paths and Markdown fragments without accessing the network. */
-export function checkDocuments({ root, files }) {
+/**
+ * 收集 Git 索引中的路径；新增链接目标先 `git add`，才能证明交付不会漏文件。
+ *
+ * 为什么需要：`checkDocuments` 原来只看磁盘，因此**查不出指向 `artifacts/`、`dist/` 这类
+ * 被 gitignore 的路径的链接**——本地有文件、CI 的干净检出里没有（PR #127 就是这样被拦下的）。
+ *
+ * 文档扫描仍包含未跟踪的新 Markdown，提前发现新文档中的坏链接；但链接目标只认索引，
+ * 未被忽略不代表已提交，不能据此声称它会出现在干净检出里。
+ *
+ * **必须用 `-z`**：默认输出会把非 ASCII 文件名转义成 `\xxx`，中文文件名会误报。
+ */
+export function collectVisibleFiles(root) {
+  const output = execFileSync('git', ['ls-files', '--cached', '-z'], { cwd: root, encoding: 'utf8' });
+  return new Set(output.split('\0').filter(Boolean));
+}
+
+/**
+ * Validate repository-local paths and Markdown fragments without accessing the network.
+ *
+ * `visible`（可选）是 {@link collectVisibleFiles} 的返回值：给了它就要**同时**校验
+ * 「链接目标能否出现在干净检出里」，没给则只校验磁盘（供不依赖 git 的单元测试使用）。
+ */
+export function checkDocuments({ root, files, visible }) {
   root = path.resolve(root);
   const errors = [];
   const directoryEntries = new Map();
@@ -102,6 +123,19 @@ export function checkDocuments({ root, files }) {
     }
     return true;
   };
+  // 链接目标必须在「git 能看见」的集合里：只在磁盘上存在、却被 .gitignore 忽略的目标，
+  // 在 CI 的干净检出里不存在。目录链接按「目录下有没有可见文件」判断（git 不跟踪目录本身）。
+  const visibleFiles = new Set();
+  const visibleDirectories = new Set();
+  if (visible !== undefined) {
+    for (const entry of visible) {
+      const absolute = path.resolve(root, entry);
+      visibleFiles.add(absolute);
+      for (let directory = path.dirname(absolute); inside(directory) && directory !== root; directory = path.dirname(directory)) {
+        visibleDirectories.add(directory);
+      }
+    }
+  }
   for (const file of files) {
     const source = path.resolve(root, file);
     if (!inside(source) || !existsSync(source)) {
@@ -126,6 +160,11 @@ export function checkDocuments({ root, files }) {
         : source;
       if (!inside(target)) { error('链接指向仓库外部的本地路径'); continue; }
       if (!exactExists(target)) { error('目标不存在或路径大小写不一致'); continue; }
+      if (visible !== undefined && target !== root) {
+        const isDirectory = statSync(target).isDirectory();
+        const inGit = isDirectory ? visibleDirectories.has(target) : visibleFiles.has(target);
+        if (!inGit) { error('目标未被 git 跟踪：请先 git add；忽略或漏提交的文件在干净检出中不存在'); continue; }
+      }
       if (fragment && /\.md$/i.test(target)) {
         if (!anchorCache.has(target)) anchorCache.set(target, headingAnchors(readFileSync(target, 'utf8')));
         if (!anchorCache.get(target).has(fragment)) error(`文档锚点不存在：#${fragment}`);
@@ -138,7 +177,7 @@ export function checkDocuments({ root, files }) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const root = fileURLToPath(new URL('../', import.meta.url));
-    const result = checkDocuments({ root, files: collectDocumentationFiles(root) });
+    const result = checkDocuments({ root, files: collectDocumentationFiles(root), visible: collectVisibleFiles(root) });
     for (const error of result.errors) console.error(`${error.file}:${error.line} ${error.message} (${error.url})`);
     console.log(`文档检查：${result.filesChecked} 个 Markdown，${result.linksChecked} 个本地引用，${result.errors.length} 个错误。`);
     if (result.errors.length) process.exitCode = 1;

@@ -99,6 +99,18 @@
       <view class="entry-description">只用官方原文回答，附出处与核查日</view>
     </button>
 
+    <button
+      id="defense-entry"
+      class="home-wide-entry"
+      style="display:block;width:100%;max-width:none"
+      hover-class="pressed"
+      bindtap="openDefense"
+      aria-label="项目讲解与答辩练习，按材料逐句核对你的讲解"
+    >
+      <view class="entry-title">项目讲解与答辩练习</view>
+      <view class="entry-description">拿一份课程项目，按材料核对讲解；三轮一次复盘，可重答一处</view>
+    </button>
+
     <view class="news-section">
       <view class="news-section-head">
         <view class="section-title">最近动态</view>

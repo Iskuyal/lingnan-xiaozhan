@@ -9,3 +9,5 @@
 | [2026 年 9 月云开发实施过程](cloud-setup-2026-09.md) | 早期超时、权限、备案讨论及收尾操作 | [云开发手册](../development/cloud/README.md)、[部署关卡](../development/cloud/deployment.md) |
 
 新的验收证据继续放在 [evidence/](../evidence/README.md)，审查与整改放在 [review/](../review/README.md)，不因时间经过就移动图片或改写结论。
+
+- [2026-10-03收尾前待办](pending-before-closeout-2026-10-03.md)与[状态快照](status-before-closeout-2026-10-03.md)：完整保留更正前的日期、判断与未决项；当前入口见状态和待办。

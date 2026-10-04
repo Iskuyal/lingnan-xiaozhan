@@ -61,7 +61,7 @@ test('升学语料随构建注入云函数目录，且只带原文与出处（�
   const passages = corpus.documents.flatMap((document) => document.passages);
   assert.equal(passages.length, 25);
   for (const passage of passages) {
-    assert.deepEqual(Object.keys(passage).sort(), ['id', 'text']);
+    assert.deepEqual(Object.keys(passage).filter(key => key !== 'categories').sort(), ['id', 'text']);
     assert.ok(passage.text.length > 0);
   }
 });
@@ -258,6 +258,8 @@ test('advancement-qa：数值等价写法（1.5万 ↔ 15000）算有出处，�
     const harness = createHarness({ security: wechatOk(), respond: () => openAiTextResponse(item.text) });
     const result = await harness.main(advancementEvent({
       passageIds: [item.passageId],
+      messages: [{ role: 'user', text: item.passageId.startsWith('gd-segmented')
+        ? '2026年广东三二分段转段每科报考费多少？' : '2026年广东公务员计划提供多少岗位？' }],
       scope: { category: item.passageId.startsWith('gd-segmented') ? 'segmented_三二分段专升本转段' : 'internship_实习招聘', year: 2026, region: '广东省' },
     }));
     assert.equal(result.ok, item.ok, `${item.text} → ${result.detail}`);

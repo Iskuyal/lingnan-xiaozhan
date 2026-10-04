@@ -22,7 +22,7 @@ test('语料自检：四份文档、段落齐全、每条都有 https 出处与�
   assert.equal(passages.length, 25);
   for (const document of advancement.ADVANCEMENT_DOCUMENTS) {
     assert.match(document.sourceUrl, /^https?:\/\//, `${document.id} 缺少官方链接`);
-    assert.ok(['2026-09-29', '2026-09-30'].includes(document.collectedAt), `${document.id} 核查日不对：${document.collectedAt}`);
+    assert.equal(document.collectedAt, corpus.documents.find(source => source.id === document.id).collectedAt);
     assert.ok(document.title !== '' && document.issuer !== '');
   }
   for (const passage of passages) {

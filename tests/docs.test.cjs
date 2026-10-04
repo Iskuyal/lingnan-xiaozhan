@@ -4,8 +4,12 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 let checkDocuments;
-before(async () => { ({ checkDocuments } = await import('../scripts/check-docs.mjs')); });
+let collectVisibleFiles;
+before(async () => {
+  ({ checkDocuments, collectVisibleFiles } = await import('../scripts/check-docs.mjs'));
+});
 
 function fixture(t, files) {
   const tempRoot = path.resolve(os.tmpdir());
@@ -131,4 +135,61 @@ test('文档检查：HTML 图片与链接可检查且保留显式锚点', (t) =>
 test('文档检查：不把围栏里的标题当作文档锚点', (t) => {
   const result = check(t, { 'README.md': '[错误](#示例标题)\n```md\n# 示例标题\n```' });
   assert.equal(result.errors.length, 1);
+});
+
+// ------------------------------------------------ 链接目标必须能在干净检出里存在（2026-10-02）
+
+test('文档检查：指向被 .gitignore 忽略的目标时报错（CI 干净检出会 404）', (t) => {
+  const files = {
+    'README.md': '# 项目\n[回读](artifacts/verify/readback.json)',
+    'artifacts/verify/readback.json': '{}',
+  };
+  // `visible` 就是 collectVisibleFiles 的结果：这份 fixture 里只有 README.md 被 git 看见。
+  const ignored = checkDocuments({ root: fixture(t, files), files: ['README.md'], visible: new Set(['README.md']) });
+  assert.equal(ignored.errors.length, 1);
+  assert.equal(ignored.errors[0].url, 'artifacts/verify/readback.json');
+  assert.match(ignored.errors[0].message, /git/u);
+
+  // 同一份文件若真的会进 git（例如没有被忽略），判据必须放过。
+  const tracked = checkDocuments({
+    root: fixture(t, files),
+    files: ['README.md'],
+    visible: new Set(['README.md', 'artifacts/verify/readback.json']),
+  });
+  assert.deepEqual(tracked.errors, []);
+});
+
+test('文档检查：collectVisibleFiles 用 -z 解析，中文文件名不转义、被忽略项被排除', (t) => {
+  const root = fixture(t, {
+    '.gitignore': 'artifacts/\n',
+    'README.md': '# 项目\n[中文](docs/中文.md)\n[生成物](artifacts/out.json)\n[目录](docs/)',
+    'docs/中文.md': '# 中文',
+    'artifacts/out.json': '{}',
+  });
+  execFileSync('git', ['init', '-q'], { cwd: root });
+  execFileSync('git', ['add', 'README.md', 'docs/中文.md'], { cwd: root });
+  const visible = collectVisibleFiles(root);
+  assert.ok(visible.has('README.md'));
+  // 不带 -z 的默认输出会把中文名转义成 \344\270\255\346\226\207，这里必须拿到原样文件名。
+  assert.ok(visible.has('docs/中文.md'), `中文文件名不应被转义：${[...visible].join(' ')}`);
+  assert.ok(!visible.has('artifacts/out.json'), '被忽略的生成物不应出现在可见集合里');
+
+  // 目录链接（`docs/`）靠「目录下有可见文件」通过，生成物链接必须被拦下。
+  const result = checkDocuments({ root, files: ['README.md'], visible });
+  assert.equal(result.errors.length, 1, JSON.stringify(result.errors));
+  assert.equal(result.errors[0].url, 'artifacts/out.json');
+});
+
+test('文档检查：未提交目标必须报错，git add 后才可交付', (t) => {
+  const root = fixture(t, {
+    'README.md': '[遗漏文件](docs/new.md)',
+    'docs/new.md': '# 新文档',
+  });
+  execFileSync('git', ['init', '-q'], { cwd: root });
+  execFileSync('git', ['add', 'README.md'], { cwd: root });
+  const result = checkDocuments({ root, files: ['README.md'], visible: collectVisibleFiles(root) });
+  assert.equal(result.errors.length, 1, '磁盘上的未跟踪目标不能冒充可交付文件');
+  assert.equal(result.errors[0].url, 'docs/new.md');
+  execFileSync('git', ['add', 'docs/new.md'], { cwd: root });
+  assert.deepEqual(checkDocuments({ root, files: ['README.md'], visible: collectVisibleFiles(root) }).errors, []);
 });

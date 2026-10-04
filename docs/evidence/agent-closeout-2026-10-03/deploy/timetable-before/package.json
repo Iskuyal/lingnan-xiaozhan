@@ -1,0 +1,16 @@
+{
+  "name": "timetable",
+  "version": "1.0.0",
+  "private": true,
+  "description": "解析教务课表 Excel 草稿，并按微信身份读写个人课表",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "4.0.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "overrides": {
+    "axios": "0.33.0",
+    "lodash.set": "npm:set-value@4.1.0",
+    "lodash.unset": "4.18.0"
+  }
+}

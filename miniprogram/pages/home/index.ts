@@ -104,6 +104,9 @@ Page({
   openAdvancement() {
     wx.navigateTo({ url: '/pages/advancement/index' });
   },
+  openDefense() {
+    wx.navigateTo({ url: '/pages/defense/index' });
+  },
   copySource() {
     wx.setClipboardData({
       data: school.sourceUrl,

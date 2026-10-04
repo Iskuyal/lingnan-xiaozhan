@@ -1,10 +1,10 @@
 /**
  * 升学 / 实习问答（本地演示，Issue #94）。
  *
- * **这一版不调用任何模型**：回答就是把检索到的官方原文段落原样给出，配出处卡片与「适用年份」；
+ * **本检索模块不调用模型**：先给出官方原文段落、出处卡片和适用年份；模型版由 ./model.ts 组装请求。
  * 类别不明、年份未收录、问岗位或分数线时，用固定话术澄清或拒答。因此：
  * - 不存在「模型编造」的风险，但**也不是智能问答**——检索不到就答不了；
- * - 界面必须写明「未接模型」，不得宣称实时 AI 服务（见 `docs/evidence/advancement-poc/README.md` 的 go/no-go）。
+ * - 本地摘录与现场模型回答分别标注；旧 PoC 的「未接模型」仅是当时的实现状态，不约束当前模型版。
  *
  * 检索与守门规则与 PoC 脚本一致（`scripts/advancement-poc.cjs`）：
  * bigram + idf 打分、按段落长度开方归一；类别判定与越界数据的规则见下。
@@ -93,6 +93,10 @@ const OUT_OF_SCOPE: Array<{ word: string; kind: string }> = [
   { word: '录取率', kind: '录取率' },
   { word: '薪资', kind: '薪资' },
   { word: '工资', kind: '薪资' },
+  { word: '月薪', kind: '薪资' },
+  { word: '年薪', kind: '薪资' },
+  { word: '时薪', kind: '薪资' },
+  { word: '薪酬', kind: '薪资' },
   { word: '招人', kind: '实时岗位' },
   { word: '招不招', kind: '实时岗位' },
   { word: '哪家公司', kind: '实时岗位' },
@@ -137,7 +141,9 @@ for (const grams of PASSAGE_GRAMS) {
 /** idf 之和，按段落长度开方归一（不归一的话长段落会压过精确命中的短段落）。 */
 function score(query: string, index: number): number {
   let total = 0;
-  for (const gram of new Set(bigrams(query))) {
+  // 地方常用别名只用于检索，不改问题范围或展示原文。
+  const normalized = query.replace(/专插本/gu, '普通专升本');
+  for (const gram of new Set(bigrams(normalized))) {
     if (!PASSAGE_GRAMS[index].has(gram)) continue;
     const df = DOCUMENT_FREQUENCY.get(gram) ?? 1;
     total += Math.log(1 + PASSAGES.length / df);
@@ -219,7 +225,8 @@ export function classify(question: string): Classification {
 export function coveredYears(category: AdvancementDocument['category']): number[] {
   const years = new Set<number>();
   for (const document of ADVANCEMENT_DOCUMENTS) {
-    if (document.category === category && document.applicableYear > 0) years.add(document.applicableYear);
+    if ((document.category === category || document.passages.some(p => p.categories?.includes(category)))
+      && document.applicableYear > 0) years.add(document.applicableYear);
   }
   return [...years].sort();
 }
@@ -340,7 +347,8 @@ export function ask(question: string, topN: number = 2, scope: AskScope = {}): A
     return scopeQuestion('请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。', options);
   }
 
-  const pool = PASSAGES.filter((passage) => passage.document.category === classification.category
+  const pool = PASSAGES.filter((passage) => (passage.document.category === classification.category
+    || passage.categories?.includes(classification.category))
     && (passage.document.applicableYear === year || passage.document.applicableYear === 0)
     && passage.document.applicableRegion === region);
   const ranked = pool

@@ -1,0 +1,41 @@
+﻿
+> wx-match@0.1.0 poc:defense:usage
+> node scripts/poc-project-defense.cjs --usage
+
+{
+  "ok": true,
+  "action": "usage",
+  "failureClass": "",
+  "message": "",
+  "detail": "当月累计 259 次调用、240971 token、0.060257 元（上限 50 元，告警线 40 元）",
+  "feature": "usage",
+  "provider": "",
+  "model": "",
+  "text": "",
+  "safety": null,
+  "usage": null,
+  "usageSummary": {
+    "month": "2026-10",
+    "calls": 259,
+    "failures": 19,
+    "promptTokens": 144769,
+    "completionTokens": 96202,
+    "totalTokens": 240971,
+    "costYuan": 0.060257,
+    "capYuan": 50,
+    "warnRatio": 0.8,
+    "warnThresholdYuan": 40,
+    "warn": false,
+    "exceeded": false,
+    "priceInputPerMillion": 0.25,
+    "priceOutputPerMillion": 0.25,
+    "updatedAt": "2026-10-02T04:58:18.301Z"
+  },
+  "capWarning": "",
+  "warnings": [],
+  "citations": [],
+  "advancement": null,
+  "probe": null,
+  "elapsedMs": 82
+}
+usage 为只读动作：不消耗个人日额度、不触发内容安全检测。

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>答辩练习 · 重答对照</title>
+  <link rel="stylesheet" href="_tokens.css">
+  <link rel="stylesheet" href="_mockup.css">
+  <style>
+    .ff-pick { display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid rgba(43,36,34,.14); background:rgba(255,255,255,.55); }
+    .ff-pick.on { border-color:rgba(196,28,35,.45); background:rgba(196,28,35,.05); }
+    .ff-pick-dot { flex:none; width:13px; height:13px; border:3.5px solid var(--brand); border-radius:50%; }
+    .ff-pick-name { flex:1; color:var(--text); font-size:12.5px; font-weight:600; }
+    .ff-pick-tag { color:var(--warn); font-size:10px; font-weight:700; }
+    .ff-compare { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+    .ff-side { padding:10px 12px; border:1px solid rgba(43,36,34,.14); background:rgba(255,255,255,.55); }
+    .ff-side.new { border-left:3px solid #147a70; }
+    .ff-side.old { border-left:3px solid rgba(43,36,34,.25); }
+    .ff-side-label { color:var(--text-3); font-size:10px; }
+    .ff-side-text { margin-top:5px; color:var(--text); font-size:12.5px; line-height:1.8; }
+    .ff-gain { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; }
+    .ff-gain-chip { min-height:20px; padding:1px 7px; border:1px solid rgba(20,122,112,.32); border-radius:3px; background:rgba(20,122,112,.10); color:#147a70; font-size:10px; font-weight:700; }
+    .ff-keep { margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="statusbar"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="battery"></span></span></div>
+  <div class="navbar"><span class="nav-back">‹</span><span class="nav-title">重答一处薄弱项</span><span class="nav-capsule"><i></i><i></i><b></b></span></div>
+  <main class="page">
+    <div class="eyebrow">重答 · 全流程仅此一次 · 必须由你自己新写</div>
+    <h1 class="page-title">选一处重答</h1>
+
+    <div class="section-head" style="margin-top:14px"><span class="section-title">选哪一处</span><span class="section-note">按复盘里的结果</span></div>
+    <div class="ff-pick on"><span class="ff-pick-dot"></span><span class="ff-pick-name">方案及取舍</span><span class="ff-pick-tag">需补充</span></div>
+    <div class="ff-pick" style="margin-top:8px"><span class="ff-pick-dot" style="border-color:rgba(43,36,34,.3)"></span><span class="ff-pick-name">验证与限制</span><span class="ff-pick-tag">与材料待核对</span></div>
+
+    <div class="section-head"><span class="section-title">上一次 vs 这一次</span></div>
+    <div class="ff-compare">
+      <div class="ff-side old">
+        <div class="ff-side-label">第一次回答</div>
+        <div class="ff-side-text">我们做了智能识别，能自动处理各种格式，兼容性很好。</div>
+      </div>
+      <div class="ff-side new">
+        <div class="ff-side-label">重答（新增依据已标出）</div>
+        <div class="ff-side-text">
+          解析的是教务导出的网格矩阵：前几行元信息，表头是星期一到星期日，之后每行一个大节（F3）。
+          识别不出的周次和节次只做标记、保留原值，不猜也不擅自修，留给学生在确认页裁决（F4）。
+          目前只有单换行与空行两种分隔实测过，其他格式没测。
+        </div>
+        <div class="ff-gain">
+          <span class="ff-gain-chip">新增依据 F3</span>
+          <span class="ff-gain-chip">新增依据 F4</span>
+          <span class="ff-gain-chip">撤回「各种格式」</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ff-keep">
+      <div class="ff-frame-title">仍然是待验证</div>
+      <div class="ff-row">F8① 服务端越权隔离 · F8② 100 条以上分页读取 · F8③ 临时文件极端残留</div>
+      <div class="quiet">重答没有改变这三项的状态，本次反馈也不会把它们写成已完成。</div>
+    </div>
+
+    <div class="ff-note">
+      判断标准只有一条：<b>有没有新增可回核的条目编号</b>。把句子写长、写得更流畅，不算改善；
+      把「下一步计划」写成「已经验证」，也不算改善。
+    </div>
+
+    <div class="primary" style="margin-top:18px"><span>提交重答，看依据对照</span><span class="action-arrow">›</span></div>
+    <div class="quiet back-link">重答后再出现一次反馈，本次会话即结束</div>
+  </main>
+</body>
+</html>

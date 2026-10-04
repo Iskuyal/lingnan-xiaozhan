@@ -1,3 +1,5 @@
+> 2026-10-03：此件保留为历史执行记录。已完成部分不要重做；当前剩余工作以 [待办总表](pending.md) 和 [收尾证据](../evidence/agent-closeout-2026-10-03/README.md) 为准。
+
 # 项目讲解与答辩练习：G0开始提示词
 
 关联任务：[Issue #111](https://github.com/Iskuyal/wx-match/issues/111)。

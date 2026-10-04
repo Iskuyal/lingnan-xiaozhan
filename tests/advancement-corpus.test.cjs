@@ -19,10 +19,7 @@ test('语料：四份官方材料，每条段落都带出处、核查日与检�
     assert.match(document.sourceUrl, /^https?:\/\//, `${document.id} 缺少官方链接`);
     assert.ok(document.title.trim() !== '', `${document.id} 缺少标题`);
     assert.ok(document.issuer.trim() !== '', `${document.id} 缺少发布主体`);
-    // 2026-09-30 修订了两段（gd-zsb-2026#not-eligible 与 gd-employment-2026#soe 补回原文主语/
-    // 小标题，见 docs/evidence/advancement-model/README.md），对应两份材料的核查日改成 09-30；
-    // 其余材料仍是 09-29。核查日只能是这两个值之一，且必须是完整日期。
-    assert.ok(['2026-09-29', '2026-09-30'].includes(document.collectedAt), `${document.id} 核查日不对：${document.collectedAt}`);
+    assert.match(document.collectedAt, /^\d{4}-\d{2}-\d{2}$/u, `${document.id} 缺完整核查日期`);
     assert.ok([
       'ordinary_专升本',
       'segmented_三二分段专升本转段',

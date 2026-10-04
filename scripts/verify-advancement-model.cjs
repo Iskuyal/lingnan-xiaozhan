@@ -15,6 +15,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 const { connectMini } = require('./lib/mini-connect.cjs');
+const { waitForInitialExample } = require('./lib/advancement-bootstrap.cjs');
+const { advancementBuildHashes } = require('./lib/advancement-build-hashes.cjs');
 
 const MODEL_WAIT_MS = 45000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -28,8 +30,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  */
 function recordedResponse() {
   const verifier = require(path.resolve('dist/cloudfunctions/ai/advancement.js'));
-  const buildHashes = Object.fromEntries(['index.js', 'advancement.js', 'advancement-corpus.js'].map((file) => [file,
-    createHash('sha256').update(fs.readFileSync(path.resolve('dist/cloudfunctions/ai', file))).digest('hex')]));
+  const buildHashes = advancementBuildHashes();
   const dir = path.resolve('artifacts/verify');
   if (!fs.existsSync(dir)) return null;
   const files = fs.readdirSync(dir)
@@ -110,6 +111,7 @@ async function run() {
     await sleep(2000);
     const page = await mini.currentPage();
     report.route = page.path;
+    report.initialExamplePhase = await waitForInitialExample(page);
 
     const ask = async (text) => {
       await (await page.$('#qa-input')).input(text);

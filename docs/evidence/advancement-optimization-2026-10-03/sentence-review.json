@@ -1,0 +1,120 @@
+{
+  "reviews": [
+    {
+      "run": "diagnostic-b",
+      "id": "b04",
+      "answer": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”[S1]。",
+      "sentences": [
+        {
+          "claim": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”[S1]。",
+          "citation": "S1",
+          "passageId": "gd-segmented-2026#parts",
+          "injectedQuote": "转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。",
+          "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "三个考核部分与分项考核/综合评价对应官方原文；本次用的是旧逐字摘录，完整官网句首已在后续语料修正，不能当最终版本实测。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    },
+    {
+      "run": "diagnostic-b",
+      "id": "b07",
+      "answer": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等[S1]。",
+      "sentences": [
+        {
+          "claim": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等[S1]。",
+          "citation": "S1",
+          "passageId": "gd-zsb-2026#vocational-teacher",
+          "injectedQuote": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等。",
+          "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "符合上述条件之一、志愿填报开始前、与报考专业对应、中级及以上与原句一致；未把取得证书单独推成必然可报。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    },
+    {
+      "run": "regression-b",
+      "id": "b01",
+      "answer": "全年全省提供事业单位岗位不少于5万个[S1]",
+      "sentences": [
+        {
+          "claim": "全年全省提供事业单位岗位不少于5万个[S1]",
+          "citation": "S1",
+          "passageId": "gd-employment-2026#public-institution",
+          "injectedQuote": "全年全省提供事业单位岗位不少于5万个",
+          "sourceUrl": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "全年/全省/事业单位岗位主体及不少于5万个比较词与官方原文一致，不当成实时空缺。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    },
+    {
+      "run": "regression-b",
+      "id": "b03",
+      "answer": "[S1] 普通专升本计划招生6.5万人",
+      "sentences": [
+        {
+          "claim": "[S1] 普通专升本计划招生6.5万人",
+          "citation": "S1",
+          "passageId": "gd-employment-2026#upgrade-plan",
+          "injectedQuote": "普通专升本计划招生6.5万人",
+          "sourceUrl": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "普通专升本招生计划6.5万人，不是就业岗位数；原文发布于就业行动材料，新增段落主题不改变事实适用年份/地区。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    },
+    {
+      "run": "regression-b",
+      "id": "b06",
+      "answer": "基本素质考核“不合格”的学生，不得报考[S1]。",
+      "sentences": [
+        {
+          "claim": "基本素质考核“不合格”的学生，不得报考[S1]。",
+          "citation": "S1",
+          "passageId": "gd-segmented-2026#quality-check",
+          "injectedQuote": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。",
+          "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "不合格学生不得报考，否定、主语和条件全部保留，无个人资格保证。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    },
+    {
+      "run": "regression-b",
+      "id": "b07",
+      "answer": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等[S1]。",
+      "sentences": [
+        {
+          "claim": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等[S1]。",
+          "citation": "S1",
+          "passageId": "gd-zsb-2026#vocational-teacher",
+          "injectedQuote": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等。",
+          "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+          "factSupported": true,
+          "conditionNegationNumberReview": "符合上述条件之一、志愿填报开始前、与报考专业对应、中级及以上与原句一致；未把取得证书单独推成必然可报。"
+        }
+      ],
+      "reviewer": "执行agent逐句语义复核，非人类评审；同一verify函数结果未当独立证据",
+      "allDisplayedFactsSupported": true,
+      "unsupportedClaims": 0
+    }
+  ],
+  "humanFactReview": "pending",
+  "boundary": "只覆盖实际成功上屏的6条（跨两版本、含重复b07），不是6道独立题或最终版本泛化成绩。其余拒答/降级/未调用单列原始记录。"
+}
