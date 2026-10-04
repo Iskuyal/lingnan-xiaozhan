@@ -68,3 +68,6 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 - [校历与考试（整体待评审）](exam-calendar/README.md)
 - [体测估算（BMI 来源纠错，整体待评审）](fitness-calc/README.md)
 - [升学问答（澄清纠错，整体待评审）](advancement-qa/README.md)
+- [校长审核材料：功能、使用过程与最终结果](principal-showcase-v5/README.md)（仅展示材料，不修改小程序）
+
+- [校长审核材料v6：结果核对与投影阅读](principal-showcase-v6/README.md)（展示材料继续优化）
