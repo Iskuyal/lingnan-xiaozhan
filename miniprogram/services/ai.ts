@@ -408,7 +408,7 @@ function withTimeout<T>(call: Promise<T>, timeoutMs: number): Promise<T | typeof
  * 契约要求超时「按 `model_unavailable` 结束」，所以这里不抛错：抛错会走 transportMessage 那套
  * 「没能发出去」的文案，而契约要的是「模型没有返回结果」这一条。
  */
-function timedOutResult(): AiCallResult {
+export function timedOutResult(): AiCallResult {
   return {
     ok: false,
     failureClass: 'model_unavailable',
@@ -439,7 +439,11 @@ export async function callAi(data: Record<string, unknown>, timeoutMs: number = 
     console.warn(`AI 调用超过 ${timeoutMs} 毫秒仍未返回，按 model_unavailable 结束`);
     return timedOutResult();
   }
-  const result = response === null || response === undefined ? undefined : response.result;
+  return aiResultOf(response === null || response === undefined ? undefined : response.result);
+}
+
+/** 产品页与评测重放共用返回解析，保证上屏来源经过同一字段筛选。 */
+export function aiResultOf(result: unknown): AiCallResult {
   if (result === null || result === undefined || typeof result !== 'object') {
     throw new Error('AI 服务返回了无法识别的结果');
   }

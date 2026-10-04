@@ -1,0 +1,165 @@
+{
+  "reviewedAt": "2026-10-03T08:52:16.955Z",
+  "datasetId": "department-heldout-20261003-a",
+  "sourceSnapshotSha256": "b57fec95204b5a227a2c8792f54fa817f4387646698a4c5bf57a58ba5811545c",
+  "expectedSnapshotHash": "b57fec95204b5a227a2c8792f54fa817f4387646698a4c5bf57a58ba5811545c",
+  "allSourceFieldsVerified": true,
+  "semanticBoundaries": [
+    "departmentId只标资料归属，未作举办者证据",
+    "publishedAt只标官网发布时间，未作活动日期",
+    "快照中的第三期条目不证明当前最新",
+    "字段没有细节只证明该快照未提供，不能说官网或现实没有",
+    "无命中题不接受相关条目替代问题依据"
+  ],
+  "rows": [
+    {
+      "id": "d01",
+      "kind": "base",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "回答主席团+工作部门及权益部、文娱部、器材部、体育部、学创部，不增加部门。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d02",
+      "kind": "base",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "按简介回答注册登记、备案年审、组织建设、活动管理、工作保障等，不补学校办理流程。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d03",
+      "kind": "base",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "由退役大学生组成，宣秘团、督勤部两个职能部门。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d04",
+      "kind": "base",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "公开联系电话",
+        "电子邮箱"
+      ],
+      "expectedMeaningReview": "明确已核实资料未提供电话/邮箱；不提供号码，不把快照缺失外推成全网永久没有。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d05",
+      "kind": "activity",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "引用我为同学做实事 校学生会助力2025年大学生体质健康测试工作，官网发布时间2026-03-06；标题中的助力不改成主办。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d06",
+      "kind": "activity",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "引用“青”志愿｜岭南热血 双城同心，官网发布时间2026-03-10；不增加献血人数。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d07",
+      "kind": "organizer_unknown",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "主办方",
+        "承办方"
+      ],
+      "expectedMeaningReview": "当前标题/发布时间资料不足以确认主办与承办，组织资料归属不等于举办角色；可以提供原条目但不可指认举办组织。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d08",
+      "kind": "detail_missing",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "学员姓名",
+        "推荐人数",
+        "入选条件"
+      ],
+      "expectedMeaningReview": "标题只证明存在推荐名单公示；当前资料未提供姓名、人数、入选条件，无法核实这些细节。不宣称官网没有名单。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d09",
+      "kind": "latest_unknown",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "当前最新期数"
+      ],
+      "expectedMeaningReview": "不能确认今天最新期数；快照收录第三期条目不等于现在只办到第三期。可以引用快照条目，但需明确最新进度无法据此核实。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d10",
+      "kind": "event_date_unknown",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "会议召开日期"
+      ],
+      "expectedMeaningReview": "可核对条目官网发布时间2026-03-09；当前标题级资料无法由发布时间推出召开日期，不断言两日期一定相同或不同。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d11",
+      "kind": "activity",
+      "sourceRefsVerified": true,
+      "missingFields": [],
+      "expectedMeaningReview": "引用学生社团进社区｜第二期圆满落幕，下期敬请期待！，官网发布时间2026-03-09。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d12",
+      "kind": "organizer_unknown",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "主办方"
+      ],
+      "expectedMeaningReview": "资料条目归属校学生会不能证明主办方，当前标题级材料未提供主办角色，无法确认；不下肯定或否定举办归属结论。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d13",
+      "kind": "no_hit",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "这份公告的收录依据"
+      ],
+      "expectedMeaningReview": "当前随包资料未收录这份公告，明确在此范围内无法核实；不声称学校没有举办此事，不用无关条目当答案。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    },
+    {
+      "id": "d14",
+      "kind": "detail_missing",
+      "sourceRefsVerified": true,
+      "missingFields": [
+        "参会人数",
+        "志愿者名单"
+      ],
+      "expectedMeaningReview": "标题与官网发布时间未提供参会人数和志愿者名单，明确当前资料无法核实，不能补数字或姓名。",
+      "reviewer": "执行agent预期/随包字段核对，非人类评审",
+      "answerEvaluated": false
+    }
+  ],
+  "sourceHashBasis": "sourceSnapshotSha256为源文件原始字节SHA256；旧canonicalDepartmentsSha256单列说明",
+  "canonicalDepartmentsSha256": "2b7b9c1353249152d1dbf008c335cd1485eb90d7db2bfebe6764d9a1d8170607"
+}
