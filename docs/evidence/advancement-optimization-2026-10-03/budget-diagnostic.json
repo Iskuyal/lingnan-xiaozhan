@@ -1,0 +1,15 @@
+{
+  "registeredAt": "2026-10-03T07:14:34.181Z",
+  "usageSnapshot": "artifacts/advancement-optimization/usage-instrumented.json",
+  "personalDailyLimit": {
+    "day": "2026-10-03",
+    "used": 25,
+    "limit": 60,
+    "remaining": 35
+  },
+  "maxCloudCalls": 2,
+  "estimatedSafetyCalls": 4,
+  "safetyQuota": "当前openai审核；可用余量无独立查询接口，未知；撞配额即停",
+  "maxEstimatedCostYuan": 0.02,
+  "scope": "冻结B诊断子集b04/b07，仅回归"
+}

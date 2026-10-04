@@ -1,0 +1,31 @@
+{
+  "codeSha": "a1a156e",
+  "fullTests": {
+    "passed": 747,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typecheck": "passed",
+  "sourceUnits": {
+    "verified": 24,
+    "total": 24,
+    "pages": 3,
+    "navigationPageRecheckedToday": false
+  },
+  "cloudReadback": "final-manifest.json",
+  "simulatorMock": "ui-offline-final.json",
+  "trueFinalModel": "not_run_after_accounting_stop",
+  "trueFinalUi": "not_run_after_accounting_stop",
+  "trueDevice": "not_run_no_hardware_evidence",
+  "frozenBFileSha256": "24cf76c3cb9fdaef45fd4d5b8bd784184bc9649888db2526c8f6fe0cbbca2261",
+  "freezeCFileSha256": "342f02eaab93163e482115bb1f2964e6637c2371aa7fba12d3ee76cfbccf2b84",
+  "realCalls": {
+    "diagnostic": 2,
+    "regressionB": 8,
+    "afterStop": 0
+  },
+  "knownBusinessTokens": 4361,
+  "knownBusinessCostYuan": 0.00109,
+  "actualTotalCostYuan": null,
+  "accountingGap": "B的4条空响应在旧路径usage丢失，真实中转费用未知；云端原记录保留、无手工补猜或闸门删除。当前月累计仅已入账数字，须负责人核账后恢复。"
+}

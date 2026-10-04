@@ -1,0 +1,147 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const product = require('../dist/services/advancement/index.js');
+const model = require('../dist/services/advancement/model.js');
+const verifier = require('../dist/cloudfunctions/ai/advancement.js');
+const corpus = require('../dist/cloudfunctions/ai/advancement-corpus.js');
+const { createHarness, openAiTextResponse } = require('./ai-harness.cjs');
+const evaluator = require('../scripts/eval-advancement-model.cjs');
+
+test('招生总量按原句主题检索，不能因发布文件归类为就业丢失依据', () => {
+  for (const q of ['2026年广东普通专升本计划招生总量是多少万人？', '广东2026年专插本招生计划有多少人？']) {
+    const result = product.ask(q);
+    assert.equal(result.behavior, 'answer', result.note);
+    assert.equal(result.citations[0].quote, '普通专升本计划招生6.5万人');
+    const scope = verifier.resolveAdvancementScope(corpus, result.resolvedScope);
+    assert.ok(scope.scope);
+    assert.ok(verifier.resolveAdvancementSources(corpus, result.citations.map(c => c.passageId), scope.scope).sources);
+  }
+});
+
+test('完整原句句号后紧随引用可上屏，但不能让段末引用覆盖前一句', async () => {
+  for (const id of ['gd-segmented-2026#parts', 'gd-segmented-2026#quality-check', 'gd-zsb-2026#vocational-teacher']) {
+    const document = corpus.documents.find(d => d.passages.some(p => p.id === id));
+    const { sources } = verifier.resolveAdvancementSources(corpus, [id], { category: document.category, year: 2026, region: '广东省' });
+    const sentences = sources[0].quote.split(/[。！？!?\n]+/u).filter(Boolean);
+    const answer = sentences.map(s => `${s}。[S1]`).join('\n');
+    assert.deepEqual(verifier.verifyAdvancementAnswer(answer, sources).violations, []);
+    if (sentences.length > 1) assert.ok(verifier.verifyAdvancementAnswer(`${sources[0].quote}[S1]`, sources).violations.length > 0);
+  }
+});
+
+test('问题范围不能被伪造scope覆盖：服务端与客户端均拒绝', async () => {
+  const local = product.ask('2027年北京普通专升本网上缴费截止时间？', 2, { category: 'ordinary_专升本', year: 2026, region: '广东省' });
+  assert.equal(local.behavior, 'refuse');
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => openAiTextResponse('网上缴费截止时间为1月23日17:00[S1]') });
+  const safe = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const event = model.advancementChatEvent('2027年北京普通专升本网上缴费截止时间？', safe.resolvedScope, safe.citations);
+  const response = await harness.main(event);
+  assert.equal(response.ok, false);
+  assert.equal(response.failureClass, 'invalid_request');
+  assert.equal(harness.http.length, 0);
+});
+
+test('服务端仍拒绝遗漏条件、反转否定、错误来源与新增数字', () => {
+  const { sources } = verifier.resolveAdvancementSources(corpus, ['gd-segmented-2026#quality-check'], { category: 'segmented_三二分段专升本转段', year: 2026, region: '广东省' });
+  for (const text of ['基本素质考核“不合格”的学生，可以报考。[S1]', '学生不得报考。[S1]', '基本素质考核“不合格”的学生，不得报考。[S2]', '基本素质考核“不合格”的学生，不得报考。[S1]\n报名费为100元。[S1]']) {
+    assert.ok(verifier.verifyAdvancementAnswer(text, sources).violations.length > 0, text);
+  }
+});
+
+test('真实调用留分步耗时，不能把serverElapsed当客户端端到端', async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => openAiTextResponse('网上缴费截止时间为1月23日17:00[S1]') });
+  const local = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const response = await harness.main(model.advancementChatEvent('2026年广东普通专升本网上缴费截止时间？', local.resolvedScope, local.citations));
+  assert.equal(response.ok, true, response.detail);
+  for (const key of ['inputSafetyMs','outputSafetyMs','modelMs','modelNetworkMs','preflightMs','accountingMs','citationMs']) assert.ok(response.timings[key] >= 0, key);
+  const call = evaluator.summarizeCall({ invoked: true, result: response, elapsedMs: response.elapsedMs + 250 });
+  assert.equal(call.clientElapsedMs, response.elapsedMs + 250);
+});
+
+test('只读日额度区分月度金额，不增加日计数', async () => {
+  const harness = createHarness();
+  const access = harness.load('access.js');
+  const now = new Date('2026-10-03T04:00:00Z');
+  const empty = await access.readUserDailyLimit(harness.db, 'test-admin-openid', now);
+  assert.equal(empty.remaining, 30);
+  await access.consumeUserLimits(harness.db, 'test-admin-openid', now);
+  for (let i = 0; i < 2; i++) assert.equal((await access.readUserDailyLimit(harness.db, 'test-admin-openid', now)).remaining, 29);
+  const counter = Object.keys(harness.monthly).find(key => key.startsWith('limit:day:'));
+  harness.monthly[counter].count = 'bad';
+  await assert.rejects(() => access.readUserDailyLimit(harness.db, 'test-admin-openid', now));
+});
+
+test('额度、审核配额与记账故障立即停止，预算缺失不能发真实请求', () => {
+  for (const call of [{ failureClass: 'quota_exhausted' }, { warnings: ['用量记账失败'] }, { detail: '记账闸门被占用' }, { detail: '审核配额已耗尽' }]) assert.ok(evaluator.stopReason(call));
+  assert.equal(evaluator.stopReason({ ok: true, warnings: [] }), '');
+  assert.throws(() => evaluator.validateBudget('', 1));
+});
+
+test('续跑指纹覆盖共享范围守门、客户端检索与请求提示词', () => {
+  const hashes = require('../scripts/lib/advancement-build-hashes.cjs').advancementBuildHashes();
+  for (const key of ['access.js','advancement-query.js','advancement-query-corpus.js','client/index.js','client/model.js']) assert.match(hashes[key], /^[0-9a-f]{64}$/u);
+});
+
+test('升学请求只保留一份服务端纪律与完整原文，来源卡片仍完整返回', async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => openAiTextResponse('网上缴费截止时间为1月23日17:00[S1]') });
+  const local = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const event = model.advancementChatEvent('2026年广东普通专升本网上缴费截止时间？', local.resolvedScope, local.citations);
+  event.system = '客户端重复纪律标记'.repeat(20);
+  const response = await harness.main(event);
+  assert.equal(response.ok, true, response.detail);
+  const prompt = JSON.parse(harness.http[0].body).messages[0].content;
+  assert.equal(prompt.includes('客户端重复纪律标记'), false);
+  assert.ok(prompt.length < local.citations.reduce((n,c)=>n+c.quote.length,0) + 300);
+  for (const c of local.citations) {
+    assert.ok(prompt.includes(c.quote));
+    assert.ok(response.advancement.sources.some(s => s.id === c.passageId && s.sourceUrl === c.sourceUrl && s.title === c.title));
+  }
+});
+
+test('空正文仍计入中转已返回的真实token费用，不把失败当零消耗', async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }) }, respond: () => ({ status: 200, body: JSON.stringify({ choices: [{ message: { content: '', reasoning_content: 'PRIVATE_REASONING' }, finish_reason: 'length' }], usage: { prompt_tokens: 200, completion_tokens: 600, total_tokens: 800 } }) }) });
+  const local = product.ask('2026年广东普通专升本网上缴费截止时间？');
+  const response = await harness.main(model.advancementChatEvent('2026年广东普通专升本网上缴费截止时间？', local.resolvedScope, local.citations));
+  assert.equal(response.ok, false);
+  assert.equal(response.failureClass, 'model_unavailable');
+  assert.equal(response.text, '');
+  assert.equal(response.usage?.totalTokens, 800);
+  const entry = harness.records.find(r => r.kind === 'model');
+  assert.equal(entry.totalTokens, 800);
+  assert.ok(entry.costYuan > 0);
+  assert.ok(!JSON.stringify(response).includes('PRIVATE_REASONING'));
+});
+
+test('志愿与毕业证语料保留官网完整原句及其前提，不用旧拼接摘要冒充原文', () => {
+  const quote = id => corpus.documents.flatMap(d=>d.passages).find(p=>p.id===id).text;
+  assert.ok(quote('gd-zsb-2026#volunteer').includes('考试成绩公布后，考生根据自身实际，按院校专业组模式进行志愿填报。'));
+  const graduation = quote('gd-segmented-2026#graduation');
+  assert.ok(graduation.includes('复查合格并经注册后，即成为学校的正式学生'));
+  assert.ok(graduation.includes('其毕业证书上标注“在本校xx专业专科起点本科学习”'));
+  assert.ok(graduation.includes('转段学生毕业后的就业办法，与普通高校本科毕业生相同。'));
+});
+
+test('实时薪酬的常见表达都拒答，不把相关岗位计划当实时薪资依据', () => {
+  for (const word of ['月薪','年薪','时薪','薪酬']) {
+    const result = product.ask(`广东2026年实习岗位现在的${word}能有多少？`);
+    assert.equal(result.behavior, 'refuse', word);
+    assert.equal(model.canAskModel(result), false);
+  }
+});
+
+for (const knownFailure of [false, true]) test(`多带${knownFailure ? '已计费空正文' : 'HTTP失败'}不借用别带用量，响应与账本一致`, async () => {
+  const harness = createHarness({ security: { msgSecCheck: async () => ({ errCode: 0 }), imgSecCheck: async () => ({ errCode: 0 }) }, respond: request => {
+    if (request.body.includes('startSection') && /7[^0-9]+9/u.test(request.body)) return knownFailure
+      ? { status: 200, body: JSON.stringify({ choices: [{ message: { content: '' }, finish_reason: 'length' }], usage: { prompt_tokens: 200, completion_tokens: 600, total_tokens: 800 } }) }
+      : { status: 500, body: 'failure' };
+    return openAiTextResponse('{"courses":[],"problems":[]}', { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 });
+  }});
+  const response = await harness.main({ action: 'vision', feature: 'timetable-vision', image: { base64: Buffer.from('image').toString('base64'), mimeType: 'image/png' }, system: '识别课表', messages: [{ role: 'user', text: '识别课程' }], bands: 4 });
+  assert.equal(response.ok, true, response.detail);
+  const records = harness.records.filter(r => r.kind === 'model');
+  const failed = records.find(r => r.ok === false);
+  assert.ok(failed, '必须复现一带失败');
+  assert.equal(failed.totalTokens, knownFailure ? 800 : 0);
+  assert.equal(records.reduce((n,r)=>n+r.totalTokens,0), knownFailure ? 890 : 90);
+  assert.equal(response.usage.totalTokens, knownFailure ? 890 : 90);
+});

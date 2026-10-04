@@ -215,6 +215,9 @@ export interface DepartmentActivityCitation {
 }
 
 export interface AiResponse {
+  /** 分步服务端测量。网络/记账计数是流水线步骤的子项，不能重复相加。 */
+  timings?: Record<string, number>;
+  userDailyLimit?: { day: string; used: number; limit: number; remaining: number };
   ok: boolean;
   action: ActionName | '';
   failureClass: FailureClass | '';
