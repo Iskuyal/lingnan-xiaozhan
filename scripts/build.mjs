@@ -86,6 +86,11 @@ cpSync(resolve(root, 'project.config.json'), join(output, 'project.config.json')
     const target = join(output, 'cloudfunctions', 'ai', 'advancement-corpus.js');
     mkdirSync(join(output, 'cloudfunctions', 'ai'), { recursive: true });
     writeFileSync(target, renderAdvancementCorpusModule(payload), 'utf8');
+    // 云端复用同一产品范围/检索实现，避免客户端守门与服务端校验漂移。
+    const queryModule = readFileSync(join(output, 'services/advancement/index.js'), 'utf8')
+      .replace(/require\("\.\/corpus"\)/gu, 'require("./advancement-query-corpus")');
+    writeFileSync(join(output, 'cloudfunctions/ai/advancement-query.js'), queryModule, 'utf8');
+    copyFileSync(join(output, 'services/advancement/corpus.js'), join(output, 'cloudfunctions/ai/advancement-query-corpus.js'));
     console.log(`升学语料已注入 ai 云函数（${payload.documents.length} 份材料、${payload.documents.reduce((sum, item) => sum + item.passages.length, 0)} 个段落、版本 ${payload.version}）`);
   } catch (error) {
     console.warn(`升学语料生成失败，升学问答将按 internal 拒绝（fail-closed）：${error && error.message ? error.message : error}`);

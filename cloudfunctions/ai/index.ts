@@ -20,7 +20,7 @@ import * as cloud from 'wx-server-sdk';
 import { Config, ModelTarget, loadConfig, resolveModelTarget, secretsOf } from './config';
 import { AiFailure, MessageInputKind, describeError, fail, messageFor, redactSecrets, toFailure } from './errors';
 import { isTimeoutError, withTimeout } from './http';
-import { ModelCallResult, ModelInvocation, callModel } from './providers';
+import { ModelCallResult, ModelInvocation, ModelResponseFailure, callModel } from './providers';
 import { SafetyOutcome, WechatSecurityApi, checkImage, checkText, rejectionDetail } from './safety';
 import { runProbe } from './probe';
 import { buildActivityContext, DepartmentActivityCorpus, isActivityQuestion, isDepartmentActivityCorpus } from './rag';
@@ -55,9 +55,10 @@ import {
   unknownUsage,
 } from './usage';
 import { BandCallResult, VISION_PROFILE, bandMaxTokens, bandedSystem, mergeBands, planBands, predictSeconds } from './vision';
-import { assertAdmin, assertOwnPhotoFile, consumeProbeWindow, consumeUserLimits, isAdmin, requireOpenid, userKey } from './access';
+import { assertAdmin, assertOwnPhotoFile, consumeProbeWindow, consumeUserLimits, readUserDailyLimit, isAdmin, requireOpenid, userKey } from './access';
 import {
   ADVANCEMENT_QA_FEATURE,
+  ADVANCEMENT_MAX_SOURCES,
   AdvancementCorpus,
   AdvancementResult,
   injectedAdvancementText,
@@ -210,6 +211,7 @@ export interface AiEvent {
 
 /** 一次调用的可变状态：失败路径也要能拿到已发生的用量与告警。 */
 interface RunLog {
+  timings: Record<string, number>;
   requestId: string;
   userKey: string;
   isAdmin: boolean;
@@ -466,6 +468,7 @@ function pushWarning(log: RunLog, warning: string): void {
 
 /** 写一条调用记录并累加月度汇总；记账失败不推翻已经完成的模型调用，但要在返回值里告警。 */
 async function record(log: RunLog, entry: Omit<SubCallRecord, 'userKey'>): Promise<void> {
+  const started = Date.now();
   try {
     const recordWithUser = { ...entry, userKey: log.userKey };
     await recordSubCall(db, recordWithUser, log.config, new Date());
@@ -473,7 +476,22 @@ async function record(log: RunLog, entry: Omit<SubCallRecord, 'userKey'>): Promi
   } catch (error) {
     log.accountingFailed = true;
     pushWarning(log, `用量记账失败，本次成本未计入月度累计：${describeError(error)}`);
+  } finally {
+    log.timings.accountingMs = (log.timings.accountingMs ?? 0) + Date.now() - started;
   }
+}
+
+/** 含失败路径的实际壁钟计时，不改变审核/记账的执行顺序。 */
+async function timed<T>(log: RunLog, step: string, run: () => Promise<T>): Promise<T> {
+  const started = Date.now();
+  try { return await run(); }
+  finally { log.timings[step] = (log.timings[step] ?? 0) + Date.now() - started; }
+}
+
+/** 失败带只读本次响应的计费信息，不读取并行调用共用的 log.usage。 */
+function responseFailureUsage(error: unknown, config: Config): CallUsage | null {
+  if (!(error instanceof ModelResponseFailure)) return null;
+  return error.usage === null ? unknownUsage(0, config) : toCallUsage(error.usage, config);
 }
 
 /** 调用模型并记账：成功与失败都留下记录（失败调用同样是排查线索）。 */
@@ -481,6 +499,7 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
   const startedAt = Date.now();
   try {
     const result = await callModel(target, invocation);
+    log.timings.modelNetworkMs = (log.timings.modelNetworkMs ?? 0) + result.elapsedMs;
     log.provider = target.format;
     log.model = target.model;
     log.usage = toCallUsage(result.usage, log.config);
@@ -501,6 +520,12 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
     const failure = toFailure(error);
     log.provider = target.format;
     log.model = target.model;
+    const failureUsage = responseFailureUsage(error, log.config);
+    if (error instanceof ModelResponseFailure) {
+      log.timings.modelNetworkMs = (log.timings.modelNetworkMs ?? 0) + error.elapsedMs;
+      log.usage = failureUsage;
+      if (error.usage === null) pushWarning(log, '模型无效响应未返回用量，需核账后继续评测');
+    }
     await record(log, {
       requestId: log.requestId,
       feature: log.feature,
@@ -511,7 +536,7 @@ async function invokeModel(log: RunLog, target: ModelTarget, invocation: ModelIn
       ok: false,
       failureClass: failure.failureClass,
       durationMs: Date.now() - startedAt,
-      usage: toCallUsage(ZERO_USAGE, log.config),
+      usage: failureUsage ?? toCallUsage(ZERO_USAGE, log.config),
     });
     throw failure;
   }
@@ -612,6 +637,7 @@ async function checkSafely(log: RunLog, run: () => Promise<SafetyOutcome>, api: 
   const startedAt = Date.now();
   try {
     const outcome = await run();
+    log.timings.safetyNetworkMs = (log.timings.safetyNetworkMs ?? 0) + outcome.durationMs;
     recordSafety(log, outcome.report);
     noteUnchecked(log, outcome);
     await record(log, {
@@ -758,14 +784,13 @@ async function runVision(
         failure: null,
       };
     } catch (error) {
-      return { band: { band, ok: false, text: '' }, usage: null, failure: toFailure(error) };
+      return { band: { band, ok: false, text: '' }, usage: responseFailureUsage(error, log.config), failure: toFailure(error) };
     }
   }));
 
   const usages = settled.flatMap((item) => (item.usage === null ? [] : [item.usage]));
-  // 全带都失败时保持 `usage: null`（与单带的失败路径一致）：没有成功的模型调用就没有用量，
-  // 记一个 0 会被读成「这次没花钱」。
-  if (usages.length > 0) log.usage = sumCallUsage(usages, log.config);
+  // 汇总所有已计费子调用，包括空正文失败；全带没有响应计费证据才返回 null。
+  log.usage = usages.length > 0 ? sumCallUsage(usages, log.config) : null;
   for (const item of settled) {
     if (item.failure === null) continue;
     // detail 里可能有上游响应片段：返回值会带上这条告警，因此截断后再拼，不让它无限长。
@@ -814,9 +839,23 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
     }
     const scopeOutcome = resolveAdvancementScope(advancementCorpus, event.scope);
     if ('error' in scopeOutcome) fail('invalid_request', `升学问答范围校验未通过：${scopeOutcome.error}`);
+    // scope 是澄清选项的声明，不能覆盖当前问题中明确相反的年份、地区或类别。
+    const userMessages = messages.filter(message => message.role === 'user');
+    const query = userMessages[userMessages.length - 1]?.text ?? '';
+    let questionScope: { behavior: string; resolvedScope?: { category: string; year: number; region: string } };
+    try {
+      questionScope = require('./advancement-query').ask(query, ADVANCEMENT_MAX_SOURCES, scopeOutcome.scope);
+    } catch {
+      fail('internal', '升学范围守门模块缺失或损坏，已拒绝调用');
+    }
+    if (questionScope.behavior !== 'answer' || questionScope.resolvedScope?.category !== scopeOutcome.scope.category
+      || questionScope.resolvedScope?.year !== scopeOutcome.scope.year || questionScope.resolvedScope?.region !== scopeOutcome.scope.region) {
+      fail('invalid_request', '升学问题与声明范围不一致，或当前问题需要澄清/拒答');
+    }
     const sourceOutcome = resolveAdvancementSources(advancementCorpus, event.passageIds, scopeOutcome.scope);
     if ('error' in sourceOutcome) fail('invalid_request', `升学问答资料来源校验未通过：${sourceOutcome.error}`);
-    system = `${system}\n\n${injectedAdvancementText(sourceOutcome.sources, scopeOutcome.scope)}`;
+    // 纪律只保留服务端一份；来源卡片元信息回传给客户端，不重复送进模型与输入审核。
+    system = injectedAdvancementText(sourceOutcome.sources, scopeOutcome.scope);
     log.advancementResult = {
       scope: scopeOutcome.scope,
       corpusVersion: advancementCorpus.version,
@@ -901,7 +940,7 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
     if (imageOutcome.rejected) rejectContent(imageOutcome, 'image');
   }
   if (input.text !== '') {
-    const textOutcome = await moderateText(log, input.text, wechat, openid, startedAt, MAX_INPUT_CHUNKS);
+    const textOutcome = await timed(log, 'inputSafetyMs', () => moderateText(log, input.text, wechat, openid, startedAt, MAX_INPUT_CHUNKS));
     if (textOutcome.rejected) rejectContent(textOutcome);
   }
 
@@ -913,21 +952,23 @@ async function runModelAction(log: RunLog, event: AiEvent, startedAt: number, op
   });
   const result = vision
     ? await runVision(log, event, target, { system, messages })
-    : (await invokeModel(log, target, {
+    : (await timed(log, 'modelMs', () => invokeModel(log, target, {
       system,
       messages,
       maxTokens: target.maxTokens,
       timeoutMs: target.timeoutMs,
-    })).text;
+    }))).text;
 
   // 4) 输出内容安全：AI 生成的文字上屏前再检一次（分带识别在**合并后**的文本上只检一次）。
-  await moderateOutput(log, result, wechat, openid, startedAt);
+  await timed(log, 'outputSafetyMs', () => moderateOutput(log, result, wechat, openid, startedAt));
 
   // 5) 出处校验（升学问答）：内容安全之后再过一次事实闸。句子里的日期、数字与官方事实
   //    必须指向本次注入的可信段落，否则不作为官方结论返回——调用方降级为本地原文摘录。
   //    这一步在输出检测之后：不通过的回答同样已经过检，两个结论互不掩盖。
   if (log.advancementResult !== null) {
+    const citationStarted = Date.now();
     const verdict = verifyAdvancementAnswer(result, log.advancementResult.sources);
+    log.timings.citationMs = Date.now() - citationStarted;
     log.advancementResult.verified = verdict.violations.length === 0;
     log.advancementResult.refused = verdict.refused;
     log.advancementResult.violations = verdict.violations;
@@ -981,6 +1022,7 @@ function baseResponse(options: {
     citations: log === null ? [] : log.activityCitations.slice(),
     advancement: log === null ? null : log.advancementResult,
     probe: null,
+    timings: log === null ? {} : { ...log.timings },
     elapsedMs: Date.now() - options.startedAt,
   };
 }
@@ -1076,6 +1118,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     }
     const summary = await readSummary(config, now);
     log = {
+      timings: { preflightMs: Date.now() - startedAt },
       requestId,
       userKey: userKey(openid),
       isAdmin: admin,
@@ -1096,6 +1139,7 @@ export async function main(event: AiEvent = {}): Promise<AiResponse> {
     // 查用量在任何情况下都要能用（哪怕已经超上限），因此先于上限判定返回。
     if (action === 'usage') {
       const response = successResponse(log, action, startedAt);
+      response.userDailyLimit = await readUserDailyLimit(db, openid, now);
       // `message` 的契约是「成功时为空串」；上限告警走专门的 capWarning 字段（baseResponse 已填）。
       response.detail = `当月累计 ${summary.calls} 次调用、${summary.totalTokens} token、${summary.costYuan} 元`
         + `（上限 ${summary.capYuan} 元，告警线 ${summary.warnThresholdYuan} 元）`;

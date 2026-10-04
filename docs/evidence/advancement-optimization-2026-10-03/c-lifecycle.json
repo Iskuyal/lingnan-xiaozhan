@@ -1,0 +1,41 @@
+{
+  "datasetId": "heldout-20261003-c",
+  "questionFileSha256": "342f02eaab93163e482115bb1f2964e6637c2371aa7fba12d3ee76cfbccf2b84",
+  "firstLocalRun": {
+    "source": "c-local-plan.txt",
+    "workingTree": "bb887be + 当时未提交的完整原句/空响应用量修复",
+    "top2Recall": {
+      "correct": 8,
+      "total": 8
+    },
+    "top1": {
+      "correct": 7,
+      "total": 8
+    },
+    "guards": {
+      "correct": 5,
+      "total": 6
+    },
+    "failures": [
+      "c06预期段落在第2位（top2有依据，不据此改题或调检索）",
+      "c14月薪漏判，错误返回answer，未发云请求"
+    ]
+  },
+  "lifecycle": "首次本地守门结果暴露薪酬缺口后已用于修复，后续C只算回归。questions-c.json的冻结时note作为历史状态保留；该未调参表述不代表修复后的现状。题面、预期及判据不改。",
+  "trueCloudFirstRun": "not_run_stopped_accounting_reconciliation_and_model_budget_decision",
+  "localRegression": {
+    "guards": {
+      "correct": 6,
+      "total": 6
+    },
+    "top2Recall": {
+      "correct": 8,
+      "total": 8
+    },
+    "top1": {
+      "correct": 7,
+      "total": 8
+    }
+  },
+  "futureIndependentRequirement": "恢复真实调用后另冻未用于修复的新批（例如D），保留B/C为回归，不能把C修后结果当独立效果。"
+}

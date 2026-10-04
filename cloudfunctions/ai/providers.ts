@@ -30,6 +30,13 @@ export interface ModelCallResult {
   httpStatus: number;
 }
 
+/** 已收到模型响应但正文无效：携带计费信息，禁止返回推理正文。 */
+export class ModelResponseFailure extends AiFailure {
+  constructor(failure: AiFailure, readonly usage: TokenUsage | null, readonly elapsedMs: number) {
+    super(failure.failureClass, failure.detail, { message: failure.message, timedOut: failure.timedOut });
+  }
+}
+
 export interface BuiltRequest {
   url: string;
   headers: Record<string, string>;
@@ -321,7 +328,9 @@ export async function callModel(target: ModelTarget, invocation: ModelInvocation
   try {
     parsed = parseModelResponse(target, payload);
   } catch (error) {
-    throw toFailure(error);
+    const source = payload !== null && typeof payload === 'object' ? payload as Record<string, unknown> : {};
+    const usage = target.format === 'anthropic' ? parseAnthropicUsage(source.usage) : parseOpenAiUsage(source.usage);
+    throw new ModelResponseFailure(toFailure(error), usage, elapsedMs);
   }
   return {
     text: parsed.text,

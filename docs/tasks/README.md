@@ -9,7 +9,7 @@
 | [项目答辩练习G1历史续跑提示词](project-defense-g1-resume-prompt.md) | 离线部分已交付后，接力跑真实调用与逐例判定；Issue #112 |
 | [项目答辩练习G4部署与真实验收提示词](project-defense-g4-prompt.md) | 合并 PR #124–#126 → 部署回读 → 端到端与真机 → 新冻结样例首评与对照；Issue #115 |
 | [项目答辩练习G4收尾与G5交接提示词](project-defense-g4-resume-prompt.md) | G4 已执行完（PR #127）：收人类复核与待拍板项，把时延/额度/审核配置写成 G5（10-08）输入；Issue #115 / #116 |
-| [升学模型阶段提示词](advancement-model-prompt.md) | 新会话执行下一阶段模型版与真实引用评测 |
+| [升学模型阶段提示词](advancement-model-prompt.md) | 模型已接入；先核账与取得预算配置决定，再恢复真实独立题与引用验收 |
 | [待办总表](pending.md) | 未决事项、未完成项、证据归档与负责人前置 |
 | [11 张执行 Ticket](tickets/README.md) | 逐票的状态、依赖、验收标准和历史成果 |
 | [资讯后续范围](p3-2-news-updates.md) | P3-2 的栏目、全量与增量同步决策 |

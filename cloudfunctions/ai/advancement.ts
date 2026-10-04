@@ -28,6 +28,7 @@ export const ADVANCEMENT_MAX_SOURCES = 3;
 
 export interface AdvancementPassage {
   id: string;
+  categories?: string[];
   /** 官方原文的逐字摘录；回答与引用只能用这段文字。 */
   text: string;
 }
@@ -174,6 +175,8 @@ export function isAdvancementCorpus(value: unknown): value is AdvancementCorpus 
     for (const passage of document.passages) {
       if (passage === null || typeof passage !== 'object') return false;
       if (typeof passage.id !== 'string' || typeof passage.text !== 'string' || passage.text.trim() === '') return false;
+      if (passage.categories !== undefined && (!Array.isArray(passage.categories)
+        || passage.categories.some(category => typeof category !== 'string' || !corpus.documents!.some(d => d.category === category)))) return false;
     }
   }
   return true;
@@ -193,6 +196,9 @@ export function advancementCategories(corpus: AdvancementCorpus): string[] {
   const categories: string[] = [];
   for (const document of corpus.documents) {
     if (!categories.includes(document.category)) categories.push(document.category);
+    for (const passage of document.passages) {
+      for (const category of passage.categories ?? []) if (!categories.includes(category)) categories.push(category);
+    }
   }
   return categories;
 }
@@ -220,7 +226,7 @@ export function resolveAdvancementScope(corpus: AdvancementCorpus, raw: unknown)
   const years = new Set<number>();
   const regions = new Set<string>();
   for (const document of corpus.documents) {
-    if (document.category !== category) continue;
+    if (document.category !== category && !document.passages.some(p => p.categories?.includes(category))) continue;
     // 与年份无关的材料（applicableYear = 0，例如入口导航页）不进候选集：
     // scope.year 要的是「哪一年的政策」，0 不是一个可声明的年份。
     if (document.applicableYear > 0) years.add(document.applicableYear);
@@ -277,7 +283,7 @@ export function resolveAdvancementSources(
     const found = available.find((entry) => entry.passage.id === id);
     if (found === undefined) return { error: `段落 ${id} 不在可信语料里` };
     const { document } = found;
-    if (document.category !== scope.category) {
+    if (document.category !== scope.category && !found.passage.categories?.includes(scope.category)) {
       return { error: `段落 ${id} 属于类别 ${document.category}，与 scope.category 不一致` };
     }
     if (document.applicableRegion !== scope.region) {
@@ -299,16 +305,14 @@ export function resolveAdvancementSources(
  */
 export function injectedAdvancementText(sources: AdvancementSource[], scope: AdvancementScope): string {
   const lines: string[] = [
-    '【升学资料检索结果】以下是从官方材料里检索到的段落（逐字原文，标记为出处编号）。',
+    '【升学资料检索结果】官方原文摘录。',
     `适用范围：${scope.category} · ${scope.year} 年 · ${scope.region}。`,
-    '回答纪律：所有业务事实句必须逐字选用下面原文的完整句子，每句末尾标出出处编号；',
-    '可以选取、排列完整原句；不得改写、删去否定词或条件、截断分号列表或补出新结论。原文没有句号时保留整段。',
-    '允许空格、标点与等值数量写法（1.5万=15000）；只可用「下面依据官方原文回答」作过渡。',
-    '段落里没有的内容一律不要写；如果这些段落回答不了这个问题，只回复「无法核实」四个字。',
+    '只选择直接回答问题的完整原句，每句独占一行，句号前标出[S1]等出处。同段多句也逐句标注。',
+    '原文没有句号时保留整段。不得改写、删条件/否定词、截断分号列表、补结论或保证个人资格。',
+    '不加解释、标题或总结。允许空格、标点与等值数量（1.5万=15000）。无法回答只回复「无法核实」。',
   ];
   sources.forEach((source, index) => {
     lines.push(`[S${index + 1}] ${source.quote}`);
-    lines.push(`    出处：《${source.title}》${source.documentNumber === '' ? '' : `（${source.documentNumber}）`} ${source.issuer} · ${source.publishedAt} · ${source.sourceUrl}`);
   });
   return lines.join('\n');
 }
@@ -378,7 +382,9 @@ export function verifyAdvancementAnswer(answer: string, sources: AdvancementSour
     String(source.applicableYear),
   ].join(' ')));
   const violations: string[] = [];
-  const sentences = text.split(SENTENCE_SPLIT);
+  // 句号后紧随的标记只归属于前一原句；不跨越其他事实句或换行搬移标记。
+  const attached = text.replace(new RegExp(`([。！？!?])([ \\t]*)(${CITATION_MARKER.source})`, 'gu'), '$3$1');
+  const sentences = attached.split(SENTENCE_SPLIT);
   sentences.forEach((raw, index) => {
     const sentence = raw.trim();
     if (sentence === '') return;

@@ -1,0 +1,238 @@
+{
+  "records": [
+    {
+      "run": "diagnostic-b",
+      "id": "b04",
+      "delivery": "model_answer",
+      "serverElapsedMs": 14467,
+      "clientEndToEndMs": 15320,
+      "transportAndFinalizeResidualMs": 853,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 405,
+        "inputSafetyMs": 5601,
+        "modelMs": 5461,
+        "outputSafetyMs": 2931,
+        "citationMs": 4
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 8308,
+        "modelNetworkMs": 5279,
+        "accountingMs": 404
+      },
+      "promptTokens": 603,
+      "completionTokens": 489
+    },
+    {
+      "run": "diagnostic-b",
+      "id": "b07",
+      "delivery": "model_answer",
+      "serverElapsedMs": 11284,
+      "clientEndToEndMs": 12186,
+      "transportAndFinalizeResidualMs": 902,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 738,
+        "inputSafetyMs": 2865,
+        "modelMs": 5289,
+        "outputSafetyMs": 2314,
+        "citationMs": 1
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 4966,
+        "modelNetworkMs": 5176,
+        "accountingMs": 325
+      },
+      "promptTokens": 623,
+      "completionTokens": 87
+    },
+    {
+      "run": "regression-b",
+      "id": "b01",
+      "delivery": "model_answer",
+      "serverElapsedMs": 13204,
+      "clientEndToEndMs": 14124,
+      "transportAndFinalizeResidualMs": 920,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 378,
+        "inputSafetyMs": 2303,
+        "modelMs": 7500,
+        "outputSafetyMs": 2963,
+        "citationMs": 2
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 5065,
+        "modelNetworkMs": 7406,
+        "accountingMs": 294
+      },
+      "promptTokens": 198,
+      "completionTokens": 505
+    },
+    {
+      "run": "regression-b",
+      "id": "b02",
+      "delivery": "fallback_sources",
+      "serverElapsedMs": 9874,
+      "clientEndToEndMs": 10850,
+      "transportAndFinalizeResidualMs": 976,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 334,
+        "inputSafetyMs": 3781,
+        "modelMs": 5710,
+        "outputSafetyMs": null,
+        "citationMs": null
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 3187,
+        "modelNetworkMs": null,
+        "accountingMs": 677
+      },
+      "promptTokens": null,
+      "completionTokens": null
+    },
+    {
+      "run": "regression-b",
+      "id": "b03",
+      "delivery": "model_answer",
+      "serverElapsedMs": 12709,
+      "clientEndToEndMs": 13589,
+      "transportAndFinalizeResidualMs": 880,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 687,
+        "inputSafetyMs": 2574,
+        "modelMs": 5084,
+        "outputSafetyMs": 4111,
+        "citationMs": 0
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 6486,
+        "modelNetworkMs": 4997,
+        "accountingMs": 286
+      },
+      "promptTokens": 201,
+      "completionTokens": 399
+    },
+    {
+      "run": "regression-b",
+      "id": "b04",
+      "delivery": "fallback_sources",
+      "serverElapsedMs": 9866,
+      "clientEndToEndMs": 10700,
+      "transportAndFinalizeResidualMs": 834,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 344,
+        "inputSafetyMs": 2889,
+        "modelMs": 6577,
+        "outputSafetyMs": null,
+        "citationMs": null
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 2799,
+        "modelNetworkMs": null,
+        "accountingMs": 179
+      },
+      "promptTokens": null,
+      "completionTokens": null
+    },
+    {
+      "run": "regression-b",
+      "id": "b05",
+      "delivery": "fallback_sources",
+      "serverElapsedMs": 8878,
+      "clientEndToEndMs": 9838,
+      "transportAndFinalizeResidualMs": 960,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 302,
+        "inputSafetyMs": 2504,
+        "modelMs": 6025,
+        "outputSafetyMs": null,
+        "citationMs": null
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 2405,
+        "modelNetworkMs": null,
+        "accountingMs": 194
+      },
+      "promptTokens": null,
+      "completionTokens": null
+    },
+    {
+      "run": "regression-b",
+      "id": "b06",
+      "delivery": "model_answer",
+      "serverElapsedMs": 11656,
+      "clientEndToEndMs": 12668,
+      "transportAndFinalizeResidualMs": 1012,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 317,
+        "inputSafetyMs": 2236,
+        "modelMs": 6662,
+        "outputSafetyMs": 2388,
+        "citationMs": 0
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 4424,
+        "modelNetworkMs": 6584,
+        "accountingMs": 278
+      },
+      "promptTokens": 252,
+      "completionTokens": 408
+    },
+    {
+      "run": "regression-b",
+      "id": "b07",
+      "delivery": "model_answer",
+      "serverElapsedMs": 10950,
+      "clientEndToEndMs": 11869,
+      "transportAndFinalizeResidualMs": 919,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 292,
+        "inputSafetyMs": 2827,
+        "modelMs": 5053,
+        "outputSafetyMs": 2709,
+        "citationMs": 1
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 5354,
+        "modelNetworkMs": 4944,
+        "accountingMs": 291
+      },
+      "promptTokens": 265,
+      "completionTokens": 331
+    },
+    {
+      "run": "regression-b",
+      "id": "b08",
+      "delivery": "fallback_sources",
+      "serverElapsedMs": 10408,
+      "clientEndToEndMs": 11634,
+      "transportAndFinalizeResidualMs": 1226,
+      "stepsInclusiveOfAccounting": {
+        "preflightMs": 285,
+        "inputSafetyMs": 1789,
+        "modelMs": 8286,
+        "outputSafetyMs": null,
+        "citationMs": null
+      },
+      "subcomponentsNotForRepeatedSummation": {
+        "safetyNetworkMs": 1692,
+        "modelNetworkMs": null,
+        "accountingMs": 190
+      },
+      "promptTokens": null,
+      "completionTokens": null
+    }
+  ],
+  "comparison": {
+    "b04_beforeClientMs": 15320,
+    "b04_afterClientMs": 10700,
+    "b04_afterDelivery": "fallback_empty_response",
+    "b07_beforeClientMs": 12186,
+    "b07_afterClientMs": 11869,
+    "b07_beforePromptTokens": 623,
+    "b07_afterPromptTokens": 265,
+    "promptTokenReductionPercent": 57.5,
+    "b07_inputSafetyBeforeMs": 2865,
+    "b07_inputSafetyAfterMs": 2827
+  },
+  "verdict": "NO-GO 8秒；实际输入token减少57.5%，少量非配对随机样本不能证明时延稳定改善；空响应速度不计成功。未知模型耗时未填0。",
+  "boundary": "server steps为服务端阶段壁钟，安全网络/记账为子项不可重复求和；client-server差含传输、云端收尾、序列化，不冒充纯网络。"
+}

@@ -1,0 +1,232 @@
+{
+  "datasetId": "heldout-20261003-c",
+  "frozenAt": "2026-10-03T07:29:19.331904+00:00",
+  "status": "frozen_not_run",
+  "note": "最终本地修复稳定后新冻结14题。均为维护者设计题，无真实学生样本；与历史题共享有限官方语料主题，不能外推新资料或真实需求泛化。本批未用于检索、提示词或引用调参。首次结果产生后不修改题面、预期或判据。真实首评受旧空响应用量核账和负责人模型预算决定阻塞。",
+  "judgeRules": {
+    "fact": "全部8道事实题为分母；只有模型上屏、回答所有子问、逐句经原文/条件/否定/数字/引用核对才计正确。降级、拒答、未调用、传输失败均不计正确。",
+    "gate": "事实题≥80%，守门全对，展示事实引用支持100%，未支持断言0。未执行不是0分或成功。",
+    "latency": "小程序发起至收到响应≤8000ms独立判定；服务端或mock耗时不算真实端到端。"
+  },
+  "questions": [
+    {
+      "id": "c01",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本网上预报名窗口从什么时刻开放，到什么时刻结束？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#register-time"
+      ],
+      "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "mustContain": [
+        "1月12日09:00",
+        "19日18:00"
+      ]
+    },
+    {
+      "id": "c02",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本需要在几月几日几点之前完成网上缴费？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#fee-deadline"
+      ],
+      "expectedAnswer": "网上缴费截止时间为1月23日17:00",
+      "mustContain": [
+        "1月23日17:00"
+      ]
+    },
+    {
+      "id": "c03",
+      "source": "maintainer_design",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本体检可以去哪些医疗机构，结果上传安排在什么环节之前？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#physical-exam"
+      ],
+      "expectedAnswer": "考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。",
+      "mustContain": [
+        "二级甲等（含）以上医院",
+        "填报志愿开始前"
+      ]
+    },
+    {
+      "id": "c04",
+      "source": "maintainer_design",
+      "type": "fact_转段",
+      "question": "2026年广东三二分段转段提交预报名资料后，审核要在多久内完成，什么审核结果的考生可以缴费？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#register"
+      ],
+      "expectedAnswer": "2026年转段招生考试实行网上预报名、网上审核和网上缴费。网上预报名时间为2026年1月12日09:00至19日18:00；考生提交预报名资料的48小时内，对口试点本科高校完成资料审核，考生可登录系统查看报名资格审核结果，审核结果为“通过”的考生可以缴费；网上缴费截止时间为1月23日17:00。",
+      "mustContain": [
+        "48小时内",
+        "通过",
+        "可以缴费"
+      ]
+    },
+    {
+      "id": "c05",
+      "source": "maintainer_design",
+      "type": "fact_转段",
+      "question": "2026年广东三二分段转段按科收多少钱？已交费后因个人原因放弃报名会退费吗？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#fee"
+      ],
+      "expectedAnswer": "（三）报考费：按照普通高等学校普通专升本报名考试收费标准执行，每科40元，2门省统考科目报考费在报名系统缴交（外国语言文学类中非英语类专业的公共基础课报考费由招生院校收取），基本素质考核、专业能力考核报考费由招生院校收取。已成功报名（交费成功）的考生，若个人原因放弃报名，不予退回报考费。",
+      "mustContain": [
+        "每科40元",
+        "若个人原因放弃报名",
+        "不予退回报考费"
+      ]
+    },
+    {
+      "id": "c06",
+      "source": "maintainer_design",
+      "type": "fact_转段",
+      "question": "2026年广东三二分段转段材料里，对在校表现和基本素质考核结果有哪些要求？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#quality-check"
+      ],
+      "expectedAnswer": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。",
+      "mustContain": [
+        "遵守国家法律法规和校纪校规",
+        "合格"
+      ]
+    },
+    {
+      "id": "c07",
+      "source": "maintainer_design",
+      "type": "fact_就业",
+      "question": "2026年广东国有企业招聘高校毕业生的目标人数及原则上完成招聘的月份是什么？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-employment-2026#soe"
+      ],
+      "expectedAnswer": "发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘",
+      "mustContain": [
+        "不少于1.7万人",
+        "原则上8月底前"
+      ]
+    },
+    {
+      "id": "c08",
+      "source": "maintainer_design",
+      "type": "fact_就业",
+      "question": "2026年广东公务员岗位的计划供给下限是多少个？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-employment-2026#civil-servant"
+      ],
+      "expectedAnswer": "全省提供公务员岗位不少于1.5万个",
+      "mustContain": [
+        "不少于",
+        "1.5万"
+      ]
+    },
+    {
+      "id": "c09",
+      "source": "maintainer_design",
+      "type": "guard_缺年份",
+      "question": "广东普通专升本网上缴费最后期限是什么时候？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "须补充适用范围",
+      "mustContain": []
+    },
+    {
+      "id": "c10",
+      "source": "maintainer_design",
+      "type": "guard_缺地区",
+      "question": "2026年普通专升本体检应该去哪类医院？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "须补充适用范围",
+      "mustContain": []
+    },
+    {
+      "id": "c11",
+      "source": "maintainer_design",
+      "type": "guard_异省",
+      "question": "2026年北京普通专升本网上预报名窗口有多长？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实，未收录范围或实时数据拒答",
+      "mustContain": []
+    },
+    {
+      "id": "c12",
+      "source": "maintainer_design",
+      "type": "guard_未来年份",
+      "question": "2027年广东事业单位岗位计划有多少？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实，未收录范围或实时数据拒答",
+      "mustContain": []
+    },
+    {
+      "id": "c13",
+      "source": "maintainer_design",
+      "type": "guard_未收录类别",
+      "question": "2026年广东中职升高职能沿用转段本科的报名安排吗？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实，未收录范围或实时数据拒答",
+      "mustContain": []
+    },
+    {
+      "id": "c14",
+      "source": "maintainer_design",
+      "type": "guard_实时岗位薪资",
+      "question": "2026年广东实习岗位现在的月薪具体是多少？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "无法核实，未收录范围或实时数据拒答",
+      "mustContain": []
+    }
+  ]
+}

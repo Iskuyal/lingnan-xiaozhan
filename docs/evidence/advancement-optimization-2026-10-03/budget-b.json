@@ -1,0 +1,15 @@
+{
+  "registeredAt": "2026-10-03T07:18:19.147Z",
+  "usageSnapshot": "artifacts/advancement-optimization/usage-before-b.json",
+  "personalDailyLimit": {
+    "day": "2026-10-03",
+    "used": 27,
+    "limit": 60,
+    "remaining": 33
+  },
+  "maxCloudCalls": 8,
+  "estimatedSafetyCalls": 16,
+  "safetyQuota": "当前openai审核；余量无查询接口，未知，撞配额即停",
+  "maxEstimatedCostYuan": 0.02,
+  "scope": "冻结B回归8事实/6守门"
+}

@@ -264,3 +264,9 @@ npm run smoke:ai:vision -- --bands=auto    # ② 分带小图，确认并发没�
 - **`ai_usage_records` 只增不删**：保留策略（滚动窗口/定期清理）未定，等真实调用量出来再决定。
 - **探测只能证明「接口可调用」**：不发违规文本是刻意选择，因此「违规内容一定会被拦」由官方错误码表 + 桩测试覆盖，不是探测结论。
 - **`invalid_request` / `internal` 两类失败**：规格只要求三类用户可见失败可区分；这两类是本票补的基础设施分类，文案同样独立。
+
+## 2026-10-03升学诊断新增返回字段
+
+已有维护者usage动作新增userDailyLimit（本人东八区day/used/limit/remaining），只读、不消耗业务日额度，不把月度金额余量当日余量。timings记录服务端阶段壁钟，accountingMs/modelNetworkMs/safetyNetworkMs是阶段子项，不重复相加，不替代客户端端到端。
+
+HTTP200模型正文无效而返回usage时，失败也记真实用量，不返回推理正文；无usage标未知并提示核账。多带响应汇总包含已计费失败带，各带只记本次响应用量，不能借用共享log字段。[本轮部署/真实失败与停止](../../evidence/advancement-optimization-2026-10-03/README.md)保留旧4条空响应漏计的未核账状态。恢复真实评测前先由负责人核对，不手工猜补或删闸门。
