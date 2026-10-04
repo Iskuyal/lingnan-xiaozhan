@@ -1,0 +1,7 @@
+{
+  "reason": "审查发现来源哈希此前基于JSON.stringify(snapshot.departments)，未标算法且未验证。首评尚未执行，只修正元数据为源文件原始字节SHA256并校验，不改任何questions或评分判据。",
+  "beforeCanonicalDepartmentsSha256": "2b7b9c1353249152d1dbf008c335cd1485eb90d7db2bfebe6764d9a1d8170607",
+  "afterRawSnapshotSha256": "b57fec95204b5a227a2c8792f54fa817f4387646698a4c5bf57a58ba5811545c",
+  "questionsUnchanged": true,
+  "modelCalls": 0
+}

@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-03T09:03:29.466Z",
+  "localBaseline": "b7d1d19",
+  "deployedEvidence": "PR131代码a1a156e/证据e80d70b",
+  "actualRootFiles": 22,
+  "identicalToPriorReadback": 22,
+  "localMatched": 15,
+  "localMismatches": [
+    "access.js",
+    "advancement-corpus.js",
+    "advancement-query-corpus.js",
+    "advancement-query.js",
+    "advancement.js",
+    "index.js",
+    "providers.js"
+  ],
+  "ragAndCorpusMatched": true,
+  "noDeploymentPerformed": true,
+  "noModelOrCloudConfigChanges": true
+}
