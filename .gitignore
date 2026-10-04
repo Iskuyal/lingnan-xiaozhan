@@ -11,6 +11,8 @@ node_modules/
 miniprogram_npm/
 dist/
 coverage/
+__pycache__/
+*.pyc
 *.log
 .DS_Store
 Thumbs.db
