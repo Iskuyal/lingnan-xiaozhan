@@ -1,6 +1,6 @@
 # 项目当前状态
 
-核对日期：2026-10-04（材料与Git整合；其他实测仍按记录日期）。代码基线是 PR #129 合并提交 `3dfbfe8`，收尾证据见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)，升学最新修复与停止边界见[优化记录](evidence/advancement-optimization-2026-10-03/README.md)；最终交付 SHA 见 PR。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
+核对日期：2026-10-07（任务入口与材料归档；其他实测仍按记录日期）。整合基线为 `main@e5be351`：PR #131升学修复、PR #132部门独立题集与采集器、PR #133展示材料和历史提示词均已合入。收尾证据见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)，升学最新修复与停止边界见[优化记录](evidence/advancement-optimization-2026-10-03/README.md)，本次入口维护见[记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
 
 ## 已实现与实际证据
 

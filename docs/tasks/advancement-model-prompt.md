@@ -1,9 +1,9 @@
 # 升学问答优化后的恢复执行提示词
 
-核对日期：2026-10-03。模型版已有实现、部署、真实答案与截图；本轮修复和停止边界见[优化证据](../evidence/advancement-optimization-2026-10-03/README.md)。功能判据以[阶段目标](../planning/next-phase-advancement-model.md)为准。以下是恢复验收任务，不是重复接入模型的任务。
+核对日期：2026-10-07（执行入口维护；实测仍按10-03记录）。PR #131/#132/#133已合入main，模型版已有实现、部署、真实答案与截图；修复和停止边界见[优化证据](../evidence/advancement-optimization-2026-10-03/README.md)。功能判据以[阶段目标](../planning/next-phase-advancement-model.md)为准。以下是恢复验收任务，不是重复接入模型的任务。
 
 ```text
-在 F:\VibeCoding\wx-match 继续 Issue #93/#94 的升学问答验收。fetch 最新origin/main，保留原目录未提交展示材料，在独立worktree与codex/分支工作；若当前PR未合入，先核对其中最终修复和证据，避免丢失修复。
+在 wx-match 继续 Issue #93/#94 的升学问答验收。fetch 最新origin/main，先检查并保留共享工作区实际存在的改动，在独立worktree与codex/分支工作；PR #131/#132/#133已合入，不再从已删除分支恢复代码。先核对最新状态与既有证据，避免重复实现或重跑已用作修复的题集。
 
 开工先读取AGENTS.md、CONTEXT.md、docs/status.md、docs/tasks/pending.md、产品规格、相关ADR、docs/evidence/advancement-optimization-2026-10-03/README.md和当前Issue。给出简短计划与每步完成判据。
 
