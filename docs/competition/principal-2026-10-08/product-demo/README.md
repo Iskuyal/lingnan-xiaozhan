@@ -6,6 +6,18 @@
 
 声音改用`zh-CN-XiaoxiaoNeural`中文女声、-5%语速和自然停顿，不将旁白强行加速以塞进场景。音乐由代码生成76 BPM和弦与拨弦，语音出现时降低至25%。[narrate_v7.py](narrate_v7.py)使用线上Microsoft Edge语音服务，仅发送公开项目文案；[audio_v7.py](audio_v7.py)混音并导出视频、试听与独立SRT。业务AI仍为固定模拟响应，不请求真实业务模型。不能将“业务AI未调用”解释为“语音也未使用线上服务”。语音工具来源：[edge-tts](https://github.com/rany2/edge-tts)，声音名称参考[Microsoft文档](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts)。
 
+## v8镜头推近（候选，2026-10-10，待评审）
+
+[index-v8.html](index-v8.html)在v7页面之上叠加[cinema-v8.js](cinema-v8.js)与[cinema-v8.css](cinema-v8.css)；v7的`index.html`及其脚本未修改。镜头脚本按手机内元素的实时坐标取景（手机只做`translate + scale`，原点左上角），因此周课表手工新增、部门列表、目标日页面的布局位移不会错位。版式数值沿用[设计稿](../../../design/principal-showcase-v8/README.md)。
+
+```powershell
+python -X utf8 docs/competition/principal-2026-10-08/product-demo/render_v8.py --inspect
+python -X utf8 docs/competition/principal-2026-10-08/product-demo/render_v8.py
+python -X utf8 docs/competition/principal-2026-10-08/product-demo/audio_v8.py
+```
+
+[render_v8.py](render_v8.py)保留v5/v7的49项检查，追加“镜头焦点无缺失”和“高亮框不出画面、批注卡与步骤区不重叠”（每0.5秒一帧）两项，共51项；输出写入忽略目录`artifacts/product-demo-v8/`。局部修改后可用`--ranges '[[起,止]]'`补渲，再用ffmpeg `concat`合入静音成片。[audio_v8.py](audio_v8.py)读取`artifacts/product-demo-v7/`里缓存的16段语音，不联网；成片、试听和字幕写到上一级目录，文件名带v8。完整整片渲染约7分钟。
+
 ## 当前播放与重建
 
 离线播放：直接打开MP4；或保留`product-demo/`与上一级同名v7 MP4的关系，用Chrome打开`product-demo/index.html`。点击播放可同步成片音轨，暂停后可操作主要按钮，支持进度条及功能跳转。字幕需由播放器另行加载，未烧录。

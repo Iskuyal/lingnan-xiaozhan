@@ -71,3 +71,4 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 - [项目讲解与答辩练习（G2 设计图与业务契约，整体待评审）](project-defense/README.md)
 - [校长审核材料：功能、使用过程与最终结果](principal-showcase-v5/README.md)（仅展示材料，不修改小程序）
 - [校长审核材料v6：结果核对与投影阅读](principal-showcase-v6/README.md)（展示材料继续优化）
+- [校长审核材料v8：镜头推近、批注与结果核对](principal-showcase-v8/README.md)（动画画面版式，自审待评审）
