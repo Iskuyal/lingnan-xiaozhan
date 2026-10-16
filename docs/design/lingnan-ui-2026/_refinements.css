@@ -1,0 +1,8 @@
+/* 高频任务减少重复标题占位，保留原生导航标题。 */
+.screen.work .head h1,.screen.work .head .eyebrow{display:none}
+.screen.work .head{margin:0 0 4px;gap:0}
+.weekgrid{grid-template-columns:24px 22px minmax(0,1fr) minmax(0,1fr) 22px minmax(0,1fr) 22px 22px;grid-template-rows:30px repeat(6,87.36px);min-height:0}
+.course{font-size:12px;line-height:1.55;padding:7px 5px}
+.course small{font-size:10px;margin-top:6px}
+.period{font-size:9px;white-space:nowrap}
+@media(max-width:350px){.weekgrid{grid-template-columns:21px 19px minmax(0,1fr) minmax(0,1fr) 19px minmax(0,1fr) 19px 19px;gap:2px;padding:4px}.course{font-size:10px;padding:5px 3px}.course small{font-size:9px}}

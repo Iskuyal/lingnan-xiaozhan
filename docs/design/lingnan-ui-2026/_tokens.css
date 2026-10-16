@@ -1,0 +1,8 @@
+/* 现有 app.wxss 的同名同值令牌；设计稿未改生产样式。 */
+:root {
+  --brand:#c41c23; --brand-deep:#8c1614; --brand-ink:#7a1a12;
+  --gold:#c69a28; --gold-deep:#a67f1c;
+  --paper:#fdf7f5; --paper-shade:#faeee9;
+  --text:#2b2422; --text-2:#6b5d57; --text-3:#746760;
+  --warn:#9a5b1e;
+}
