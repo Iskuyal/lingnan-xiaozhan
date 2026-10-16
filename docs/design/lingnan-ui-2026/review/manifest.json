@@ -1,22 +1,22 @@
 {
-  "artifactVersion": "d566b4247b3e2b34e59a8358957bc5a29d8dd13be57c7f719f7e59ab5d3cbbc6",
+  "artifactVersion": "c9545dd0d306673197f4c09732fc85e2a0c532ea22857011a75fd3af18085764",
   "date": "2026-10-16",
   "mode": "static design",
   "files": [
     {
       "file": "design-data.mjs",
-      "sha256": "643d6bbda2d8ac2b9c0591442c877704b44ca0db880a0d0dfca4e0e8cac154b6",
-      "bytes": 31503
+      "sha256": "2966aba98853c482ce5a539291d90e141491d597836ca2a3ce0aa676ff68c1fb",
+      "bytes": 41074
     },
     {
       "file": "figma-script.mjs",
-      "sha256": "6d0bdf032cffbb279455b1881e84d1c8baefe316a5a1385453c61a070d2ee333",
-      "bytes": 20781
+      "sha256": "ef8bf8386fd37585a58e2ac3c2e8b7f7f4f06cc467a912967d35d7117bbb7f4e",
+      "bytes": 21300
     },
     {
       "file": "generate-html.mjs",
-      "sha256": "95b006b8ba400b089ea7d56ce5f5e1404de4493539c66e6b930f695dfaec069f",
-      "bytes": 7201
+      "sha256": "5116396a5de9eefe88b3dfe41464821dae690d0d460f2b3d74e58d5c9be6ad3b",
+      "bytes": 8731
     },
     {
       "file": "_mockup.css",
@@ -25,8 +25,8 @@
     },
     {
       "file": "_refinements.css",
-      "sha256": "4c45086ca7e9d7d24c292c5fb77a7c715688a56e4536a97d96a40c49beaaac50",
-      "bytes": 689
+      "sha256": "55d4bb0fffa341eb1ae1a0d0f61d727f7955c12203770902bdf6d9c353b792cf",
+      "bytes": 2301
     },
     {
       "file": "_tokens.css",
@@ -35,8 +35,8 @@
     },
     {
       "file": "01-home.html",
-      "sha256": "691bc3a9c21a68f5708d18195321cc7b12b711bc441989fa9c7413c69d9fb4d2",
-      "bytes": 5290
+      "sha256": "112474a21802dfd395b05c2e402db117116322d3dc9f0490ce8f4d99e9535cbf",
+      "bytes": 5200
     },
     {
       "file": "02-timetable-empty.html",
@@ -45,13 +45,13 @@
     },
     {
       "file": "03-timetable-week.html",
-      "sha256": "800e8b89d5313af9e049fb3a956ecb09827f2859ad9c862c9dc8173a9347260c",
-      "bytes": 3511
+      "sha256": "c7f93bbe1c22e894959cffe90397caa25c73b41636e82a78609f9f796a47ee1c",
+      "bytes": 3149
     },
     {
       "file": "04-course-detail.html",
-      "sha256": "5bcb231a5d65a0dc9ce1e286147efc8a8cef5089063875aac3bb833cb9383ef6",
-      "bytes": 1673
+      "sha256": "0bb62b93eec862df28a9ae23c85730f7e04bdf4a5cb3ad572d3e8d0a510a9cd4",
+      "bytes": 1652
     },
     {
       "file": "05-import.html",
@@ -65,27 +65,27 @@
     },
     {
       "file": "07-recognition.html",
-      "sha256": "aab56f661e69b2d469bd69e681d004418601f146e9cf66e3351515e840b86af7",
-      "bytes": 2772
+      "sha256": "01270f1fd2f4e9da447a5d7d578b36e157ac6f4db1aefa2903b74d7f97c7987a",
+      "bytes": 2901
     },
     {
       "file": "08-correction.html",
-      "sha256": "e01c6213ef1cc0000aa6d2ba7204d01ceb773c9daae554626154517d6411e426",
-      "bytes": 1886
+      "sha256": "5c351eb31a561bd80fd6e5b4699ae8fa864b48dce7b22251021b9aca986da8d3",
+      "bytes": 1892
     },
     {
       "file": "09-replace-confirm.html",
-      "sha256": "ff9ee06f04b9b935743937c8605de81a1ac457b3f38f938af782a8ad8cf7e261",
-      "bytes": 1902
+      "sha256": "23cff6d635a4929d19fb32e90ef3591cabd2e646239ed89397f1e7fb9ea96c75",
+      "bytes": 1887
     },
     {
       "file": "10-course-edit.html",
-      "sha256": "37397d6051bc4adb58600ff7e2a5dbedb685673d0e71db0d4b3ddf3d2934160c",
-      "bytes": 2680
+      "sha256": "efd3964a25f49624324c4612c3741c23475a88ab56701bc373122f00c0353927",
+      "bytes": 2869
     },
     {
       "file": "11-course-manage.html",
-      "sha256": "4ff5f547621469e19a44654957e2c8d6b6b80dfe965cfb7ca7c05ff7687ba389",
+      "sha256": "e445585ba69988a2a009c7139d6ea27bbb80bf601659f5e8a59a785a4659ad48",
       "bytes": 2711
     },
     {
@@ -95,8 +95,8 @@
     },
     {
       "file": "13-assistant.html",
-      "sha256": "1df9ff71b74d649e6979554b6464ebbb9c7f3150334d477d35b6ae171c14ecde",
-      "bytes": 1770
+      "sha256": "5c9e52576d76fdbb394b9cdc812c9592d0af8a1ab1acc2ed058c3e5ed8e6e04e",
+      "bytes": 1694
     },
     {
       "file": "14-change-confirm.html",
@@ -105,8 +105,8 @@
     },
     {
       "file": "15-assistant-failure.html",
-      "sha256": "23a2639f330fa0921f796ea2bf58f5b3b94cbf35b1844f1e4f9dcc16f934e77d",
-      "bytes": 2038
+      "sha256": "4573ba4ff508f853c775dbe14c6de288169f9cf3fd622c9f50d5d61766980253",
+      "bytes": 1998
     },
     {
       "file": "16-departments.html",
@@ -115,18 +115,18 @@
     },
     {
       "file": "17-department-detail.html",
-      "sha256": "ada2623def1a95e4a069b0531fa1a42759e814cb8a4bac41dc2044fff480917b",
-      "bytes": 1993
+      "sha256": "9bda65f3ae2cfe7d399d8307d364ce7cf9b3a5f34265321dc3410a5c8caf0c3c",
+      "bytes": 1942
     },
     {
       "file": "18-department-qa.html",
-      "sha256": "374afd097be8f3acdfb75cdd2f02f8dadd8093494d45df6ef9b2b9cc562027d7",
-      "bytes": 1890
+      "sha256": "e5cfdaa5f7747e4cf5ec2b7ea59bbbc6c9e1ff7c082ecec9bb54adc00f71df4e",
+      "bytes": 1863
     },
     {
       "file": "19-news.html",
-      "sha256": "8dc6945893ab727fd96a3208150605aa6777f321090adc557a5ecfb1c99b74dc",
-      "bytes": 2992
+      "sha256": "1fec9a8ec13e67613d2015cd36ac94d828ee218772d74ddacd1dda94fbd8dda6",
+      "bytes": 2933
     },
     {
       "file": "20-news-detail.html",
@@ -135,28 +135,28 @@
     },
     {
       "file": "21-goals.html",
-      "sha256": "c2a2b190f72bd2be282560f55498b08917a7f719531290d3d52485f1a6529529",
-      "bytes": 2032
+      "sha256": "29aa7e3dfb3d60743f3ca99593b53d6a8c28705594a9f311a7efe7f6aa2f86d6",
+      "bytes": 1855
     },
     {
       "file": "22-goal-edit.html",
-      "sha256": "35de31338273d33d4f802e621ebbb1b5873200f7d9b264d8c39b37a04034ad3d",
-      "bytes": 1786
+      "sha256": "16148d73bab4d7592296f3780c80dae9abea1e0ee06b3ba63e003cd7080d3cbd",
+      "bytes": 1792
     },
     {
       "file": "23-calendar.html",
-      "sha256": "3725c684475a923d1edc4dfcd665f538ed15129a6f84ba4eb033e34f3e5f6e31",
-      "bytes": 2110
+      "sha256": "e1d7bef9ec0206d2390f0775e21c1161ef586ba6a4a65411847005210391ab17",
+      "bytes": 2116
     },
     {
       "file": "24-fitness-input.html",
-      "sha256": "b2ed9a88d1dbc5572bd64ea34f29b2a8b1389b0bd43ca771a995f2e5c5fac9c7",
-      "bytes": 2225
+      "sha256": "f0fa61f560847eb0686ff04cc108aaea06c9742586b960e0a7ca19cd4ecf8684",
+      "bytes": 2227
     },
     {
       "file": "25-fitness-result.html",
-      "sha256": "29ea1ed2b572070e9f431a4954f8406a10d58b4f2fcd4409dd8df22b1d3cfa31",
-      "bytes": 1971
+      "sha256": "cc63f1a4d33ed0bb59e3baf89ed7018e18bad2ba06cd75209dc9109fbdd02003",
+      "bytes": 2057
     },
     {
       "file": "26-fitness-incomplete.html",
@@ -165,13 +165,13 @@
     },
     {
       "file": "27-advancement.html",
-      "sha256": "06ab0f59e01f55c632cfd6ca0124a80a852d968b479b67439bf48415db9a4c90",
-      "bytes": 2640
+      "sha256": "87e5365b673c16cb81329c68e51b2e18e7a745bcea3fe6685b146a94a635772c",
+      "bytes": 2628
     },
     {
       "file": "28-advancement-source.html",
-      "sha256": "7aea9b9b2d68f1a46d59e67bbea9577b130cfca4f712ea38536caf67aaba5571",
-      "bytes": 1887
+      "sha256": "6f41493b0d07bfc4ec6049c9acad2bc7fe1c9975b8daf1656cbb4850ef185b2d",
+      "bytes": 2035
     },
     {
       "file": "29-advancement-fallback.html",
@@ -190,28 +190,28 @@
     },
     {
       "file": "32-defense-pending.html",
-      "sha256": "e4761a835619d5c74b2322a9eda5bacefb5bb2119d0d48dbe607bd903d2d44d6",
-      "bytes": 1964
+      "sha256": "20b04282b2bfa15b5577006449260ec72d5c9f62bc5a08bae03941cda773676d",
+      "bytes": 2029
     },
     {
       "file": "33-defense-feedback.html",
-      "sha256": "c2673dfcc7e0fd7b95fe3abe9246a06d1e351bd4f9149af1895b0d79c999cf00",
-      "bytes": 2054
+      "sha256": "b2ce20375e2914391ef427fdb446f9eba81b68dad18a397b38a19f83fcb1ff94",
+      "bytes": 1961
     },
     {
       "file": "34-news-recovery.html",
-      "sha256": "ccebfc4926522296dc56bae5322c934362081b09df577e8ea1fcf44c07097414",
-      "bytes": 1678
+      "sha256": "ab43dbd28c5a11114bae23007b77d5562d938232eab248b651998fcd5633d920",
+      "bytes": 1607
     },
     {
       "file": "35-copy-feedback.html",
-      "sha256": "e6c7f817b58ab4271f604f5829b95986770471732955bbec7adb0a8e9bb034aa",
-      "bytes": 1653
+      "sha256": "2db105ef5f0d145c0146418456799df8494605391967458165d612a9be074f0d",
+      "bytes": 1616
     },
     {
       "file": "36-delete-confirm.html",
-      "sha256": "44065eeb0928f9afad3caa0689304121ad6c0471bc1ecf2db9d1659cc077c059",
-      "bytes": 1686
+      "sha256": "380cc89e59ea049fd6a484f3a92caba72b673294f96525bffb3a6f22fb7c6c82",
+      "bytes": 1415
     },
     {
       "file": "37-exit-confirm.html",
@@ -220,13 +220,13 @@
     },
     {
       "file": "38-defense-failure.html",
-      "sha256": "a3a6f98f5adfd54dce9b2955cfa16f4474e1a8d6c34f5fc422c26032600020b4",
-      "bytes": 1644
+      "sha256": "e31fbf0b296ec1dd5ced0d724a56ee22c243cbaa521b7ea4eca8fe8fa122659b",
+      "bytes": 1601
     },
     {
       "file": "39-defense-round2.html",
-      "sha256": "65ce6465caa3102d559e77a1a2d923cfff2626116ad5d8d2cd7506762db6b482",
-      "bytes": 1993
+      "sha256": "413ea41216eaf6ef72a3517117e23889d520c264a067b3fa7237c375f137a75c",
+      "bytes": 1951
     },
     {
       "file": "40-defense-review.html",
@@ -254,14 +254,69 @@
       "bytes": 2217
     },
     {
+      "file": "45-assistant-safety.html",
+      "sha256": "4b160d7098cb82d0f8a665ad440de2f05bb989b41c30a5bc66ca70546835a440",
+      "bytes": 1342
+    },
+    {
+      "file": "46-assistant-quota.html",
+      "sha256": "fad73e9ca7564e586fcf1cee2870e8467e4cd76212a75e60f9585093658eac78",
+      "bytes": 1308
+    },
+    {
+      "file": "47-goals-empty.html",
+      "sha256": "96f0e05f9a220d54ec7030e6af64d2bd4257986c18506c31fd9039ef532591cb",
+      "bytes": 1489
+    },
+    {
+      "file": "48-news-empty.html",
+      "sha256": "63fddf7f73b90cda52db3d6ad93a8ac72c795a8fe02b1a09ad40e1c9e6f47b58",
+      "bytes": 1524
+    },
+    {
+      "file": "49-import-failure.html",
+      "sha256": "d45b13d7c24ae5c66ee3c4203800e1c089123d7390257afc035af7eaa556bec6",
+      "bytes": 1438
+    },
+    {
+      "file": "50-course-invalid.html",
+      "sha256": "078639172b93b52bb6bf6afc12b0aac9c46c3eb39971cb03a3dbad1dfd4f6bfd",
+      "bytes": 1566
+    },
+    {
+      "file": "51-goal-delete-confirm.html",
+      "sha256": "69d30f176c71859bff146674cecdb125063c45b9a518c1be160feed65e493d62",
+      "bytes": 1416
+    },
+    {
+      "file": "52-defense-round3.html",
+      "sha256": "ccf392e1275c4cc4f99aec207a86f30760fa293ea7a872e9ec100071d5737384",
+      "bytes": 1892
+    },
+    {
+      "file": "53-defense-feedback2.html",
+      "sha256": "8895159fa55a3411d4b4cc83de6f2973d9a07d48c60a04cb5526f9e009194f77",
+      "bytes": 1844
+    },
+    {
+      "file": "54-defense-feedback3.html",
+      "sha256": "a792202959765c19d1b5ae2de26a0b4c8baf3e5216ab7bb6508745a37a5690ca",
+      "bytes": 1813
+    },
+    {
+      "file": "55-timetable-dense.html",
+      "sha256": "ef291d8b1e95bc2aaf1cff2ea50d119a65225a283c11f995f523892a9b9139c8",
+      "bytes": 3395
+    },
+    {
       "file": "screens.json",
-      "sha256": "08bc228f52e34c1d060fe75e1efebfb0e1623e11b96859f5c4e42af00c09a4d1",
-      "bytes": 65458
+      "sha256": "793009455f20aa905b51c37e7ebbe65c9f79b7068d76a0c58436b64631c0e309",
+      "bytes": 74870
     },
     {
       "file": "verify-design.py",
-      "sha256": "e2d86df0cc96575d47af39f96bf6a87b7caef373a3d4d114e327674acec69e27",
-      "bytes": 6403
+      "sha256": "5802c3ead5c7c71afe344844b5d3e9349689ea2ef5c654ef21bd8a96b81ba143",
+      "bytes": 7521
     },
     {
       "file": "assets/lingnan-logo-horizontal.jpg",
@@ -274,9 +329,14 @@
       "bytes": 126175
     },
     {
+      "file": "assets/lingnan-logo-official.png",
+      "sha256": "178540625568f852dcd3f66c72590f31aba7c90fa069d02a5d3bd546e5b3ff3e",
+      "bytes": 21150
+    },
+    {
       "file": "png/01-home.png",
-      "sha256": "71dafaacfa8824af77a17f7a7278da58bc48d46dc1d4edcdd2886101aa3debfe",
-      "bytes": 303940
+      "sha256": "cb629a6856af1e1c775aa597d289532d62e29cb6064a324d7d49d20d7a4ede58",
+      "bytes": 279486
     },
     {
       "file": "png/02-timetable-empty.png",
@@ -285,13 +345,13 @@
     },
     {
       "file": "png/03-timetable-week.png",
-      "sha256": "9d571f762fd9e624c9b47730c3fa367c5042d660079b17dd2de7d5ab359e92cb",
-      "bytes": 109672
+      "sha256": "18173fd297c28f9e84413473a754541ae9f508a111fd8832480133f5095df968",
+      "bytes": 102134
     },
     {
       "file": "png/04-course-detail.png",
-      "sha256": "1a9c1e3a4165e51498307a75e909a12a05ae48ea8619a82d70c40a1e87a5876a",
-      "bytes": 88643
+      "sha256": "526a9ede750f6a346b24b6979749cb90dfdb73c4deb0b350c98d62995f1b31cb",
+      "bytes": 85170
     },
     {
       "file": "png/05-import.png",
@@ -305,28 +365,28 @@
     },
     {
       "file": "png/07-recognition.png",
-      "sha256": "0b22374f5abcfe3484fc6a909af0378134249e2810976aeba24ef09a3ded44f2",
-      "bytes": 118301
+      "sha256": "bdd6efb4f0d2a7309a7664a17070790a7c99b46132878b4d70fc577c0975f890",
+      "bytes": 126089
     },
     {
       "file": "png/08-correction.png",
-      "sha256": "e7efe395b9354565cf3fa2ae4e7dc8fc80fd035ccdd2ae1d23ba98a85bc9c0fb",
-      "bytes": 115696
+      "sha256": "57b1eb92ad7ce66756bd4e252ab4d3237b6c25cf0c09262cc1f05a19f46d3724",
+      "bytes": 117129
     },
     {
       "file": "png/09-replace-confirm.png",
-      "sha256": "50bb76a9dac642b097175266c6e3d412833bfe6e2b3bda822b36a40e853180a5",
-      "bytes": 120096
+      "sha256": "74ee3f7fe33a866b4545263f2a2455a9340a0bbbf472c15fa081740222ceaf48",
+      "bytes": 116847
     },
     {
       "file": "png/10-course-edit.png",
-      "sha256": "38dcb0efd3958b2a0e828558226585334c5795b90fec38c103dfbc709f8c1043",
-      "bytes": 144835
+      "sha256": "8805c03cc93e4481a9a895ee89c593ebe00684676159c6123dffd7349250064e",
+      "bytes": 160221
     },
     {
       "file": "png/11-course-manage.png",
-      "sha256": "43ca568940dc127494b14154d2fff5e4ac63ccf57c79335094b7fe545c9bdfa7",
-      "bytes": 96651
+      "sha256": "9e9b715c3b72202a5531f0db8973d784a3e4c3ab01edb72595659de141cddd42",
+      "bytes": 95185
     },
     {
       "file": "png/12-settings.png",
@@ -335,8 +395,8 @@
     },
     {
       "file": "png/13-assistant.png",
-      "sha256": "25ab4000998c3961dc6b1335d998cb7740437562bb06b1bace37d3c9b1c9e16b",
-      "bytes": 105762
+      "sha256": "4978f921676b2440de884c674f6af6957b50198a359d77bbcc72083672174c36",
+      "bytes": 102453
     },
     {
       "file": "png/14-change-confirm.png",
@@ -345,8 +405,8 @@
     },
     {
       "file": "png/15-assistant-failure.png",
-      "sha256": "7bf6a25e60cd8ff84fbdc35e6728ef7402a146c19d1b61e48b5636e20ffde0e8",
-      "bytes": 112681
+      "sha256": "d79caac88f767cd6e114cdd6919f77382ba9bf729eccaac5f6ab99582e0c521c",
+      "bytes": 100873
     },
     {
       "file": "png/16-departments.png",
@@ -355,18 +415,18 @@
     },
     {
       "file": "png/17-department-detail.png",
-      "sha256": "4e2d9f9d8069f02daccebdf0f4b81b192cbb937cc7c7d42710f75250045e223a",
-      "bytes": 148572
+      "sha256": "63fbec9b226321352861e838f4b66f83af2d6419ac029a11db4307dd59e3fa36",
+      "bytes": 134143
     },
     {
       "file": "png/18-department-qa.png",
-      "sha256": "b226b4e382cebd02cad2fae513aa3131bc0090b01f59473fb52987915e7c08a3",
-      "bytes": 134860
+      "sha256": "41719d3b55d4eb02c371fd2e2b40867ed50282f47f392aa9d7b02ddffbaf1a4b",
+      "bytes": 130802
     },
     {
       "file": "png/19-news.png",
-      "sha256": "47a6b319426b61cdbf54fbc9e57dcc29d037389e35ab1f787bb7fa1a7cdf4fe1",
-      "bytes": 152942
+      "sha256": "13686b835470d09e56b1c092724121d9dc211c3545f8a7044398521ceeea8ff3",
+      "bytes": 145194
     },
     {
       "file": "png/20-news-detail.png",
@@ -375,8 +435,8 @@
     },
     {
       "file": "png/21-goals.png",
-      "sha256": "f30b2215f3b6d79fec6e7e6b9a69f421ace0868ee19d24703b2291043aec1a97",
-      "bytes": 94506
+      "sha256": "3ef9701ba8678c913b8396f9102df2ca5a7da8b832e90b6a2f56b0c4a70b0d46",
+      "bytes": 79719
     },
     {
       "file": "png/22-goal-edit.png",
@@ -385,8 +445,8 @@
     },
     {
       "file": "png/23-calendar.png",
-      "sha256": "f65e7dca4ffc049955a6eabeed0398f2151356da22288b0eb7ec0fd58700c645",
-      "bytes": 143773
+      "sha256": "ebc68b13039cd629fa0e6c5bef90c2ceb1151aca3fb2125b00c050c98a05645f",
+      "bytes": 159530
     },
     {
       "file": "png/24-fitness-input.png",
@@ -395,8 +455,8 @@
     },
     {
       "file": "png/25-fitness-result.png",
-      "sha256": "0219415fd5c204ecf5f071b453092c856b79d51335a5266ba1f9a1a56085ce85",
-      "bytes": 120807
+      "sha256": "60f3fe45de288bf40c9675bbf3c0c1bb94b61884e100be21b0a395d8bcf82080",
+      "bytes": 127095
     },
     {
       "file": "png/26-fitness-incomplete.png",
@@ -405,13 +465,13 @@
     },
     {
       "file": "png/27-advancement.png",
-      "sha256": "b56c2862cd48c75f9439777820da070e402bafbbaf74c842db38c427f5408cb3",
-      "bytes": 135296
+      "sha256": "48976bbaf3ae34b60dce2d02493cd8468b0de10d1d59fcbefb5dec19af8ac5ea",
+      "bytes": 133813
     },
     {
       "file": "png/28-advancement-source.png",
-      "sha256": "870f07e8ccaf457eb5a80042bac3f8084ce1aab99329412eda4826e8bb03cd02",
-      "bytes": 126882
+      "sha256": "4be54f9a86e390cb5cd4dc742a6282baa88f00c4676bb81db8985f5173ee1c3c",
+      "bytes": 135577
     },
     {
       "file": "png/29-advancement-fallback.png",
@@ -430,28 +490,28 @@
     },
     {
       "file": "png/32-defense-pending.png",
-      "sha256": "e9d7a3509fb25c36264df722a0db1e18605329b54ac412603592dd1ea3022174",
-      "bytes": 107404
+      "sha256": "59f7b7955edfb6e00174541d9908150a1e8b8365cee2b163666a4554f84ba2e6",
+      "bytes": 112463
     },
     {
       "file": "png/33-defense-feedback.png",
-      "sha256": "6ef3f21fd7ff209c67980d48b96f3e1f061f43820e9877f82abde4c8ff21939b",
-      "bytes": 137774
+      "sha256": "290d9a33e30e208db2e447cf5dec2ba60733e74eb71d4ef35767fcba97828147",
+      "bytes": 128758
     },
     {
       "file": "png/34-news-recovery.png",
-      "sha256": "bda6ab749e1d6aeeac69a5c8b77ac8e15b1ceb227bf98a52dc987d6a7e3aec49",
-      "bytes": 103301
+      "sha256": "d729499db7bcb9d3e57d16b17335753e727e986167f796bead35b67f137beecf",
+      "bytes": 93952
     },
     {
       "file": "png/35-copy-feedback.png",
-      "sha256": "7c06144d08e79c3d7204a05be110f5e905de1cefc3a592fc7bed0d4dbe8c78e7",
-      "bytes": 85221
+      "sha256": "0a1ca33b3701316e2e353bac7fa5ff857e46afd91f907bd7dcfb6184b3ea6e63",
+      "bytes": 72492
     },
     {
       "file": "png/36-delete-confirm.png",
-      "sha256": "da16d7e911c08510a0739a1937a9385a332d2008d3e9e71755644ddd3fc52ce6",
-      "bytes": 94618
+      "sha256": "478784da07759a4a7cdb2009b2bb417ce0b3ee4977d2f57366ed54bbf7e70422",
+      "bytes": 68696
     },
     {
       "file": "png/37-exit-confirm.png",
@@ -460,13 +520,13 @@
     },
     {
       "file": "png/38-defense-failure.png",
-      "sha256": "6b3e6ea557dc9ba976aa6db138a93e3ed7cd400cd2be3923cf98ea7cb5088eaf",
-      "bytes": 100842
+      "sha256": "ef7860b55978cd73b74a680e1ada1d9a823d4f4165c16b1456ed3ae71dbc9d40",
+      "bytes": 92673
     },
     {
       "file": "png/39-defense-round2.png",
-      "sha256": "3e06416d03ee5488e0e1a4290702e30bbf0b98babf6a6e5c974b0ddeb861d829",
-      "bytes": 126123
+      "sha256": "9b52035226ff1913b951cfa24ac3856faa395088f372dd98ae0b515792f9058b",
+      "bytes": 118470
     },
     {
       "file": "png/40-defense-review.png",
@@ -494,9 +554,64 @@
       "bytes": 83465
     },
     {
+      "file": "png/45-assistant-safety.png",
+      "sha256": "bb2ed6e1975ce2eb4c826e1fc73e18bcae69265ba8c1ec96b4442c225c355552",
+      "bytes": 66145
+    },
+    {
+      "file": "png/46-assistant-quota.png",
+      "sha256": "22cb5d0b3d22a7b4231c03ce88e3916cafc329542cb3d8bee2c7310d0132b14d",
+      "bytes": 58418
+    },
+    {
+      "file": "png/47-goals-empty.png",
+      "sha256": "c51b96160e603df91e1e6d9fa1f1bda5a7cb2b217b839a9ba2fa9321265e621c",
+      "bytes": 56496
+    },
+    {
+      "file": "png/48-news-empty.png",
+      "sha256": "87cccff232e09d65d75bab02c418b34f952615c70cbaad38df99e01ecb2820a5",
+      "bytes": 58681
+    },
+    {
+      "file": "png/49-import-failure.png",
+      "sha256": "cf7ad5b53abd28f700773f584abeecb149c5d7c04046896f0e67ec6f5df05990",
+      "bytes": 71216
+    },
+    {
+      "file": "png/50-course-invalid.png",
+      "sha256": "519b4524a217b8e5a0ecb4409a369d89e498dcfa94767d555e0fe949cd73da01",
+      "bytes": 79989
+    },
+    {
+      "file": "png/51-goal-delete-confirm.png",
+      "sha256": "adc77d120f812b469151083c716f49bf3acc6eafec10e997636fd2632a0adaa6",
+      "bytes": 70887
+    },
+    {
+      "file": "png/52-defense-round3.png",
+      "sha256": "8fcf53e6698826998638b9066733bc524d82642dc0b1888d9d7511f534d9da33",
+      "bytes": 116004
+    },
+    {
+      "file": "png/53-defense-feedback2.png",
+      "sha256": "aedda68dac3bd39bd721aed81fe5ebe21cc7d8c1a15ad9051b6eb4f91c3995c8",
+      "bytes": 106509
+    },
+    {
+      "file": "png/54-defense-feedback3.png",
+      "sha256": "27aa677b89a070785504d6370da0b2d76d354c769a011a1cee364a731c1600c9",
+      "bytes": 104167
+    },
+    {
+      "file": "png/55-timetable-dense.png",
+      "sha256": "a26c8916f9e51314a3512c800dda813fbedaa4729a5817aa4561319d689bf3d1",
+      "bytes": 106781
+    },
+    {
       "file": "review/narrow/01-home.png",
-      "sha256": "65c07921ff9c69ccee7fa724aa78b04b879fac4450ccf896773a098db4d99cf0",
-      "bytes": 88511
+      "sha256": "44486be0383e67cc8781fbf79a9f6607cfd627393e2c4aee0bb682d0fda252ec",
+      "bytes": 83717
     },
     {
       "file": "review/narrow/02-timetable-empty.png",
@@ -505,13 +620,13 @@
     },
     {
       "file": "review/narrow/03-timetable-week.png",
-      "sha256": "276b0a146b607e668aa37565f8f6fbcde51f4ea379cc02d00f094e376711141c",
-      "bytes": 35627
+      "sha256": "e457436edd0ddae17858414f2ff7de01213fdc1f86847f9293477f927e37883e",
+      "bytes": 31652
     },
     {
       "file": "review/narrow/04-course-detail.png",
-      "sha256": "c575c0dea826d2d1e6be7d3cbcbee3068383b45a3a8ecc7e8c46811077e42636",
-      "bytes": 27488
+      "sha256": "31d8529e169c12cfa73ea7a05ca3307d4bd1296cb9c7c5b4f3b5f7213d1caa67",
+      "bytes": 26551
     },
     {
       "file": "review/narrow/05-import.png",
@@ -525,28 +640,28 @@
     },
     {
       "file": "review/narrow/07-recognition.png",
-      "sha256": "c6194f6d5f817ff0949055cb4bb5c310a202c9a5a91b8933230468f689b9c8af",
-      "bytes": 38258
+      "sha256": "a9f0345fe3c3067f3586cadd156ee7b505ea091c9cd6ce1a696c1477e2c4218c",
+      "bytes": 41284
     },
     {
       "file": "review/narrow/08-correction.png",
-      "sha256": "41c8b339265b1bcd92eea58a724e606d2505ab3599a4d3ba89e748036131f7a5",
-      "bytes": 34530
+      "sha256": "11de5e94a1d07ffe8b267a5c6da1ba87245f5842d4288d0d829b88996d7dbada",
+      "bytes": 34856
     },
     {
       "file": "review/narrow/09-replace-confirm.png",
-      "sha256": "5a378ed3dc6e304d04f6daed90ff73b3523bafe2a23deb1dbcff6d1875eb97ca",
-      "bytes": 34823
+      "sha256": "2d69d667741872b482cc3fbb5ce89df72b9a29750c69eeb8cc24b1b1440c3389",
+      "bytes": 34225
     },
     {
       "file": "review/narrow/10-course-edit.png",
-      "sha256": "8372ee2b869aa22dd1212bba7e2dc4c0ae18969f2d83064c669a762901c02544",
-      "bytes": 46034
+      "sha256": "38234a52d5c4e781ac3bc8226885f61243935dfb52a95e95b097245a89cfb15f",
+      "bytes": 49991
     },
     {
       "file": "review/narrow/11-course-manage.png",
-      "sha256": "0abbd6faf53caa2e97f8f411e60981f86073c36634e6f73cbca969334c34a8fb",
-      "bytes": 30220
+      "sha256": "1cc1cf91938d3fa57d61ab6d2a51d999df556fe6743e83ec7f150da6d458ee2c",
+      "bytes": 29965
     },
     {
       "file": "review/narrow/12-settings.png",
@@ -555,8 +670,8 @@
     },
     {
       "file": "review/narrow/13-assistant.png",
-      "sha256": "fa5401fbf552a3a5bf6716b258fc8ef536f530b44b60e4d66c1418803ffbe117",
-      "bytes": 31627
+      "sha256": "005a17df4ddb30a09d2d19270cb9c24680edf7580556c642242f09e7c4b59198",
+      "bytes": 30411
     },
     {
       "file": "review/narrow/14-change-confirm.png",
@@ -565,8 +680,8 @@
     },
     {
       "file": "review/narrow/15-assistant-failure.png",
-      "sha256": "8416da2d233c05182f8a812d5a26d785aab674b22ced92d36394c66a9488581e",
-      "bytes": 37932
+      "sha256": "7699d57f5c1f1f7f045648dc28255be471674e1bdadbe06d101b9cfa07510f0d",
+      "bytes": 33787
     },
     {
       "file": "review/narrow/16-departments.png",
@@ -575,18 +690,18 @@
     },
     {
       "file": "review/narrow/17-department-detail.png",
-      "sha256": "36237e5393b2aa20c4b36029059baafa4f68120e2d710bee18d406918ef0eb38",
-      "bytes": 46042
+      "sha256": "630a71d03b7cb45f1cebbda8a6457fdf6f77ba6814c8bb5f36c371f8e6f63a86",
+      "bytes": 40207
     },
     {
       "file": "review/narrow/18-department-qa.png",
-      "sha256": "a393b80b3592da32b1b8421f33cdb2b9fe945156267fc7a75e42be624fd6e881",
-      "bytes": 37991
+      "sha256": "7036bf0f6463ec86f00e8d0806f8ee704a3f95e9329feee04b0e58e4d9f69873",
+      "bytes": 36973
     },
     {
       "file": "review/narrow/19-news.png",
-      "sha256": "4a79abaa06906cc1963e456fee09727cc0258d3a06a7309ebe6089db60dd8774",
-      "bytes": 47824
+      "sha256": "e65c010df861f511f0bceef9c2e63a69fb9a824fd00b6d160f7d1f1f63fe5fa0",
+      "bytes": 45930
     },
     {
       "file": "review/narrow/20-news-detail.png",
@@ -595,8 +710,8 @@
     },
     {
       "file": "review/narrow/21-goals.png",
-      "sha256": "7619a7d9c8a7a0d95688214216610911e3d3a2e1f5807d419ef2b4bc1f9cfc7f",
-      "bytes": 29932
+      "sha256": "cfd5b4b03fb2be72b8cb6cf0eb82b5dea73a47b9fcddc1b1e33a87da207442e9",
+      "bytes": 25550
     },
     {
       "file": "review/narrow/22-goal-edit.png",
@@ -605,8 +720,8 @@
     },
     {
       "file": "review/narrow/23-calendar.png",
-      "sha256": "25d1a74987f786244f180604315c5469d9dda0bf68dd22698adc883341fde7cb",
-      "bytes": 42205
+      "sha256": "080b8e924d9dad24ea10440d7e8caa36be89f7e3043171766859c06ce656ea95",
+      "bytes": 45670
     },
     {
       "file": "review/narrow/24-fitness-input.png",
@@ -615,8 +730,8 @@
     },
     {
       "file": "review/narrow/25-fitness-result.png",
-      "sha256": "bef7c303848c358ed6f751fd3177f61d0ad8424c2482cf67b5722dc8d981445b",
-      "bytes": 35812
+      "sha256": "f554ebdf5b5f8432123b3f46781fb38a55c9759c336b84f420083d4d03469a4a",
+      "bytes": 38046
     },
     {
       "file": "review/narrow/26-fitness-incomplete.png",
@@ -625,13 +740,13 @@
     },
     {
       "file": "review/narrow/27-advancement.png",
-      "sha256": "1add2fea40b4a816cd0095259b64e1eb840caebd47516fb023c5141a31511494",
-      "bytes": 39987
+      "sha256": "df63ac860b7e5f2eadac814c8cfd30d9c36c5572884129d7153b69c3e76b9456",
+      "bytes": 39589
     },
     {
       "file": "review/narrow/28-advancement-source.png",
-      "sha256": "444b587763667fc9a4b235ff66edca35f07c68f20ecbfe7a8ee87388c8d5a72f",
-      "bytes": 36287
+      "sha256": "c2395eb8329116c43888369c080335e7bcdcf4fa1bf83986f1dc260d0784fa2e",
+      "bytes": 39338
     },
     {
       "file": "review/narrow/29-advancement-fallback.png",
@@ -650,28 +765,28 @@
     },
     {
       "file": "review/narrow/32-defense-pending.png",
-      "sha256": "c0ed712ab821d2707c3b274b12a4e8c55bf419f1c2580ef49f2b7dcff3d57ead",
-      "bytes": 33395
+      "sha256": "a0aa693f07245550eeb572ac0daa3638a3d343c1a8ffff5caa8ea576dd03526b",
+      "bytes": 35897
     },
     {
       "file": "review/narrow/33-defense-feedback.png",
-      "sha256": "48e2f2a001b37d93a0e641c7570d7a14d5d13b69659d3f43618f59c66909f0f6",
-      "bytes": 41976
+      "sha256": "705b844a2a3c5334ca0538414eb30f1f631bd0047193d40e34f70a09b3a2fa43",
+      "bytes": 39591
     },
     {
       "file": "review/narrow/34-news-recovery.png",
-      "sha256": "de55ab61344a9fafaac28fee4b0fa3f6e8bdfb5a9ec8e00c2a7e390e6e676687",
-      "bytes": 31724
+      "sha256": "40a5681f7b6a73e9b28afd897105160a775db31f2ddb2bbfa97b05706d9e94b8",
+      "bytes": 28460
     },
     {
       "file": "review/narrow/35-copy-feedback.png",
-      "sha256": "6146608abd3d02ebeb63d60aba8f6af9219b6b2bfd19c469ba4adf65b605984e",
-      "bytes": 27720
+      "sha256": "dfa6e959e137bfc1e85f46c4837e5765c2d6e72dd2ea11cce960ca7d3fab6acb",
+      "bytes": 25039
     },
     {
       "file": "review/narrow/36-delete-confirm.png",
-      "sha256": "82259b264302b6520afbc35978043bc6d3b6d0a083766016e481ab4261cb1acd",
-      "bytes": 30601
+      "sha256": "b67ed6b0f4eeaa7852cc9036dd7cac60d9405e11ae8a3d2fd85e4a036828fb57",
+      "bytes": 21846
     },
     {
       "file": "review/narrow/37-exit-confirm.png",
@@ -680,13 +795,13 @@
     },
     {
       "file": "review/narrow/38-defense-failure.png",
-      "sha256": "41b97c4fa4ad23d98df92885d946abb580cbe0e88fa86fb300e1ae21809bdd24",
-      "bytes": 28928
+      "sha256": "84b82fc715ff48d0f8325563c24f0fdad970bfecec9e25fa746fcb13d9f9cf67",
+      "bytes": 27225
     },
     {
       "file": "review/narrow/39-defense-round2.png",
-      "sha256": "79637b43f46711ca5e1d47dcbe2a0f211f1dccc7a49a0defde561d4db3262681",
-      "bytes": 36144
+      "sha256": "180263cd673a0b4c84ca418c32b6a6f3ebc71024f49e612f2f970d0defa1e7e3",
+      "bytes": 34441
     },
     {
       "file": "review/narrow/40-defense-review.png",
@@ -714,9 +829,74 @@
       "bytes": 26450
     },
     {
+      "file": "review/narrow/45-assistant-safety.png",
+      "sha256": "ab173c627cc86e98375ec23ce05769fafafe42ed72fd148e61846cc12a51c56b",
+      "bytes": 20742
+    },
+    {
+      "file": "review/narrow/46-assistant-quota.png",
+      "sha256": "ea31ee2fd7374317c3de2f993f82325d641129fc96e59719a88ae743ed4f8964",
+      "bytes": 18734
+    },
+    {
+      "file": "review/narrow/47-goals-empty.png",
+      "sha256": "84860a337dc53a6808460d070d6e57403aa12fdf292528d4bcb08d1fa3f201b2",
+      "bytes": 20467
+    },
+    {
+      "file": "review/narrow/48-news-empty.png",
+      "sha256": "b642dd15966c4f22c7b1969d9da2b0a72062ea622fe53d995469507223285c85",
+      "bytes": 21250
+    },
+    {
+      "file": "review/narrow/49-import-failure.png",
+      "sha256": "a649553667c3cfb8d8d64ea41c06060904e9a10955e69f4ba3e7e7be23acd723",
+      "bytes": 22039
+    },
+    {
+      "file": "review/narrow/50-course-invalid.png",
+      "sha256": "5e75b9001c4f3bd4ea66a4c8333c920502dd84c0ee54ce2190f891ce830943d5",
+      "bytes": 24818
+    },
+    {
+      "file": "review/narrow/51-goal-delete-confirm.png",
+      "sha256": "9820c4a9acba9f62dc805b330ddfda32319cb269446f921e81e60e7e28579b88",
+      "bytes": 22344
+    },
+    {
+      "file": "review/narrow/52-defense-round3.png",
+      "sha256": "21ef6d847e2b0ab3fb5d5526b0b5434ad88007694c7862583a5dc15df2ab7c11",
+      "bytes": 33478
+    },
+    {
+      "file": "review/narrow/53-defense-feedback2.png",
+      "sha256": "8d935ead9c85ad17e778f2d8bd7d76a9a2e32242b874ca0d95dadf866b104d57",
+      "bytes": 35039
+    },
+    {
+      "file": "review/narrow/54-defense-feedback3.png",
+      "sha256": "25f6a7e9add2c215f995b1d76f804d34f36b2eb6dc8c9c9bb4c1d158e5a1633d",
+      "bytes": 33633
+    },
+    {
+      "file": "review/narrow/55-timetable-dense.png",
+      "sha256": "f2e72f06f621931e04e1e925de601e8bcee9f442b06dba7ba042159e16ee4382",
+      "bytes": 33127
+    },
+    {
+      "file": "review/stress/week-320-right.png",
+      "sha256": "a162208c015a672c7dfc4a44d8c39152b8fefdfa996037a8621a8257f020df98",
+      "bytes": 29563
+    },
+    {
+      "file": "review/stress/week-390-right.png",
+      "sha256": "b9880d966bb51d7abe20ad10a046acb0f7381806e45898aa352bef56fd1bd2ee",
+      "bytes": 32614
+    },
+    {
       "file": "review/overview.png",
-      "sha256": "7ec9594661be60374807394748aaee0bdb970222913ef7b09e58627e85b546eb",
-      "bytes": 715358
+      "sha256": "d02e3719304334285b35932eb8779f74f7e7f9df314682c68098a9c10124f54e",
+      "bytes": 712662
     },
     {
       "file": "figma/png/01-home.png",
@@ -735,8 +915,13 @@
     },
     {
       "file": "figma/state.json",
-      "sha256": "9e902fe9930aaf83ad19d1df45d768ec58068dad3d62e29f897eb2ae9104828c",
-      "bytes": 1835
+      "sha256": "691761a713ff2e88fcc80c33e049578d29148ab9d81759253fef89aa4b30d287",
+      "bytes": 2168
+    },
+    {
+      "file": "review/brief.md",
+      "sha256": "7889806dfa178ad30dc4b248fb8a16324eb38faa98c7397b423302ef050bcfa9",
+      "bytes": 2941
     }
   ],
   "reviewersPerRound": 1,
@@ -746,6 +931,7 @@
     "normal": "png/",
     "narrow": "review/narrow/",
     "figma": "figma/png/",
-    "overview": "review/overview.png"
+    "overview": "review/overview.png",
+    "stress": "review/stress/"
   }
 }

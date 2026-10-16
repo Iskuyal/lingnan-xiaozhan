@@ -55,7 +55,10 @@ function instance(parent,name,values){const n=comps[name].createInstance();track
 function cta(parent,label,target,tone='primary'){const main=buttonSet.children.find(c=>c.type==='COMPONENT'&&c.name==='tone='+tone);const n=main.createInstance();track(n);parent.appendChild(n);setTexts(n,{Label:label});action(n,target);return n;}
 function block(parent,b){let n;
 switch(b.type){
-case 'brand':n=auto(parent,'官方校徽 / 保持原比例','VERTICAL',350,0,'white',12);border(n);const logo=keep(figma.createRectangle());logo.name='官方校徽图像槽';logo.resize(326,326*140/620);fill(logo,'white');n.appendChild(logo);logoSlots.push(logo.id);break;
+case 'reviewLinks':return null;
+case 'heroCompact':n=auto(parent,'首页短标题','VERTICAL',350,4);text(n,b.title,24,'text','Bold',350,true);text(n,b.text,12,'secondary','Regular',350);break;
+case 'weekToolbar':n=auto(parent,'课表操作','HORIZONTAL',350,8);for(const i of b.items){const t=auto(n,i.label,'VERTICAL',111,0,'white',12);border(t,'deep');text(t,i.label,12,'deep','Medium',87);action(t,i.target);}break;
+case 'brand':n=auto(parent,'官方校徽 / 保持原比例','VERTICAL',350,0,'deep',12);border(n);const logo=keep(figma.createRectangle());logo.name='官方校徽图像槽';logo.resize(326,326*113/320);fill(logo,'white');n.appendChild(logo);logoSlots.push(logo.id);break;
 case 'hero':n=auto(parent,'首页标题','VERTICAL',350,12);text(n,'LINGNAN / CAMPUS TOOLS',11,'deep','Medium',350);text(n,b.title,34,'text','Bold',350,true);text(n,b.text,15,'text','Regular',350);text(n,b.meta,11,'muted','Regular',350);const line=keep(figma.createRectangle());line.resize(350,2);fill(line,'brand');n.appendChild(line);break;
 case 'primaryEntry':n=auto(parent,'课表主入口','HORIZONTAL',350,12,'brand',20);n.cornerRadius=12;n.minHeight=112;const copy=auto(n,'入口说明','VERTICAL',242,4);text(copy,'每周安排',11,'white','Regular',242);text(copy,b.title,24,'white','Bold',242);text(copy,b.text,13,'white','Regular',242);const ic=icon(n,b.icon,36);for(const v of ic.findAllWithCriteria({types:['VECTOR']})){v.strokes=[paint('white')];}n.counterAxisAlignItems='CENTER';action(n,b.target);break;
 case 'section':n=auto(parent,b.title,'HORIZONTAL',350,8);text(n,b.title,17,'text','Bold',246);text(n,b.meta,11,'muted','Regular',96);n.counterAxisAlignItems='CENTER';break;

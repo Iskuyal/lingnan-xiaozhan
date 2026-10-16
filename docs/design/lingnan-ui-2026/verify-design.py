@@ -48,7 +48,11 @@ with sync_playwright() as p:
       ('fitness',['24','25','26','24']),
       ('news',['19','20','35','20']),
       ('defense-cancel',['30','31','32','31']),
-      ('defense-reanswer',['40','41','42','01'])
+      ('defense-reanswer',['40','41','42','01']),
+      ('defense-three-rounds',['33','39','53','52','54','40']),
+      ('goal-delete',['22','51','47']),
+      ('import-recovery',['49','05','07']),
+      ('course-invalid',['50','10'])
     ]
     by_id={s['id']:s for s in SCREENS}
     for label,seq in chains:
@@ -58,10 +62,25 @@ with sync_playwright() as p:
             assert page.url.endswith(by_id[target]['file']),label
         paths.append({'name':label,'screens':seq,'staticLinks':'passed','businessBehavior':'not tested'})
 
+    # 真实浏览器局部水平滚动：验证固定列宽可查看周末；不外推微信手势。
+    stress=[]
+    (ROOT/'review'/'stress').mkdir(exist_ok=True)
+    for width in (390,320):
+        page.set_viewport_size({'width':width,'height':844})
+        page.goto((ROOT/by_id['55']['file']).as_uri())
+        scroller=page.locator('.week-scroll')
+        scroller.hover()
+        page.mouse.wheel(700,0)
+        page.wait_for_timeout(200)
+        value=scroller.evaluate('(e)=>({left:e.scrollLeft,max:e.scrollWidth-e.clientWidth})')
+        assert value['left']>0,'week horizontal scrolling'
+        page.screenshot(path=str(ROOT/'review'/'stress'/f'week-{width}-right.png'),full_page=True)
+        stress.append({'viewport':width,'horizontalScroll':value,'passed':True})
+
     # 用本轮截图生成宽幅目录，原图保持完整；它是评审导航，不导入 Figma。
     featured=['01','03','06','14','16','20','21','23','25','28','31','40']
     cells=''.join('<section><header>'+i+' · '+by_id[i]['title']+'</header><img src="'+(ROOT/'png'/(Path(by_id[i]['file']).stem+'.png')).as_uri()+'"></section>' for i in featured)
-    board='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;background:#eee5df;color:#2b2422;font-family:"Microsoft YaHei",sans-serif;padding:48px}h1{font-size:36px;margin:0 0 12px}p{font-size:16px;margin:0 0 32px;color:#6b5d57}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px}section{min-width:0}header{height:44px;font-size:13px;font-weight:600}img{width:100%;height:auto;display:block;box-shadow:0 5px 20px #2b242215}</style><h1>岭南校园工具 / 全流程 UI 提案</h1><p>44 张画面 · 12 张代表稿一览 · 静态示例，未修改小程序实现 · 2026-10-16</p><div class="grid">'''+cells+'</div></html>'
+    board='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;background:#eee5df;color:#2b2422;font-family:"Microsoft YaHei",sans-serif;padding:48px}h1{font-size:36px;margin:0 0 12px}p{font-size:16px;margin:0 0 32px;color:#6b5d57}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px}section{min-width:0}header{height:44px;font-size:13px;font-weight:600}img{width:100%;height:auto;display:block;box-shadow:0 5px 20px #2b242215}</style><h1>岭南校园工具 / 全流程 UI 提案</h1><p>'''+str(len(SCREENS))+''' 张画面 · 12 张代表稿一览 · 静态示例，未修改小程序实现 · 2026-10-16</p><div class="grid">'''+cells+'</div></html>'
     board_path=ARTIFACTS/'overview.html'
     board_path.write_text(board,encoding='utf-8')
     page.set_viewport_size({'width':1920,'height':1080})
@@ -78,7 +97,7 @@ for fg,bg in [('#ffffff','#c41c23'),('#ffffff','#8c1614'),('#6b5d57','#fdf7f5'),
     ratio=(max(lum(fg),lum(bg))+.05)/(min(lum(fg),lum(bg))+.05)
     contrast.append({'foreground':fg,'background':bg,'ratio':round(ratio,2),'normalText45':ratio>=4.5})
     if ratio<4.5: failures.append({'contrast':[fg,bg],'ratio':ratio})
-report={'date':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'contrastSamples':contrast,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
+report={'date':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'weekScrolling':stress,'contrastSamples':contrast,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
 (ROOT/'review'/'checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({'screens':len(SCREENS),'renderScenarios':len(results),'staticPaths':len(paths),'contrastSamples':len(contrast),'failures':failures},ensure_ascii=False))
 if failures: raise SystemExit(1)

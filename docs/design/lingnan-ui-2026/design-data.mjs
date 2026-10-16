@@ -37,7 +37,7 @@ export const screens = [
  page('04','课程详情','来自你已保存的课表 · 示例','pages/timetable/index',[
   card('使用 JSP 开发 Web 应用系统','周二 · 第 1–2 节','第 2–6、8–17 周 · 清远校区','', 'blue'),
   field('地点','博雅楼 B602'),field('教师','示例教师'),field('学分','4'),
-  button('编辑这门课程','10'),button('返回周课表','03','secondary'),note('课程详情在现有课表页内展开；关闭后保留周次。')
+  button('编辑这门课程','10'),button('返回周课表','03','secondary'),note('关闭详情后，仍回到当前教学周。')
  ],{back:'03'}),
  page('05','导入课表','先导入，再校对，最后保存','pages/timetable/import/index',[
   steps(['选择','校对','确认'],0),
@@ -60,21 +60,21 @@ export const screens = [
   button('查看识别成功稿（演示）','08','tertiary')
  ],{back:'05'}),
  page('08','核对课程信息','Excel / 截图共用校对 · 示例','pages/timetable/edit/index',[
-  note('地点没有识别清楚，请对照原图填写。','warning','待核对 1 / 1'),
+  note('地点没有识别清楚，请对照原始课表填写。','warning','待核对 1 / 1'),
   card('保留的原文','数据库应用技术 [1-16]周 3-4节 B?05','只读原文 · 不自动猜测'),
   field('课程名','数据库应用技术'),field('地点','B305','按原图校对后的示例值'),field('星期与节次','周三 · 第 3–4 节'),field('教学周','第 1–16 周 · 每周'),
   button('保存这处校对，返回草稿','09'),button('取消校对','06','secondary')
  ],{back:'06'}),
  page('09','确认导入','核对完成 · 3 门示例课程','pages/timetable/import/index',[
   steps(['选择','校对','确认'],2),note('即将替换当前整份课表，请确认后继续。','warning','替换前再看一眼'),
-  card('当前课表','6 门课程','此处为已存在课表的替换场景'),card('导入后的课表','3 门课程 · 已核对','替换后以本次草稿为准','','blue'),
+  card('当前课表','6 门课程','当前已保存的课程'),card('导入后的课表','3 门课程 · 已核对','替换后以本次草稿为准','','blue'),
   note('取消会保留当前 6 门课程。\n确认保存成功后才返回周课表；失败仍停留在草稿。'),
   button('确认替换为 3 门课程','03'),button('取消，继续校对','06','secondary')
  ],{back:'06'}),
  page('10','编辑课程','新增 / 编辑共用表单 · 示例','pages/timetable/edit/index',[
   section('基本信息'),field('课程名 *','使用 JSP 开发 Web 应用系统'),field('教师','示例教师','不知道可以留空'),field('地点','博雅楼 B602'),field('学分','4','没有可以留空'),field('备注','实训课','选填'),
-  section('上课安排'),chips(['一','二','三','四','五','六','日'],1),field('节次 *','第 1 节 — 第 2 节','不代填学校作息时间'),field('起止周 *','第 2 周 — 第 17 周'),chips(['每周','单周','双周'],0),field('课程颜色','靛青 · 同名课程保持同色'),
-  button('保存课程','03'),button('取消，返回课表','03','secondary'),note('返回遇到未保存内容时应提示；删除课程需二次确认。')
+  section('上课安排'),chips(['一','二','三','四','五','六','日'],1),field('节次 *','第 1 节 — 第 2 节','这里只填节次，具体时刻可在设置中补充'),field('起止周 *','第 2 周 — 第 17 周'),chips(['每周','单周','双周'],0),field('课程颜色','靛青 · 同名课程保持同色'),
+  button('保存课程','03'),button('取消，返回课表','03','secondary'),note('离开前请保存修改；删除课程还需要你再次确认。')
  ],{back:'03'}),
  page('11','管理课程','按课程查看 · 示例数据','pages/timetable/manage/index',[
   button('新增课程','10'),section('已保存课程','3 门示例'),
@@ -117,7 +117,7 @@ export const screens = [
  ],{back:'16'}),
  page('18','部门问答','当前对象：校学生会','pages/departments/detail/index',[
   quote('在哪里可以报名加入？'),card('资料中未找到报名方式','官网未公布这项信息，无法根据现有资料确认。','回答示例 · 不替组织生成联系方式'),
-  source('参考资料 · 校学生会','当前资料仅支持查看组织介绍与已收录动态。','点击来源仅复制链接，不直接打开未配置的网页'),
+  source('参考资料 · 校学生会','当前资料仅支持查看组织介绍与已收录动态。','复制原文链接，可在微信里粘贴查看'),
   field('继续提问','例如：这个组织有哪些职责？'),button('提问（演示状态）','18'),button('返回组织详情','17','secondary'),note('问答失败保留问题；可重试或继续阅读公开资料。')
  ],{back:'17'}),
  page('19','校园资讯','来自学校官网，保留出处','pages/news/index',[
@@ -166,7 +166,7 @@ export const screens = [
   note('资料有适用年份与核查日。回答不构成报考资格、录取或岗位判断。'),
   field('想了解什么？','2026 年普通专升本何时预报名？'),button('提问','28'),
   section('可以这样问'),row('普通专升本报名时间','按已收录年份查原文','28','book'),row('三二分段转段考核','先确认考试类型与年份','28','book'),
-  section('资料范围'),source('官方材料快照','只展示有依据的内容；核对失败时直接给原文。','当前仓库快照核查于 2026-10-03'),note('岗位、薪资与录取分数线不在当前资料范围。')
+  section('资料范围'),source('官方材料快照','只展示有依据的内容；核对失败时直接给原文。','资料核查于 2026-10-03'),note('岗位、薪资与录取分数线不在当前资料范围。')
  ]),
  page('28','回答与依据','2026 普通专升本 · 历史资料','pages/advancement/index',[
   quote('2026 年普通专升本何时预报名？'),
@@ -194,7 +194,7 @@ export const screens = [
  ],{back:'30'}),
  page('32','正在核对你的回答','第 1 轮 · 等待状态示意','pages/defense/index',[
   {type:'empty',icon:'scan',title:'逐句对照材料依据',text:'需要读取材料，再核对你写的内容。\n历史实测约 20–45 秒，并非时延保证。'},
-  note('取消后回到当前轮，保留已写内容。\n直接退出则清空本次材料、回答与反馈。'),button('取消核对，保留草稿','31','secondary'),button('退出练习','37','tertiary'),button('查看反馈稿（演示）','33','tertiary'),button('查看失败稿（演示）','38','tertiary')
+  note('停止等待后回到当前轮，保留已写内容。\n直接退出则清空本次材料、回答与反馈。'),button('停止等待，保留草稿','31','secondary'),button('退出练习','37','tertiary'),button('查看反馈稿（演示）','33','tertiary'),button('查看失败稿（演示）','38','tertiary')
  ],{back:'31'}),
  page('33','这一轮的依据核对','第 1 轮 · 静态反馈示例','pages/defense/index',[
   section('引用核对'),card('[F1] [F4] 可回核','从聊天选文件、识别不确定交给学生校对，与本份材料对应。'),
@@ -207,8 +207,8 @@ export const screens = [
   note('读取新资讯失败，仍展示最近一次成功的内容。','warning'),card('关于本学期课程安排的通知（示例）','旧内容仍可阅读','最近成功读取：2026-10-16 09:00（示例）','20'),button('重试读取','19'),
   section('首次无数据时'),card('暂时没有可展示的资讯','稍后重试；首页其他工具仍可使用。'),button('返回首页','01','secondary')
  ],{back:'19'}),
- page('35','链接已复制','复制结果示意 · 无真实剪贴板动作','pages/news/detail/index',[
-  {type:'empty',icon:'check',title:'原文链接已复制',text:'在微信内合适的位置粘贴后查看。\n本静态稿仅展示成功反馈。'},button('返回资讯详情','20','secondary'),note('真实实现复制失败时：提示「复制失败，请重试」，保留正文并允许再复制。')
+ page('35','链接已复制','原文链接复制反馈','pages/news/detail/index',[
+  {type:'empty',icon:'check',title:'原文链接已复制',text:'在微信内合适的位置粘贴后查看原文。'},button('返回资讯详情','20','secondary'),note('如果复制失败，可以留在正文页重新复制。')
  ],{back:'20'}),
  page('36','删除前确认','删除状态示意','pages/timetable/manage/index',[
   note('确定删除「大学英语」？','warning','删除 1 门课程'),card('大学英语','周五 · 第 5–6 节','本操作只影响这门已保存课程'),button('确认删除（演示）','44'),button('取消，保留课程','11','secondary'),
@@ -245,6 +245,86 @@ export const screens = [
   note('「大学英语」已删除，其余 2 门课程保留。'),section('已保存课程','2 门示例'),row('使用 JSP 开发 Web 应用系统','周二 1–2 节 · 博雅楼 B602','10','book'),row('数据库应用技术','周三 3–4 节 · B305','10','book'),button('新增课程','10'),button('返回首页','01','secondary')
  ],{back:'11'})
 ];
+// 第二轮修订：每屏只呈现一种当前状态；评审导航由渲染器放在产品画面外。
+const get=id=>screens.find(s=>s.id===id);
+const reviewLinks=items=>({type:'reviewLinks',items});
+get('01').blocks=get('01').blocks.filter(b=>b.type!=='hero');
+get('01').blocks.splice(1,0,{type:'heroCompact',title:'把校园日常，安排好。',text:'读资讯、找组织、查课表。'});
+get('03').blocks=get('03').blocks.map(b=>b.type==='week'?{...b,rows:3}:b);
+get('03').blocks.splice(1,0,{type:'weekToolbar',items:[{label:'管理课程',target:'11'},{label:'导入',target:'05'},{label:'设置',target:'12'}]});
+get('03').blocks=get('03').blocks.filter(b=>b.type!=='tiles'&&b.type!=='row');
+get('03').blocks.splice(4,0,row('第 7–12 节，本周无课','展开完整周视图','55','calendar'));
+get('07').blocks=get('07').blocks.filter(b=>!(b.type==='button'&&b.label.includes('演示')));
+get('07').blocks.push(reviewLinks([{label:'识别成功 → 校对',target:'08'},{label:'识别失败',target:'49'}]));
+get('10').blocks.find(b=>b.type==='chips'&&b.items.length===7).weekdays=true;
+get('10').blocks.push(reviewLinks([{label:'节次输入错误',target:'50'}]));
+get('11').blocks.find(b=>b.type==='button'&&b.target==='36').label='删除「大学英语」';
+get('13').blocks=get('13').blocks.filter(b=>b.type!=='chips');
+get('13').blocks[0]=quote('第 8 周星期二第 1–2 节有什么课？');
+get('13').blocks.find(b=>b.type==='note').text='可以查课，也可以提出新增或修改。涉及改课时，由你确认后才会保存。';
+get('15').blocks=get('15').blocks.slice(0,5);
+get('15').blocks.push(reviewLinks([{label:'安全检查未通过',target:'45'},{label:'可用次数用完',target:'46'}]));
+get('17').blocks=[section('组织介绍'),note('校学生会是在校党委领导和校团委指导下的全校性学生组织。组织架构为“主席团 + 工作部门”，设权益部、文娱部、器材部、体育部、学创部 5 个部门。'),section('联系方式'),note('官网未公布联系方式。'),section('已收录动态'),card('第四届校园提案大赛圆满结束','资料快照收录的动态标题。','原文发布 2026-03-09 · 核查 2026-09-18','35'),button('就这个组织提问','18'),source('学校官网 · 团委','当前资料校区未标注；可复制来源核对。','资料核查于 2026-09-18')];
+get('18').blocks.find(b=>b.type==='button'&&b.target==='18').label='发送问题';
+get('19').blocks[0]=note('来源：学校官网\n最近成功读取：2026-10-16 09:00（示例）');
+get('19').blocks.find(b=>b.type==='button').label='加载更多';
+get('21').blocks=get('21').blocks.slice(0,4);
+get('21').blocks.push(reviewLinks([{label:'首次没有目标日',target:'47'}]));
+get('22').blocks.find(b=>b.type==='button'&&b.target==='36').target='51';
+get('23').subtitle='资料核查于 2026-09-29 · 非实时';
+get('23').blocks=[note('以下为已收录资料的快照；报名、适用年份和来源分别显示。'),section('学校校历'),card('学校校历','暂未收录可核实的公开日期。','可到学校教务处核对','35'),section('四六级'),card('大学英语四级笔试（CET4）','考试：2026-12-12 09:00–11:20\n报名：以本校教务处通知为准','2026 下半年 · 全国 · 快照核查 2026-09-29','35'),section('计算机等级'),card('2026 年 9 月批次 · 已结束','考试：2026-09-19 至 09-21','广东 · 原文发布 2026-06-24','35'),source('中国教育考试网 / 学校教务处','日期卡均可复制对应来源链接。','资料快照不代表本轮重新核实')];
+get('25').blocks=get('25').blocks.filter(b=>!(b.type==='button'&&b.target==='26'));
+get('25').blocks.push(reviewLinks([{label:'肺活量缺项的结果',target:'26'}]));
+get('28').blocks=get('28').blocks.filter(b=>!(b.type==='button'&&b.target==='29'));
+get('28').blocks.splice(get('28').blocks.findIndex(b=>b.type==='field')+1,0,button('发送问题','28'));
+get('28').blocks.push(reviewLinks([{label:'模型暂不可用',target:'29'}]));
+get('32').blocks=get('32').blocks.filter(b=>!(b.type==='button'&&b.label.includes('演示')));
+get('32').blocks.push(reviewLinks([{label:'成功返回反馈',target:'33'},{label:'请求失败，保留回答',target:'38'}]));
+get('33').blocks=get('33').blocks.filter(b=>!(b.type==='button'&&b.target==='40'));
+get('34').blocks=get('34').blocks.slice(0,3);
+get('34').blocks.push(button('返回首页','01','secondary'),reviewLinks([{label:'首次没有资讯',target:'48'}]));
+get('35').blocks.push(button('返回首页','01','tertiary'));
+get('36').blocks=get('36').blocks.slice(0,4);
+get('38').blocks.find(b=>b.type==='note'&&b.text.includes('失败不表示')).text='请求未完成，不会对你的回答生成评价。';
+get('39').blocks.find(b=>b.type==='button'&&b.target==='40').target='53';
+get('39').blocks.find(b=>b.type==='button'&&b.target==='53').label='提交第 2 轮';
+get('39').blocks.find(b=>b.type==='source').meta='引用条目须能在材料中回核。';
+screens.push(
+ page('45','内容未通过检查','课表助手 · 安全检查状态', 'pages/timetable/index',[
+  note('这条问题未通过安全检查，请调整表述后再试。','warning'),quote('原问题会保留在输入框中。'),button('修改问题','13'),button('返回课表','03','secondary')
+ ],{back:'13'}),
+ page('46','今日可用次数已用完','课表助手 · 额度状态','pages/timetable/index',[
+  note('今天暂时不能继续请求助手。已保存课表仍可查看和手工编辑。','warning'),button('手工编辑课程','10'),button('返回课表','03','secondary')
+ ],{back:'03'}),
+ page('47','目标日','重要的日子，给它一个位置','pages/goals/index',[
+  {type:'empty',icon:'flag',title:'还没有目标日',text:'添加一件你想记住的事。'},button('添加目标日','22'),note('只保存在这台设备，不联网、不上传。')
+ ]),
+ page('48','校园资讯','暂时没有可展示的资讯','pages/news/index',[
+  {type:'empty',icon:'news',title:'暂时没有资讯',text:'稍后再来看看，也可以重新读取。'},button('重新读取','19'),button('返回首页','01','secondary')
+ ]),
+ page('49','截图识别没有完成','你的已保存课表未改动','pages/timetable/import/index',[
+  note('图片识别暂时不可用或请求超时。这次没有生成可保存的课表。','warning'),button('重新选择截图','07'),button('改用 Excel 导入','05','secondary'),button('手工添加课程','10','secondary'),button('返回课表','03','tertiary')
+ ],{back:'05'}),
+ page('50','请检查节次','编辑课程 · 输入错误状态','pages/timetable/edit/index',[
+  field('课程名','数据库实验'),field('起始节次','5'),field('结束节次','3','','结束节次不能早于起始节次，请修改。'),note('本次输入尚未保存，其他字段已保留。','warning'),button('返回修改节次','10'),button('取消编辑','03','secondary')
+ ],{back:'10'}),
+ page('51','删除前确认','目标日 · 课程项目展示','pages/goals/edit/index',[
+  note('确定删除「课程项目展示」？','warning','删除这条目标日'),card('课程项目展示','2026-10-31','只删除这一条本机记录'),button('确认删除这条目标日','47'),button('取消，保留目标日','22','secondary')
+ ],{back:'22'}),
+ page('52','第 3 轮 / 共 3 轮','材料：课表导入与校对','pages/defense/index',[
+  steps(['问题与目标','方案取舍','验证限制'],2),card('验证与限制','哪些部分验证过、哪些还没验证？请如实说明依据与限制。'),{type:'textarea',label:'你的回答',value:'我能说明文件选择、草稿和确认保存的设计。[F1][F4] 但材料中 F8 列出的隔离、分页与临时文件问题仍待验证，不把它们说成已通过。',hint:'20–500 字 · 依据不足可以说明仍待验证'},button('提交第 3 轮','54'),button('退出练习','37','secondary')
+ ],{back:'39'}),
+ page('53','第 2 轮的依据核对','材料：课表导入与校对','pages/defense/index',[
+  section('引用核对'),card('[F4] [INV-1] 可回核','先校对草稿，再由本人确认，才能成为已保存课表。'),section('是否对应回答'),note('本轮说明了草稿和保存之间的区别。'),section('待验证保留'),note('[F8] 的待验证事项继续保留。','warning'),section('追问'),card('第 3 轮 · 验证与限制','哪些部分已有依据，哪些仍未验证？'),button('开始第 3 轮','52')
+ ],{back:'39'}),
+ page('54','第 3 轮的依据核对','三轮已完成反馈后进入复盘','pages/defense/index',[
+  section('引用核对'),card('[F1] [F4] [F8] 可回核','已完成的说明与仍待验证的事项分别保留。'),section('是否对应回答'),note('本轮讨论验证依据和限制。'),section('待验证保留'),note('没有新证据支持 [F8] 已完成，本轮继续保留待验证。','warning'),section('追问'),note('本轮为最后一轮；可以整理三轮复盘，再重答一处。'),button('查看三轮复盘','40')
+ ],{back:'52'}),
+ page('55','完整周课表','七天有课 / 长标题 · 压力样例','pages/timetable/index',[
+  {type:'weeknav'},{type:'week',rows:6,dense:true},note('左右滑动查看完整七天；点课程查看完整名称和地点。'),button('返回当前周','03','secondary')
+ ],{back:'03'})
+);
+
 export const icons={
  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 17h3"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M21 21v-3a6 6 0 0 0-3-5"/>',news:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h4M7 18h10"/>',flag:'<path d="M5 21V3M5 4h14l-3 5 3 5H5"/>',activity:'<path d="M2 13h5l3-9 4 16 3-7h5"/>',book:'<path d="M12 5c-3-2-7-2-10 0v15c3-2 7-2 10 0 3-2 7-2 10 0V5c-3-2-7-2-10 0v15"/>',chat:'<path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M7 8h10M7 12h7"/>',upload:'<path d="M12 16V3M7 8l5-5 5 5M3 15v6h18v-6"/>',edit:'<path d="m15 4 5 5M4 15 15 4l5 5L9 20H4z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z"/>',scan:'<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M6 12h12M9 8h6M9 16h6"/>',cloud:'<path d="M6 18a5 5 0 0 1-1-10 7 7 0 0 1 13-1 5 5 0 0 1 0 10M12 10v4M12 18v1"/>',check:'<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>'
 };

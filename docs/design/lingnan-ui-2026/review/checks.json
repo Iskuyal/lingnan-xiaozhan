@@ -2,7 +2,7 @@
   "date": "2026-10-16",
   "environment": "Windows Chrome headless / Playwright",
   "mode": "static design only",
-  "screens": 44,
+  "screens": 55,
   "viewports": [
     390,
     320
@@ -26,7 +26,7 @@
       "screen": "03",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 10,
+      "linkCount": 11,
       "issues": []
     },
     {
@@ -54,7 +54,7 @@
       "screen": "07",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 6,
       "issues": []
     },
     {
@@ -75,7 +75,7 @@
       "screen": "10",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -110,7 +110,7 @@
       "screen": "15",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 6,
       "issues": []
     },
     {
@@ -166,7 +166,7 @@
       "screen": "23",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -201,7 +201,7 @@
       "screen": "28",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
@@ -236,28 +236,28 @@
       "screen": "33",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 2,
       "issues": []
     },
     {
       "screen": "34",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
       "screen": "35",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 2,
+      "linkCount": 3,
       "issues": []
     },
     {
       "screen": "36",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 3,
       "issues": []
     },
     {
@@ -314,6 +314,83 @@
       "width": 390,
       "horizontalOverflow": false,
       "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "45",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "46",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "47",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "48",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "49",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "50",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "51",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "52",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "53",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "54",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "55",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 11,
       "issues": []
     },
     {
@@ -334,7 +411,7 @@
       "screen": "03",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 10,
+      "linkCount": 11,
       "issues": []
     },
     {
@@ -362,7 +439,7 @@
       "screen": "07",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 6,
       "issues": []
     },
     {
@@ -383,7 +460,7 @@
       "screen": "10",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -418,7 +495,7 @@
       "screen": "15",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 6,
       "issues": []
     },
     {
@@ -474,7 +551,7 @@
       "screen": "23",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -509,7 +586,7 @@
       "screen": "28",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
@@ -544,28 +621,28 @@
       "screen": "33",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 2,
       "issues": []
     },
     {
       "screen": "34",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
       "screen": "35",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 2,
+      "linkCount": 3,
       "issues": []
     },
     {
       "screen": "36",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 3,
       "issues": []
     },
     {
@@ -622,6 +699,83 @@
       "width": 320,
       "horizontalOverflow": false,
       "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "45",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "46",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "47",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "48",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "49",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "50",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "51",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "52",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "53",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "54",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "55",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 11,
       "issues": []
     }
   ],
@@ -714,6 +868,66 @@
       ],
       "staticLinks": "passed",
       "businessBehavior": "not tested"
+    },
+    {
+      "name": "defense-three-rounds",
+      "screens": [
+        "33",
+        "39",
+        "53",
+        "52",
+        "54",
+        "40"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "goal-delete",
+      "screens": [
+        "22",
+        "51",
+        "47"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "import-recovery",
+      "screens": [
+        "49",
+        "05",
+        "07"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "course-invalid",
+      "screens": [
+        "50",
+        "10"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    }
+  ],
+  "weekScrolling": [
+    {
+      "viewport": 390,
+      "horizontalScroll": {
+        "left": 177,
+        "max": 177
+      },
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "horizontalScroll": {
+        "left": 239,
+        "max": 239
+      },
+      "passed": true
     }
   ],
   "contrastSamples": [

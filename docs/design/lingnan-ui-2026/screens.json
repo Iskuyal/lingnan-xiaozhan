@@ -9,10 +9,9 @@
         "type": "brand"
       },
       {
-        "type": "hero",
-        "title": "校园日常，\n从容一点。",
-        "text": "读资讯、找组织、查课表。",
-        "meta": "广州校区 / 清远校区"
+        "type": "heroCompact",
+        "title": "把校园日常，安排好。",
+        "text": "读资讯、找组织、查课表。"
       },
       {
         "type": "primaryEntry",
@@ -167,7 +166,25 @@
         "type": "weeknav"
       },
       {
-        "type": "week"
+        "type": "weekToolbar",
+        "items": [
+          {
+            "label": "管理课程",
+            "target": "11"
+          },
+          {
+            "label": "导入",
+            "target": "05"
+          },
+          {
+            "label": "设置",
+            "target": "12"
+          }
+        ]
+      },
+      {
+        "type": "week",
+        "rows": 3
       },
       {
         "type": "note",
@@ -176,35 +193,17 @@
         "title": ""
       },
       {
-        "type": "tiles",
-        "compact": true,
-        "items": [
-          {
-            "title": "导入课表",
-            "text": "Excel / 截图",
-            "icon": "upload",
-            "target": "05"
-          },
-          {
-            "title": "管理课程",
-            "text": "新增、修改、删除",
-            "icon": "edit",
-            "target": "11"
-          }
-        ]
+        "type": "row",
+        "title": "第 7–12 节，本周无课",
+        "text": "展开完整周视图",
+        "target": "55",
+        "icon": "calendar"
       },
       {
         "type": "button",
         "label": "打开课表助手",
         "target": "13",
         "tone": "primary"
-      },
-      {
-        "type": "row",
-        "title": "学期与作息",
-        "text": "第 1 周日期、节次时刻",
-        "target": "12",
-        "icon": "settings"
       }
     ],
     "back": "01",
@@ -259,7 +258,7 @@
       },
       {
         "type": "note",
-        "text": "课程详情在现有课表页内展开；关闭后保留周次。",
+        "text": "关闭详情后，仍回到当前教学周。",
         "tone": "neutral",
         "title": ""
       }
@@ -441,10 +440,17 @@
         "icon": "edit"
       },
       {
-        "type": "button",
-        "label": "查看识别成功稿（演示）",
-        "target": "08",
-        "tone": "tertiary"
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "识别成功 → 校对",
+            "target": "08"
+          },
+          {
+            "label": "识别失败",
+            "target": "49"
+          }
+        ]
       }
     ],
     "back": "05",
@@ -458,7 +464,7 @@
     "blocks": [
       {
         "type": "note",
-        "text": "地点没有识别清楚，请对照原图填写。",
+        "text": "地点没有识别清楚，请对照原始课表填写。",
         "tone": "warning",
         "title": "待核对 1 / 1"
       },
@@ -539,7 +545,7 @@
         "type": "card",
         "title": "当前课表",
         "text": "6 门课程",
-        "meta": "此处为已存在课表的替换场景",
+        "meta": "当前已保存的课程",
         "target": "",
         "tone": "white"
       },
@@ -635,13 +641,14 @@
           "六",
           "日"
         ],
-        "selected": 1
+        "selected": 1,
+        "weekdays": true
       },
       {
         "type": "field",
         "label": "节次 *",
         "value": "第 1 节 — 第 2 节",
-        "hint": "不代填学校作息时间",
+        "hint": "这里只填节次，具体时刻可在设置中补充",
         "error": ""
       },
       {
@@ -681,9 +688,18 @@
       },
       {
         "type": "note",
-        "text": "返回遇到未保存内容时应提示；删除课程需二次确认。",
+        "text": "离开前请保存修改；删除课程还需要你再次确认。",
         "tone": "neutral",
         "title": ""
+      },
+      {
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "节次输入错误",
+            "target": "50"
+          }
+        ]
       }
     ],
     "back": "03",
@@ -735,7 +751,7 @@
       },
       {
         "type": "button",
-        "label": "查看删除确认示意",
+        "label": "删除「大学英语」",
         "target": "36",
         "tone": "secondary"
       },
@@ -835,14 +851,6 @@
     "route": "pages/timetable/index",
     "blocks": [
       {
-        "type": "chips",
-        "items": [
-          "查课",
-          "增改课程"
-        ],
-        "selected": 0
-      },
-      {
         "type": "quote",
         "text": "第 8 周星期二第 1–2 节有什么课？",
         "who": "你"
@@ -857,7 +865,7 @@
       },
       {
         "type": "note",
-        "text": "增改课程会先给出变更提案，由你确认后才保存。",
+        "text": "可以查课，也可以提出新增或修改。涉及改课时，由你确认后才会保存。",
         "tone": "neutral",
         "title": ""
       },
@@ -973,21 +981,17 @@
         "tone": "tertiary"
       },
       {
-        "type": "section",
-        "title": "其他失败的文案",
-        "meta": ""
-      },
-      {
-        "type": "note",
-        "text": "内容未通过安全检查：请调整问题后再试。",
-        "tone": "warning",
-        "title": ""
-      },
-      {
-        "type": "note",
-        "text": "今日可用次数已用完：稍后再试，仍可手工编辑。",
-        "tone": "warning",
-        "title": ""
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "安全检查未通过",
+            "target": "45"
+          },
+          {
+            "label": "可用次数用完",
+            "target": "46"
+          }
+        ]
       }
     ],
     "back": "03",
@@ -1069,19 +1073,13 @@
     "route": "pages/departments/detail/index",
     "blocks": [
       {
-        "type": "orgHero",
-        "mark": "学生会",
-        "title": "校学生会",
-        "text": "校区未标注"
-      },
-      {
         "type": "section",
         "title": "组织介绍",
         "meta": ""
       },
       {
         "type": "note",
-        "text": "职责、下设部门与动态按学校官网已核实资料展示；本稿不新增组织事实。",
+        "text": "校学生会是在校党委领导和校团委指导下的全校性学生组织。组织架构为“主席团 + 工作部门”，设权益部、文娱部、器材部、体育部、学创部 5 个部门。",
         "tone": "neutral",
         "title": ""
       },
@@ -1092,20 +1090,20 @@
       },
       {
         "type": "note",
-        "text": "官网未公布联系方式。\n本页不提供报名或部门账号。",
+        "text": "官网未公布联系方式。",
         "tone": "neutral",
         "title": ""
       },
       {
         "type": "section",
-        "title": "部门动态",
+        "title": "已收录动态",
         "meta": ""
       },
       {
         "type": "card",
-        "title": "动态标题按来源原文展示",
-        "text": "若只有标题级资料，回答不补写主办方、地点或报名方式。",
-        "meta": "示例条目 · 查看原文来源",
+        "title": "第四届校园提案大赛圆满结束",
+        "text": "资料快照收录的动态标题。",
+        "meta": "原文发布 2026-03-09 · 核查 2026-09-18",
         "target": "35",
         "tone": "white"
       },
@@ -1117,9 +1115,9 @@
       },
       {
         "type": "source",
-        "title": "学校官网",
-        "text": "资料有缺失时，问答会直接说明。",
-        "meta": "资料快照核查于 2026-09-18"
+        "title": "学校官网 · 团委",
+        "text": "当前资料校区未标注；可复制来源核对。",
+        "meta": "资料核查于 2026-09-18"
       }
     ],
     "back": "16",
@@ -1148,7 +1146,7 @@
         "type": "source",
         "title": "参考资料 · 校学生会",
         "text": "当前资料仅支持查看组织介绍与已收录动态。",
-        "meta": "点击来源仅复制链接，不直接打开未配置的网页"
+        "meta": "复制原文链接，可在微信里粘贴查看"
       },
       {
         "type": "field",
@@ -1159,7 +1157,7 @@
       },
       {
         "type": "button",
-        "label": "提问（演示状态）",
+        "label": "发送问题",
         "target": "18",
         "tone": "primary"
       },
@@ -1187,7 +1185,7 @@
     "blocks": [
       {
         "type": "note",
-        "text": "以下为布局示例，不是实时学校通知。\n页面应显示最近成功读取时间，失败保留旧内容。",
+        "text": "来源：学校官网\n最近成功读取：2026-10-16 09:00（示例）",
         "tone": "neutral",
         "title": ""
       },
@@ -1225,7 +1223,7 @@
       },
       {
         "type": "button",
-        "label": "加载更多（演示）",
+        "label": "加载更多",
         "target": "34",
         "tone": "secondary"
       },
@@ -1316,23 +1314,13 @@
         "tone": "primary"
       },
       {
-        "type": "section",
-        "title": "没有目标日时",
-        "meta": ""
-      },
-      {
-        "type": "card",
-        "title": "还没有目标日",
-        "text": "添加一件你想记住的事。",
-        "meta": "空态示例",
-        "target": "22",
-        "tone": "white"
-      },
-      {
-        "type": "note",
-        "text": "过期事项显示「已过」，目标日当天显示「就是今天」。",
-        "tone": "neutral",
-        "title": ""
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "首次没有目标日",
+            "target": "47"
+          }
+        ]
       }
     ],
     "back": "01",
@@ -1388,7 +1376,7 @@
       {
         "type": "button",
         "label": "删除这条目标日",
-        "target": "36",
+        "target": "51",
         "tone": "tertiary"
       },
       {
@@ -1404,12 +1392,12 @@
   {
     "id": "23",
     "title": "校历与考试",
-    "subtitle": "查日期，也能核对来源",
+    "subtitle": "资料核查于 2026-09-29 · 非实时",
     "route": "pages/calendar/index",
     "blocks": [
       {
         "type": "note",
-        "text": "设计采用仓库资料快照，不是实时查询结果。\n考试与报名分开显示，未公布时不沿用往年。",
+        "text": "以下为已收录资料的快照；报名、适用年份和来源分别显示。",
         "tone": "neutral",
         "title": ""
       },
@@ -1420,44 +1408,43 @@
       },
       {
         "type": "card",
-        "title": "学期与教学安排",
-        "text": "以本校通知为准",
-        "meta": "学校校历与全国放假安排分别核对",
+        "title": "学校校历",
+        "text": "暂未收录可核实的公开日期。",
+        "meta": "可到学校教务处核对",
         "target": "35",
         "tone": "white"
       },
       {
         "type": "section",
-        "title": "考试日期卡",
+        "title": "四六级",
         "meta": ""
       },
       {
         "type": "card",
-        "title": "已结束的考试批次",
-        "text": "日期已过，显示「已结束」",
-        "meta": "历史资料样式，不继续显示倒计时",
+        "title": "大学英语四级笔试（CET4）",
+        "text": "考试：2026-12-12 09:00–11:20\n报名：以本校教务处通知为准",
+        "meta": "2026 下半年 · 全国 · 快照核查 2026-09-29",
         "target": "35",
         "tone": "white"
       },
       {
+        "type": "section",
+        "title": "计算机等级",
+        "meta": ""
+      },
+      {
         "type": "card",
-        "title": "待公布的考试安排",
-        "text": "待公布",
-        "meta": "没有可核实日期时，不生成具体日期",
+        "title": "2026 年 9 月批次 · 已结束",
+        "text": "考试：2026-09-19 至 09-21",
+        "meta": "广东 · 原文发布 2026-06-24",
         "target": "35",
         "tone": "white"
       },
       {
         "type": "source",
-        "title": "每条日期各自附来源",
-        "text": "发布主体 · 适用范围 · 发布日期 · 核查日",
-        "meta": "正文与复制原文链接并列"
-      },
-      {
-        "type": "button",
-        "label": "复制对应官方入口",
-        "target": "35",
-        "tone": "secondary"
+        "title": "中国教育考试网 / 学校教务处",
+        "text": "日期卡均可复制对应来源链接。",
+        "meta": "资料快照不代表本轮重新核实"
       }
     ],
     "back": "01",
@@ -1627,10 +1614,13 @@
         "tone": "primary"
       },
       {
-        "type": "button",
-        "label": "查看缺项结果",
-        "target": "26",
-        "tone": "secondary"
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "肺活量缺项的结果",
+            "target": "26"
+          }
+        ]
       }
     ],
     "back": "24",
@@ -1768,7 +1758,7 @@
         "type": "source",
         "title": "官方材料快照",
         "text": "只展示有依据的内容；核对失败时直接给原文。",
-        "meta": "当前仓库快照核查于 2026-10-03"
+        "meta": "资料核查于 2026-10-03"
       },
       {
         "type": "note",
@@ -1820,15 +1810,24 @@
       },
       {
         "type": "button",
-        "label": "查看暂不可用状态",
-        "target": "29",
-        "tone": "secondary"
+        "label": "发送问题",
+        "target": "28",
+        "tone": "primary"
       },
       {
         "type": "button",
         "label": "返回提问",
         "target": "27",
         "tone": "tertiary"
+      },
+      {
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "模型暂不可用",
+            "target": "29"
+          }
+        ]
       }
     ],
     "back": "27",
@@ -2003,13 +2002,13 @@
       },
       {
         "type": "note",
-        "text": "取消后回到当前轮，保留已写内容。\n直接退出则清空本次材料、回答与反馈。",
+        "text": "停止等待后回到当前轮，保留已写内容。\n直接退出则清空本次材料、回答与反馈。",
         "tone": "neutral",
         "title": ""
       },
       {
         "type": "button",
-        "label": "取消核对，保留草稿",
+        "label": "停止等待，保留草稿",
         "target": "31",
         "tone": "secondary"
       },
@@ -2020,16 +2019,17 @@
         "tone": "tertiary"
       },
       {
-        "type": "button",
-        "label": "查看反馈稿（演示）",
-        "target": "33",
-        "tone": "tertiary"
-      },
-      {
-        "type": "button",
-        "label": "查看失败稿（演示）",
-        "target": "38",
-        "tone": "tertiary"
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "成功返回反馈",
+            "target": "33"
+          },
+          {
+            "label": "请求失败，保留回答",
+            "target": "38"
+          }
+        ]
       }
     ],
     "back": "31",
@@ -2094,12 +2094,6 @@
         "label": "进入第 2 轮",
         "target": "39",
         "tone": "primary"
-      },
-      {
-        "type": "button",
-        "label": "查看三轮复盘稿（演示）",
-        "target": "40",
-        "tone": "secondary"
       }
     ],
     "back": "31",
@@ -2132,23 +2126,19 @@
         "tone": "primary"
       },
       {
-        "type": "section",
-        "title": "首次无数据时",
-        "meta": ""
-      },
-      {
-        "type": "card",
-        "title": "暂时没有可展示的资讯",
-        "text": "稍后重试；首页其他工具仍可使用。",
-        "meta": "",
-        "target": "",
-        "tone": "white"
-      },
-      {
         "type": "button",
         "label": "返回首页",
         "target": "01",
         "tone": "secondary"
+      },
+      {
+        "type": "reviewLinks",
+        "items": [
+          {
+            "label": "首次没有资讯",
+            "target": "48"
+          }
+        ]
       }
     ],
     "back": "19",
@@ -2157,14 +2147,14 @@
   {
     "id": "35",
     "title": "链接已复制",
-    "subtitle": "复制结果示意 · 无真实剪贴板动作",
+    "subtitle": "原文链接复制反馈",
     "route": "pages/news/detail/index",
     "blocks": [
       {
         "type": "empty",
         "icon": "check",
         "title": "原文链接已复制",
-        "text": "在微信内合适的位置粘贴后查看。\n本静态稿仅展示成功反馈。"
+        "text": "在微信内合适的位置粘贴后查看原文。"
       },
       {
         "type": "button",
@@ -2174,9 +2164,15 @@
       },
       {
         "type": "note",
-        "text": "真实实现复制失败时：提示「复制失败，请重试」，保留正文并允许再复制。",
+        "text": "如果复制失败，可以留在正文页重新复制。",
         "tone": "neutral",
         "title": ""
+      },
+      {
+        "type": "button",
+        "label": "返回首页",
+        "target": "01",
+        "tone": "tertiary"
       }
     ],
     "back": "20",
@@ -2213,23 +2209,6 @@
         "label": "取消，保留课程",
         "target": "11",
         "tone": "secondary"
-      },
-      {
-        "type": "section",
-        "title": "目标日删除的对应文案",
-        "meta": ""
-      },
-      {
-        "type": "note",
-        "text": "确定删除「课程项目展示」？\n取消后这条目标日仍保留。",
-        "tone": "neutral",
-        "title": ""
-      },
-      {
-        "type": "button",
-        "label": "取消，返回目标日",
-        "target": "22",
-        "tone": "tertiary"
       }
     ],
     "back": "11",
@@ -2300,7 +2279,7 @@
       },
       {
         "type": "note",
-        "text": "失败不表示「你没讲清楚」。\n安全拒绝与额度用尽应使用各自原因文案。",
+        "text": "请求未完成，不会对你的回答生成评价。",
         "tone": "neutral",
         "title": ""
       }
@@ -2341,12 +2320,12 @@
         "type": "source",
         "title": "材料速查",
         "text": "[F1] 微信聊天选文件\n[F4] 未识别字段交由学生校对",
-        "meta": "示例轮次；第三轮复用结构，主题为验证与限制"
+        "meta": "引用条目须能在材料中回核。"
       },
       {
         "type": "button",
-        "label": "提交本轮（查看复盘示意）",
-        "target": "40",
+        "label": "提交第 2 轮",
+        "target": "53",
         "tone": "primary"
       },
       {
@@ -2590,5 +2569,448 @@
     ],
     "back": "11",
     "file": "44-course-deleted.html"
+  },
+  {
+    "id": "45",
+    "title": "内容未通过检查",
+    "subtitle": "课表助手 · 安全检查状态",
+    "route": "pages/timetable/index",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "这条问题未通过安全检查，请调整表述后再试。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "quote",
+        "text": "原问题会保留在输入框中。",
+        "who": "你"
+      },
+      {
+        "type": "button",
+        "label": "修改问题",
+        "target": "13",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "返回课表",
+        "target": "03",
+        "tone": "secondary"
+      }
+    ],
+    "back": "13",
+    "file": "45-assistant-safety.html"
+  },
+  {
+    "id": "46",
+    "title": "今日可用次数已用完",
+    "subtitle": "课表助手 · 额度状态",
+    "route": "pages/timetable/index",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "今天暂时不能继续请求助手。已保存课表仍可查看和手工编辑。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "手工编辑课程",
+        "target": "10",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "返回课表",
+        "target": "03",
+        "tone": "secondary"
+      }
+    ],
+    "back": "03",
+    "file": "46-assistant-quota.html"
+  },
+  {
+    "id": "47",
+    "title": "目标日",
+    "subtitle": "重要的日子，给它一个位置",
+    "route": "pages/goals/index",
+    "blocks": [
+      {
+        "type": "empty",
+        "icon": "flag",
+        "title": "还没有目标日",
+        "text": "添加一件你想记住的事。"
+      },
+      {
+        "type": "button",
+        "label": "添加目标日",
+        "target": "22",
+        "tone": "primary"
+      },
+      {
+        "type": "note",
+        "text": "只保存在这台设备，不联网、不上传。",
+        "tone": "neutral",
+        "title": ""
+      }
+    ],
+    "back": "01",
+    "file": "47-goals-empty.html"
+  },
+  {
+    "id": "48",
+    "title": "校园资讯",
+    "subtitle": "暂时没有可展示的资讯",
+    "route": "pages/news/index",
+    "blocks": [
+      {
+        "type": "empty",
+        "icon": "news",
+        "title": "暂时没有资讯",
+        "text": "稍后再来看看，也可以重新读取。"
+      },
+      {
+        "type": "button",
+        "label": "重新读取",
+        "target": "19",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "返回首页",
+        "target": "01",
+        "tone": "secondary"
+      }
+    ],
+    "back": "01",
+    "file": "48-news-empty.html"
+  },
+  {
+    "id": "49",
+    "title": "截图识别没有完成",
+    "subtitle": "你的已保存课表未改动",
+    "route": "pages/timetable/import/index",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "图片识别暂时不可用或请求超时。这次没有生成可保存的课表。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "重新选择截图",
+        "target": "07",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "改用 Excel 导入",
+        "target": "05",
+        "tone": "secondary"
+      },
+      {
+        "type": "button",
+        "label": "手工添加课程",
+        "target": "10",
+        "tone": "secondary"
+      },
+      {
+        "type": "button",
+        "label": "返回课表",
+        "target": "03",
+        "tone": "tertiary"
+      }
+    ],
+    "back": "05",
+    "file": "49-import-failure.html"
+  },
+  {
+    "id": "50",
+    "title": "请检查节次",
+    "subtitle": "编辑课程 · 输入错误状态",
+    "route": "pages/timetable/edit/index",
+    "blocks": [
+      {
+        "type": "field",
+        "label": "课程名",
+        "value": "数据库实验",
+        "hint": "",
+        "error": ""
+      },
+      {
+        "type": "field",
+        "label": "起始节次",
+        "value": "5",
+        "hint": "",
+        "error": ""
+      },
+      {
+        "type": "field",
+        "label": "结束节次",
+        "value": "3",
+        "hint": "",
+        "error": "结束节次不能早于起始节次，请修改。"
+      },
+      {
+        "type": "note",
+        "text": "本次输入尚未保存，其他字段已保留。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "返回修改节次",
+        "target": "10",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "取消编辑",
+        "target": "03",
+        "tone": "secondary"
+      }
+    ],
+    "back": "10",
+    "file": "50-course-invalid.html"
+  },
+  {
+    "id": "51",
+    "title": "删除前确认",
+    "subtitle": "目标日 · 课程项目展示",
+    "route": "pages/goals/edit/index",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "确定删除「课程项目展示」？",
+        "tone": "warning",
+        "title": "删除这条目标日"
+      },
+      {
+        "type": "card",
+        "title": "课程项目展示",
+        "text": "2026-10-31",
+        "meta": "只删除这一条本机记录",
+        "target": "",
+        "tone": "white"
+      },
+      {
+        "type": "button",
+        "label": "确认删除这条目标日",
+        "target": "47",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "取消，保留目标日",
+        "target": "22",
+        "tone": "secondary"
+      }
+    ],
+    "back": "22",
+    "file": "51-goal-delete-confirm.html"
+  },
+  {
+    "id": "52",
+    "title": "第 3 轮 / 共 3 轮",
+    "subtitle": "材料：课表导入与校对",
+    "route": "pages/defense/index",
+    "blocks": [
+      {
+        "type": "steps",
+        "items": [
+          "问题与目标",
+          "方案取舍",
+          "验证限制"
+        ],
+        "active": 2
+      },
+      {
+        "type": "card",
+        "title": "验证与限制",
+        "text": "哪些部分验证过、哪些还没验证？请如实说明依据与限制。",
+        "meta": "",
+        "target": "",
+        "tone": "white"
+      },
+      {
+        "type": "textarea",
+        "label": "你的回答",
+        "value": "我能说明文件选择、草稿和确认保存的设计。[F1][F4] 但材料中 F8 列出的隔离、分页与临时文件问题仍待验证，不把它们说成已通过。",
+        "hint": "20–500 字 · 依据不足可以说明仍待验证"
+      },
+      {
+        "type": "button",
+        "label": "提交第 3 轮",
+        "target": "54",
+        "tone": "primary"
+      },
+      {
+        "type": "button",
+        "label": "退出练习",
+        "target": "37",
+        "tone": "secondary"
+      }
+    ],
+    "back": "39",
+    "file": "52-defense-round3.html"
+  },
+  {
+    "id": "53",
+    "title": "第 2 轮的依据核对",
+    "subtitle": "材料：课表导入与校对",
+    "route": "pages/defense/index",
+    "blocks": [
+      {
+        "type": "section",
+        "title": "引用核对",
+        "meta": ""
+      },
+      {
+        "type": "card",
+        "title": "[F4] [INV-1] 可回核",
+        "text": "先校对草稿，再由本人确认，才能成为已保存课表。",
+        "meta": "",
+        "target": "",
+        "tone": "white"
+      },
+      {
+        "type": "section",
+        "title": "是否对应回答",
+        "meta": ""
+      },
+      {
+        "type": "note",
+        "text": "本轮说明了草稿和保存之间的区别。",
+        "tone": "neutral",
+        "title": ""
+      },
+      {
+        "type": "section",
+        "title": "待验证保留",
+        "meta": ""
+      },
+      {
+        "type": "note",
+        "text": "[F8] 的待验证事项继续保留。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "section",
+        "title": "追问",
+        "meta": ""
+      },
+      {
+        "type": "card",
+        "title": "第 3 轮 · 验证与限制",
+        "text": "哪些部分已有依据，哪些仍未验证？",
+        "meta": "",
+        "target": "",
+        "tone": "white"
+      },
+      {
+        "type": "button",
+        "label": "开始第 3 轮",
+        "target": "52",
+        "tone": "primary"
+      }
+    ],
+    "back": "39",
+    "file": "53-defense-feedback2.html"
+  },
+  {
+    "id": "54",
+    "title": "第 3 轮的依据核对",
+    "subtitle": "三轮已完成反馈后进入复盘",
+    "route": "pages/defense/index",
+    "blocks": [
+      {
+        "type": "section",
+        "title": "引用核对",
+        "meta": ""
+      },
+      {
+        "type": "card",
+        "title": "[F1] [F4] [F8] 可回核",
+        "text": "已完成的说明与仍待验证的事项分别保留。",
+        "meta": "",
+        "target": "",
+        "tone": "white"
+      },
+      {
+        "type": "section",
+        "title": "是否对应回答",
+        "meta": ""
+      },
+      {
+        "type": "note",
+        "text": "本轮讨论验证依据和限制。",
+        "tone": "neutral",
+        "title": ""
+      },
+      {
+        "type": "section",
+        "title": "待验证保留",
+        "meta": ""
+      },
+      {
+        "type": "note",
+        "text": "没有新证据支持 [F8] 已完成，本轮继续保留待验证。",
+        "tone": "warning",
+        "title": ""
+      },
+      {
+        "type": "section",
+        "title": "追问",
+        "meta": ""
+      },
+      {
+        "type": "note",
+        "text": "本轮为最后一轮；可以整理三轮复盘，再重答一处。",
+        "tone": "neutral",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "查看三轮复盘",
+        "target": "40",
+        "tone": "primary"
+      }
+    ],
+    "back": "52",
+    "file": "54-defense-feedback3.html"
+  },
+  {
+    "id": "55",
+    "title": "完整周课表",
+    "subtitle": "七天有课 / 长标题 · 压力样例",
+    "route": "pages/timetable/index",
+    "blocks": [
+      {
+        "type": "weeknav"
+      },
+      {
+        "type": "week",
+        "rows": 6,
+        "dense": true
+      },
+      {
+        "type": "note",
+        "text": "左右滑动查看完整七天；点课程查看完整名称和地点。",
+        "tone": "neutral",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "返回当前周",
+        "target": "03",
+        "tone": "secondary"
+      }
+    ],
+    "back": "03",
+    "file": "55-timetable-dense.html"
   }
 ]
