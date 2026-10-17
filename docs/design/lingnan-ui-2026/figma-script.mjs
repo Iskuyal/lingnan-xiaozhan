@@ -56,6 +56,8 @@ function cta(parent,label,target,tone='primary'){const main=buttonSet.children.f
 function block(parent,b){let n;
 switch(b.type){
 case 'reviewLinks':return null;
+case 'toast':n=auto(parent,'原位结果提示','HORIZONTAL',350,8,'successBg',12);text(n,b.text,13,'success','Medium',282);break;
+case 'courseRow':n=auto(parent,b.title,'VERTICAL',350,8,'white',15);border(n);text(n,b.title,15,'text','Medium',320);text(n,b.text,12,'muted','Regular',320);const actions=auto(n,'当前课程操作','HORIZONTAL',320,12);action(text(actions,'编辑',13,'deep','Medium',100),b.edit);action(text(actions,'删除',13,'deep','Medium',100),b.remove);break;
 case 'heroCompact':n=auto(parent,'首页短标题','VERTICAL',350,4);text(n,b.title,24,'text','Bold',350,true);text(n,b.text,12,'secondary','Regular',350);break;
 case 'weekToolbar':n=auto(parent,'课表操作','HORIZONTAL',350,8);for(const i of b.items){const t=auto(n,i.label,'VERTICAL',111,0,'white',12);border(t,'deep');text(t,i.label,12,'deep','Medium',87);action(t,i.target);}break;
 case 'brand':n=auto(parent,'官方校徽 / 保持原比例','VERTICAL',350,0,'deep',12);border(n);const logo=keep(figma.createRectangle());logo.name='官方校徽图像槽';logo.resize(326,326*113/320);fill(logo,'white');n.appendChild(logo);logoSlots.push(logo.id);break;

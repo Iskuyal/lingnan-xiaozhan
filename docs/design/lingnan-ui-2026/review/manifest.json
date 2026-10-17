@@ -1,22 +1,22 @@
 {
-  "artifactVersion": "c9545dd0d306673197f4c09732fc85e2a0c532ea22857011a75fd3af18085764",
-  "date": "2026-10-16",
+  "artifactVersion": "8ff5eb3ce4e6bfd4486c5353080152112cc696edbf8ed52e3abaf29bcac380bc",
+  "date": "2026-10-17",
   "mode": "static design",
   "files": [
     {
       "file": "design-data.mjs",
-      "sha256": "2966aba98853c482ce5a539291d90e141491d597836ca2a3ce0aa676ff68c1fb",
-      "bytes": 41074
+      "sha256": "36f6b1a50125982a2babf0f2c562d73bbda107fff1e5ded63f3d5d0e6d05d6bb",
+      "bytes": 44048
     },
     {
       "file": "figma-script.mjs",
-      "sha256": "ef8bf8386fd37585a58e2ac3c2e8b7f7f4f06cc467a912967d35d7117bbb7f4e",
-      "bytes": 21300
+      "sha256": "ff1e8052cd8ae9f264b65355cd2ff07f81afd54a7eb34ee046a8aecdd1be05dc",
+      "bytes": 21784
     },
     {
       "file": "generate-html.mjs",
-      "sha256": "5116396a5de9eefe88b3dfe41464821dae690d0d460f2b3d74e58d5c9be6ad3b",
-      "bytes": 8731
+      "sha256": "1fb5c6e00d02a885fd39a473565b59ef99c71a84ba8f5787a48a17aec8b6b56f",
+      "bytes": 9238
     },
     {
       "file": "_mockup.css",
@@ -25,8 +25,8 @@
     },
     {
       "file": "_refinements.css",
-      "sha256": "55d4bb0fffa341eb1ae1a0d0f61d727f7955c12203770902bdf6d9c353b792cf",
-      "bytes": 2301
+      "sha256": "4e94c9fcd3fc7e036641ca8bc937e83d006b810f0493633691d991bb7da5f335",
+      "bytes": 3315
     },
     {
       "file": "_tokens.css",
@@ -85,8 +85,8 @@
     },
     {
       "file": "11-course-manage.html",
-      "sha256": "e445585ba69988a2a009c7139d6ea27bbb80bf601659f5e8a59a785a4659ad48",
-      "bytes": 2711
+      "sha256": "04049ad29de9f5f7d1ad9f24514a9c88460944f53723d0ed3817a50dea6ba3fc",
+      "bytes": 1968
     },
     {
       "file": "12-settings.html",
@@ -95,18 +95,18 @@
     },
     {
       "file": "13-assistant.html",
-      "sha256": "5c9e52576d76fdbb394b9cdc812c9592d0af8a1ab1acc2ed058c3e5ed8e6e04e",
-      "bytes": 1694
+      "sha256": "d9ea4fbc18cc69c913bc02422993291f4b6569e651c01af0f7ba845199b22384",
+      "bytes": 1733
     },
     {
       "file": "14-change-confirm.html",
-      "sha256": "7e3e346696d1440bf3db84c15b69e231eb73f4e9e700cce92e811df9e792e980",
-      "bytes": 1781
+      "sha256": "23608dfc4c7e7fcdbe5ed32ec2d71d7d0834440947ef0fbb01bc8a84c0fdeb98",
+      "bytes": 1798
     },
     {
       "file": "15-assistant-failure.html",
-      "sha256": "4573ba4ff508f853c775dbe14c6de288169f9cf3fd622c9f50d5d61766980253",
-      "bytes": 1998
+      "sha256": "8093e6e40778f98204045d9b6c4665a5b057a3d1ccfb089643c93efe0b54dd3d",
+      "bytes": 2015
     },
     {
       "file": "16-departments.html",
@@ -115,13 +115,13 @@
     },
     {
       "file": "17-department-detail.html",
-      "sha256": "9bda65f3ae2cfe7d399d8307d364ce7cf9b3a5f34265321dc3410a5c8caf0c3c",
-      "bytes": 1942
+      "sha256": "b6a2b7df180ca732b92b38ed579cf4050e094c27dfe0421438ff9f8e367512cd",
+      "bytes": 2029
     },
     {
       "file": "18-department-qa.html",
-      "sha256": "e5cfdaa5f7747e4cf5ec2b7ea59bbbc6c9e1ff7c082ecec9bb54adc00f71df4e",
-      "bytes": 1863
+      "sha256": "25a1397ab550f96c4b411e6f22a9414be405787809f218fa2473bf64abcb841c",
+      "bytes": 1946
     },
     {
       "file": "19-news.html",
@@ -130,8 +130,8 @@
     },
     {
       "file": "20-news-detail.html",
-      "sha256": "65460c89c42489685e68130506c87db73e010243fd865fde26d1198c07c22893",
-      "bytes": 1876
+      "sha256": "a26b2e3abc3ac599f64ef84581db754f0c793b1c64c29a3e25c270d2c1f1df4d",
+      "bytes": 2014
     },
     {
       "file": "21-goals.html",
@@ -145,8 +145,8 @@
     },
     {
       "file": "23-calendar.html",
-      "sha256": "e1d7bef9ec0206d2390f0775e21c1161ef586ba6a4a65411847005210391ab17",
-      "bytes": 2116
+      "sha256": "10c8857a1acffbb0e5adefc535a2e836b41f02f7ca97da2aefff1549f99c9247",
+      "bytes": 2411
     },
     {
       "file": "24-fitness-input.html",
@@ -155,7 +155,7 @@
     },
     {
       "file": "25-fitness-result.html",
-      "sha256": "cc63f1a4d33ed0bb59e3baf89ed7018e18bad2ba06cd75209dc9109fbdd02003",
+      "sha256": "a00740bf44b4c2aa4ed593d038c5dbdc6277e91f662b3976c942af2eb9b8ac9e",
       "bytes": 2057
     },
     {
@@ -180,7 +180,7 @@
     },
     {
       "file": "30-defense-materials.html",
-      "sha256": "33c616671b90de7e76bdd33e522aeacf2636fba65a9b833264ffd10b478d8f2f",
+      "sha256": "36cb00f5940faa4bf36c91f3eb4a70a7b161595f183c1b757a53777a54db0969",
       "bytes": 2019
     },
     {
@@ -205,8 +205,8 @@
     },
     {
       "file": "35-copy-feedback.html",
-      "sha256": "2db105ef5f0d145c0146418456799df8494605391967458165d612a9be074f0d",
-      "bytes": 1616
+      "sha256": "232a988cad5ff7689b5c4c6437c7b39be37893fc5f5aa6575ee641df5259f984",
+      "bytes": 2141
     },
     {
       "file": "36-delete-confirm.html",
@@ -245,13 +245,13 @@
     },
     {
       "file": "43-course-saved.html",
-      "sha256": "077ce12629e3efbc782d6da59298428f2c01e4241a590502c4bdd80f96818b3c",
-      "bytes": 1578
+      "sha256": "b647a28af3c34cdaf58bf7a8518ed9411258d9d85bd7cb3dfd2248b3b3a6472a",
+      "bytes": 2930
     },
     {
       "file": "44-course-deleted.html",
-      "sha256": "f5c2bf700cf94a2769a444c6e264c90d248cd5a2e5b19402e12d0e5295d4732d",
-      "bytes": 2217
+      "sha256": "83956ef9aebb1ac475fc2e4160259c4bc7ddbdd276f29fd19f68f9f4aa742344",
+      "bytes": 2353
     },
     {
       "file": "45-assistant-safety.html",
@@ -310,13 +310,13 @@
     },
     {
       "file": "screens.json",
-      "sha256": "793009455f20aa905b51c37e7ebbe65c9f79b7068d76a0c58436b64631c0e309",
-      "bytes": 74870
+      "sha256": "723c1052d2425a27520c6125f029a468978c5a0857ff5da7236f2fc5c8ede3fe",
+      "bytes": 75947
     },
     {
       "file": "verify-design.py",
-      "sha256": "5802c3ead5c7c71afe344844b5d3e9349689ea2ef5c654ef21bd8a96b81ba143",
-      "bytes": 7521
+      "sha256": "2259d44217b2c6c837ccb0211fef26f704e4b8bb85de054c9703dbc7a77d950e",
+      "bytes": 9607
     },
     {
       "file": "assets/lingnan-logo-horizontal.jpg",
@@ -345,8 +345,8 @@
     },
     {
       "file": "png/03-timetable-week.png",
-      "sha256": "18173fd297c28f9e84413473a754541ae9f508a111fd8832480133f5095df968",
-      "bytes": 102134
+      "sha256": "0554aaa6184c277b724a225267564177e53c827305c21add04c778b98d3834c9",
+      "bytes": 102304
     },
     {
       "file": "png/04-course-detail.png",
@@ -385,8 +385,8 @@
     },
     {
       "file": "png/11-course-manage.png",
-      "sha256": "9e9b715c3b72202a5531f0db8973d784a3e4c3ab01edb72595659de141cddd42",
-      "bytes": 95185
+      "sha256": "b652318500e69848b70fa0ca35a2743c91adbc7a1e622045ab3d3b2447dc1cbf",
+      "bytes": 107348
     },
     {
       "file": "png/12-settings.png",
@@ -395,18 +395,18 @@
     },
     {
       "file": "png/13-assistant.png",
-      "sha256": "4978f921676b2440de884c674f6af6957b50198a359d77bbcc72083672174c36",
-      "bytes": 102453
+      "sha256": "b24920ce1f688c24f130c8121ec9bfe3d63addfb95f6aa4345b2ff774696b12e",
+      "bytes": 109438
     },
     {
       "file": "png/14-change-confirm.png",
-      "sha256": "3d13f3c6d3d905c49c2922646e487e34d3a56e2ceb2830da766cc94116aed7f0",
-      "bytes": 117128
+      "sha256": "a019ea6e034495d9c6732871670e783d37b80055d76518ff9a7c40bd72f10515",
+      "bytes": 118811
     },
     {
       "file": "png/15-assistant-failure.png",
-      "sha256": "d79caac88f767cd6e114cdd6919f77382ba9bf729eccaac5f6ab99582e0c521c",
-      "bytes": 100873
+      "sha256": "0fa3b3ed85dd8c74e2f01dfd97df34640c6b39dc270e1496f5170ec9d4c01e07",
+      "bytes": 102334
     },
     {
       "file": "png/16-departments.png",
@@ -415,13 +415,13 @@
     },
     {
       "file": "png/17-department-detail.png",
-      "sha256": "63fbec9b226321352861e838f4b66f83af2d6419ac029a11db4307dd59e3fa36",
-      "bytes": 134143
+      "sha256": "dc4454b3a7d0b18fba4ce9a4ff85bd1101ff77e2cba4c0f7def9a61fea85f5a2",
+      "bytes": 142870
     },
     {
       "file": "png/18-department-qa.png",
-      "sha256": "41719d3b55d4eb02c371fd2e2b40867ed50282f47f392aa9d7b02ddffbaf1a4b",
-      "bytes": 130802
+      "sha256": "b6cf20765630c4647f0bde2a297464d120ecb37bf04e307545cfb8f6aa3b2d32",
+      "bytes": 139260
     },
     {
       "file": "png/19-news.png",
@@ -430,8 +430,8 @@
     },
     {
       "file": "png/20-news-detail.png",
-      "sha256": "feddaa7c9846ef113b6a5ba30960723c239025e2e082511a2ba53ed20aa760e6",
-      "bytes": 163307
+      "sha256": "82dbfd0965b62a27570334e4df96d62e5759c8a4c8ce5c526e7dd568570b3174",
+      "bytes": 192313
     },
     {
       "file": "png/21-goals.png",
@@ -445,8 +445,8 @@
     },
     {
       "file": "png/23-calendar.png",
-      "sha256": "ebc68b13039cd629fa0e6c5bef90c2ceb1151aca3fb2125b00c050c98a05645f",
-      "bytes": 159530
+      "sha256": "f57eff3ab535e06968e229952c9ee0fb898764926bdce3ec9d3df0f390641e81",
+      "bytes": 191543
     },
     {
       "file": "png/24-fitness-input.png",
@@ -455,8 +455,8 @@
     },
     {
       "file": "png/25-fitness-result.png",
-      "sha256": "60f3fe45de288bf40c9675bbf3c0c1bb94b61884e100be21b0a395d8bcf82080",
-      "bytes": 127095
+      "sha256": "5b28c28bc32686cb21dbfdccc2fd33c546df0f4a9c8c92f9973554a28156325b",
+      "bytes": 126348
     },
     {
       "file": "png/26-fitness-incomplete.png",
@@ -480,8 +480,8 @@
     },
     {
       "file": "png/30-defense-materials.png",
-      "sha256": "f546e9a2e2f0d49fe333a9591f84a9cea93589c9d1c27891f048c1cdf82241e3",
-      "bytes": 136284
+      "sha256": "41d86020c67a31124e5cf51e701cc131303695c2e89e4aa74c701e5b7a376690",
+      "bytes": 134837
     },
     {
       "file": "png/31-defense-practice.png",
@@ -505,8 +505,8 @@
     },
     {
       "file": "png/35-copy-feedback.png",
-      "sha256": "0a1ca33b3701316e2e353bac7fa5ff857e46afd91f907bd7dcfb6184b3ea6e63",
-      "bytes": 72492
+      "sha256": "008ba0bdc55271e121469915715e2d8a274e6eb752ab9e59aca9b10ac205b667",
+      "bytes": 199891
     },
     {
       "file": "png/36-delete-confirm.png",
@@ -545,13 +545,13 @@
     },
     {
       "file": "png/43-course-saved.png",
-      "sha256": "b9a23dc52e12301443d4c94f474b7c05808b664b8cb15cb8efa5be8ac6a3d425",
-      "bytes": 89066
+      "sha256": "18c07e7b66f7286c16c1e6ca8a58e97074ce3408304d03835a9cabd4a71dcaca",
+      "bytes": 115421
     },
     {
       "file": "png/44-course-deleted.png",
-      "sha256": "a92c2ecdafc855271d57601389c53ed0fa1e778bc136beda4d35e74fb963ee59",
-      "bytes": 83465
+      "sha256": "9d1ca66e85aeff97a6e2a06c29e8e52362768403966e1dd20a346e8fc6e62a0b",
+      "bytes": 82357
     },
     {
       "file": "png/45-assistant-safety.png",
@@ -605,8 +605,8 @@
     },
     {
       "file": "png/55-timetable-dense.png",
-      "sha256": "a26c8916f9e51314a3512c800dda813fbedaa4729a5817aa4561319d689bf3d1",
-      "bytes": 106781
+      "sha256": "0a7e878017c16623d263ab5d54537352aec72f810558eff58540b6698bf90fbc",
+      "bytes": 107235
     },
     {
       "file": "review/narrow/01-home.png",
@@ -620,8 +620,8 @@
     },
     {
       "file": "review/narrow/03-timetable-week.png",
-      "sha256": "e457436edd0ddae17858414f2ff7de01213fdc1f86847f9293477f927e37883e",
-      "bytes": 31652
+      "sha256": "9205c3dc68edfa9e86e346c32b5f9f11fc2b81f49941521dabc2bf01569cdd70",
+      "bytes": 31818
     },
     {
       "file": "review/narrow/04-course-detail.png",
@@ -660,8 +660,8 @@
     },
     {
       "file": "review/narrow/11-course-manage.png",
-      "sha256": "1cc1cf91938d3fa57d61ab6d2a51d999df556fe6743e83ec7f150da6d458ee2c",
-      "bytes": 29965
+      "sha256": "7c7e1a8231a73dcb1e0c444307b836a6b2d0d23a61394e10b7f958d11c5c269e",
+      "bytes": 33672
     },
     {
       "file": "review/narrow/12-settings.png",
@@ -670,18 +670,18 @@
     },
     {
       "file": "review/narrow/13-assistant.png",
-      "sha256": "005a17df4ddb30a09d2d19270cb9c24680edf7580556c642242f09e7c4b59198",
-      "bytes": 30411
+      "sha256": "dec17ac17ce2e5b47635d8aeafd7ab810d25ef30b5548aec7f8ccde3f07d3bc2",
+      "bytes": 32102
     },
     {
       "file": "review/narrow/14-change-confirm.png",
-      "sha256": "0f39047b5f54e5394f6c76b6ade2140f1b3e9e8a74f73bf65b22cf4530beac83",
-      "bytes": 34331
+      "sha256": "cc0ed9d331087fdb5c159fac1f13c7fd63e2faa3dd7dda0588f90c39b0796ae4",
+      "bytes": 34833
     },
     {
       "file": "review/narrow/15-assistant-failure.png",
-      "sha256": "7699d57f5c1f1f7f045648dc28255be471674e1bdadbe06d101b9cfa07510f0d",
-      "bytes": 33787
+      "sha256": "b72aee4903ad7b07a6b01b301ef270a3e2dc8576aacde732329a484ecf0957ec",
+      "bytes": 34294
     },
     {
       "file": "review/narrow/16-departments.png",
@@ -690,13 +690,13 @@
     },
     {
       "file": "review/narrow/17-department-detail.png",
-      "sha256": "630a71d03b7cb45f1cebbda8a6457fdf6f77ba6814c8bb5f36c371f8e6f63a86",
-      "bytes": 40207
+      "sha256": "b9b61e4c7d5b2f9d966387650e4aae7c202279c663553fae281c63ad26b2e166",
+      "bytes": 42691
     },
     {
       "file": "review/narrow/18-department-qa.png",
-      "sha256": "7036bf0f6463ec86f00e8d0806f8ee704a3f95e9329feee04b0e58e4d9f69873",
-      "bytes": 36973
+      "sha256": "5a0c0e44b033f02aaf3dad9b14055f46b122b7800185d60056b0264e2b71d4c5",
+      "bytes": 39327
     },
     {
       "file": "review/narrow/19-news.png",
@@ -705,8 +705,8 @@
     },
     {
       "file": "review/narrow/20-news-detail.png",
-      "sha256": "c11a28d459f580b07ff423b595a7539ed0bd99f14491c7b46ba4a089bf55e57b",
-      "bytes": 48191
+      "sha256": "630a3ca3986ebabe36049de11aab9b615fc4f3d384d6d913bc28a12b6db0756f",
+      "bytes": 55231
     },
     {
       "file": "review/narrow/21-goals.png",
@@ -720,8 +720,8 @@
     },
     {
       "file": "review/narrow/23-calendar.png",
-      "sha256": "080b8e924d9dad24ea10440d7e8caa36be89f7e3043171766859c06ce656ea95",
-      "bytes": 45670
+      "sha256": "da5cb7c41ca48d09c03e93ddb3b6c69897b61aeff0e64db0d47bcbfa0de563b2",
+      "bytes": 54572
     },
     {
       "file": "review/narrow/24-fitness-input.png",
@@ -730,8 +730,8 @@
     },
     {
       "file": "review/narrow/25-fitness-result.png",
-      "sha256": "f554ebdf5b5f8432123b3f46781fb38a55c9759c336b84f420083d4d03469a4a",
-      "bytes": 38046
+      "sha256": "b70ab7874eaf9faa84486158af363be2495135c55d89512fd3cfeff0ae39ab42",
+      "bytes": 37683
     },
     {
       "file": "review/narrow/26-fitness-incomplete.png",
@@ -755,8 +755,8 @@
     },
     {
       "file": "review/narrow/30-defense-materials.png",
-      "sha256": "443762f5114f4e597f66792300b9c60a098cc32a1ad1b4d5b2e3849fbd48cb82",
-      "bytes": 37664
+      "sha256": "9b0b49071666c7871f975c54e523bbcc671b74a506876d72ae7fcef281b78279",
+      "bytes": 37269
     },
     {
       "file": "review/narrow/31-defense-practice.png",
@@ -780,8 +780,8 @@
     },
     {
       "file": "review/narrow/35-copy-feedback.png",
-      "sha256": "dfa6e959e137bfc1e85f46c4837e5765c2d6e72dd2ea11cce960ca7d3fab6acb",
-      "bytes": 25039
+      "sha256": "0148beaef474d0f3256ed971efb2372ba3a9ae8530496c1afac6f193fd29389a",
+      "bytes": 57335
     },
     {
       "file": "review/narrow/36-delete-confirm.png",
@@ -820,13 +820,13 @@
     },
     {
       "file": "review/narrow/43-course-saved.png",
-      "sha256": "dda8012720a3c855a20c8dc7addf7ccc961f3ddcb5a2109ed064b124a0a66894",
-      "bytes": 26951
+      "sha256": "de38bcafaef77ca0ac97c69fee3c1ec69fc59bafbd4cadd15ae559a3de953e31",
+      "bytes": 34632
     },
     {
       "file": "review/narrow/44-course-deleted.png",
-      "sha256": "9e04bf7242afd8b481184e0a24f1c83b7222a3df6e7a067a190da0f1a37376dd",
-      "bytes": 26450
+      "sha256": "36b19a5874eeb226558e14ec45454b7d12832239bde5275b156ee85e443f506a",
+      "bytes": 26971
     },
     {
       "file": "review/narrow/45-assistant-safety.png",
@@ -880,23 +880,43 @@
     },
     {
       "file": "review/narrow/55-timetable-dense.png",
-      "sha256": "f2e72f06f621931e04e1e925de601e8bcee9f442b06dba7ba042159e16ee4382",
-      "bytes": 33127
+      "sha256": "e0d73155ee5f364c7aa74a03bca76025a84a5256fc2b1a1fac1c6b82776c18a1",
+      "bytes": 33386
+    },
+    {
+      "file": "review/stress/week-320-left.png",
+      "sha256": "e0d73155ee5f364c7aa74a03bca76025a84a5256fc2b1a1fac1c6b82776c18a1",
+      "bytes": 33386
+    },
+    {
+      "file": "review/stress/week-320-middle.png",
+      "sha256": "59908428fcf3ff42c12427ffe998c515459be4c6e0a60e7af5136c94d4a9eaab",
+      "bytes": 31191
     },
     {
       "file": "review/stress/week-320-right.png",
-      "sha256": "a162208c015a672c7dfc4a44d8c39152b8fefdfa996037a8621a8257f020df98",
-      "bytes": 29563
+      "sha256": "bf7a501714f0013b6da7d40bffbc1a6f2104a0cc45d47b9c2f3e7d4f21b6e490",
+      "bytes": 30121
+    },
+    {
+      "file": "review/stress/week-390-left.png",
+      "sha256": "0297b8b1249e7dfe4ace78a159294f7f3d4a6518ec6ef45f62b046d5f7a21812",
+      "bytes": 35492
+    },
+    {
+      "file": "review/stress/week-390-middle.png",
+      "sha256": "79de14d5900543e1474bdaeb97c7f5aab1b0d9de4867a1ec61ae8f3915dc0e2d",
+      "bytes": 33985
     },
     {
       "file": "review/stress/week-390-right.png",
-      "sha256": "b9880d966bb51d7abe20ad10a046acb0f7381806e45898aa352bef56fd1bd2ee",
-      "bytes": 32614
+      "sha256": "54e01e64a2eb32a4c1aacbb9f9d7e3cf98450fadc5c987684d58c00b202aab0c",
+      "bytes": 33039
     },
     {
       "file": "review/overview.png",
-      "sha256": "d02e3719304334285b35932eb8779f74f7e7f9df314682c68098a9c10124f54e",
-      "bytes": 712662
+      "sha256": "759e704e8c0d0c62407b3045860bfbe836ca472b2babda4db39661c05597af3d",
+      "bytes": 753364
     },
     {
       "file": "figma/png/01-home.png",
@@ -915,13 +935,13 @@
     },
     {
       "file": "figma/state.json",
-      "sha256": "691761a713ff2e88fcc80c33e049578d29148ab9d81759253fef89aa4b30d287",
-      "bytes": 2168
+      "sha256": "83b6fab3ed350105afa1662e28b2b69182576f8fb4f80abd4f19b4f6a7030465",
+      "bytes": 2267
     },
     {
       "file": "review/brief.md",
-      "sha256": "7889806dfa178ad30dc4b248fb8a16324eb38faa98c7397b423302ef050bcfa9",
-      "bytes": 2941
+      "sha256": "d0e7550ad3874497b137b619559f3306d1b0f794d36b523899be2dafebfbee0d",
+      "bytes": 3417
     }
   ],
   "reviewersPerRound": 1,
@@ -933,5 +953,6 @@
     "figma": "figma/png/",
     "overview": "review/overview.png",
     "stress": "review/stress/"
-  }
+  },
+  "designScenarioDate": "2026-10-16"
 }

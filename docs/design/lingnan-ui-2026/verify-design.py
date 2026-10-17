@@ -1,6 +1,6 @@
 """静态设计渲染走查；不调用微信、云端或业务模型。"""
 from pathlib import Path
-import json, hashlib, re
+import json, hashlib, re, subprocess
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
@@ -69,13 +69,21 @@ with sync_playwright() as p:
         page.set_viewport_size({'width':width,'height':844})
         page.goto((ROOT/by_id['55']['file']).as_uri())
         scroller=page.locator('.week-scroll')
-        scroller.hover()
-        page.mouse.wheel(700,0)
-        page.wait_for_timeout(200)
-        value=scroller.evaluate('(e)=>({left:e.scrollLeft,max:e.scrollWidth-e.clientWidth})')
-        assert value['left']>0,'week horizontal scrolling'
-        page.screenshot(path=str(ROOT/'review'/'stress'/f'week-{width}-right.png'),full_page=True)
-        stress.append({'viewport':width,'horizontalScroll':value,'passed':True})
+        for position in ('left','middle','right'):
+            if position=='left': scroller.evaluate('(e)=>e.scrollLeft=0')
+            if position=='middle': scroller.evaluate('(e)=>e.scrollLeft=(e.scrollWidth-e.clientWidth)/2')
+            if position=='right':
+                scroller.hover()
+                page.mouse.wheel(700,0)
+                page.wait_for_timeout(200)
+            value=scroller.evaluate('(e)=>({left:e.scrollLeft,max:e.scrollWidth-e.clientWidth})')
+            if position!='left': assert value['left']>0,'week horizontal scrolling'
+            axis=page.locator('.period').evaluate_all('(nodes)=>nodes.map(e=>({text:e.textContent,left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}))')
+            viewport=scroller.bounding_box()
+            assert all(a['left']>=viewport['x'] and a['right']<=viewport['x']+viewport['width'] for a in axis),'sticky period axis visible'
+            assert [a['text'] for a in axis]==['1–2','3–4','5–6','7–8','9–10','11–12']
+            page.screenshot(path=str(ROOT/'review'/'stress'/f'week-{width}-{position}.png'),full_page=True)
+            stress.append({'viewport':width,'position':position,'horizontalScroll':value,'periodAxisVisible':True,'passed':True})
 
     # 用本轮截图生成宽幅目录，原图保持完整；它是评审导航，不导入 Figma。
     featured=['01','03','06','14','16','20','21','23','25','28','31','40']
@@ -97,7 +105,16 @@ for fg,bg in [('#ffffff','#c41c23'),('#ffffff','#8c1614'),('#6b5d57','#fdf7f5'),
     ratio=(max(lum(fg),lum(bg))+.05)/(min(lum(fg),lum(bg))+.05)
     contrast.append({'foreground':fg,'background':bg,'ratio':round(ratio,2),'normalText45':ratio>=4.5})
     if ratio<4.5: failures.append({'contrast':[fg,bg],'ratio':ratio})
-report={'date':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'weekScrolling':stress,'contrastSamples':contrast,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
+# 同一组设计输入交给现有计算器，不用旧设计稿的手写总分作期望值。
+fitness_input={'sex':'male','band':'freshman','height':175,'weight':61.3,'vitalCapacity':4300,'sprint50':7,'sitAndReach':17.7,'standingLongJump':248,'strength':15,'distanceRunSeconds':222}
+calculator=json.loads(subprocess.check_output(['node','-e',"process.stdout.write(JSON.stringify(require('./dist/services/fitness/index.js').estimate("+json.dumps(fitness_input)+")))"],cwd=REPO,encoding='utf-8'))
+fitness_screen=next(s for s in SCREENS if s['id']=='25')
+displayed=next(b for b in fitness_screen['blocks'] if b['type']=='metric')
+table=next(b for b in fitness_screen['blocks'] if b['type']=='table')
+fitness_match=float(displayed['value'])==calculator['total'] and displayed['label']==calculator['grade'] and [int(r[-1]) for r in table['rows']]==[i['score'] for i in calculator['items']]
+fitness_example={'input':fitness_input,'calculatorTotal':calculator['total'],'displayedTotal':displayed['value'],'itemScores':[i['score'] for i in calculator['items']],'passed':fitness_match}
+if not fitness_match: failures.append({'fitnessExample':fitness_example})
+report={'date':'2026-10-17','designScenarioDate':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'weekScrolling':stress,'contrastSamples':contrast,'fitnessExample':fitness_example,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
 (ROOT/'review'/'checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({'screens':len(SCREENS),'renderScenarios':len(results),'staticPaths':len(paths),'contrastSamples':len(contrast),'failures':failures},ensure_ascii=False))
 if failures: raise SystemExit(1)

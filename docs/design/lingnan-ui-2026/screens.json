@@ -723,43 +723,35 @@
         "meta": "3 门示例"
       },
       {
-        "type": "row",
+        "type": "courseRow",
         "title": "使用 JSP 开发 Web 应用系统",
         "text": "周二 1–2 节 · 博雅楼 B602",
-        "target": "10",
-        "icon": "book"
+        "edit": "10"
       },
       {
-        "type": "row",
+        "type": "courseRow",
         "title": "数据库应用技术",
         "text": "周三 3–4 节 · B305",
-        "target": "10",
-        "icon": "book"
+        "edit": "10"
       },
       {
-        "type": "row",
+        "type": "courseRow",
         "title": "大学英语",
         "text": "周五 5–6 节 · B305",
-        "target": "10",
-        "icon": "book"
+        "edit": "10",
+        "remove": "36"
       },
       {
         "type": "note",
-        "text": "删除前显示课程名和影响范围；取消不写入。",
-        "tone": "warning",
+        "text": "删除课程还需要你再次确认，取消后课程保留。",
+        "tone": "neutral",
         "title": ""
       },
       {
         "type": "button",
-        "label": "删除「大学英语」",
-        "target": "36",
-        "tone": "secondary"
-      },
-      {
-        "type": "button",
-        "label": "返回周课表",
+        "label": "返回当前周课表",
         "target": "03",
-        "tone": "tertiary"
+        "tone": "secondary"
       }
     ],
     "back": "03",
@@ -872,7 +864,7 @@
       {
         "type": "field",
         "label": "输入你的问题",
-        "value": "周三第 3–4 节加一节课",
+        "value": "第 1–16 周，周三第 7–8 节加一节数据库实验，B305。",
         "hint": "",
         "error": ""
       },
@@ -900,7 +892,7 @@
     "blocks": [
       {
         "type": "quote",
-        "text": "周三第 3–4 节加一节数据库实验，B305。",
+        "text": "第 1–16 周，周三第 7–8 节加一节数据库实验，B305。",
         "who": "你"
       },
       {
@@ -912,7 +904,7 @@
       {
         "type": "card",
         "title": "新增 · 数据库实验",
-        "text": "周三 · 第 3–4 节\n第 1–16 周 · 每周",
+        "text": "周三 · 第 7–8 节\n第 1–16 周 · 每周",
         "meta": "B305 · 示例提案",
         "target": "",
         "tone": "blue"
@@ -959,7 +951,7 @@
       },
       {
         "type": "quote",
-        "text": "周三第 3–4 节加一节数据库实验，B305。",
+        "text": "第 1–16 周，周三第 7–8 节加一节数据库实验，B305。",
         "who": "你"
       },
       {
@@ -1118,6 +1110,12 @@
         "title": "学校官网 · 团委",
         "text": "当前资料校区未标注；可复制来源核对。",
         "meta": "资料核查于 2026-09-18"
+      },
+      {
+        "type": "button",
+        "label": "复制组织资料来源",
+        "target": "17",
+        "tone": "secondary"
       }
     ],
     "back": "16",
@@ -1147,6 +1145,12 @@
         "title": "参考资料 · 校学生会",
         "text": "当前资料仅支持查看组织介绍与已收录动态。",
         "meta": "复制原文链接，可在微信里粘贴查看"
+      },
+      {
+        "type": "button",
+        "label": "复制问答资料来源",
+        "target": "18",
+        "tone": "secondary"
       },
       {
         "type": "field",
@@ -1248,9 +1252,9 @@
         "title": "关于本学期课程安排的通知",
         "meta": "2026-10-16 · 示例资讯",
         "paragraphs": [
-          "这里是资讯正文的排版样例，用于检查长标题、段落和中文标点的阅读效果。本文不是学校发布的真实通知。",
-          "正文保留清楚的段落层次，日期、地点与参加对象来自原文。没有原文的信息不自行补全。",
-          "分享打开时直接阅读本页；没有上一页时，提供返回首页入口。"
+          "课程项目展示可以从问题、方案与验证三部分展开。同学们可提前整理项目说明、主要操作和结果依据，按课程要求准备展示内容。",
+          "介绍已完成的工作时，请同时保留尚未验证的限制。演示可以展示实际操作、输入和可见结果，帮助听众理解项目如何解决具体问题。",
+          "本文为资讯阅读示例，不对应学校实际通知。具体时间、地点和参加安排，请以学校发布的原文为准。"
         ]
       },
       {
@@ -1415,6 +1419,12 @@
         "tone": "white"
       },
       {
+        "type": "button",
+        "label": "复制「学校校历」来源",
+        "target": "23",
+        "tone": "secondary"
+      },
+      {
         "type": "section",
         "title": "四六级",
         "meta": ""
@@ -1428,6 +1438,12 @@
         "tone": "white"
       },
       {
+        "type": "button",
+        "label": "复制「大学英语四级笔试（CET4）」来源",
+        "target": "23",
+        "tone": "secondary"
+      },
+      {
         "type": "section",
         "title": "计算机等级",
         "meta": ""
@@ -1439,6 +1455,12 @@
         "meta": "广东 · 原文发布 2026-06-24",
         "target": "35",
         "tone": "white"
+      },
+      {
+        "type": "button",
+        "label": "复制「2026 年 9 月批次 · 已结束」来源",
+        "target": "23",
+        "tone": "secondary"
       },
       {
         "type": "source",
@@ -1551,9 +1573,9 @@
     "blocks": [
       {
         "type": "metric",
-        "value": "83.0",
+        "value": "84.0",
         "label": "良好",
-        "text": "估算分 · 7 项已计入\n标准分 83.0 + 附加分 0",
+        "text": "估算分 · 7 项已计入\n标准分 84.0 + 附加分 0",
         "tone": "red"
       },
       {
@@ -1901,17 +1923,17 @@
       },
       {
         "type": "card",
-        "title": "课表导入与校对",
+        "title": "● 已选 · 课表导入与校对",
         "text": "本项目自有材料 · 9 条事实 + 3 条不变量",
         "meta": "含待验证事项；不代表已验证全部功能",
         "target": "31",
-        "tone": "white"
+        "tone": "blue"
       },
       {
         "type": "card",
-        "title": "打字练习小游戏",
+        "title": "○ 打字练习小游戏",
         "text": "维护者原创设计情景",
-        "meta": "没有代码或测试记录；不是现有产品功能",
+        "meta": "可选 · 没有代码或测试记录；不是现有产品功能",
         "target": "",
         "tone": "white"
       },
@@ -1929,7 +1951,7 @@
       },
       {
         "type": "button",
-        "label": "选择「课表导入与校对」开始",
+        "label": "开始练习",
         "target": "31",
         "tone": "primary"
       }
@@ -2146,27 +2168,42 @@
   },
   {
     "id": "35",
-    "title": "链接已复制",
-    "subtitle": "原文链接复制反馈",
+    "title": "资讯详情",
+    "subtitle": "示例资讯 · 用于阅读版式评审",
     "route": "pages/news/detail/index",
     "blocks": [
       {
-        "type": "empty",
-        "icon": "check",
-        "title": "原文链接已复制",
-        "text": "在微信内合适的位置粘贴后查看原文。"
+        "type": "toast",
+        "text": "原文链接已复制",
+        "target": "20"
+      },
+      {
+        "type": "article",
+        "title": "关于本学期课程安排的通知",
+        "meta": "2026-10-16 · 示例资讯",
+        "paragraphs": [
+          "课程项目展示可以从问题、方案与验证三部分展开。同学们可提前整理项目说明、主要操作和结果依据，按课程要求准备展示内容。",
+          "介绍已完成的工作时，请同时保留尚未验证的限制。演示可以展示实际操作、输入和可见结果，帮助听众理解项目如何解决具体问题。",
+          "本文为资讯阅读示例，不对应学校实际通知。具体时间、地点和参加安排，请以学校发布的原文为准。"
+        ]
+      },
+      {
+        "type": "source",
+        "title": "原文出处",
+        "text": "学校官网 · 实际正文须对应真实来源",
+        "meta": "资料读取时间与发布日期分别展示"
       },
       {
         "type": "button",
-        "label": "返回资讯详情",
-        "target": "20",
+        "label": "复制原文链接",
+        "target": "35",
         "tone": "secondary"
       },
       {
-        "type": "note",
-        "text": "如果复制失败，可以留在正文页重新复制。",
-        "tone": "neutral",
-        "title": ""
+        "type": "button",
+        "label": "返回资讯列表",
+        "target": "19",
+        "tone": "tertiary"
       },
       {
         "type": "button",
@@ -2175,7 +2212,7 @@
         "tone": "tertiary"
       }
     ],
-    "back": "20",
+    "back": "19",
     "file": "35-copy-feedback.html"
   },
   {
@@ -2482,30 +2519,27 @@
   },
   {
     "id": "43",
-    "title": "课程已更新",
-    "subtitle": "确认保存成功后的状态示意",
+    "title": "我的课表",
+    "subtitle": "第 8 周 · 确认保存后的示例",
     "route": "pages/timetable/index",
     "blocks": [
       {
+        "type": "toast",
+        "text": "已新增「数据库实验」，现有 4 门课程。"
+      },
+      {
+        "type": "weeknav"
+      },
+      {
+        "type": "week",
+        "rows": 4,
+        "added": true
+      },
+      {
         "type": "note",
-        "text": "已按你的确认新增「数据库实验」。",
+        "text": "周三第 7–8 节 · 数据库实验 · B305\n第 1–16 周，已按你确认的内容保存。",
         "tone": "neutral",
-        "title": "变更已保存"
-      },
-      {
-        "type": "card",
-        "title": "数据库实验",
-        "text": "周三 · 第 3–4 节 · 第 1–16 周",
-        "meta": "B305 · 示例课程",
-        "target": "",
-        "tone": "blue"
-      },
-      {
-        "type": "metric",
-        "value": "4",
-        "label": "门课程",
-        "text": "本次变更：3 → 4\n只在保存成功后显示这条结果",
-        "tone": "red"
+        "title": ""
       },
       {
         "type": "button",
@@ -2525,46 +2559,33 @@
   },
   {
     "id": "44",
-    "title": "已删除这门课程",
-    "subtitle": "管理课程 · 删除成功示意",
+    "title": "我的课表",
+    "subtitle": "第 8 周 · 删除成功后的示例",
     "route": "pages/timetable/manage/index",
     "blocks": [
       {
-        "type": "note",
-        "text": "「大学英语」已删除，其余 2 门课程保留。",
-        "tone": "neutral",
-        "title": ""
+        "type": "toast",
+        "text": "「大学英语」已删除，其余 2 门课程保留。"
       },
       {
-        "type": "section",
-        "title": "已保存课程",
-        "meta": "2 门示例"
+        "type": "weeknav"
       },
       {
-        "type": "row",
-        "title": "使用 JSP 开发 Web 应用系统",
-        "text": "周二 1–2 节 · 博雅楼 B602",
-        "target": "10",
-        "icon": "book"
-      },
-      {
-        "type": "row",
-        "title": "数据库应用技术",
-        "text": "周三 3–4 节 · B305",
-        "target": "10",
-        "icon": "book"
+        "type": "week",
+        "rows": 2,
+        "removed": true
       },
       {
         "type": "button",
         "label": "新增课程",
         "target": "10",
-        "tone": "primary"
+        "tone": "secondary"
       },
       {
         "type": "button",
         "label": "返回首页",
         "target": "01",
-        "tone": "secondary"
+        "tone": "tertiary"
       }
     ],
     "back": "11",

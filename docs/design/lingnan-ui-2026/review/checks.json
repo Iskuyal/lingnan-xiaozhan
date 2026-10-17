@@ -1,5 +1,6 @@
 {
-  "date": "2026-10-16",
+  "date": "2026-10-17",
+  "designScenarioDate": "2026-10-16",
   "environment": "Windows Chrome headless / Playwright",
   "mode": "static design only",
   "screens": 55,
@@ -124,14 +125,14 @@
       "screen": "17",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
       "screen": "18",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -166,7 +167,7 @@
       "screen": "23",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 7,
       "issues": []
     },
     {
@@ -250,7 +251,7 @@
       "screen": "35",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 5,
       "issues": []
     },
     {
@@ -306,14 +307,14 @@
       "screen": "43",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 9,
       "issues": []
     },
     {
       "screen": "44",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 7,
       "issues": []
     },
     {
@@ -509,14 +510,14 @@
       "screen": "17",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
       "screen": "18",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -551,7 +552,7 @@
       "screen": "23",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 7,
       "issues": []
     },
     {
@@ -635,7 +636,7 @@
       "screen": "35",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 5,
       "issues": []
     },
     {
@@ -691,14 +692,14 @@
       "screen": "43",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 9,
       "issues": []
     },
     {
       "screen": "44",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 5,
+      "linkCount": 7,
       "issues": []
     },
     {
@@ -915,18 +916,62 @@
   "weekScrolling": [
     {
       "viewport": 390,
+      "position": "left",
+      "horizontalScroll": {
+        "left": 0,
+        "max": 177
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "position": "middle",
+      "horizontalScroll": {
+        "left": 89,
+        "max": 177
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "position": "right",
       "horizontalScroll": {
         "left": 177,
         "max": 177
       },
+      "periodAxisVisible": true,
       "passed": true
     },
     {
       "viewport": 320,
+      "position": "left",
+      "horizontalScroll": {
+        "left": 0,
+        "max": 239
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "position": "middle",
+      "horizontalScroll": {
+        "left": 120,
+        "max": 239
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "position": "right",
       "horizontalScroll": {
         "left": 239,
         "max": 239
       },
+      "periodAxisVisible": true,
       "passed": true
     }
   ],
@@ -974,6 +1019,32 @@
       "normalText45": true
     }
   ],
+  "fitnessExample": {
+    "input": {
+      "sex": "male",
+      "band": "freshman",
+      "height": 175,
+      "weight": 61.3,
+      "vitalCapacity": 4300,
+      "sprint50": 7,
+      "sitAndReach": 17.7,
+      "standingLongJump": 248,
+      "strength": 15,
+      "distanceRunSeconds": 222
+    },
+    "calculatorTotal": 84,
+    "displayedTotal": "84.0",
+    "itemScores": [
+      100,
+      80,
+      85,
+      80,
+      80,
+      80,
+      80
+    ],
+    "passed": true
+  },
   "failures": [],
   "notVerified": [
     "微信客户端/真机",

@@ -91,17 +91,17 @@ export const screens = [
   chips(['查课','增改课程'],0),quote('第 8 周星期二第 1–2 节有什么课？'),
   card('第 8 周 · 周二','使用 JSP 开发 Web 应用系统\n第 1–2 节 · 博雅楼 B602','回答示例 · 依据已保存课表','','blue'),
   note('增改课程会先给出变更提案，由你确认后才保存。'),
-  field('输入你的问题','周三第 3–4 节加一节课'),button('发送，查看变更提案','14'),button('返回周课表','03','secondary')
+  field('输入你的问题','第 1–16 周，周三第 7–8 节加一节数据库实验，B305。'),button('发送，查看变更提案','14'),button('返回周课表','03','secondary')
  ],{back:'03'}),
  page('14','确认课程变更','助手提出的建议 · 尚未保存','pages/timetable/index',[
-  quote('周三第 3–4 节加一节数据库实验，B305。'),
+  quote('第 1–16 周，周三第 7–8 节加一节数据库实验，B305。'),
   note('这次将新增 1 门课程。请检查周次、地点和节次。','warning','等待你确认'),
-  card('新增 · 数据库实验','周三 · 第 3–4 节\n第 1–16 周 · 每周','B305 · 示例提案','','blue'),
+  card('新增 · 数据库实验','周三 · 第 7–8 节\n第 1–16 周 · 每周','B305 · 示例提案','','blue'),
   note('课程数：3 → 4\n取消不会改变现有课表；保存成功后才显示已更新。'),button('确认新增课程','43'),button('取消这次变更','13','secondary'),button('查看失败恢复示意','15','tertiary')
  ],{back:'13'}),
  page('15','助手暂时不可用','失败分支示意','pages/timetable/index',[
   {type:'empty',icon:'cloud',title:'这次没有完成请求',text:'模型暂时不可用或响应超时。\n你的课表没有因此改动。'},
-  quote('周三第 3–4 节加一节数据库实验，B305。'),button('重试这条请求','14'),button('改用手工编辑','10','secondary'),button('返回周课表','03','tertiary'),
+  quote('第 1–16 周，周三第 7–8 节加一节数据库实验，B305。'),button('重试这条请求','14'),button('改用手工编辑','10','secondary'),button('返回周课表','03','tertiary'),
   section('其他失败的文案'),note('内容未通过安全检查：请调整问题后再试。','warning'),note('今日可用次数已用完：稍后再试，仍可手工编辑。','warning')
  ],{back:'03'}),
  page('16','学生部门','先了解，再找到适合你的组织','pages/departments/index',[
@@ -152,7 +152,7 @@ export const screens = [
   button('估算','25'),note('留空的项目不会当成 0 分；缺项不生成总分。')
  ]),
  page('25','估算结果','男 · 大一 / 大二 · 完整示例','pages/fitness/index',[
-  metric('83.0','良好','估算分 · 7 项已计入\n标准分 83.0 + 附加分 0'),
+  metric('84.0','良好','估算分 · 7 项已计入\n标准分 84.0 + 附加分 0'),
   note('这是按国家标准得到的估算，不是学校成绩。\n学校具体计分规则尚未核实。','warning'),
   {type:'table',heads:['项目','成绩','得分'],rows:[['BMI','20.0','100'],['肺活量','4300 毫升','80'],['50 米跑','7.0 秒','85'],['坐位体前屈','17.7 厘米','80'],['立定跳远','248 厘米','80'],['引体向上','15 次','80'],['1000 米跑','3′42″','80']]},
   button('修改数据，重新估算','24'),button('查看缺项结果','26','secondary')
@@ -239,7 +239,7 @@ export const screens = [
   card('新增了可回核的依据','重答加入了 [F4] 与 [INV-1] 的对应说明。','示例反馈，不是学习效果证明'),note('[F8] 中的待验证事项仍未解决。\n会话不会长期保存，离开前可复制复盘。','warning'),button('复制复盘文字','42','secondary'),button('回到首页','01')
  ],{back:'40'}),
  page('43','课程已更新','确认保存成功后的状态示意','pages/timetable/index',[
-  note('已按你的确认新增「数据库实验」。','neutral','变更已保存'),card('数据库实验','周三 · 第 3–4 节 · 第 1–16 周','B305 · 示例课程','','blue'),metric('4','门课程','本次变更：3 → 4\n只在保存成功后显示这条结果'),button('继续使用课表助手','13','secondary'),button('返回首页','01','tertiary')
+  note('已按你的确认新增「数据库实验」。','neutral','变更已保存'),card('数据库实验','周三 · 第 7–8 节 · 第 1–16 周','B305 · 示例课程','','blue'),metric('4','门课程','本次变更：3 → 4\n只在保存成功后显示这条结果'),button('继续使用课表助手','13','secondary'),button('返回首页','01','tertiary')
  ],{back:'13'}),
  page('44','已删除这门课程','管理课程 · 删除成功示意','pages/timetable/manage/index',[
   note('「大学英语」已删除，其余 2 门课程保留。'),section('已保存课程','2 门示例'),row('使用 JSP 开发 Web 应用系统','周二 1–2 节 · 博雅楼 B602','10','book'),row('数据库应用技术','周三 3–4 节 · B305','10','book'),button('新增课程','10'),button('返回首页','01','secondary')
@@ -324,6 +324,25 @@ screens.push(
   {type:'weeknav'},{type:'week',rows:6,dense:true},note('左右滑动查看完整七天；点课程查看完整名称和地点。'),button('返回当前周','03','secondary')
  ],{back:'03'})
 );
+
+
+// 第三轮：操作对象明确、来源可核对，成功反馈留在当前任务。
+get('11').blocks=[button('新增课程','10'),section('已保存课程','3 门示例'),
+ {type:'courseRow',title:'使用 JSP 开发 Web 应用系统',text:'周二 1–2 节 · 博雅楼 B602',edit:'10'},
+ {type:'courseRow',title:'数据库应用技术',text:'周三 3–4 节 · B305',edit:'10'},
+ {type:'courseRow',title:'大学英语',text:'周五 5–6 节 · B305',edit:'10',remove:'36'},
+ note('删除课程还需要你再次确认，取消后课程保留。'),button('返回当前周课表','03','secondary')];
+get('17').blocks.push(button('复制组织资料来源','17','secondary'));
+get('18').blocks.splice(get('18').blocks.findIndex(b=>b.type==='source')+1,0,button('复制问答资料来源','18','secondary'));
+const calBlocks=[];for(const b of get('23').blocks){calBlocks.push(b);if(b.type==='card')calBlocks.push(button('复制「'+b.title+'」来源','23','secondary'));}get('23').blocks=calBlocks;
+const materialCards=get('30').blocks.filter(b=>b.type==='card');materialCards[0].title='● 已选 · 课表导入与校对';materialCards[0].tone='blue';materialCards[1].title='○ 打字练习小游戏';materialCards[1].meta='可选 · 没有代码或测试记录；不是现有产品功能';get('30').blocks.find(b=>b.type==='button').label='开始练习';
+get('20').blocks.find(b=>b.type==='article').paragraphs=[
+ '课程项目展示可以从问题、方案与验证三部分展开。同学们可提前整理项目说明、主要操作和结果依据，按课程要求准备展示内容。',
+ '介绍已完成的工作时，请同时保留尚未验证的限制。演示可以展示实际操作、输入和可见结果，帮助听众理解项目如何解决具体问题。',
+ '本文为资讯阅读示例，不对应学校实际通知。具体时间、地点和参加安排，请以学校发布的原文为准。'];
+get('35').title='资讯详情';get('35').subtitle=get('20').subtitle;get('35').back='19';get('35').blocks=[{type:'toast',text:'原文链接已复制',target:'20'},...structuredClone(get('20').blocks)];
+get('43').title='我的课表';get('43').subtitle='第 8 周 · 确认保存后的示例';get('43').blocks=[{type:'toast',text:'已新增「数据库实验」，现有 4 门课程。'}, {type:'weeknav'},{type:'week',rows:4,added:true},note('周三第 7–8 节 · 数据库实验 · B305\n第 1–16 周，已按你确认的内容保存。'),button('继续使用课表助手','13','secondary'),button('返回首页','01','tertiary')];
+get('44').title='我的课表';get('44').subtitle='第 8 周 · 删除成功后的示例';get('44').blocks=[{type:'toast',text:'「大学英语」已删除，其余 2 门课程保留。'},{type:'weeknav'},{type:'week',rows:2,removed:true},button('新增课程','10','secondary'),button('返回首页','01','tertiary')];
 
 export const icons={
  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 17h3"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M21 21v-3a6 6 0 0 0-3-5"/>',news:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h4M7 18h10"/>',flag:'<path d="M5 21V3M5 4h14l-3 5 3 5H5"/>',activity:'<path d="M2 13h5l3-9 4 16 3-7h5"/>',book:'<path d="M12 5c-3-2-7-2-10 0v15c3-2 7-2 10 0 3-2 7-2 10 0V5c-3-2-7-2-10 0v15"/>',chat:'<path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M7 8h10M7 12h7"/>',upload:'<path d="M12 16V3M7 8l5-5 5 5M3 15v6h18v-6"/>',edit:'<path d="m15 4 5 5M4 15 15 4l5 5L9 20H4z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z"/>',scan:'<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M6 12h12M9 8h6M9 16h6"/>',cloud:'<path d="M6 18a5 5 0 0 1-1-10 7 7 0 0 1 13-1 5 5 0 0 1 0 10M12 10v4M12 18v1"/>',check:'<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>'

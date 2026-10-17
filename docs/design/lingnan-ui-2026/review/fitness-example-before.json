@@ -1,0 +1,1086 @@
+{
+  "date": "2026-10-17",
+  "designScenarioDate": "2026-10-16",
+  "environment": "Windows Chrome headless / Playwright",
+  "mode": "static design only",
+  "screens": 55,
+  "viewports": [
+    390,
+    320
+  ],
+  "renderChecks": [
+    {
+      "screen": "01",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "issues": []
+    },
+    {
+      "screen": "02",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "03",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "issues": []
+    },
+    {
+      "screen": "04",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "05",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "06",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "07",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "08",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "09",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "10",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "11",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "12",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "13",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "14",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "15",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "16",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "17",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "18",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "19",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "20",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "21",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "22",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "23",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "24",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "25",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "26",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "27",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "28",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "29",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "30",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "31",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "32",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "33",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "34",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "35",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "36",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "37",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "38",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "39",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "40",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "41",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "42",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "43",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 9,
+      "issues": []
+    },
+    {
+      "screen": "44",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "45",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "46",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "47",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "48",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "49",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "50",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "51",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "52",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "53",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "54",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "55",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "issues": []
+    },
+    {
+      "screen": "01",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 10,
+      "issues": []
+    },
+    {
+      "screen": "02",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "03",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "issues": []
+    },
+    {
+      "screen": "04",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "05",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "06",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "07",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "08",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "09",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "10",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "11",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "12",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "13",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "14",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "15",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "16",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "17",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "18",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "19",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 6,
+      "issues": []
+    },
+    {
+      "screen": "20",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "21",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "22",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "23",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "24",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "25",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "26",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "27",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "28",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "29",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "30",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "31",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "32",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "33",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "34",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "35",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "36",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "37",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "38",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "39",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "40",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 4,
+      "issues": []
+    },
+    {
+      "screen": "41",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "42",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "43",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 9,
+      "issues": []
+    },
+    {
+      "screen": "44",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 7,
+      "issues": []
+    },
+    {
+      "screen": "45",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "46",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "47",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "48",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "49",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 5,
+      "issues": []
+    },
+    {
+      "screen": "50",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "51",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "52",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
+      "issues": []
+    },
+    {
+      "screen": "53",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "54",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 2,
+      "issues": []
+    },
+    {
+      "screen": "55",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 11,
+      "issues": []
+    }
+  ],
+  "staticNavigation": [
+    {
+      "name": "import",
+      "screens": [
+        "01",
+        "02",
+        "05",
+        "06",
+        "08",
+        "09",
+        "03"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "assistant-cancel",
+      "screens": [
+        "03",
+        "13",
+        "14",
+        "13"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "assistant-confirm",
+      "screens": [
+        "13",
+        "14",
+        "43"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "delete-confirm",
+      "screens": [
+        "11",
+        "36",
+        "44"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "fitness",
+      "screens": [
+        "24",
+        "25",
+        "26",
+        "24"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "news",
+      "screens": [
+        "19",
+        "20",
+        "35",
+        "20"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "defense-cancel",
+      "screens": [
+        "30",
+        "31",
+        "32",
+        "31"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "defense-reanswer",
+      "screens": [
+        "40",
+        "41",
+        "42",
+        "01"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "defense-three-rounds",
+      "screens": [
+        "33",
+        "39",
+        "53",
+        "52",
+        "54",
+        "40"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "goal-delete",
+      "screens": [
+        "22",
+        "51",
+        "47"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "import-recovery",
+      "screens": [
+        "49",
+        "05",
+        "07"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    },
+    {
+      "name": "course-invalid",
+      "screens": [
+        "50",
+        "10"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
+    }
+  ],
+  "weekScrolling": [
+    {
+      "viewport": 390,
+      "position": "left",
+      "horizontalScroll": {
+        "left": 0,
+        "max": 177
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "position": "middle",
+      "horizontalScroll": {
+        "left": 89,
+        "max": 177
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "position": "right",
+      "horizontalScroll": {
+        "left": 177,
+        "max": 177
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "position": "left",
+      "horizontalScroll": {
+        "left": 0,
+        "max": 239
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "position": "middle",
+      "horizontalScroll": {
+        "left": 120,
+        "max": 239
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    },
+    {
+      "viewport": 320,
+      "position": "right",
+      "horizontalScroll": {
+        "left": 239,
+        "max": 239
+      },
+      "periodAxisVisible": true,
+      "passed": true
+    }
+  ],
+  "contrastSamples": [
+    {
+      "foreground": "#ffffff",
+      "background": "#c41c23",
+      "ratio": 5.94,
+      "normalText45": true
+    },
+    {
+      "foreground": "#ffffff",
+      "background": "#8c1614",
+      "ratio": 9.38,
+      "normalText45": true
+    },
+    {
+      "foreground": "#6b5d57",
+      "background": "#fdf7f5",
+      "ratio": 5.95,
+      "normalText45": true
+    },
+    {
+      "foreground": "#746760",
+      "background": "#ffffff",
+      "ratio": 5.45,
+      "normalText45": true
+    },
+    {
+      "foreground": "#78420e",
+      "background": "#fff4e4",
+      "ratio": 7.47,
+      "normalText45": true
+    },
+    {
+      "foreground": "#254d80",
+      "background": "#e9eff6",
+      "ratio": 7.4,
+      "normalText45": true
+    },
+    {
+      "foreground": "#135b54",
+      "background": "#e4f0ed",
+      "ratio": 6.78,
+      "normalText45": true
+    }
+  ],
+  "fitnessExample": {
+    "input": {
+      "sex": "male",
+      "band": "freshman",
+      "height": 175,
+      "weight": 61.3,
+      "vitalCapacity": 4300,
+      "sprint50": 7,
+      "sitAndReach": 17.7,
+      "standingLongJump": 248,
+      "strength": 15,
+      "distanceRunSeconds": 222
+    },
+    "calculatorTotal": 84,
+    "displayedTotal": "83.0",
+    "itemScores": [
+      100,
+      80,
+      85,
+      80,
+      80,
+      80,
+      80
+    ],
+    "passed": false
+  },
+  "failures": [
+    {
+      "fitnessExample": {
+        "input": {
+          "sex": "male",
+          "band": "freshman",
+          "height": 175,
+          "weight": 61.3,
+          "vitalCapacity": 4300,
+          "sprint50": 7,
+          "sitAndReach": 17.7,
+          "standingLongJump": 248,
+          "strength": 15,
+          "distanceRunSeconds": 222
+        },
+        "calculatorTotal": 84,
+        "displayedTotal": "83.0",
+        "itemScores": [
+          100,
+          80,
+          85,
+          80,
+          80,
+          80,
+          80
+        ],
+        "passed": false
+      }
+    }
+  ],
+  "notVerified": [
+    "微信客户端/真机",
+    "模型与云端行为",
+    "真实文件/图片上传与保存",
+    "剪贴板实际写入",
+    "全部Figma画面渲染及原型连线",
+    "读屏/键盘表单/200%文字缩放"
+  ]
+}

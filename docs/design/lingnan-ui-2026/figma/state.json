@@ -69,5 +69,6 @@
   "date": "2026-10-16",
   "remoteArtifactVersion": "初稿 e44588e",
   "localScreenCount": 55,
-  "localLogo": "用户已选择官网 EST.2001 盾形横版；远端尚未同步"
+  "localLogo": "用户已选择官网 EST.2001 盾形横版；远端尚未同步",
+  "lastQuotaProbe": "2026-10-17：get_metadata仍被Starter额度拒绝；未执行远端修改"
 }
