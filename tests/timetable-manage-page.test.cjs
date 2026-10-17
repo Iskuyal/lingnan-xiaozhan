@@ -466,3 +466,41 @@ test('课程管理页：模板与样式的硬规则（id、文案、不出现具
     assert.doesNotMatch(source, /\d{1,2}:\d{2}/u, `${name} 里出现了具体时刻`);
   }
 });
+
+test('课程管理页：行内编辑不改变勾选，取消单门删除不写入', async () => {
+  const cloud = cloudStub({ list: () => feedOf(fourCourses()) });
+  const { page, wx } = load(cloud, '4', false);
+  await page.onShow();
+  const id = page.data.courses[0].id;
+  page.toggleRow({ currentTarget: { dataset: { id } } });
+  const selected = list(page.data.selectedIds);
+  page.editRow({ currentTarget: { dataset: { id } } });
+  assert.ok(wx.actions.includes(`navigateTo:/pages/timetable/edit/index?id=${encodeURIComponent(id)}`));
+  assert.deepEqual(list(page.data.selectedIds), selected);
+  await page.deleteRow({ currentTarget: { dataset: { id } } });
+  assert.ok(wx.modals[0].content.includes(page.data.courses[0].name));
+  assert.equal(cloud.calls.filter(item => item.data.action !== 'list').length, 0);
+  assert.deepEqual(list(page.data.selectedIds), selected);
+  delete globalThis.wx;
+});
+
+test('课程管理页：确认单门删除只删除指向的课程，然后重读', async () => {
+  let courses = fourCourses();
+  const id = courses[1].id;
+  const deleted = [];
+  const cloud = cloudStub({
+    list: () => feedOf(courses),
+    deleteCourse: data => {
+      deleted.push(data.id);
+      courses = courses.filter(item => item.id !== data.id);
+      return { ok: true };
+    },
+  });
+  const { page } = load(cloud);
+  await page.onShow();
+  await page.deleteRow({ currentTarget: { dataset: { id } } });
+  assert.deepEqual(deleted, [id]);
+  assert.equal(page.data.courses.some(item => item.id === id), false);
+  assert.equal(page.data.deleting, false);
+  delete globalThis.wx;
+});

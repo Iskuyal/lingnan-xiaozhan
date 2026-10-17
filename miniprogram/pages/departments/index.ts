@@ -111,6 +111,9 @@ Page({
   copyActivitySource(event: DatasetEvent) {
     copyActivitySourceUrl(event.currentTarget.dataset.url ?? '');
   },
+  copySource() {
+    copyActivitySourceUrl(this.data.view.source.sourceUrl);
+  },
   onQaInput(event: InputEvent) {
     const raw = event.detail === undefined ? '' : event.detail.value;
     this.setData({ qaInput: typeof raw === 'string' ? raw : '' });

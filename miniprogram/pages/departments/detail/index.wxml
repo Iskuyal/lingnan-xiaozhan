@@ -12,7 +12,7 @@
       <view wx:if="{{detail.campusNote}}" class="department-campus-note">{{detail.campusNote}}</view>
       </view>
 
-      <button id="department-detail-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到当前部门问答">
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="department-detail-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到当前部门问答">
         <view class="qa-entry-copy">
           <view class="qa-entry-title">问问{{detail.name}}</view>
           <view class="qa-entry-note">查看已核实资料，或继续提问</view>
@@ -48,6 +48,7 @@
           <view wx:for="{{detail.activities}}" wx:key="sourceUrl" class="detail-activity">
             <view class="detail-activity-title">{{item.title}}</view>
             <view class="detail-activity-date">{{item.publishedAt}}</view>
+            <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="source-button" hover-class="pressed" data-url="{{item.sourceUrl}}" bindtap="copyActivitySource">复制动态原文链接</button>
           </view>
         </view>
       </view>
@@ -62,16 +63,16 @@
       <view class="detail-source">
         <view class="detail-source-label">资料来源：{{detail.sourceLabel}}</view>
         <view class="detail-verified-date">核查于 {{detail.verifiedAt}}</view>
-        <button id="copy-detail-source" class="source-button" hover-class="pressed" bindtap="copySource">复制来源链接</button>
+        <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-detail-source" class="source-button" hover-class="pressed" bindtap="copySource">复制来源链接</button>
       </view>
 
-      <button id="back-to-list" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-to-list" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
     </view>
   </block>
 
   <view wx:else id="department-not-found" class="status-page">
     <view class="status-title">{{notFoundTitle}}</view>
     <view class="status-copy">{{notFoundCopy}}</view>
-    <button id="not-found-back" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="not-found-back" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
   </view>
 </view>

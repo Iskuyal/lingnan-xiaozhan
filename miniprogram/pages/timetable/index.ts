@@ -30,6 +30,7 @@ import {
   weekLabelOf,
 } from '../../services/timetable/view';
 import { courseColor } from '../../services/timetable/palette';
+import { presentGrid } from '../../services/timetable/presentation';
 import {
   LoadedSettings,
   TimetableSettings,
@@ -137,6 +138,8 @@ function weekPatch(courses: Course[], week: number, inputs: WeekInputs) {
       todayWeekday: isThisWeek ? weekday : 0,
     }),
     grid,
+    gridUi: presentGrid(grid),
+    gridExpanded: false,
     weekRange: formatWeekRange(config, week),
     todayBar:
       isThisWeek && hasTimes
@@ -245,6 +248,8 @@ Page({
     weekIndex: 0,
     view: { week: 1, weekLabel: '第 1 周', rows: [], days: [], total: 0 } as WeekView,
     grid: buildGrid([], 1),
+    gridUi: presentGrid(buildGrid([], 1)),
+    gridExpanded: false,
     viewMode: 'grid' as ViewMode,
     weekRange: '',
     settings: emptySettings() as TimetableSettings,
@@ -271,6 +276,10 @@ Page({
   clockMinutes: 0,
   /** 学生自己翻过周次之后就不再自动跳到本周（否则每次 onShow 都把他拽回来）。 */
   weekPinned: false,
+  toggleGridExpansion() {
+    const expanded = !this.data.gridExpanded;
+    this.setData({ gridExpanded: expanded, gridUi: presentGrid(this.data.grid, expanded) });
+  },
   onLoad(query: { today?: string; clock?: string }) {
     const injectedToday = typeof query.today === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(query.today) ? query.today : '';
     this.today = injectedToday === '' ? localToday() : injectedToday;

@@ -18,14 +18,14 @@
   <view wx:elif="{{status === 'error'}}" class="news-empty">
     <view class="section-title">暂时读不到内容</view>
     <view class="news-empty-copy">{{errorMessage}}</view>
-    <button id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
-    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
   <view wx:elif="{{status === 'empty'}}" class="news-empty">
     <view class="section-title">暂无资讯</view>
     <view class="news-empty-copy">云端还没有已同步的条目，同步成功后文章会出现在这里。</view>
-    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
   <view wx:else class="news-list">
@@ -49,11 +49,11 @@
     <view wx:if="{{moreState === 'loading'}}" class="news-more">正在加载更早的资讯…</view>
     <view wx:elif="{{moreState === 'error'}}" class="news-more news-more-error">
       <view class="news-more-copy">{{errorMessage}}</view>
-      <button id="retry-more" class="news-more-button" hover-class="pressed" bindtap="retryMore">重试</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-more" class="news-more-button" hover-class="pressed" bindtap="retryMore">重试</button>
     </view>
     <view wx:elif="{{hasMore}}" class="news-more news-more-tap" hover-class="pressed" bindtap="loadMore">上滑或点此加载更多</view>
     <view wx:else class="news-more">已经到底了</view>
 
-    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 </view>

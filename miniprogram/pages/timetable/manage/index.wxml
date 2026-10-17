@@ -16,7 +16,7 @@
         <view class="section-title">暂时读不到课程</view>
       </view>
       <view class="mg-hint-copy">{{errorMessage}}</view>
-      <button id="manage-retry" class="mg-btn mg-btn-secondary" hover-class="pressed" bindtap="retry">重试</button>
+      <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="manage-retry" class="mg-btn mg-btn-secondary" hover-class="pressed" bindtap="retry">重试</button>
       <view id="manage-back" class="mg-back" hover-class="pressed" bindtap="goBack"><text class="mg-back-text">返回课表</text></view>
     </view>
   </block>
@@ -26,7 +26,7 @@
     <view class="mg-empty">
       <view class="mg-empty-title">还没有课程</view>
       <view class="mg-empty-copy">导入课表文件或手工添加课程后，就能在这里成批整理。</view>
-      <button id="manage-back" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="goBack">返回课表</button>
+      <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="manage-back" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="goBack">返回课表</button>
     </view>
   </block>
 
@@ -63,7 +63,7 @@
     <view wx:if="{{rows.length === 0}}" class="mg-empty">
       <view class="mg-empty-title">这个筛选下没有课程</view>
       <view class="mg-empty-copy">换一个筛选条件，或者回到全部看看。</view>
-      <button id="manage-reset-filter" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="resetFilter">查看全部</button>
+      <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="manage-reset-filter" class="mg-btn mg-btn-secondary mg-empty-btn" hover-class="pressed" bindtap="resetFilter">查看全部</button>
     </view>
 
     <!-- 列表：勾选圈 + 课程色条 + 课程名 + 副行；整行可点，选中行高亮。 -->
@@ -81,22 +81,26 @@
         <view class="mg-main">
           <view class="mg-name">{{item.name}}</view>
           <view class="mg-sub">{{item.sub}}<text wx:if="{{item.needsReview}}" class="mg-chip mg-chip-review">待核对</text><text wx:if="{{item.manual}}" class="mg-chip mg-chip-plain">手工</text></view>
+          <view class="mg-row-actions">
+            <button style="margin-left:0;margin-right:0;width:auto;max-width:none" class="mg-row-action" data-id="{{item.id}}" disabled="{{deleting}}" catchtap="editRow" aria-label="编辑{{item.name}}">编辑</button>
+            <button style="margin-left:0;margin-right:0;width:auto;max-width:none" class="mg-row-action" data-id="{{item.id}}" disabled="{{deleting}}" catchtap="deleteRow" aria-label="删除{{item.name}}">删除</button>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- 动作条：固定在底部，先写清后果再给两个动作。没有可操作的行时整条不出现。 -->
+    <!-- 批量动作紧接课程列表，先说明后果；筛选、勾选规则保持一致。 -->
     <view wx:if="{{showActions}}" class="mg-actions">
       <view class="mg-quiet">删除会连同这些课的全部分段一起删掉，无法撤销</view>
       <view class="mg-btn-row">
-        <button
+        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none"
           id="manage-delete-selected"
           class="mg-btn mg-btn-warn"
           hover-class="pressed"
           disabled="{{selectedCount === 0 || deleting}}"
           bindtap="deleteSelected"
         >删除所选 {{selectedCount}} 门</button>
-        <button
+        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none"
           id="manage-select-all"
           class="mg-btn mg-btn-secondary"
           hover-class="pressed"

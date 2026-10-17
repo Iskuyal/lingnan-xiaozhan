@@ -33,6 +33,7 @@ import {
 } from '../../../services/timetable/view';
 import { colorAt, colorIndexFor } from '../../../services/timetable/palette';
 import { UNKNOWN_COURSE_NAME, buildDraftGrid } from './draft-grid';
+import { presentGrid } from '../../../services/timetable/presentation';
 import { callAi, userMessage, visionEvent } from '../../../services/ai';
 import {
   MAX_PHOTO_BYTES,
@@ -146,6 +147,7 @@ Page({
     problemsText: '',
     items: [] as DraftItemView[],
     draftGrid: EMPTY_GRID,
+    draftGridUi: presentGrid(EMPTY_GRID, true),
     gridHintWarn: '',
     semester: '',
     semesterText: '',
@@ -459,7 +461,7 @@ Page({
   refresh() {
     const draft = getDraft();
     if (draft === null) {
-      this.setData({ step: 'guide', items: [], courseCount: 0, blockedCount: 0, warningCount: 0, draftGrid: EMPTY_GRID });
+      this.setData({ step: 'guide', items: [], courseCount: 0, blockedCount: 0, warningCount: 0, draftGrid: EMPTY_GRID, draftGridUi: presentGrid(EMPTY_GRID, true) });
       return;
     }
     const items: DraftItemView[] = draft.courses.map((course: DraftCourse, index: number) => {
@@ -527,6 +529,7 @@ Page({
       metaLine: metaLineOf(warningCount, blocked.length),
       problemsText: draft.problems.join('；'),
       draftGrid: placed.layout,
+      draftGridUi: presentGrid(placed.layout, true),
       gridHintWarn,
       privacyText: isPhoto ? PHOTO_PRIVACY : FILE_PRIVACY,
     });

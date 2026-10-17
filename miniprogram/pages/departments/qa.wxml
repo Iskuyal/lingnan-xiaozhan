@@ -12,12 +12,12 @@
 -->
 <template name="department-qa">
   <view class="qa">
-    <button wx:if="{{!qaOpen}}" id="qa-open" class="home-button qa-open" hover-class="pressed" bindtap="openQa">问问 AI：部门答疑</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" wx:if="{{!qaOpen}}" id="qa-open" class="home-button qa-open" hover-class="pressed" bindtap="openQa">问问 AI：部门答疑</button>
     <view wx:else class="qa-panel">
       <view class="qa-head">
         <text class="qa-badge">部门答疑</text>
         <text class="qa-head-note">只依据官网已核实资料回答</text>
-        <button class="qa-close" hover-class="pressed" bindtap="closeQa">收起</button>
+        <button style="margin-left:0;margin-right:0;width:52px;max-width:none" class="qa-close" hover-class="pressed" bindtap="closeQa">收起</button>
       </view>
 
       <view class="qa-row qa-row-assistant">
@@ -101,7 +101,7 @@
           bindconfirm="sendQuestion"
           disabled="{{qaSending}}"
         />
-        <button id="qa-send" class="qa-send" hover-class="pressed" disabled="{{qaSending}}" bindtap="sendQuestion">发送</button>
+        <button style="margin-left:0;margin-right:0;width:64px;max-width:none" id="qa-send" class="qa-send" hover-class="pressed" disabled="{{qaSending}}" bindtap="sendQuestion">发送</button>
       </view>
 
       <view id="qa-safety-note" class="qa-warn" wx:if="{{qaSafetyNote !== ''}}">{{qaSafetyNote}}</view>
@@ -110,7 +110,7 @@
       <view class="qa-cap" wx:if="{{qaCapWarning !== ''}}">{{qaCapWarning}}</view>
 
       <view class="qa-restart" wx:if="{{qaMessages.length > 1}}">
-        <button id="qa-restart" class="qa-restart-button" hover-class="pressed" bindtap="restartConversation">重新开始对话</button>
+        <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="qa-restart" class="qa-restart-button" hover-class="pressed" bindtap="restartConversation">重新开始对话</button>
       </view>
 
       <view class="qa-note">{{qaSourceNote}}</view>

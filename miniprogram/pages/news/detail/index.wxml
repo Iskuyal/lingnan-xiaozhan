@@ -14,14 +14,14 @@
     <view class="detail-source">
       <view class="detail-source-label">原文链接</view>
       <view class="detail-url">{{article.url}}</view>
-      <button id="copy-article-source" class="home-button" hover-class="pressed" bindtap="copySource">复制原文链接</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-article-source" class="source-button" hover-class="pressed" bindtap="copySource">复制原文链接</button>
     </view>
 
     <view class="detail-note" wx:if="{{syncedAtText !== ''}}">
       本条内容最近一次成功写入：{{syncedAtText}}；正文图片未同步，请以原文为准。
     </view>
 
-    <button id="back-from-detail" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-detail" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
   </block>
 
   <view wx:elif="{{status === 'loading'}}" class="status-page">
@@ -32,14 +32,14 @@
   <view wx:elif="{{status === 'error'}}" class="status-page">
     <view class="status-title">暂时读不到这篇资讯</view>
     <view class="status-copy">{{errorMessage}}</view>
-    <button id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
-    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
   </view>
 
   <view wx:else class="status-page">
     <view class="status-title">没有找到这篇资讯</view>
     <view class="status-copy">该条目不在云端已同步的内容里，可能是链接不完整或文章尚未收录。</view>
     <view class="status-note">数据由云函数从官网同步，同步成功后即可在这里查看。</view>
-    <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
   </view>
 </view>

@@ -1,50 +1,37 @@
-.qa { margin-top:24rpx; }
-.qa-entry-shortcut { width:100%; min-height:96rpx; margin:16rpx 0 18rpx; padding:14rpx 16rpx; display:flex; align-items:center; justify-content:space-between; gap:12rpx; border:1rpx solid rgba(43,36,34,0.14); border-left:6rpx solid var(--gold, #c69a28); background:var(--paper-shade, #faeee9); text-align:left; }
-.qa-entry-copy { flex:1; min-width:0; }
-.qa-entry-title { color:var(--brand-deep, #8c1614); font-size:25rpx; line-height:1.4; font-weight:700; }
-.qa-entry-note { margin-top:3rpx; color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.5; }
-.qa-entry-arrow { flex:none; color:var(--gold-deep, #a67f1c); font-size:32rpx; line-height:1; }
-.qa-open { width:100%; text-align:left; background:var(--brand-deep, #8c1614); }
-.qa-panel { border:1rpx solid rgba(43,36,34,0.18); background:rgba(255,255,255,0.62); }
-.qa-head { min-height:78rpx; display:flex; align-items:center; padding:14rpx 18rpx; background:var(--brand-deep, #8c1614); }
-.qa-badge { padding:6rpx 12rpx; color:var(--brand-deep, #8c1614); background:var(--gold, #c69a28); font-size:19rpx; font-weight:700; }
-.qa-head-note { flex:1; min-width:0; margin-left:12rpx; color:rgba(255,255,255,0.76); font-size:19rpx; line-height:1.4; }
-.qa-close {
-  /* 微信原生 button 会带 184px 内在宽度，弹性项需显式设宽并解除最小宽度。 */
-  flex:0 0 84rpx; min-width:0; width:84rpx; min-height:84rpx; margin-left:8rpx; padding:8rpx;
-  display:flex; align-items:center; justify-content:center; color:#fff; font-size:20rpx;
-}
-.qa-row { display:flex; margin-top:16rpx; }
+.qa-entry-shortcut,.qa-open { display:block; width:100%; max-width:none; padding:14px 16px; margin:18px 0; background:#c41c23; color:#fff; border-radius:8px; text-align:left; }
+.qa-entry-copy { display:inline-block; max-width:90%; }
+.qa-entry-title { font-size:15px; font-weight:600; }
+.qa-entry-note { margin-top:5px; font-size:12px; line-height:1.7; }
+.qa-entry-arrow { float:right; font-size:23px; }
+.qa-panel { margin-top:22px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.qa-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.qa-badge { color:#8c1614; font-size:16px; font-weight:700; }
+.qa-head-note { margin-top:5px; color:#746760; font-size:11px; line-height:1.7; }
+.qa-close { flex:none; width:52px; min-height:44px; padding:8px; font-size:12px; color:#8c1614; border:1px solid #b9847c; border-radius:7px; }
+.qa-row { display:flex; margin-top:12px; }
 .qa-row-user { justify-content:flex-end; }
-.qa-bubble { max-width:88%; padding:16rpx 18rpx; font-size:23rpx; line-height:1.7; }
-.qa-bubble-assistant { border-left:6rpx solid var(--gold, #c69a28); background:var(--paper-shade, #faeee9); color:var(--text, #2b2422); }
-.qa-bubble-user { background:var(--brand, #c41c23); color:#fff; }
-.qa-bubble-text { white-space:normal; }
-.qa-options { margin-top:14rpx; display:flex; flex-wrap:wrap; gap:8rpx; }
-.qa-option { flex:1; min-width:220rpx; min-height:84rpx; padding:13rpx; display:flex; flex-direction:column; justify-content:center; border:1rpx solid rgba(43,36,34,0.16); background:rgba(255,255,255,0.56); }
-.qa-option-active { border-color:var(--gold, #c69a28); }
-.qa-option-name { color:var(--brand-deep, #8c1614); font-size:22rpx; font-weight:700; }
-.qa-option-campus { margin-top:4rpx; color:var(--text-3, #746760); font-size:19rpx; }
-.qa-transcript { max-height:520rpx; overflow-y:auto; }
-.qa-bubble-pending { color:var(--text-3, #746760); }
-.qa-suggestions { display:flex; flex-wrap:wrap; gap:8rpx; margin-top:14rpx; }
-.qa-suggestion { max-width:100%; min-height:84rpx; padding:12rpx 15rpx; display:flex; align-items:center; border:1rpx solid rgba(43,36,34,0.16); color:var(--text-2, #6b5d57); font-size:20rpx; line-height:1.5; }
-.qa-input-row { display:flex; align-items:stretch; gap:10rpx; margin-top:16rpx; }
-.qa-input { flex:1; min-width:0; min-height:74rpx; padding:16rpx; border:1rpx solid rgba(43,36,34,0.22); background:var(--paper, #fdf7f5); color:var(--text, #2b2422); font-size:22rpx; }
-.qa-send {
-  /* 对齐设计稿 68px 发送键；固定宽度避免撑开输入行，Flex 居中避免文字贴上沿。 */
-  flex:0 0 132rpx; min-width:0; width:132rpx; padding:0 10rpx; display:flex; align-items:center; justify-content:center;
-  background:var(--brand, #c41c23); color:#fff; font-size:22rpx; font-weight:700; line-height:1.3;
-}
-.qa-warn,.qa-error,.qa-cap,.qa-offline { margin-top:12rpx; padding:12rpx 14rpx; border-left:6rpx solid var(--warn, #9a5b1e); background:var(--warn-soft, rgba(255,244,228,0.86)); color:var(--warn, #9a5b1e); font-size:20rpx; line-height:1.65; }
-.qa-restart { margin-top:12rpx; }
-.qa-restart-button { min-height:58rpx; color:var(--brand-ink, #7a1a12); font-size:20rpx; }
-.qa-note { margin-top:12rpx; color:var(--text-3, #746760); font-size:19rpx; line-height:1.6; }
-
-/* 仅在本轮部门动态检索命中时展示，尺寸以 docs/design/department-rag/ 为准。 */
-.qa-citations { margin-top:19rpx; border-top:1rpx solid var(--gold-deep, #a67f1c); padding-top:15rpx; }
-.qa-citations-head { margin-bottom:12rpx; color:var(--text-3, #746760); font-size:21rpx; }
-.qa-citation { margin-bottom:12rpx; padding:15rpx 19rpx; border:1rpx solid var(--gold-deep, #a67f1c); border-radius:var(--r-control, 20rpx); background:var(--glass, rgba(255,255,255,0.52)); }
-.qa-citation:last-child { margin-bottom:0; }
-.qa-citation-title { color:var(--text, #2b2422); font-size:23rpx; line-height:1.5; }
-.qa-citation-meta { margin-top:4rpx; color:var(--text-3, #746760); font-size:21rpx; line-height:1.5; }
+.qa-bubble { max-width:100%; padding:13px 15px; border:1px solid #ded4cf; border-radius:10px; }
+.qa-bubble-assistant { background:#fff; }
+.qa-bubble-user { background:#faeee9; border-color:#d4b9ac; border-bottom-right-radius:2px; }
+.qa-bubble-text { font-size:14px; line-height:1.9; white-space:pre-wrap; word-break:break-all; }
+.qa-options { margin-top:14px; }
+.qa-option { display:block; width:100%; margin-top:8px; padding:12px; min-height:48px; background:#fff; border:1px solid #ded4cf; border-radius:8px; text-align:left; }
+.qa-option-active { border-color:#8c1614; background:#faeee9; }
+.qa-option-name { font-size:14px; font-weight:600; }
+.qa-option-campus { margin-top:5px; color:#746760; font-size:11px; }
+.qa-transcript { margin-top:16px; }
+.qa-bubble-pending { color:#746760; }
+.qa-suggestions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.qa-suggestion { min-height:44px; padding:10px 12px; border:1px solid #b9847c; border-radius:7px; color:#8c1614; font-size:12px; text-align:left; }
+.qa-input-row { display:flex; align-items:center; gap:8px; margin-top:16px; }
+.qa-input { flex:1; min-width:0; height:48px; padding:10px 12px; border:1px solid #aa9990; border-radius:7px; font-size:14px; background:#fff; }
+.qa-send { flex:none; width:64px; min-height:48px; padding:10px; background:#c41c23; color:#fff; font-size:14px; }
+.qa-warn,.qa-error,.qa-cap { padding:12px; margin-top:12px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
+.qa-offline,.qa-note { margin-top:12px; color:#746760; font-size:11px; line-height:1.8; }
+.qa-restart { margin-top:12px; }
+.qa-restart-button { min-height:44px; color:#8c1614; font-size:12px; }
+.qa-citations { margin-top:14px; padding-top:14px; border-top:1px solid #bca99d; }
+.qa-citations-head { font-size:12px; color:#8c1614; font-weight:600; }
+.qa-citation { min-height:44px; padding:10px 0; border-bottom:1px solid #ded4cf; }
+.qa-citation-title { color:#8c1614; font-size:13px; line-height:1.8; }
+.qa-citation-meta { margin-top:5px; color:#746760; font-size:11px; }

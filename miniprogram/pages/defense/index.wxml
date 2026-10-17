@@ -11,20 +11,21 @@
     <view
       wx:for="{{materials}}"
       wx:key="id"
-      class="card material"
+      class="card material {{item.id === selectedMaterialId ? 'material-selected' : ''}}"
       hover-class="pressed"
       data-id="{{item.id}}"
-      bindtap="onPickMaterial"
+      bindtap="onSelectMaterial"
     >
       <view class="material-head">
         <text class="material-name">{{item.name}}</text>
-        <text class="pick">选择</text>
+        <text class="pick">{{item.id === selectedMaterialId ? '已选' : '选择'}}</text>
       </view>
       <view class="chip {{item.kind === 'owned' ? 'chip-gold' : 'chip-warn'}}">{{item.kindLabel}}</view>
       <view wx:for="{{item.facts}}" wx:for-item="fact" wx:key="*this" class="fact">{{fact}}</view>
       <view class="quiet">{{item.note}}</view>
     </view>
 
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="defense-begin" class="primary" bindtap="onBegin">开始练习</button>
     <view class="section-head"><text class="section-title">这次会话的边界</text></view>
     <view class="bound">最多三轮提问，之后一次复盘与一次重答；不做无限对话。</view>
     <view class="bound">每轮回答 20–500 字。说得短但有依据，不会被扣分。</view>
@@ -67,7 +68,7 @@
 
     <view class="hint" wx:if="{{hint !== ''}}">{{hint}}</view>
 
-    <button class="primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，拿反馈与追问</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，拿反馈与追问</button>
     <view class="quiet">提交后会调用一次模型（实测 20–45 秒），期间可以取消并保留上面的草稿。</view>
   </block>
 
@@ -82,9 +83,9 @@
       <view class="pending-foot"><text>通常 20–45 秒</text><text>已等 {{pendingSeconds}} 秒</text></view>
     </view>
     <view class="note">现在取消不会丢东西：你写的内容仍在输入框里，回到上一页可以继续改或复制出来。</view>
-    <button class="secondary" hover-class="pressed" bindtap="onCancelPending">取消这次核对</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCancelPending">停止等待，保留草稿</button>
     <view class="note">直接退出则本次会话不保存：材料选择、三轮回答、反馈与复盘都会清空。</view>
-    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
   </block>
 
   <!-- 四节反馈 -->
@@ -103,8 +104,8 @@
     </view>
 
     <view class="note">这条反馈只把材料和你写的句子对着看。它不给你打分、不评价表达，也不会因为练过一次就把材料里的「待验证」变成「已完成」。</view>
-    <button class="primary" hover-class="pressed" bindtap="onNextRound">用这个追问开始第 {{round + 1}} 轮</button>
-    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onNextRound">用这个追问开始第 {{round + 1}} 轮</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
   </block>
 
   <!-- 复盘 -->
@@ -116,11 +117,15 @@
         <text class="dim-name">{{item.dimension}}</text>
         <text class="chip {{item.status === '已反馈' ? 'chip-gold' : 'chip-warn'}}">{{item.status}}</text>
       </view>
+      <text class="dim-body" wx:if="{{item.summary !== ''}}">对应回答：{{item.summary}}</text>
+      <text class="dim-body" wx:if="{{item.basis !== ''}}">引用核对：{{item.basis}}</text>
+      <text class="dim-body" wx:if="{{item.followup !== ''}}">本轮追问：{{item.followup}}</text>
       <text class="dim-body" wx:if="{{item.excerpt !== ''}}">待验证保留：{{item.excerpt}}</text>
     </view>
     <view class="note">复盘只列「哪个维度拿到了反馈」和「该轮保留了哪些待验证」，不判断你的项目好不好，也不把「下一步计划」算成「已经验证」。</view>
-    <button class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
-    <button class="primary" hover-class="pressed" bindtap="onStartReanswer">重答一处薄弱项</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
+    <view class="note">重答时选择你想补充的一处说明，按上面的反馈补上可回核的材料条目；待验证事项继续保留。</view>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onStartReanswer">重答一处薄弱项</button>
     <view class="quiet">重答只有一次；重答必须由你自己新写，不能用同一段文字再提交一遍。</view>
   </block>
 
@@ -133,8 +138,8 @@
       <text class="frame-body">{{item.body}}</text>
     </view>
     <view class="note">重答的判定只看有没有新增可回核的条目编号；把句子写长、写得更流畅不算改善。</view>
-    <button class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
-    <button class="primary" hover-class="pressed" bindtap="goHome">回到首页</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="goHome">回到首页</button>
   </block>
 
   <!-- 失败 / 额度 -->
@@ -149,8 +154,23 @@
       <text class="quiet">保留的回答</text>
       <text class="kept-text">{{answer}}</text>
     </view>
-    <button class="primary" wx:if="{{failureRetryable}}" hover-class="pressed" bindtap="onRetry">重试这一次核对</button>
-    <button class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" wx:if="{{failureRetryable}}" hover-class="pressed" bindtap="onRetry">重试这一次核对</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
   </block>
 
+
+  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="defense-material-open" wx:if="{{phase !== 'pending'}}" class="secondary" data-anchor="{{phase === 'review' || phase === 'reanswer' ? 'F4' : ''}}" bindtap="onOpenMaterial">查看完整练习材料与依据</button>
+  <view wx:if="{{materialOpen}}" class="reader-mask" catchtap="onCloseMaterial">
+    <view class="reader-panel" catchtap="stopMaterialTap">
+      <view class="reader-head"><view><view class="reader-title">{{materialReaderName}}</view><view class="quiet">{{materialReaderKind}} · 冻结 {{materialFrozenAt}}</view></view><button style="margin-left:0;margin-right:0;width:52px;max-width:none" id="material-close-top" class="reader-close" bindtap="onCloseMaterial">关闭</button></view>
+      <view class="reader-index"><button style="margin-left:0;margin-right:0;width:calc((100% - 18px) / 4);max-width:none" wx:for="{{materialRows}}" wx:key="id" class="reader-index-item" data-id="{{item.id}}" bindtap="onLocateMaterial">{{item.id}}</button></view>
+      <scroll-view id="material-reader" class="reader-scroll" scroll-y="{{true}}" scroll-into-view="{{materialAnchor}}" enhanced="{{true}}">
+        <view class="reader-note">以下是冻结练习素材，不是当前上线声明，也不证明学习效果。设计情景不代表已有功能。</view>
+        <view class="reader-entry reader-entry-body">{{materialPreface}}</view>
+        <view wx:for="{{materialRows}}" wx:key="id" id="material-{{item.id}}" class="reader-entry"><view class="reader-entry-head">{{item.id}} · {{item.status}}</view><view class="reader-entry-body">{{item.body}}</view></view>
+        <view class="reader-note reader-entry-body">{{materialBoundary}}</view>
+      </scroll-view>
+      <view class="reader-footer"><button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="material-close-bottom" class="primary" bindtap="onCloseMaterial">返回{{phase === 'materials' ? '材料选择' : phase === 'reanswer' ? '重答草稿' : phase === 'review' ? '三轮复盘' : '当前练习'}}，保留内容</button></view>
+    </view>
+  </view>
 </view>
