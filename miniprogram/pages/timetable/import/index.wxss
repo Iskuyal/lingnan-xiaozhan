@@ -8,6 +8,7 @@
 .imp-file,.imp-progress { margin-top:14px; font-size:12px; color:#746760; line-height:1.8; word-break:break-all; }
 .imp-error,.imp-cap,.imp-problem,.imp-notice,.imp-callout-warn { margin:16px 0; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
 .imp-summary { padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.imp-meta-toggle { display:block; min-height:44px; padding:10px; margin-top:12px; border:1px solid #b9847c; border-radius:7px; background:#fff; color:#8c1614; font-size:12px; }
 .imp-title { margin:8px 0 16px; font-size:22px; font-weight:700; line-height:1.5; }
 .imp-sheet-row { display:flex; gap:12px; margin-top:10px; font-size:13px; line-height:1.8; }
 .imp-sheet-key { flex:none; width:54px; color:#746760; }

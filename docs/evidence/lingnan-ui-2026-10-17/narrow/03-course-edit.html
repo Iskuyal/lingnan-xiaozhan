@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>320px 浏览器辅助检查</title><style>body{margin:0}div,button{box-sizing:border-box}button,input,textarea{font:inherit}button{border:0}img{height:auto}.native-nav{height:88px;padding:45px 10px 0;background:white;text-align:center;font-size:12px}.scope{padding:4px 12px;font-size:10px;background:#fff4e4;color:#78420e}button { min-width:0; max-width:100%; box-sizing:border-box; border-radius:8px; }
+input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14px; }
+.page { min-height:100vh; padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.ui-icon { flex:none; display:block; width:24px; height:24px; }
+.ui-sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); }
+.eyebrow,.quiet { color:var(--text-3, #746760); font-size:12px; line-height:1.75; }
+.section-title { color:var(--text, #2b2422); font-size:17px; line-height:1.5; font-weight:700; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin:24px 0 12px; gap:8px; }
+.section-note { color:var(--text-3, #746760); font-size:11px; }
+.section-bar { display:none; }
+.home-button { display:block; width:100%; max-width:none; min-height:48px; margin:16px 0 0; padding:12px 16px; border-radius:8px; background:var(--brand, #c41c23); color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.home-button.secondary,.source-button { background:var(--surface, #ffffff); color:var(--brand-deep, #8c1614); border:1px solid #b9847c; }
+.source-button { display:block; width:100%; min-height:48px; margin-top:14px; padding:12px; border-radius:8px; font-size:13px; line-height:1.7; text-align:center; }
+.status-page { padding-top:46px; }
+.status-title { color:var(--text, #2b2422); font-size:22px; line-height:1.5; margin-bottom:14px; }
+.status-copy { color:var(--text-2, #6b5d57); font-size:14px; line-height:1.9; }
+.status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
+.pressed { opacity:.72; }
+button[disabled] { opacity:.5; }
+@media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }
+
+/**
+ * 全局样式与设计令牌。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
+ */
+body {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-divide: rgba(255,255,255,0.70);
+  --glass-drop: rgba(92,28,26,0.13);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+  --glass-blur: 16px;
+  --r-chip: 5.12px;
+  --r-control: 8.533333333333333px;
+  --r-card: 10.24px;
+  --r-panel: 13.653333333333334px;
+  --r-pill: 426.24px;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+view,button { box-sizing:border-box; }
+button { margin:0; padding:0; font:inherit; color:inherit; background:transparent; }
+button::after { border:0; }
+.status-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; background:#faeee9; border-radius:8px; }
+.status-icon image { width:28px; height:28px; }
+.edit-block { padding-top:36px; }
+.edit-copy,.edit-error { margin-top:14px; color:#6b5d57; font-size:13px; line-height:1.9; }
+.edit-error { color:#9a5b1e; }
+.edit-heading { margin-bottom:16px; }
+.edit-heading .section-title { font-size:22px; }
+.edit-group { margin-top:22px; }
+.edit-group .section-head { margin:22px 0 12px; }
+.edit-group-title { font-size:17px; font-weight:700; }
+.edit-field { margin-top:16px; }
+.edit-label { margin-bottom:8px; font-size:13px; font-weight:600; }
+.edit-input { width:100%; min-height:48px; padding:12px 13px; background:#fff; border:1px solid #aa9990; border-radius:7px; font-size:14px; line-height:1.7; }
+.edit-input-row { display:flex; gap:8px; align-items:center; }
+.edit-input-num { flex:1; min-width:0; width:54px; text-align:center; }
+.edit-unit,.edit-unit-to { flex:none; font-size:12px; color:#746760; }
+.edit-hint,.edit-quiet { margin-top:7px; color:#746760; font-size:11px; line-height:1.8; }
+.edit-hint-warn { color:#9a5b1e; }
+.edit-callout { margin-top:14px; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
+.edit-callout-strong { font-weight:600; }
+.edit-callout-raw { margin-top:8px; font-size:12px; }
+.edit-pills { display:flex; gap:6px; flex-wrap:wrap; }
+.edit-pill { flex:1; min-width:0; min-height:44px; padding:10px 5px; border:1px solid #aa9990; border-radius:7px; background:#fff; color:#2b2422; font-size:13px; text-align:center; }
+.edit-pill-on { background:#8c1614; border-color:#8c1614; color:#fff; }
+.edit-pills-mid { align-items:center; }
+.edit-swatch-note { flex-basis:100%; margin-top:6px; }
+.edit-chips { display:flex; gap:8px; margin:12px 0; }
+.edit-chip { flex:1; min-height:44px; padding:10px 6px; text-align:center; border:1px solid #b9847c; border-radius:7px; background:#fff; color:#8c1614; font-size:12px; }
+.edit-weeks { display:flex; flex-wrap:wrap; gap:6px; }
+.edit-wk { width:calc((100% - 24px) / 5); min-height:44px; display:flex; align-items:center; justify-content:center; border:1px solid #aa9990; border-radius:6px; background:#fff; font-size:13px; }
+.edit-wk-on { background:#8c1614; border-color:#8c1614; color:#fff; }
+.edit-wk-off { color:#746760; }
+.edit-swatches { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+.edit-swatch { width:44px; height:44px; border-radius:8px; border:3px solid #fff; background:var(--blk-solid, rgba(148,134,127,0.55)); }
+.edit-swatch-on { outline:2px solid #8c1614; }
+.edit-mini { margin-top:14px; border:1px solid #ded4cf; background:#fff; border-radius:8px; padding:6px; }
+.edit-mini-grid { display:flex; }
+.edit-mini-col { flex:1; min-width:0; }
+.edit-mini-th { font-size:11px; text-align:center; line-height:28px; }
+.edit-mini-cell { height:12.8px; margin-bottom:1.7066666666666668px; border-bottom:1px solid #eee6e2; }
+.edit-mini-block { margin-bottom:1.7066666666666668px; background:var(--blk-tint, rgba(255,255,255,0.72)); border-left:2px solid var(--blk-solid, rgba(148,134,127,0.55)); }
+.edit-mini-note { margin-top:8px; }
+.edit-delete,.edit-cancel { min-height:44px; padding:12px; margin-top:12px; color:#8c1614; background:transparent; border:1px solid #b9847c; border-radius:8px; font-size:13px; text-align:center; }
+.edit-footnote { margin-top:18px; font-size:11px; line-height:1.8; color:#746760; }
+.grid-scroll{overflow-x:auto}.reader-scroll{overflow-y:auto}body:has(.reader-mask){height:568px;overflow:hidden}.reader-mask{top:88px}body:has(.reader-mask) .scope{display:none}</style><body><div class="native-nav">320px 浏览器布局辅助</div><div class="scope">实际渲染树 + WXSS；非320px微信截图</div><div class="page"><div class="edit-heading"><div class="section-title">新增课程</div></div><div class="edit-group"><div class="section-head"><div class="section-bar"></div><div class="edit-group-title">基本信息</div></div><div class="edit-field"><div class="edit-label">课程名</div><input id="field-name" class="edit-input" placeholder="例如：高等数学" value=""></input></div><div class="edit-field"><div class="edit-label">教师</div><input id="field-teacher" class="edit-input" placeholder="不知道可以留空" value=""></input></div><div class="edit-field"><div class="edit-label">地点</div><input id="field-location" class="edit-input" placeholder="例如：崇礼楼 306" value=""></input></div><div class="edit-field"><div class="edit-label">学分</div><input id="field-credits" class="edit-input" placeholder="没有可不填" value=""></input></div><div class="edit-field edit-field-last"><div class="edit-label">备注</div><input id="field-note" class="edit-input" placeholder="教学班、方向等，可不填" value=""></input></div></div><div class="edit-group"><div class="section-head"><div class="section-bar"></div><div class="edit-group-title">上课时间</div></div><div class="edit-field"><div class="edit-label">星期</div><div id="field-weekday" class="edit-pills"><div class="edit-pill edit-pill-on" data-index="0">一</div><div class="edit-pill" data-index="1">二</div><div class="edit-pill" data-index="2">三</div><div class="edit-pill" data-index="3">四</div><div class="edit-pill" data-index="4">五</div><div class="edit-pill" data-index="5">六</div><div class="edit-pill" data-index="6">日</div></div></div><div class="edit-field"><div class="edit-label">节次</div><div class="edit-input-row"><div class="edit-unit">第</div><input id="field-start" class="edit-input edit-input-num" value="1" type="number"></input><div class="edit-unit">节</div><div class="edit-unit-to">到</div><div class="edit-unit">第</div><input id="field-end" class="edit-input edit-input-num" value="2" type="number"></input><div class="edit-unit">节</div></div><div class="edit-hint">按节次填写；学校作息与具体时刻尚未核实，这里不填上课时间。</div></div><div class="edit-field"><div class="edit-label">起止周</div><div id="field-weeks" class="edit-input-row"><div class="edit-unit">第</div><input class="edit-input edit-input-num" value="" type="number"></input><div class="edit-unit">周</div><div class="edit-unit-to">到</div><div class="edit-unit">第</div><input class="edit-input edit-input-num" value="" type="number"></input><div class="edit-unit">周</div></div></div><div class="edit-field edit-field-last"><div class="edit-label">自选周次</div><div class="edit-pills"><div class="edit-pill" data-mode="all">全学期</div><div class="edit-pill" data-mode="odd">单周</div><div class="edit-pill" data-mode="even">双周</div><div class="edit-pill edit-pill-on" data-mode="custom">自选</div></div><div class="edit-chips"><div id="weeks-all" class="edit-chip" hover-class="pressed">全选</div><div id="weeks-none" class="edit-chip" hover-class="pressed">清空</div><div id="weeks-odd" class="edit-chip" hover-class="pressed">取奇</div><div id="weeks-even" class="edit-chip" hover-class="pressed">取偶</div></div><div id="weeks-grid" class="edit-weeks"><div class="edit-wk" data-week="1">1</div><div class="edit-wk" data-week="2">2</div><div class="edit-wk" data-week="3">3</div><div class="edit-wk" data-week="4">4</div><div class="edit-wk" data-week="5">5</div><div class="edit-wk" data-week="6">6</div><div class="edit-wk" data-week="7">7</div><div class="edit-wk" data-week="8">8</div><div class="edit-wk" data-week="9">9</div><div class="edit-wk" data-week="10">10</div><div class="edit-wk" data-week="11">11</div><div class="edit-wk" data-week="12">12</div><div class="edit-wk" data-week="13">13</div><div class="edit-wk" data-week="14">14</div><div class="edit-wk" data-week="15">15</div><div class="edit-wk" data-week="16">16</div><div class="edit-wk" data-week="17">17</div><div class="edit-wk" data-week="18">18</div><div class="edit-wk" data-week="19">19</div><div class="edit-wk" data-week="20">20</div></div><div class="edit-hint">起止周与自选周是同一份周次的两种改法，改哪个都行；合并写法（如 4-5、7-16）由系统按你选的格子生成。</div><div class="edit-hint">未选择周次：保存后按「每周」显示（不限教学周）</div></div></div><div class="edit-group"><div class="section-head"><div class="section-bar"></div><div class="edit-group-title">颜色</div></div><div class="edit-pills edit-pills-mid"><div id="color-auto" class="edit-pill edit-pill-on">按课程名自动</div><div id="color-manual" class="edit-pill">手动指定</div><div class="edit-quiet edit-swatch-note">当前 靛青</div></div><div class="edit-swatches"><div id="color-c1" class="edit-swatch edit-swatch-on" style="--blk-solid:#2f5f9e" data-key="c1"></div><div id="color-c2" class="edit-swatch" style="--blk-solid:#1f7fa8" data-key="c2"></div><div id="color-c3" class="edit-swatch" style="--blk-solid:#147a70" data-key="c3"></div><div id="color-c4" class="edit-swatch" style="--blk-solid:#2e8b57" data-key="c4"></div><div id="color-c5" class="edit-swatch" style="--blk-solid:#4f8a2b" data-key="c5"></div><div id="color-c6" class="edit-swatch" style="--blk-solid:#6b7a2a" data-key="c6"></div><div id="color-c7" class="edit-swatch" style="--blk-solid:#6a5aa8" data-key="c7"></div><div id="color-c8" class="edit-swatch" style="--blk-solid:#a8478f" data-key="c8"></div></div><div class="edit-hint">自动配色保证同名课程永远同色</div></div><div class="edit-group"><div class="section-head"><div class="section-bar"></div><div class="edit-group-title">迷你课表预览</div></div><div class="edit-mini"><div class="edit-mini-grid"><div class="edit-mini-col"><div class="edit-mini-th">一</div><div class="edit-mini-cell edit-mini-block" style="height:15px;--blk-tint:rgba(47,95,158,0.13);--blk-line:rgba(47,95,158,0.3);--blk-solid:#2f5f9e"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">二</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">三</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">四</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">五</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">六</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div><div class="edit-mini-col"><div class="edit-mini-th">日</div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div><div class="edit-mini-cell"></div></div></div></div><div class="edit-quiet edit-mini-note">预览只画你正在编辑的这节课</div></div><button id="save-course" class="home-button edit-save" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">保存</button><div id="back-from-edit" class="edit-cancel" hover-class="pressed">取消</div></div></body></html>

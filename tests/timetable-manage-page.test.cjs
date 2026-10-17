@@ -468,17 +468,19 @@ test('课程管理页：模板与样式的硬规则（id、文案、不出现具
 });
 
 test('课程管理页：行内编辑不改变勾选，取消单门删除不写入', async () => {
-  const cloud = cloudStub({ list: () => feedOf(fourCourses()) });
+  const unplaced = course({ id:'unplaced',name:'待补节次的课程',weekday:0,startSection:0,endSection:0,sectionRanges:[] });
+  const cloud = cloudStub({ list: () => feedOf([...fourCourses(), unplaced]) });
   const { page, wx } = load(cloud, '4', false);
   await page.onShow();
-  const id = page.data.courses[0].id;
+  const id = unplaced.id;
+  assert.ok(page.data.rows.some(item => item.id === id), '无法落格的课程仍在管理列表可达');
   page.toggleRow({ currentTarget: { dataset: { id } } });
   const selected = list(page.data.selectedIds);
   page.editRow({ currentTarget: { dataset: { id } } });
   assert.ok(wx.actions.includes(`navigateTo:/pages/timetable/edit/index?id=${encodeURIComponent(id)}`));
   assert.deepEqual(list(page.data.selectedIds), selected);
   await page.deleteRow({ currentTarget: { dataset: { id } } });
-  assert.ok(wx.modals[0].content.includes(page.data.courses[0].name));
+  assert.ok(wx.modals[0].content.includes(unplaced.name));
   assert.equal(cloud.calls.filter(item => item.data.action !== 'list').length, 0);
   assert.deepEqual(list(page.data.selectedIds), selected);
   delete globalThis.wx;

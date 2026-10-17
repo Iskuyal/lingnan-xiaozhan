@@ -1,0 +1,135 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>320px 浏览器辅助检查</title><style>body{margin:0}div,button{box-sizing:border-box}button,input,textarea{font:inherit}img{height:auto}.native-nav{height:88px;padding:45px 10px 0;background:white;text-align:center;font-size:12px}.scope{padding:4px 12px;font-size:10px;background:#fff4e4;color:#78420e}button { min-width:0; max-width:100%; box-sizing:border-box; border-radius:8px; }
+input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14px; }
+.page { min-height:100vh; padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.ui-icon { flex:none; display:block; width:24px; height:24px; }
+.ui-sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); }
+.eyebrow,.quiet { color:var(--text-3, #746760); font-size:12px; line-height:1.75; }
+.section-title { color:var(--text, #2b2422); font-size:17px; line-height:1.5; font-weight:700; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin:24px 0 12px; gap:8px; }
+.section-note { color:var(--text-3, #746760); font-size:11px; }
+.section-bar { display:none; }
+.home-button { display:block; width:100%; max-width:none; min-height:48px; margin:16px 0 0; padding:12px 16px; border-radius:8px; background:var(--brand, #c41c23); color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.home-button.secondary,.source-button { background:var(--surface, #ffffff); color:var(--brand-deep, #8c1614); border:1px solid #b9847c; }
+.source-button { display:block; width:100%; min-height:48px; margin-top:14px; padding:12px; border-radius:8px; font-size:13px; line-height:1.7; text-align:center; }
+.status-page { padding-top:46px; }
+.status-title { color:var(--text, #2b2422); font-size:22px; line-height:1.5; margin-bottom:14px; }
+.status-copy { color:var(--text-2, #6b5d57); font-size:14px; line-height:1.9; }
+.status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
+.pressed { opacity:.72; }
+button[disabled] { opacity:.5; }
+@media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }
+
+/**
+ * 全局样式与设计令牌。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
+ */
+body {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-divide: rgba(255,255,255,0.70);
+  --glass-drop: rgba(92,28,26,0.13);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+  --glass-blur: 16px;
+  --r-chip: 5.12px;
+  --r-control: 8.533333333333333px;
+  --r-card: 10.24px;
+  --r-panel: 13.653333333333334px;
+  --r-pill: 426.24px;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+view,button { box-sizing:border-box; }
+button { margin:0; padding:0; font:inherit; color:inherit; background:transparent; }
+button::after { border:0; }
+.status-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; background:#faeee9; border-radius:8px; }
+.status-icon image { width:28px; height:28px; }
+.qa-entry-shortcut,.qa-open { display:block; width:100%; max-width:none; padding:14px 16px; margin:18px 0; background:#c41c23; color:#fff; border-radius:8px; text-align:left; }
+.qa-entry-copy { display:inline-block; max-width:90%; }
+.qa-entry-title { font-size:15px; font-weight:600; }
+.qa-entry-note { margin-top:5px; font-size:12px; line-height:1.7; }
+.qa-entry-arrow { float:right; font-size:23px; }
+.qa-panel { margin-top:22px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.qa-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.qa-badge { color:#8c1614; font-size:16px; font-weight:700; }
+.qa-head-note { margin-top:5px; color:#746760; font-size:11px; line-height:1.7; }
+.qa-close { flex:none; width:52px; min-height:44px; padding:8px; font-size:12px; color:#8c1614; border:1px solid #b9847c; border-radius:7px; }
+.qa-row { display:flex; margin-top:12px; }
+.qa-row-user { justify-content:flex-end; }
+.qa-bubble { max-width:100%; padding:13px 15px; border:1px solid #ded4cf; border-radius:10px; }
+.qa-bubble-assistant { background:#fff; }
+.qa-bubble-user { background:#faeee9; border-color:#d4b9ac; border-bottom-right-radius:2px; }
+.qa-bubble-text { font-size:14px; line-height:1.9; white-space:pre-wrap; word-break:break-all; }
+.qa-options { margin-top:14px; }
+.qa-option { display:block; width:100%; margin-top:8px; padding:12px; min-height:48px; background:#fff; border:1px solid #ded4cf; border-radius:8px; text-align:left; }
+.qa-option-active { border-color:#8c1614; background:#faeee9; }
+.qa-option-name { font-size:14px; font-weight:600; }
+.qa-option-campus { margin-top:5px; color:#746760; font-size:11px; }
+.qa-transcript { margin-top:16px; }
+.qa-bubble-pending { color:#746760; }
+.qa-suggestions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.qa-suggestion { min-height:44px; padding:10px 12px; border:1px solid #b9847c; border-radius:7px; color:#8c1614; font-size:12px; text-align:left; }
+.qa-input-row { display:flex; align-items:center; gap:8px; margin-top:16px; }
+.qa-input { flex:1; min-width:0; height:48px; padding:10px 12px; border:1px solid #aa9990; border-radius:7px; font-size:14px; background:#fff; }
+.qa-send { flex:none; width:64px; min-height:48px; padding:10px; background:#c41c23; color:#fff; font-size:14px; }
+.qa-warn,.qa-error,.qa-cap { padding:12px; margin-top:12px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
+.qa-offline,.qa-note { margin-top:12px; color:#746760; font-size:11px; line-height:1.8; }
+.qa-restart { margin-top:12px; }
+.qa-restart-button { min-height:44px; color:#8c1614; font-size:12px; }
+.qa-citations { margin-top:14px; padding-top:14px; border-top:1px solid #bca99d; }
+.qa-citations-head { font-size:12px; color:#8c1614; font-weight:600; }
+.qa-citation { min-height:44px; padding:10px 0; border-bottom:1px solid #ded4cf; }
+.qa-citation-title { color:#8c1614; font-size:13px; line-height:1.8; }
+.qa-citation-meta { margin-top:5px; color:#746760; font-size:11px; }
+
+.departments-heading { margin-bottom:18px; }
+.departments-heading .section-title { display:none; }
+.departments-intro { margin-top:8px; padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; color:#6b5d57; font-size:13px; line-height:1.9; }
+.departments-count { display:flex; justify-content:space-between; align-items:center; margin:24px 0 8px; }
+.departments-count-label { font-size:17px; font-weight:700; }
+.departments-count-value { color:#746760; font-size:11px; }
+.department-item { min-height:76px; display:flex; align-items:center; gap:12px; padding:16px 0; border-bottom:1px solid #ded4cf; }
+.department-mark { flex:none; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#faeee9; color:#8c1614; font-size:13px; font-weight:600; }
+.department-main { flex:1; min-width:0; }
+.department-name { color:#2b2422; font-size:15px; font-weight:600; line-height:1.6; }
+.department-campus { margin-top:5px; color:#746760; font-size:12px; line-height:1.6; }
+.department-chevron { color:#746760; font-size:23px; }
+.departments-empty { padding:38px 0; }
+.departments-source { margin-top:24px; padding-top:16px; border-top:1px solid #bca99d; }
+.departments-source-label { color:#8c1614; font-size:13px; font-weight:600; }
+.departments-verified-date,.departments-source-note { margin-top:8px; color:#746760; font-size:11px; line-height:1.8; }
+.grid-scroll{overflow-x:auto}.reader-scroll{overflow-y:auto}body:has(.reader-mask){height:568px;overflow:hidden}.reader-mask{top:88px}body:has(.reader-mask) .scope{display:none}</style><body><div class="native-nav">320px 浏览器布局辅助</div><div class="scope">实际渲染树 + WXSS；非320px微信截图</div><div class="page"><div class="departments-heading"><div class="eyebrow">学校官网 · 团委 · 学生组织</div><div class="section-title">学生部门</div><div class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。</div></div><button id="department-qa-shortcut" class="qa-entry-shortcut" style="margin-left:0;margin-right:0;width:100%;max-width:none" aria-label="跳到部门问答" hover-class="pressed"><div class="qa-entry-copy"><div class="qa-entry-title">问问部门</div><div class="qa-entry-note">选一个组织，或直接提问 · 仅依据官网已核实资料</div></div><span class="qa-entry-arrow">↓</span></button><div class="departments-count"><div class="departments-count-label">已核实名录</div><div class="departments-count-value">5 个组织</div></div><div id="departments-list" class="departments-list"><div id="department-student-youth-league" class="department-item" aria-label="查看校学生团委，官网未标注所属校区" aria-role="button" hover-class="pressed" data-id="student-youth-league"><div class="department-mark">团</div><div class="department-main"><div class="department-name">校学生团委</div><div class="department-campus">官网未标注所属校区</div></div><span class="department-chevron">›</span></div><div id="department-student-union" class="department-item" aria-label="查看校学生会，官网未标注所属校区" aria-role="button" hover-class="pressed" data-id="student-union"><div class="department-mark">会</div><div class="department-main"><div class="department-name">校学生会</div><div class="department-campus">官网未标注所属校区</div></div><span class="department-chevron">›</span></div><div id="department-student-club-management" class="department-item" aria-label="查看校学生社团管理部，官网未标注所属校区" aria-role="button" hover-class="pressed" data-id="student-club-management"><div class="department-mark">社</div><div class="department-main"><div class="department-name">校学生社团管理部</div><div class="department-campus">官网未标注所属校区</div></div><span class="department-chevron">›</span></div><div id="department-young-volunteers" class="department-item" aria-label="查看青年志愿者联合会，广州校区、清远校区" aria-role="button" hover-class="pressed" data-id="young-volunteers"><div class="department-mark">志</div><div class="department-main"><div class="department-name">青年志愿者联合会</div><div class="department-campus">广州校区、清远校区</div></div><span class="department-chevron">›</span></div><div id="department-veteran-affairs-service" class="department-item" aria-label="查看退役军人事务服务部，官网未标注所属校区" aria-role="button" hover-class="pressed" data-id="veteran-affairs-service"><div class="department-mark">服</div><div class="department-main"><div class="department-name">退役军人事务服务部</div><div class="department-campus">官网未标注所属校区</div></div><span class="department-chevron">›</span></div></div><div id="department-qa-panel"><div class="qa"><div class="qa-panel"><div class="qa-head"><span class="qa-badge">部门答疑</span><span class="qa-head-note">只依据官网已核实资料回答</span><button class="qa-close" style="margin-left:0;margin-right:0;width:52px;max-width:none" hover-class="pressed">收起</button></div><div class="qa-row qa-row-assistant"><div id="qa-prompt" class="qa-bubble qa-bubble-assistant"><div class="qa-bubble-text">你想了解什么部门？我从学校官网已核实的资料里回答，资料里没有的会说「官网未公布」。可以点下面的选项进入对应页面，也可以直接打字问我。</div></div></div><div class="qa-options"><div id="qa-option-student-youth-league" class="qa-option" aria-label="了解校学生团委" aria-role="button" hover-class="pressed" data-id="student-youth-league"><div class="qa-option-name">校学生团委</div><div class="qa-option-campus">官网未标注所属校区</div></div><div id="qa-option-student-union" class="qa-option" aria-label="了解校学生会" aria-role="button" hover-class="pressed" data-id="student-union"><div class="qa-option-name">校学生会</div><div class="qa-option-campus">官网未标注所属校区</div></div><div id="qa-option-student-club-management" class="qa-option" aria-label="了解校学生社团管理部" aria-role="button" hover-class="pressed" data-id="student-club-management"><div class="qa-option-name">校学生社团管理部</div><div class="qa-option-campus">官网未标注所属校区</div></div><div id="qa-option-young-volunteers" class="qa-option" aria-label="了解青年志愿者联合会" aria-role="button" hover-class="pressed" data-id="young-volunteers"><div class="qa-option-name">青年志愿者联合会</div><div class="qa-option-campus">广州校区、清远校区</div></div><div id="qa-option-veteran-affairs-service" class="qa-option" aria-label="了解退役军人事务服务部" aria-role="button" hover-class="pressed" data-id="veteran-affairs-service"><div class="qa-option-name">退役军人事务服务部</div><div class="qa-option-campus">官网未标注所属校区</div></div></div><div id="qa-transcript" class="qa-transcript"></div><div class="qa-input-row"><input id="qa-input" class="qa-input" placeholder="例如：校学生会下设哪些部门？" value=""></input><button id="qa-send" class="qa-send" style="margin-left:0;margin-right:0;width:64px;max-width:none" hover-class="pressed">发送</button></div><div class="qa-note">AI 答案的依据是学校官网已核实的学生组织资料（核查于 2026-09-18）；资料里没有的内容会回答「官网未公布」。这只是语料来源，不代表每句回答都已逐字核对，请以官网原文为准。</div></div></div></div><div id="departments-source" class="departments-source"><div class="departments-source-label">资料来源：学校官网 · 团委 · 学生组织</div><div class="departments-verified-date">核查于 2026-09-18</div><div class="departments-source-note">组织名称与介绍转录自该页面的「学生组织机构简介」表格；组织动态取自团委各栏目 2025-2026 年文章，日期为官网「发布时间」；官网未公布组织联系方式。</div><button id="copy-directory-source" class="source-button" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">复制官网链接</button></div><button id="back-home" class="home-button" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">返回首页</button></div></body></html>

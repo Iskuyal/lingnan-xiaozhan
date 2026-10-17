@@ -1,0 +1,312 @@
+{
+  "date": "2026-10-17T11:37:59.926Z",
+  "mode": "wechat_simulator_mock",
+  "boundary": "原生模拟器；云函数/数据库/本机存储接管为示例。接管后真实云请求0次；不含连接前启动读取，不证明模型、部署或真机。",
+  "checks": [
+    {
+      "name": "首页主入口进入已注册课表页",
+      "passed": true
+    },
+    {
+      "name": "课表含周日晚间课程、横向滚动与详情",
+      "passed": true
+    },
+    {
+      "name": "不连续周次继续使用自选周次",
+      "passed": true
+    },
+    {
+      "name": "文件上传与解析均模拟，列表和七天预览读取同一草稿，未保存",
+      "passed": true
+    },
+    {
+      "name": "部门入口与详情导航",
+      "passed": true
+    },
+    {
+      "name": "资讯列表进入正文",
+      "passed": true
+    },
+    {
+      "name": "体测输入计算与结果渲染",
+      "passed": true
+    },
+    {
+      "name": "模型模拟失败后展示原文依据",
+      "passed": true
+    },
+    {
+      "name": "材料定位F5再返回，回答草稿与第一轮保持",
+      "passed": true
+    },
+    {
+      "name": "三轮模拟反馈、复盘、一次重答查阅后草稿不丢失",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-home.png",
+      "page": "pages/home/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "02-timetable.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "03-timetable-right.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "04-course-sheet.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "05-course-edit.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "06-course-weeks.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "07-course-manage.png",
+      "page": "pages/timetable/manage/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "08-timetable-settings.png",
+      "page": "pages/timetable/settings/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "09-import-guide.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "09b-import-review.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "09d-import-metadata.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "09c-import-grid.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "10-departments.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "11-department-detail.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "12-department-qa.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "13-news.png",
+      "page": "pages/news/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "14-news-detail.png",
+      "page": "pages/news/detail/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "15-goals.png",
+      "page": "pages/goals/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "16-goal-edit.png",
+      "page": "pages/goals/edit/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "17-calendar.png",
+      "page": "pages/calendar/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "18-fitness-result.png",
+      "page": "pages/fitness/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "19-advancement-fallback.png",
+      "page": "pages/advancement/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "20-defense-materials.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "21-defense-practice.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "22-defense-reader.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "23-defense-feedback.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "24-defense-review.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "25-defense-reanswer.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "26-timetable-empty.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379
+    },
+    {
+      "file": "27-timetable-error.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379
+    }
+  ],
+  "passed": true,
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "mockCalls": [
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "prepareUpload"
+    },
+    {
+      "name": "timetable",
+      "action": "importDraft"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    }
+  ]
+}

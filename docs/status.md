@@ -4,7 +4,7 @@
 
 ## 已实现与实际证据
 
-2026-10-17 UI 设计更新：[全流程 UI 提案](design/lingnan-ui-2026/README.md)已完成本地 57 屏 HTML/PNG 修订及 390/320px 静态检查，负责人已确认作为 UI 重写依据（[Issue #137](https://github.com/Iskuyal/wx-match/issues/137)），设计文档随 PR #136 合入 main，**尚未改小程序实现**。Figma 已创建 44 屏初稿，但 MCP Starter 额度已耗尽，盾形校徽替换、修订同步和全量远端复核未完成（[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)）。负责人本轮说明已获校长许可使用校徽，并选择官网 EST.2001 盾形横版；[许可与官方来源](design/lingnan-ui-2026/assets/README.md)已记录，此确认不自动扩大到学校其他使用许可或真实学生数据。
+2026-10-17 UI 设计更新：[全流程 UI 提案](design/lingnan-ui-2026/README.md)已完成本地 57 屏 HTML/PNG 修订及 390/320px 静态检查，负责人已确认作为 UI 重写依据（[Issue #137](https://github.com/Iskuyal/wx-match/issues/137)），设计文档随 PR #136 合入 main；[本轮原生实现与验证](evidence/lingnan-ui-2026-10-17/README.md)在当前实现分支覆盖16条在用页面，包含固定节次轴、完整冻结材料查阅与草稿返回。整合主线后767项本机测试及390px原生模拟器10项离线交互通过，8个320px浏览器辅助画面无横向溢出；320px原生与真机另计。Figma 已创建 44 屏初稿，但 MCP Starter 额度已耗尽，盾形校徽替换、修订同步和全量远端复核未完成（[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)）。负责人本轮说明已获校长许可使用校徽，并选择官网 EST.2001 盾形横版；[许可与官方来源](design/lingnan-ui-2026/assets/README.md)已记录，此确认不自动扩大到学校其他使用许可或真实学生数据。
 
 | 对象 | 当前成果 | 证明边界 |
 | --- | --- | --- |

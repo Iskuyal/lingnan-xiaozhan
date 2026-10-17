@@ -81,6 +81,24 @@ test('选择材料先改变选中对象，明确开始后才进入第一轮', ()
   assert.equal(calls(), 0);
 });
 
+test('材料目录按需展开，定位后收起，保留当前会话和草稿', () => {
+  const { instance: p, calls } = page();
+  p.onBegin();
+  p.onAnswerInput({ detail: { value:'按F5说明先校对再保存，这份回答仍是草稿。' } });
+  const before = JSON.stringify(p.session);
+  const answer = p.data.answer;
+  p.onOpenMaterial();
+  assert.equal(p.data.materialIndexOpen, false);
+  p.toggleMaterialIndex();
+  assert.equal(p.data.materialIndexOpen, true);
+  p.onLocateMaterial({ currentTarget:{dataset:{id:'F5'}} });
+  assert.equal(p.data.materialIndexOpen, false);
+  assert.equal(p.data.materialAnchor, 'material-F5');
+  assert.equal(p.data.answer, answer);
+  assert.equal(JSON.stringify(p.session), before);
+  assert.equal(calls(), 0);
+});
+
 test('复制复盘保留可见的核对、对应回答、追问和完整待验证文字', () => {
   const { instance: p } = page();
   let copied = '';

@@ -11,6 +11,7 @@
 .material-selected .pick { color:#fff; background:#8c1614; border-color:#8c1614; }
 .chip { display:inline-block; padding:4px 8px; margin:10px 0 4px; border-radius:5px; background:#faeee9; color:#8c1614; font-size:11px; line-height:1.7; }
 .chip-warn { color:#78420e; background:#fff4e4; }
+.material .chip { display:block; padding:8px 10px; font-size:12px; font-weight:600; }
 .fact { margin-top:8px; font-size:12px; color:#6b5d57; line-height:1.9; }
 .question { margin-top:18px; padding:16px; background:#fff; border:1px solid #ded4cf; border-radius:10px; }
 .question-tag { display:block; font-size:12px; font-weight:600; color:#8c1614; }
@@ -41,6 +42,7 @@
 .reader-title { font-size:18px; font-weight:700; line-height:1.6; }
 .reader-close { flex:none; width:52px; min-height:44px; padding:10px; border:1px solid #b9847c; color:#8c1614; background:#fff; font-size:13px; }
 .reader-index { display:flex; flex-wrap:wrap; gap:6px; padding:12px 20px; background:#fff; }
+.reader-index-toggle { flex:none; min-height:44px; padding:10px 20px; background:#fff; color:#8c1614; font-size:12px; text-align:left; border-radius:0; border-bottom:1px solid #ded4cf; }
 .reader-index-item { width:calc((100% - 18px) / 4); min-height:44px; padding:10px 4px; border:1px solid #b9847c; border-radius:6px; background:#fff; color:#8c1614; font-size:12px; }
 .reader-scroll { flex:1; height:0; min-height:0; }
 .reader-note { margin:16px 20px; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:12px; line-height:1.9; }

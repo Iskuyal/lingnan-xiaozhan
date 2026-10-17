@@ -44,18 +44,21 @@
     <view class="imp-summary">
       <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
       <view class="imp-title">解析完成，请核对</view>
-      <view class="imp-rows">
+      <view class="imp-head-meta">{{courseCount}} 门课程 · {{warningCount}} 门待核对 · {{blockedCount}} 门待补全</view>
+      <view class="imp-quiet" wx:if="{{blockedCount > 0}}">补全后才能保存</view>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="import-meta-toggle" class="imp-meta-toggle" hover-class="pressed" aria-expanded="{{metaExpanded}}" bindtap="toggleMetaDetails">{{metaExpanded ? '收起文件与解析信息' : '查看文件与解析信息'}}</button>
+      <view wx:if="{{metaExpanded}}" class="imp-rows">
         <view class="imp-sheet-row" wx:for="{{metaRows}}" wx:key="key">
           <text class="imp-sheet-key">{{item.key}}</text>
           <text class="imp-sheet-val">{{item.value}}</text>
         </view>
-      </view>
       <view class="imp-summary-line" wx:for="{{metaLines}}" wx:key="*this">{{item}}</view>
       <view class="imp-head-meta">{{metaLine}}</view>
+      </view>
       <view class="imp-summary-line imp-problem" wx:if="{{problemsText !== ''}}">{{problemsText}}</view>
     </view>
 
-    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加的课程）；下面这些内容还没写入任何数据，随时可以放弃</view>
+    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加课程）；确认前不写入，可随时放弃。</view>
 
     <!-- 金杠小标题 + 右侧「列表 / 课表」切换（与主页 .seg 同一套写法）。 -->
     <view class="section-head imp-result-head">

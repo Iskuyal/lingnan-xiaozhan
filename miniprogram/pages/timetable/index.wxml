@@ -1,18 +1,16 @@
 <view class="page">
-  <view class="tt-heading">
+  <view wx:if="{{status === 'ready'}}" class="tt-heading">
     <view class="head-top">
-      <view class="eyebrow">{{semesterText}} · 按节次展示</view>
+      <view class="eyebrow"><view>{{semesterText}} · 按节次展示</view><view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程</view></view>
       <view id="timetable-settings-entry" class="head-link" hover-class="pressed" bindtap="openSettings">课表设置</view>
     </view>
     <view class="week-row">
       <view id="week-prev" class="week-nav" hover-class="pressed" bindtap="previousWeek">‹</view>
       <picker id="week-picker" class="week-pick" mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="selectWeek">
-        <view class="week-now">{{view.weekLabel}} ▾</view>
-        <view class="week-range" wx:if="{{weekRange !== ''}}">{{weekRange}}</view>
+        <view class="week-now">{{view.weekLabel}} ▾ <text class="week-range" wx:if="{{weekRange !== ''}}">{{weekRange}}</text></view>
       </picker>
       <view id="week-next" class="week-nav" hover-class="pressed" bindtap="nextWeek">›</view>
     </view>
-    <view class="tt-meta">本周 {{view.total}} 门 · 共 {{count}} 门课程</view>
   </view>
 
   <view wx:if="{{status === 'ready'}}" class="actionbar">
@@ -41,7 +39,7 @@
 
   <!-- 退化态说明（设计图 19）：缺开学日或作息时讲清缺什么、点哪里补。
        设置齐了这条就不出现，位置让给速查条。 -->
-  <view wx:if="{{setupHint !== ''}}" class="setup-hint">
+  <view wx:if="{{status === 'ready' && setupHint !== ''}}" class="setup-hint">
     <view class="setup-hint-text">{{setupHint}}</view>
     <view id="settings-cta" class="setup-hint-btn" hover-class="pressed" bindtap="openSettings">去设置</view>
   </view>
@@ -55,11 +53,11 @@
     <view class="section-title">暂时读不到课表</view>
     <view class="tt-hint-copy">{{errorMessage}}</view>
     <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button secondary" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
   <view wx:elif="{{status === 'empty'}}" class="tt-empty">
-    <view class="section-title">还没有课表</view>
+    <view class="tt-empty-title">还没有课表</view>
     <view class="tt-hint-copy">两种方式都可以：导入教务系统导出的 Excel，或手工一节一节添加。手工添加的课程与导入的课程一样保存、一样展示。</view>
     <view id="file-guide" class="tt-guide">{{fileGuide}}</view>
     <view class="tt-guide tt-guide-note">{{offlineNote}}</view>

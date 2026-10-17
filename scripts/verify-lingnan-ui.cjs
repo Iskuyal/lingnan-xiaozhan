@@ -4,10 +4,26 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 const { connectMini } = require('./lib/mini-connect.cjs');
 
 const event = dataset => ({ currentTarget: { dataset } });
 const input = value => ({ detail: { value } });
+async function waitForApp(mini) {
+  for(let attempt=0;attempt<20;attempt++) {
+    try { const page=await mini.currentPage();if(page?.path) return; } catch { /* CLI auto may precede the first page metadata. */ }
+    await new Promise(resolve=>setTimeout(resolve,300));
+  }
+  throw new Error('开发者工具启动页面尚未就绪，请等待编译完成后复跑');
+}
+function captureWindow(action, geometry) {
+  if (process.platform !== 'win32') return null;
+  const args=['-NoProfile','-NonInteractive','-File',path.resolve('scripts/lib/ui-capture-window.ps1'),'-Action',action];
+  if (geometry) for (const [key,value] of Object.entries(geometry)) args.push(`-${key}`,String(value));
+  const result=spawnSync('powershell.exe',args,{encoding:'utf8',windowsHide:true});
+  if(result.status!==0) throw new Error(result.stderr || '无法准备原生截图窗口');
+  return action==='prepare'?JSON.parse(result.stdout):null;
+}
 function fixtures() {
   const course = (id, name, weekday, start, end, location) => ({ id, name, weekday,
     teacher:'示例教师', location, campus:'清远校区', siteNumber:'', note:'布局验证示例', credits:'2',
@@ -69,11 +85,14 @@ async function run() {
   const report={date:new Date().toISOString(),mode:'wechat_simulator_mock',boundary:'原生模拟器；云函数/数据库/本机存储接管为示例。接管后真实云请求0次；不含连接前启动读取，不证明模型、部署或真机。',checks:[],screenshots:[],passed:false};
   const mini=await connectMini();
   let installed=false;
+  let windowGeometry=null;
   const shot=async(name,page) => {
     await page.waitFor(350);
     const file=path.join(directory,`${name}.png`);
     await mini.screenshot({path:file});
-    report.screenshots.push({file:path.basename(file),page:page.path});
+    const rasterWidth=fs.readFileSync(file).readUInt32BE(16);
+    assert.ok(rasterWidth >= Math.min(320,report.environment.windowWidth*.85),'模拟器截图缩放过小，不能作为可读评审证据');
+    report.screenshots.push({file:path.basename(file),page:page.path,rasterWidth});
   };
   const open=async(route,name) => {
     await mini.reLaunch(route);
@@ -84,6 +103,9 @@ async function run() {
   };
   const check=(name)=>report.checks.push({name,passed:true});
   try {
+    await waitForApp(mini);
+    windowGeometry=captureWindow('prepare');
+    await new Promise(resolve=>setTimeout(resolve,800));
     report.environment=await mini.systemInfo();
     await install(mini,fixtures());installed=true;
     let page=await open('/pages/home/index','01-home');
@@ -105,11 +127,15 @@ async function run() {
     page=await open('/pages/timetable/import/index','09-import-guide');
     await page.callMethod('startImport',{path:'mock-only.xls',name:'布局示例.xls'});await page.waitFor(400);
     assert.equal(await page.data('step'),'review');await shot('09b-import-review',page);
+    const originalItems=JSON.stringify(await page.data('items'));
+    await page.callMethod('toggleMetaDetails');await shot('09d-import-metadata',page);
+    assert.equal(JSON.stringify(await page.data('items')),originalItems,'展开来源信息不改课程草稿');
+    await page.callMethod('toggleMetaDetails');
     await page.callMethod('switchView',event({mode:'grid'}));await shot('09c-import-grid',page);
     assert.equal((await page.data('draftGridUi')).columns.length,7);check('文件上传与解析均模拟，列表和七天预览读取同一草稿，未保存');
     page=await open('/pages/departments/index','10-departments');
     await (await page.$('.department-item')).tap();await page.waitFor(800);page=await mini.currentPage();await shot('11-department-detail',page);check('部门入口与详情导航');
-    await mini.pageScrollTo(850);await shot('12-department-qa',page);
+    await page.callMethod('scrollToQa');await page.waitFor(800);await shot('12-department-qa',page);
     page=await open('/pages/news/index','13-news');
     await page.callMethod('openDetail',event({id:'mock-news'}));await page.waitFor(800);page=await mini.currentPage();await shot('14-news-detail',page);check('资讯列表进入正文');
     page=await open('/pages/goals/index?today=2026-10-17','15-goals');
@@ -128,7 +154,13 @@ async function run() {
     const answer='离线布局示例：根据F4和F5先校对导入草稿，确认之后才保存，F8待验证事项继续保留。';
     await page.callMethod('onAnswerInput',input(answer));await shot('21-defense-practice',page);
     await (await page.$('#defense-material-open')).tap();
-    await page.callMethod('onLocateMaterial',event({id:'F5'}));await shot('22-defense-reader',page);
+    await page.waitFor(400);
+    await (await page.$('#material-index-toggle')).tap();await page.waitFor(300);
+    assert.equal(await page.data('materialIndexOpen'),true);
+    await page.callMethod('onLocateMaterial',event({id:'F5'}));await page.waitFor(1200);
+    assert.equal(await page.data('materialIndexOpen'),false);
+    assert.ok(await (await page.$('#material-reader')).property('scrollTop') > 0,'目录点击必须滚动正文');
+    await shot('22-defense-reader',page);
     await (await page.$('#material-close-bottom')).tap();assert.equal(await page.data('answer'),answer);check('材料定位F5再返回，回答草稿与第一轮保持');
     for(let round=1;round<=3;round++){
       await page.callMethod('onAnswerInput',input(`${answer}本轮${round}。`));
@@ -155,9 +187,10 @@ async function run() {
       await mini.evaluate(()=>{const orig=globalThis.__lingnanUi.original;wx.cloud.callFunction=orig.call;wx.cloud.database=orig.database;wx.cloud.uploadFile=orig.upload;wx.getStorageSync=orig.get;wx.setStorageSync=orig.set;wx.removeStorageSync=orig.remove;delete globalThis.__lingnanUi;}).catch(()=>{});
     }
     mini.disconnect();
+    if(windowGeometry) { try{captureWindow('restore',windowGeometry);}catch(error){report.windowRestoreError=error.message;} }
     fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report,null,2)+'\n');
   }
   console.log(JSON.stringify({passed:report.passed,checks:report.checks.length,screenshots:report.screenshots.length,error:report.error}));
 }
 if(require.main===module) run().catch(error=>{console.error(error);process.exitCode=1;});
-module.exports={fixtures};
+module.exports={fixtures,install,waitForApp};

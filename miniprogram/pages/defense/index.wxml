@@ -93,10 +93,12 @@
     <view class="eyebrow">依据材料：{{materialName}} · {{safetyNote}}</view>
     <view class="defense-title">这一轮的依据核对</view>
 
-    <view wx:for="{{sections}}" wx:key="title" class="card frame">
+    <block wx:for="{{sections}}" wx:key="title">
+    <view wx:if="{{item.title !== '【追问】' || ask === ''}}" class="card frame">
       <text class="frame-title">{{item.title}}</text>
       <text class="frame-body">{{item.body}}</text>
     </view>
+    </block>
 
     <view class="ask" wx:if="{{ask !== ''}}">
       <text class="ask-label">追问 · 请在第 {{round + 1}} 轮回答</text>
@@ -163,7 +165,8 @@
   <view wx:if="{{materialOpen}}" class="reader-mask" catchtap="onCloseMaterial">
     <view class="reader-panel" catchtap="stopMaterialTap">
       <view class="reader-head"><view><view class="reader-title">{{materialReaderName}}</view><view class="quiet">{{materialReaderKind}} · 冻结 {{materialFrozenAt}}</view></view><button style="margin-left:0;margin-right:0;width:52px;max-width:none" id="material-close-top" class="reader-close" bindtap="onCloseMaterial">关闭</button></view>
-      <view class="reader-index"><button style="margin-left:0;margin-right:0;width:calc((100% - 18px) / 4);max-width:none" wx:for="{{materialRows}}" wx:key="id" class="reader-index-item" data-id="{{item.id}}" bindtap="onLocateMaterial">{{item.id}}</button></view>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="material-index-toggle" class="reader-index-toggle" aria-expanded="{{materialIndexOpen}}" bindtap="toggleMaterialIndex">条目目录 · {{materialIndexOpen ? '收起' : '展开 ' + materialRows.length + ' 项'}}</button>
+      <view wx:if="{{materialIndexOpen}}" class="reader-index"><button style="margin-left:0;margin-right:0;width:calc((100% - 18px) / 4);max-width:none" wx:for="{{materialRows}}" wx:key="id" class="reader-index-item" data-id="{{item.id}}" bindtap="onLocateMaterial">{{item.id}}</button></view>
       <scroll-view id="material-reader" class="reader-scroll" scroll-y="{{true}}" scroll-into-view="{{materialAnchor}}" enhanced="{{true}}">
         <view class="reader-note">以下是冻结练习素材，不是当前上线声明，也不证明学习效果。设计情景不代表已有功能。</view>
         <view class="reader-entry reader-entry-body">{{materialPreface}}</view>

@@ -141,6 +141,7 @@ Page({
     photoError: false,
     capWarning: '',
     draftView: DEFAULT_DRAFT_VIEW as DraftView,
+    metaExpanded: false,
     metaRows: [] as MetaRow[],
     metaLines: [] as string[],
     metaLine: '',
@@ -539,6 +540,9 @@ Page({
     const mode = event.currentTarget.dataset.mode;
     if (mode !== 'grid' && mode !== 'list') return;
     this.setData({ draftView: mode });
+  },
+  toggleMetaDetails() {
+    this.setData({ metaExpanded: !this.data.metaExpanded });
   },
   /** 修正 / 补录：打开这条草稿的编辑表单（草稿态），返回时 onShow 会重新刷新。 */
   fixItem(event: DatasetEvent) {

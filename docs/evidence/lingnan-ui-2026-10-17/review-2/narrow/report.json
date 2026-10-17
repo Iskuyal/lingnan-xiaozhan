@@ -1,0 +1,41 @@
+{
+  "mode": "browser_layout_from_native_tree",
+  "boundary": "320px Chrome辅助排版，非微信320px原生，不证明交互或平台控件",
+  "screens": [
+    {
+      "name": "01-home",
+      "route": "pages/home/index"
+    },
+    {
+      "name": "02-timetable",
+      "route": "pages/timetable/index"
+    },
+    {
+      "name": "03-course-edit",
+      "route": "pages/timetable/edit/index"
+    },
+    {
+      "name": "04-import-review",
+      "route": "pages/timetable/import/index"
+    },
+    {
+      "name": "05-import-metadata",
+      "route": "pages/timetable/import/index"
+    },
+    {
+      "name": "06-department-qa",
+      "route": "pages/departments/index"
+    },
+    {
+      "name": "07-defense-materials",
+      "route": "pages/defense/index"
+    },
+    {
+      "name": "08-defense-reader",
+      "route": "pages/defense/index"
+    }
+  ],
+  "passed": true,
+  "renderOutput": "ok  01-home.html  →  artifacts\\ui-implementation\\narrow-final\\png\\01-home.png  (320×1705 @1x)\nok  02-timetable.html  →  artifacts\\ui-implementation\\narrow-final\\png\\02-timetable.png  (320×1306 @1x)\nok  03-course-edit.html  →  artifacts\\ui-implementation\\narrow-final\\png\\03-course-edit.png  (320×2155 @1x)\nok  04-import-review.html  →  artifacts\\ui-implementation\\narrow-final\\png\\04-import-review.png  (320×1275 @1x)\nok  05-import-metadata.html  →  artifacts\\ui-implementation\\narrow-final\\png\\05-import-metadata.png  (320×1551 @1x)\nok  06-department-qa.html  →  artifacts\\ui-implementation\\narrow-final\\png\\06-department-qa.png  (320×1998 @1x)\nok  07-defense-materials.html  →  artifacts\\ui-implementation\\narrow-final\\png\\07-defense-materials.png  (320×1666 @1x)\nok  08-defense-reader.html  →  artifacts\\ui-implementation\\narrow-final\\png\\08-defense-reader.png  (320×568 @1x)\n",
+  "adapter": "false 布尔属性转为 HTML 缺省属性，避免浏览器误判 disabled=false"
+}

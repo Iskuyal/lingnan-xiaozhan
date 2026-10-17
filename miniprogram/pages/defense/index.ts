@@ -78,6 +78,7 @@ Page({
     materialEntries: [] as string[],
     selectedMaterialId: 'FC-1',
     materialOpen: false,
+    materialIndexOpen: false,
     materialReaderName: '',
     materialReaderKind: '',
     materialFrozenAt: '',
@@ -134,19 +135,22 @@ Page({
     const material = materialForReading(this.data.materialId || this.data.selectedMaterialId);
     if (material === null) return;
     const anchor = event?.currentTarget.dataset.anchor ?? '';
-    this.setData({ materialOpen: true, materialReaderName: material.name, materialReaderKind: material.kindLabel,
+    this.setData({ materialOpen: true, materialIndexOpen: false, materialReaderName: material.name, materialReaderKind: material.kindLabel,
       materialFrozenAt: material.frozenAt, materialRows: material.entries, materialPreface: material.preface, materialBoundary: material.boundary,
       materialAnchor: material.entries.some(entry => entry.id === anchor) ? `material-${anchor}` : '',
     });
   },
   onCloseMaterial() {
-    this.setData({ materialOpen: false, materialAnchor: '' });
+    this.setData({ materialOpen: false, materialIndexOpen: false, materialAnchor: '' });
+  },
+  toggleMaterialIndex() {
+    this.setData({ materialIndexOpen: !this.data.materialIndexOpen });
   },
   stopMaterialTap() {},
   onLocateMaterial(event: { currentTarget: { dataset: { id?: string } } }) {
     const id = String(event.currentTarget.dataset.id ?? '');
     if (!this.data.materialRows.some(entry => entry.id === id)) return;
-    this.setData({ materialAnchor: '' }, () => this.setData({ materialAnchor: `material-${id}` }));
+    this.setData({ materialIndexOpen: false, materialAnchor: '' }, () => this.setData({ materialAnchor: `material-${id}` }));
   },
 
   startTimer() {

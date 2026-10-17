@@ -3,6 +3,7 @@
  *
  * 用法：node scripts/render-mockups.mjs [目录] [--only 01,02] [--width 390] [--scale 2]
  *   默认目录 docs/design，逐个处理其下的 *.html，PNG 写到同目录的 png/<同名>.png。
+ *   辅助窄屏检查可加 --height 568 --check-overflow，默认视口高度仍为 900。
  *
  * 为什么要有这个脚本：项目约定「界面改动先出设计图」，设计图必须以 PNG 的形式进仓库
  * 才能被评审和引用；HTML 是源、PNG 是审阅件。实现见 [docs/design/README.md]。
@@ -32,6 +33,8 @@ const flag = (name, fallback) => {
 const rootDir = resolve(argv.find((a) => !a.startsWith('--') && !argv[argv.indexOf(a) - 1]?.startsWith('--')) ?? 'docs/design');
 const only = flag('--only', '');
 const width = Number(flag('--width', '390'));
+const viewportHeight = Number(flag('--height', '900'));
+const checkOverflow = argv.includes('--check-overflow');
 const scale = Number(flag('--scale', '2'));
 
 const chromePath = CHROME_CANDIDATES.find((p) => p && existsSync(p));
@@ -105,7 +108,7 @@ async function render(send, file, outFile) {
   try {
     await send('Page.enable', {}, sessionId);
     await send('Emulation.setDeviceMetricsOverride', {
-      width, height: 900, deviceScaleFactor: 1, mobile: true,
+      width, height: viewportHeight, deviceScaleFactor: 1, mobile: true,
     }, sessionId);
     await send('Page.navigate', { url: `file:///${file.replace(/\\/g, '/')}` }, sessionId);
     let height = 0;
@@ -117,7 +120,7 @@ async function render(send, file, outFile) {
         expression: `(() => {
           if (document.readyState !== 'complete') return { ready: false };
           const rect = document.body.getBoundingClientRect();
-          return { ready: true, layoutWidth: document.documentElement.clientWidth,
+          return { ready: true, layoutWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth,
                    width: Math.round(rect.width), height: Math.ceil(rect.height + rect.top) };
         })()`,
         returnByValue: true,
@@ -128,6 +131,7 @@ async function render(send, file, outFile) {
           throw new Error(`布局宽度 ${value.layoutWidth}/内容宽度 ${value.width} 与设计宽度 ${width} 不一致`
             + '（多半是缺 <meta name="viewport" content="width=device-width, initial-scale=1">）');
         }
+        if (checkOverflow && value.scrollWidth > width) throw new Error(`页面横向溢出：${value.scrollWidth}px > ${width}px`);
         height = value.height;
         if (attempt >= 2) break;
       }
