@@ -1,0 +1,992 @@
+{
+  "artifactVersion": "9b9aeca7eca2a12779a7cc7028f925212757401d09c3039b506ed183fb9010b8",
+  "date": "2026-10-17",
+  "mode": "static design",
+  "files": [
+    {
+      "file": "design-data.mjs",
+      "sha256": "312656ffcc71a3ef1b9b242f4e2c65a337b52830164806defb764ec20f7a84c1",
+      "bytes": 45686
+    },
+    {
+      "file": "figma-script.mjs",
+      "sha256": "ff1e8052cd8ae9f264b65355cd2ff07f81afd54a7eb34ee046a8aecdd1be05dc",
+      "bytes": 21784
+    },
+    {
+      "file": "generate-html.mjs",
+      "sha256": "b8f5785b5e6ca5870ac95494c6a0a11d0199b63214ccbc8cd658e2bb449ae93f",
+      "bytes": 9355
+    },
+    {
+      "file": "_mockup.css",
+      "sha256": "44a91b7d83d5fddc4f720937cf5095e84f37c878afe8f5f3ce958b39f202c0b5",
+      "bytes": 9470
+    },
+    {
+      "file": "_refinements.css",
+      "sha256": "a9c65057a48c5b7017b3df0478ae15028f6e217cc91fc6acb91d4dbce57dca64",
+      "bytes": 3735
+    },
+    {
+      "file": "_tokens.css",
+      "sha256": "ad80f8f92a747d471b76a26878286357fc037d97a184701b88bd363a584dec4f",
+      "bytes": 302
+    },
+    {
+      "file": "01-home.html",
+      "sha256": "112474a21802dfd395b05c2e402db117116322d3dc9f0490ce8f4d99e9535cbf",
+      "bytes": 5200
+    },
+    {
+      "file": "02-timetable-empty.html",
+      "sha256": "f3be32d0d0208fccdb1d9bf24d55119a8ccf722590b40036721fa26a1a0fb01d",
+      "bytes": 2210
+    },
+    {
+      "file": "03-timetable-week.html",
+      "sha256": "52265ff73291c6e14cad414d78303a4e4862a451e23ee0e974d308d03c60f11a",
+      "bytes": 3183
+    },
+    {
+      "file": "04-course-detail.html",
+      "sha256": "0bb62b93eec862df28a9ae23c85730f7e04bdf4a5cb3ad572d3e8d0a510a9cd4",
+      "bytes": 1652
+    },
+    {
+      "file": "05-import.html",
+      "sha256": "bfc4e737403d1c1578de6b01b399558ac5f6ecbe15a54ffea4b5c94738c9e9db",
+      "bytes": 2392
+    },
+    {
+      "file": "06-draft.html",
+      "sha256": "1959fec97dde2701a9a2a863e7ce6c7b8b413ab2c45b2df0dd903dffd6a8047a",
+      "bytes": 2069
+    },
+    {
+      "file": "07-recognition.html",
+      "sha256": "01270f1fd2f4e9da447a5d7d578b36e157ac6f4db1aefa2903b74d7f97c7987a",
+      "bytes": 2901
+    },
+    {
+      "file": "08-correction.html",
+      "sha256": "5c351eb31a561bd80fd6e5b4699ae8fa864b48dce7b22251021b9aca986da8d3",
+      "bytes": 1892
+    },
+    {
+      "file": "09-replace-confirm.html",
+      "sha256": "23cff6d635a4929d19fb32e90ef3591cabd2e646239ed89397f1e7fb9ea96c75",
+      "bytes": 1887
+    },
+    {
+      "file": "10-course-edit.html",
+      "sha256": "efd3964a25f49624324c4612c3741c23475a88ab56701bc373122f00c0353927",
+      "bytes": 2869
+    },
+    {
+      "file": "11-course-manage.html",
+      "sha256": "04049ad29de9f5f7d1ad9f24514a9c88460944f53723d0ed3817a50dea6ba3fc",
+      "bytes": 1968
+    },
+    {
+      "file": "12-settings.html",
+      "sha256": "7fb819040e43476c7927d350afeb6f39e317557c5cb354710440b39d8db8ea99",
+      "bytes": 2423
+    },
+    {
+      "file": "13-assistant.html",
+      "sha256": "d9ea4fbc18cc69c913bc02422993291f4b6569e651c01af0f7ba845199b22384",
+      "bytes": 1733
+    },
+    {
+      "file": "14-change-confirm.html",
+      "sha256": "23608dfc4c7e7fcdbe5ed32ec2d71d7d0834440947ef0fbb01bc8a84c0fdeb98",
+      "bytes": 1798
+    },
+    {
+      "file": "15-assistant-failure.html",
+      "sha256": "8093e6e40778f98204045d9b6c4665a5b057a3d1ccfb089643c93efe0b54dd3d",
+      "bytes": 2015
+    },
+    {
+      "file": "16-departments.html",
+      "sha256": "1c863150350ce9f0e12a8d133fdc74f5d48e3c241f30674d24f5a7f13b93610c",
+      "bytes": 3505
+    },
+    {
+      "file": "17-department-detail.html",
+      "sha256": "b6a2b7df180ca732b92b38ed579cf4050e094c27dfe0421438ff9f8e367512cd",
+      "bytes": 2029
+    },
+    {
+      "file": "18-department-qa.html",
+      "sha256": "25a1397ab550f96c4b411e6f22a9414be405787809f218fa2473bf64abcb841c",
+      "bytes": 1946
+    },
+    {
+      "file": "19-news.html",
+      "sha256": "1fec9a8ec13e67613d2015cd36ac94d828ee218772d74ddacd1dda94fbd8dda6",
+      "bytes": 2933
+    },
+    {
+      "file": "20-news-detail.html",
+      "sha256": "a26b2e3abc3ac599f64ef84581db754f0c793b1c64c29a3e25c270d2c1f1df4d",
+      "bytes": 2014
+    },
+    {
+      "file": "21-goals.html",
+      "sha256": "29aa7e3dfb3d60743f3ca99593b53d6a8c28705594a9f311a7efe7f6aa2f86d6",
+      "bytes": 1855
+    },
+    {
+      "file": "22-goal-edit.html",
+      "sha256": "16148d73bab4d7592296f3780c80dae9abea1e0ee06b3ba63e003cd7080d3cbd",
+      "bytes": 1792
+    },
+    {
+      "file": "23-calendar.html",
+      "sha256": "10c8857a1acffbb0e5adefc535a2e836b41f02f7ca97da2aefff1549f99c9247",
+      "bytes": 2411
+    },
+    {
+      "file": "24-fitness-input.html",
+      "sha256": "f0fa61f560847eb0686ff04cc108aaea06c9742586b960e0a7ca19cd4ecf8684",
+      "bytes": 2227
+    },
+    {
+      "file": "25-fitness-result.html",
+      "sha256": "a00740bf44b4c2aa4ed593d038c5dbdc6277e91f662b3976c942af2eb9b8ac9e",
+      "bytes": 2057
+    },
+    {
+      "file": "26-fitness-incomplete.html",
+      "sha256": "66a3a370e8a59de4957c08cf9634cd8b5528e2245952033013cd9962193700aa",
+      "bytes": 1935
+    },
+    {
+      "file": "27-advancement.html",
+      "sha256": "87e5365b673c16cb81329c68e51b2e18e7a745bcea3fe6685b146a94a635772c",
+      "bytes": 2628
+    },
+    {
+      "file": "28-advancement-source.html",
+      "sha256": "6f41493b0d07bfc4ec6049c9acad2bc7fe1c9975b8daf1656cbb4850ef185b2d",
+      "bytes": 2035
+    },
+    {
+      "file": "29-advancement-fallback.html",
+      "sha256": "6f4ff6ddf318773e455fb0b2f850e08e88c23cc8d6701f7dcff0396e7a387796",
+      "bytes": 1766
+    },
+    {
+      "file": "30-defense-materials.html",
+      "sha256": "e5d8042ff18893039fa51e36d35415de8a85c67a6753a29697083b3775e4369c",
+      "bytes": 2110
+    },
+    {
+      "file": "31-defense-practice.html",
+      "sha256": "48acc352f42e41df0237c33799c5868f38907046e6d9fc1253707f0948235db8",
+      "bytes": 2174
+    },
+    {
+      "file": "32-defense-pending.html",
+      "sha256": "20b04282b2bfa15b5577006449260ec72d5c9f62bc5a08bae03941cda773676d",
+      "bytes": 2029
+    },
+    {
+      "file": "33-defense-feedback.html",
+      "sha256": "b2ce20375e2914391ef427fdb446f9eba81b68dad18a397b38a19f83fcb1ff94",
+      "bytes": 1961
+    },
+    {
+      "file": "34-news-recovery.html",
+      "sha256": "ab43dbd28c5a11114bae23007b77d5562d938232eab248b651998fcd5633d920",
+      "bytes": 1607
+    },
+    {
+      "file": "35-copy-feedback.html",
+      "sha256": "232a988cad5ff7689b5c4c6437c7b39be37893fc5f5aa6575ee641df5259f984",
+      "bytes": 2141
+    },
+    {
+      "file": "36-delete-confirm.html",
+      "sha256": "380cc89e59ea049fd6a484f3a92caba72b673294f96525bffb3a6f22fb7c6c82",
+      "bytes": 1415
+    },
+    {
+      "file": "37-exit-confirm.html",
+      "sha256": "29add8fb56a37edd92298efd873d56c0f5a2213db3d1cc078b2d33c2ea4b33df",
+      "bytes": 1351
+    },
+    {
+      "file": "38-defense-failure.html",
+      "sha256": "e31fbf0b296ec1dd5ced0d724a56ee22c243cbaa521b7ea4eca8fe8fa122659b",
+      "bytes": 1601
+    },
+    {
+      "file": "39-defense-round2.html",
+      "sha256": "ea7a49bdb20759dd9ec886a163566a68e9d7bb3ee779e0dfc669021ab66c6352",
+      "bytes": 2042
+    },
+    {
+      "file": "40-defense-review.html",
+      "sha256": "cd779a191cc1fbc396c5e24ce68fdb3bdeae7eeefdb63a0acc922985297f166a",
+      "bytes": 2854
+    },
+    {
+      "file": "41-defense-reanswer.html",
+      "sha256": "39bebd0bed103bbe3b2af14870d84efc1069423d6ae280ddde005003aebee1da",
+      "bytes": 1769
+    },
+    {
+      "file": "42-defense-done.html",
+      "sha256": "37d643151bf678eb3aa8534dc617d09aa9bb419a0664f18240324f71daf69d3c",
+      "bytes": 1489
+    },
+    {
+      "file": "43-course-saved.html",
+      "sha256": "1b604a15f3f02d40db4632c82fd3b77a1c6e58916ad8c7645cc310897f35fbae",
+      "bytes": 2937
+    },
+    {
+      "file": "44-course-deleted.html",
+      "sha256": "719d50d0e53ee4a63b56f2f4315b5e18f29421adf1d4f7068d61d3b754652413",
+      "bytes": 2414
+    },
+    {
+      "file": "45-assistant-safety.html",
+      "sha256": "4b160d7098cb82d0f8a665ad440de2f05bb989b41c30a5bc66ca70546835a440",
+      "bytes": 1342
+    },
+    {
+      "file": "46-assistant-quota.html",
+      "sha256": "fad73e9ca7564e586fcf1cee2870e8467e4cd76212a75e60f9585093658eac78",
+      "bytes": 1308
+    },
+    {
+      "file": "47-goals-empty.html",
+      "sha256": "96f0e05f9a220d54ec7030e6af64d2bd4257986c18506c31fd9039ef532591cb",
+      "bytes": 1489
+    },
+    {
+      "file": "48-news-empty.html",
+      "sha256": "63fddf7f73b90cda52db3d6ad93a8ac72c795a8fe02b1a09ad40e1c9e6f47b58",
+      "bytes": 1524
+    },
+    {
+      "file": "49-import-failure.html",
+      "sha256": "d45b13d7c24ae5c66ee3c4203800e1c089123d7390257afc035af7eaa556bec6",
+      "bytes": 1438
+    },
+    {
+      "file": "50-course-invalid.html",
+      "sha256": "078639172b93b52bb6bf6afc12b0aac9c46c3eb39971cb03a3dbad1dfd4f6bfd",
+      "bytes": 1566
+    },
+    {
+      "file": "51-goal-delete-confirm.html",
+      "sha256": "69d30f176c71859bff146674cecdb125063c45b9a518c1be160feed65e493d62",
+      "bytes": 1416
+    },
+    {
+      "file": "52-defense-round3.html",
+      "sha256": "a4c4ab9251a479f5d6f553b03599a8ebfbd254b666335b9e9c51baab289014a7",
+      "bytes": 1983
+    },
+    {
+      "file": "53-defense-feedback2.html",
+      "sha256": "5089e7d168f4d9fece326917f3add521927ef0e9e261f71783837a205cc5ab85",
+      "bytes": 1841
+    },
+    {
+      "file": "54-defense-feedback3.html",
+      "sha256": "a792202959765c19d1b5ae2de26a0b4c8baf3e5216ab7bb6508745a37a5690ca",
+      "bytes": 1813
+    },
+    {
+      "file": "55-timetable-dense.html",
+      "sha256": "7100e34acd814d15d8dc4371ad3f65995181ac3a82943b7a1c3cdbeeceb67570",
+      "bytes": 3348
+    },
+    {
+      "file": "56-defense-material-view.html",
+      "sha256": "4bdb9a9cb223c443a2482c64f960f289ca42ed2aa9149c919cdef15073d0b35e",
+      "bytes": 5261
+    },
+    {
+      "file": "screens.json",
+      "sha256": "da45ef63196c301fe2cfeccfe46c935811809b87396ef445c232bc999fdb53a7",
+      "bytes": 82402
+    },
+    {
+      "file": "verify-design.py",
+      "sha256": "bf08f4cbeffb7e3ede00acca27a10d09d01a5c4741a362d3d0a69d266211d1b8",
+      "bytes": 10527
+    },
+    {
+      "file": "assets/lingnan-logo-horizontal.jpg",
+      "sha256": "e4920d7698f46c29d9dfc2cfc26c191636289d1df969f88771b5f009aadd6ce1",
+      "bytes": 69644
+    },
+    {
+      "file": "assets/lingnan-logo-vertical.jpg",
+      "sha256": "eb4586af92eaca7f2c215155321fb040ff190194db4dc99c79485567e41b5ce4",
+      "bytes": 126175
+    },
+    {
+      "file": "assets/lingnan-logo-official.png",
+      "sha256": "178540625568f852dcd3f66c72590f31aba7c90fa069d02a5d3bd546e5b3ff3e",
+      "bytes": 21150
+    },
+    {
+      "file": "png/01-home.png",
+      "sha256": "cb629a6856af1e1c775aa597d289532d62e29cb6064a324d7d49d20d7a4ede58",
+      "bytes": 279486
+    },
+    {
+      "file": "png/02-timetable-empty.png",
+      "sha256": "52df3519f0f297e8859554c2a311657439ec61c32729c25b2d873e55c406ff9c",
+      "bytes": 107160
+    },
+    {
+      "file": "png/03-timetable-week.png",
+      "sha256": "ce7f8e865f2a4a1e2a31c5cb850a3e945c9b0670706b128a5aefafe2194a4bbd",
+      "bytes": 102789
+    },
+    {
+      "file": "png/04-course-detail.png",
+      "sha256": "526a9ede750f6a346b24b6979749cb90dfdb73c4deb0b350c98d62995f1b31cb",
+      "bytes": 85170
+    },
+    {
+      "file": "png/05-import.png",
+      "sha256": "099d927eeed3c587b93da4f5e9bf0a37afe905026ff37bd9e167248ec85c7cf7",
+      "bytes": 149079
+    },
+    {
+      "file": "png/06-draft.png",
+      "sha256": "d7a844eedbc3afab2ffd563d4f1c53ed0d9439b6900c354a0ba750b84b2435cf",
+      "bytes": 123681
+    },
+    {
+      "file": "png/07-recognition.png",
+      "sha256": "bdd6efb4f0d2a7309a7664a17070790a7c99b46132878b4d70fc577c0975f890",
+      "bytes": 126089
+    },
+    {
+      "file": "png/08-correction.png",
+      "sha256": "57b1eb92ad7ce66756bd4e252ab4d3237b6c25cf0c09262cc1f05a19f46d3724",
+      "bytes": 117129
+    },
+    {
+      "file": "png/09-replace-confirm.png",
+      "sha256": "74ee3f7fe33a866b4545263f2a2455a9340a0bbbf472c15fa081740222ceaf48",
+      "bytes": 116847
+    },
+    {
+      "file": "png/10-course-edit.png",
+      "sha256": "8805c03cc93e4481a9a895ee89c593ebe00684676159c6123dffd7349250064e",
+      "bytes": 160221
+    },
+    {
+      "file": "png/11-course-manage.png",
+      "sha256": "b652318500e69848b70fa0ca35a2743c91adbc7a1e622045ab3d3b2447dc1cbf",
+      "bytes": 107348
+    },
+    {
+      "file": "png/12-settings.png",
+      "sha256": "20263880e73d504ab234aff91f1506a8e47d6faa9e54de30df5c584df0089424",
+      "bytes": 127916
+    },
+    {
+      "file": "png/13-assistant.png",
+      "sha256": "b24920ce1f688c24f130c8121ec9bfe3d63addfb95f6aa4345b2ff774696b12e",
+      "bytes": 109438
+    },
+    {
+      "file": "png/14-change-confirm.png",
+      "sha256": "a019ea6e034495d9c6732871670e783d37b80055d76518ff9a7c40bd72f10515",
+      "bytes": 118811
+    },
+    {
+      "file": "png/15-assistant-failure.png",
+      "sha256": "0fa3b3ed85dd8c74e2f01dfd97df34640c6b39dc270e1496f5170ec9d4c01e07",
+      "bytes": 102334
+    },
+    {
+      "file": "png/16-departments.png",
+      "sha256": "e96ae6873d73e86e361feb176e73ac1d33c2dc0078fb048a2cee2cf788b853c9",
+      "bytes": 132084
+    },
+    {
+      "file": "png/17-department-detail.png",
+      "sha256": "dc4454b3a7d0b18fba4ce9a4ff85bd1101ff77e2cba4c0f7def9a61fea85f5a2",
+      "bytes": 142870
+    },
+    {
+      "file": "png/18-department-qa.png",
+      "sha256": "b6cf20765630c4647f0bde2a297464d120ecb37bf04e307545cfb8f6aa3b2d32",
+      "bytes": 139260
+    },
+    {
+      "file": "png/19-news.png",
+      "sha256": "13686b835470d09e56b1c092724121d9dc211c3545f8a7044398521ceeea8ff3",
+      "bytes": 145194
+    },
+    {
+      "file": "png/20-news-detail.png",
+      "sha256": "82dbfd0965b62a27570334e4df96d62e5759c8a4c8ce5c526e7dd568570b3174",
+      "bytes": 192313
+    },
+    {
+      "file": "png/21-goals.png",
+      "sha256": "3ef9701ba8678c913b8396f9102df2ca5a7da8b832e90b6a2f56b0c4a70b0d46",
+      "bytes": 79719
+    },
+    {
+      "file": "png/22-goal-edit.png",
+      "sha256": "61ec148e6a20fec30130e843567537eb607ec0bdae736816383b6feda380b281",
+      "bytes": 90418
+    },
+    {
+      "file": "png/23-calendar.png",
+      "sha256": "f57eff3ab535e06968e229952c9ee0fb898764926bdce3ec9d3df0f390641e81",
+      "bytes": 191543
+    },
+    {
+      "file": "png/24-fitness-input.png",
+      "sha256": "69865269735e3ccb25f7715db9a9f98d52960b8790ce8651ed486cb68e718c03",
+      "bytes": 131307
+    },
+    {
+      "file": "png/25-fitness-result.png",
+      "sha256": "5b28c28bc32686cb21dbfdccc2fd33c546df0f4a9c8c92f9973554a28156325b",
+      "bytes": 126348
+    },
+    {
+      "file": "png/26-fitness-incomplete.png",
+      "sha256": "a8aced98c9bf7635b8e84a8526889b8a665e2f7a123849c3ef5e9bd0709b65aa",
+      "bytes": 110876
+    },
+    {
+      "file": "png/27-advancement.png",
+      "sha256": "48976bbaf3ae34b60dce2d02493cd8468b0de10d1d59fcbefb5dec19af8ac5ea",
+      "bytes": 133813
+    },
+    {
+      "file": "png/28-advancement-source.png",
+      "sha256": "4be54f9a86e390cb5cd4dc742a6282baa88f00c4676bb81db8985f5173ee1c3c",
+      "bytes": 135577
+    },
+    {
+      "file": "png/29-advancement-fallback.png",
+      "sha256": "f0b9a351a439793ec7b2b2dedf06f734d7a5ba6e86f5474db828910854efaafb",
+      "bytes": 117418
+    },
+    {
+      "file": "png/30-defense-materials.png",
+      "sha256": "49f6c6ba52360d478c29e07004039911adfda2fdcd6a1fc445f286cfe4200c90",
+      "bytes": 142312
+    },
+    {
+      "file": "png/31-defense-practice.png",
+      "sha256": "54957032273a51951b910c66536b11e627d0230f7f3812db11a5cb60ce6d71c3",
+      "bytes": 147348
+    },
+    {
+      "file": "png/32-defense-pending.png",
+      "sha256": "59f7b7955edfb6e00174541d9908150a1e8b8365cee2b163666a4554f84ba2e6",
+      "bytes": 112463
+    },
+    {
+      "file": "png/33-defense-feedback.png",
+      "sha256": "290d9a33e30e208db2e447cf5dec2ba60733e74eb71d4ef35767fcba97828147",
+      "bytes": 128758
+    },
+    {
+      "file": "png/34-news-recovery.png",
+      "sha256": "d729499db7bcb9d3e57d16b17335753e727e986167f796bead35b67f137beecf",
+      "bytes": 93952
+    },
+    {
+      "file": "png/35-copy-feedback.png",
+      "sha256": "008ba0bdc55271e121469915715e2d8a274e6eb752ab9e59aca9b10ac205b667",
+      "bytes": 199891
+    },
+    {
+      "file": "png/36-delete-confirm.png",
+      "sha256": "478784da07759a4a7cdb2009b2bb417ce0b3ee4977d2f57366ed54bbf7e70422",
+      "bytes": 68696
+    },
+    {
+      "file": "png/37-exit-confirm.png",
+      "sha256": "4eecabfb6f89806a08cb7e2a670a92c2ff96c25f854003921177843d5a0a0c69",
+      "bytes": 69589
+    },
+    {
+      "file": "png/38-defense-failure.png",
+      "sha256": "ef7860b55978cd73b74a680e1ada1d9a823d4f4165c16b1456ed3ae71dbc9d40",
+      "bytes": 92673
+    },
+    {
+      "file": "png/39-defense-round2.png",
+      "sha256": "93c9a66e3d3464c9877f1ae9a5a123a07aa5f7b26a4421ed016c9708d6b54f1e",
+      "bytes": 126449
+    },
+    {
+      "file": "png/40-defense-review.png",
+      "sha256": "efbf3cdab3518af555aeb3572e4b6faf4d97582ef4d2930d7e7028350a05b7b7",
+      "bytes": 138813
+    },
+    {
+      "file": "png/41-defense-reanswer.png",
+      "sha256": "54a7662274399991d68916df72906b0a9d3eea8f91d8df1f074725007384380f",
+      "bytes": 116433
+    },
+    {
+      "file": "png/42-defense-done.png",
+      "sha256": "e52640fd7953ee918933a85c41453e912527725af05f4413040dfe4eb70b70e2",
+      "bytes": 80914
+    },
+    {
+      "file": "png/43-course-saved.png",
+      "sha256": "b4d93d84d5626b8291b5c3d6dfcae93ef056c83eecac11e0d9402d6e7655c2ce",
+      "bytes": 115802
+    },
+    {
+      "file": "png/44-course-deleted.png",
+      "sha256": "f315a0218e41093d9e690b963b3aa9a6cb92084d849d52d4721dfd4f4422c016",
+      "bytes": 82866
+    },
+    {
+      "file": "png/45-assistant-safety.png",
+      "sha256": "bb2ed6e1975ce2eb4c826e1fc73e18bcae69265ba8c1ec96b4442c225c355552",
+      "bytes": 66145
+    },
+    {
+      "file": "png/46-assistant-quota.png",
+      "sha256": "22cb5d0b3d22a7b4231c03ce88e3916cafc329542cb3d8bee2c7310d0132b14d",
+      "bytes": 58418
+    },
+    {
+      "file": "png/47-goals-empty.png",
+      "sha256": "c51b96160e603df91e1e6d9fa1f1bda5a7cb2b217b839a9ba2fa9321265e621c",
+      "bytes": 56496
+    },
+    {
+      "file": "png/48-news-empty.png",
+      "sha256": "87cccff232e09d65d75bab02c418b34f952615c70cbaad38df99e01ecb2820a5",
+      "bytes": 58681
+    },
+    {
+      "file": "png/49-import-failure.png",
+      "sha256": "cf7ad5b53abd28f700773f584abeecb149c5d7c04046896f0e67ec6f5df05990",
+      "bytes": 71216
+    },
+    {
+      "file": "png/50-course-invalid.png",
+      "sha256": "519b4524a217b8e5a0ecb4409a369d89e498dcfa94767d555e0fe949cd73da01",
+      "bytes": 79989
+    },
+    {
+      "file": "png/51-goal-delete-confirm.png",
+      "sha256": "adc77d120f812b469151083c716f49bf3acc6eafec10e997636fd2632a0adaa6",
+      "bytes": 70887
+    },
+    {
+      "file": "png/52-defense-round3.png",
+      "sha256": "cb7c36cfa0e1e3c138d4d57643834492e2fa08d878e673caa506234c4cb1c5cb",
+      "bytes": 123197
+    },
+    {
+      "file": "png/53-defense-feedback2.png",
+      "sha256": "f22f6167f66fd1d58b3c9de62ff92dd069c2d66ef8e37b6b16fe47c9590a3fb2",
+      "bytes": 105780
+    },
+    {
+      "file": "png/54-defense-feedback3.png",
+      "sha256": "27aa677b89a070785504d6370da0b2d76d354c769a011a1cee364a731c1600c9",
+      "bytes": 104167
+    },
+    {
+      "file": "png/55-timetable-dense.png",
+      "sha256": "92846a9339965347af1781e5f64ff32bc1c611a3842ea5d874743bd2507807f0",
+      "bytes": 107514
+    },
+    {
+      "file": "png/56-defense-material-view.png",
+      "sha256": "6decfa28135781436664146d5d1b45f8691175a4b683e89cd0e9e73eb39dea39",
+      "bytes": 625834
+    },
+    {
+      "file": "review/narrow/01-home.png",
+      "sha256": "44486be0383e67cc8781fbf79a9f6607cfd627393e2c4aee0bb682d0fda252ec",
+      "bytes": 83717
+    },
+    {
+      "file": "review/narrow/02-timetable-empty.png",
+      "sha256": "1ef64e10da4696c2128038fb2db4580b1a91fdae34820e1bd341fadff6b205fc",
+      "bytes": 33369
+    },
+    {
+      "file": "review/narrow/03-timetable-week.png",
+      "sha256": "4f6ffba663a8bc543e2dd27bf29fd5a2ad8a8a2475fd360ac1eb4deaef204f57",
+      "bytes": 31970
+    },
+    {
+      "file": "review/narrow/04-course-detail.png",
+      "sha256": "31d8529e169c12cfa73ea7a05ca3307d4bd1296cb9c7c5b4f3b5f7213d1caa67",
+      "bytes": 26551
+    },
+    {
+      "file": "review/narrow/05-import.png",
+      "sha256": "8fdbd847fb8a5391fe74fda9423f28021e9fc8d69863e1d0cc17312b57214bce",
+      "bytes": 41299
+    },
+    {
+      "file": "review/narrow/06-draft.png",
+      "sha256": "01939d64fd59213f2b876d992672c12e270f3c1d4fb27b015c878408d2f19d58",
+      "bytes": 36414
+    },
+    {
+      "file": "review/narrow/07-recognition.png",
+      "sha256": "a9f0345fe3c3067f3586cadd156ee7b505ea091c9cd6ce1a696c1477e2c4218c",
+      "bytes": 41284
+    },
+    {
+      "file": "review/narrow/08-correction.png",
+      "sha256": "11de5e94a1d07ffe8b267a5c6da1ba87245f5842d4288d0d829b88996d7dbada",
+      "bytes": 34856
+    },
+    {
+      "file": "review/narrow/09-replace-confirm.png",
+      "sha256": "2d69d667741872b482cc3fbb5ce89df72b9a29750c69eeb8cc24b1b1440c3389",
+      "bytes": 34225
+    },
+    {
+      "file": "review/narrow/10-course-edit.png",
+      "sha256": "38234a52d5c4e781ac3bc8226885f61243935dfb52a95e95b097245a89cfb15f",
+      "bytes": 49991
+    },
+    {
+      "file": "review/narrow/11-course-manage.png",
+      "sha256": "7c7e1a8231a73dcb1e0c444307b836a6b2d0d23a61394e10b7f958d11c5c269e",
+      "bytes": 33672
+    },
+    {
+      "file": "review/narrow/12-settings.png",
+      "sha256": "24a9fa59869af5a9c939e5941ef668072dc18c6b1085b1af81f82481d40c41b4",
+      "bytes": 39558
+    },
+    {
+      "file": "review/narrow/13-assistant.png",
+      "sha256": "dec17ac17ce2e5b47635d8aeafd7ab810d25ef30b5548aec7f8ccde3f07d3bc2",
+      "bytes": 32102
+    },
+    {
+      "file": "review/narrow/14-change-confirm.png",
+      "sha256": "cc0ed9d331087fdb5c159fac1f13c7fd63e2faa3dd7dda0588f90c39b0796ae4",
+      "bytes": 34833
+    },
+    {
+      "file": "review/narrow/15-assistant-failure.png",
+      "sha256": "b72aee4903ad7b07a6b01b301ef270a3e2dc8576aacde732329a484ecf0957ec",
+      "bytes": 34294
+    },
+    {
+      "file": "review/narrow/16-departments.png",
+      "sha256": "a998e55f684986baa7b349fe99989eb66a8452ebee92041cea36d53f9451689b",
+      "bytes": 38916
+    },
+    {
+      "file": "review/narrow/17-department-detail.png",
+      "sha256": "b9b61e4c7d5b2f9d966387650e4aae7c202279c663553fae281c63ad26b2e166",
+      "bytes": 42691
+    },
+    {
+      "file": "review/narrow/18-department-qa.png",
+      "sha256": "5a0c0e44b033f02aaf3dad9b14055f46b122b7800185d60056b0264e2b71d4c5",
+      "bytes": 39327
+    },
+    {
+      "file": "review/narrow/19-news.png",
+      "sha256": "e65c010df861f511f0bceef9c2e63a69fb9a824fd00b6d160f7d1f1f63fe5fa0",
+      "bytes": 45930
+    },
+    {
+      "file": "review/narrow/20-news-detail.png",
+      "sha256": "630a3ca3986ebabe36049de11aab9b615fc4f3d384d6d913bc28a12b6db0756f",
+      "bytes": 55231
+    },
+    {
+      "file": "review/narrow/21-goals.png",
+      "sha256": "cfd5b4b03fb2be72b8cb6cf0eb82b5dea73a47b9fcddc1b1e33a87da207442e9",
+      "bytes": 25550
+    },
+    {
+      "file": "review/narrow/22-goal-edit.png",
+      "sha256": "03c499f459ad285da4a75fe4aa09195a95d693b4219900bd41e05bdf4270b0c8",
+      "bytes": 28695
+    },
+    {
+      "file": "review/narrow/23-calendar.png",
+      "sha256": "da5cb7c41ca48d09c03e93ddb3b6c69897b61aeff0e64db0d47bcbfa0de563b2",
+      "bytes": 54572
+    },
+    {
+      "file": "review/narrow/24-fitness-input.png",
+      "sha256": "853a0439c594cf8143e481bbe7ca57efd09304268484d78492c2586e0142998d",
+      "bytes": 39721
+    },
+    {
+      "file": "review/narrow/25-fitness-result.png",
+      "sha256": "b70ab7874eaf9faa84486158af363be2495135c55d89512fd3cfeff0ae39ab42",
+      "bytes": 37683
+    },
+    {
+      "file": "review/narrow/26-fitness-incomplete.png",
+      "sha256": "0b84294fd50005aa80b23605750210dd5149f6c9fb4f11180b705a28fcbb4b22",
+      "bytes": 31865
+    },
+    {
+      "file": "review/narrow/27-advancement.png",
+      "sha256": "df63ac860b7e5f2eadac814c8cfd30d9c36c5572884129d7153b69c3e76b9456",
+      "bytes": 39589
+    },
+    {
+      "file": "review/narrow/28-advancement-source.png",
+      "sha256": "c2395eb8329116c43888369c080335e7bcdcf4fa1bf83986f1dc260d0784fa2e",
+      "bytes": 39338
+    },
+    {
+      "file": "review/narrow/29-advancement-fallback.png",
+      "sha256": "c93947ad896ad1df1784ed11fca4b5f0ae75cf653daa8c14351401bdda07995a",
+      "bytes": 33358
+    },
+    {
+      "file": "review/narrow/30-defense-materials.png",
+      "sha256": "f3cd3198a0f8256d61b97bd8064b8734afd88bf392ca4915eb530b3b2471bad9",
+      "bytes": 39406
+    },
+    {
+      "file": "review/narrow/31-defense-practice.png",
+      "sha256": "9ba3b471c2c073b0988a138915a607e266b9f6c0eeb7eabe25e7e6ade19bb1ef",
+      "bytes": 41582
+    },
+    {
+      "file": "review/narrow/32-defense-pending.png",
+      "sha256": "a0aa693f07245550eeb572ac0daa3638a3d343c1a8ffff5caa8ea576dd03526b",
+      "bytes": 35897
+    },
+    {
+      "file": "review/narrow/33-defense-feedback.png",
+      "sha256": "705b844a2a3c5334ca0538414eb30f1f631bd0047193d40e34f70a09b3a2fa43",
+      "bytes": 39591
+    },
+    {
+      "file": "review/narrow/34-news-recovery.png",
+      "sha256": "40a5681f7b6a73e9b28afd897105160a775db31f2ddb2bbfa97b05706d9e94b8",
+      "bytes": 28460
+    },
+    {
+      "file": "review/narrow/35-copy-feedback.png",
+      "sha256": "0148beaef474d0f3256ed971efb2372ba3a9ae8530496c1afac6f193fd29389a",
+      "bytes": 57335
+    },
+    {
+      "file": "review/narrow/36-delete-confirm.png",
+      "sha256": "b67ed6b0f4eeaa7852cc9036dd7cac60d9405e11ae8a3d2fd85e4a036828fb57",
+      "bytes": 21846
+    },
+    {
+      "file": "review/narrow/37-exit-confirm.png",
+      "sha256": "232e59592ba4d920c2ca13f320fe4dfa650d8326107dc1d3167958b9c51a1db3",
+      "bytes": 21052
+    },
+    {
+      "file": "review/narrow/38-defense-failure.png",
+      "sha256": "84b82fc715ff48d0f8325563c24f0fdad970bfecec9e25fa746fcb13d9f9cf67",
+      "bytes": 27225
+    },
+    {
+      "file": "review/narrow/39-defense-round2.png",
+      "sha256": "1ae87f03d2504cdf898a643e9049031b9c24da71c5f807dbeb51b16fce93d4b8",
+      "bytes": 36586
+    },
+    {
+      "file": "review/narrow/40-defense-review.png",
+      "sha256": "6fa4151a79cf2952bd44e799881709cb6c7a39c904359ab25e68db62b17c58f7",
+      "bytes": 39607
+    },
+    {
+      "file": "review/narrow/41-defense-reanswer.png",
+      "sha256": "cc8bb59b27d20e29c9b986469ca343b31aea9605062415482f22dbbf6e13a95a",
+      "bytes": 33279
+    },
+    {
+      "file": "review/narrow/42-defense-done.png",
+      "sha256": "c82975d8209c9908bff45882d9d66b472dc38391407a8cadd212382e881aac1e",
+      "bytes": 24278
+    },
+    {
+      "file": "review/narrow/43-course-saved.png",
+      "sha256": "c4e6c222e0e66757604890d7136301ac67535b90bf9a37e9575c5563396e7ce8",
+      "bytes": 34752
+    },
+    {
+      "file": "review/narrow/44-course-deleted.png",
+      "sha256": "4fab87050af1fcd95e30277a339839a42c445403cda0ff07cfbd8ca231a2a260",
+      "bytes": 27186
+    },
+    {
+      "file": "review/narrow/45-assistant-safety.png",
+      "sha256": "ab173c627cc86e98375ec23ce05769fafafe42ed72fd148e61846cc12a51c56b",
+      "bytes": 20742
+    },
+    {
+      "file": "review/narrow/46-assistant-quota.png",
+      "sha256": "ea31ee2fd7374317c3de2f993f82325d641129fc96e59719a88ae743ed4f8964",
+      "bytes": 18734
+    },
+    {
+      "file": "review/narrow/47-goals-empty.png",
+      "sha256": "84860a337dc53a6808460d070d6e57403aa12fdf292528d4bcb08d1fa3f201b2",
+      "bytes": 20467
+    },
+    {
+      "file": "review/narrow/48-news-empty.png",
+      "sha256": "b642dd15966c4f22c7b1969d9da2b0a72062ea622fe53d995469507223285c85",
+      "bytes": 21250
+    },
+    {
+      "file": "review/narrow/49-import-failure.png",
+      "sha256": "a649553667c3cfb8d8d64ea41c06060904e9a10955e69f4ba3e7e7be23acd723",
+      "bytes": 22039
+    },
+    {
+      "file": "review/narrow/50-course-invalid.png",
+      "sha256": "5e75b9001c4f3bd4ea66a4c8333c920502dd84c0ee54ce2190f891ce830943d5",
+      "bytes": 24818
+    },
+    {
+      "file": "review/narrow/51-goal-delete-confirm.png",
+      "sha256": "9820c4a9acba9f62dc805b330ddfda32319cb269446f921e81e60e7e28579b88",
+      "bytes": 22344
+    },
+    {
+      "file": "review/narrow/52-defense-round3.png",
+      "sha256": "96608cd682913c663de7c2ca7042c669d8ec090ec7f6ebc224bb46184845e5d0",
+      "bytes": 35344
+    },
+    {
+      "file": "review/narrow/53-defense-feedback2.png",
+      "sha256": "d0565290fb76ed7ed1d86fac95ab1e02a7529ca0ebf09177d67140620fcde46f",
+      "bytes": 34794
+    },
+    {
+      "file": "review/narrow/54-defense-feedback3.png",
+      "sha256": "25f6a7e9add2c215f995b1d76f804d34f36b2eb6dc8c9c9bb4c1d158e5a1633d",
+      "bytes": 33633
+    },
+    {
+      "file": "review/narrow/55-timetable-dense.png",
+      "sha256": "2f7d95d7211f0cdf05701d7d60541a29cba87c3fdd1013b0f9ed9550b83a0060",
+      "bytes": 33542
+    },
+    {
+      "file": "review/narrow/56-defense-material-view.png",
+      "sha256": "c6280a26dab70d4eedc6963496e77405d4eba0f7810ecd22491eab8153a11b0c",
+      "bytes": 153117
+    },
+    {
+      "file": "review/stress/material-320-bottom.png",
+      "sha256": "2654bb6b1980a08d13deabdd5f7d6295152c70dde9e47b303d8a8e9b1f2c3da0",
+      "bytes": 45504
+    },
+    {
+      "file": "review/stress/material-320-middle.png",
+      "sha256": "e544627b958a474967cb6c7b5726fbb6e2dda2da6f1bcd5df2aad0f7738fe94f",
+      "bytes": 46863
+    },
+    {
+      "file": "review/stress/material-320-top.png",
+      "sha256": "29255dbb4413785b0432bd7f6690216bad4ad597442fc69666cf1191f86b7138",
+      "bytes": 34164
+    },
+    {
+      "file": "review/stress/week-320-left.png",
+      "sha256": "2f7d95d7211f0cdf05701d7d60541a29cba87c3fdd1013b0f9ed9550b83a0060",
+      "bytes": 33542
+    },
+    {
+      "file": "review/stress/week-320-middle.png",
+      "sha256": "4e3d34a4b3ef963d7c91e2e4ae31fc6c6b439932253e9ac2e5d47d2e1cf026a6",
+      "bytes": 31262
+    },
+    {
+      "file": "review/stress/week-320-right.png",
+      "sha256": "d9480324cf37c145eb7a61414e307a822280cf1145843bbde92bae5d0b7719c3",
+      "bytes": 30320
+    },
+    {
+      "file": "review/stress/week-390-left.png",
+      "sha256": "003e1bfc2bda6cb120061ac3fca8bab7e6d0289a14e92233f6dfa38d8bcb97c3",
+      "bytes": 35651
+    },
+    {
+      "file": "review/stress/week-390-middle.png",
+      "sha256": "eefae87c2e57bf8c8c137c8709e15dc1f345db3fc85f77ed7472dcb24bb3e031",
+      "bytes": 34167
+    },
+    {
+      "file": "review/stress/week-390-right.png",
+      "sha256": "694b079a00e041d6bec37b53b28779f7416c42c72a251e3d76060211f365c63d",
+      "bytes": 33227
+    },
+    {
+      "file": "review/overview.png",
+      "sha256": "86a98907f99079ddc56274a13ca2ab9fa976bcd0966b8a4e5f649cbcf641f12e",
+      "bytes": 770019
+    },
+    {
+      "file": "figma/png/01-home.png",
+      "sha256": "5b0858283a4b85fd1f2a96e2469e21310acd59f77d50709d517e8fc947ba64d4",
+      "bytes": 119530
+    },
+    {
+      "file": "figma/png/03-timetable-week.png",
+      "sha256": "044fec744d8eda3710dd881bd3b6257727e1583004dda9ea3f0463cae89a60be",
+      "bytes": 48607
+    },
+    {
+      "file": "figma/png/31-defense-practice.png",
+      "sha256": "d8e779e46adff8b9efa399477a5df4f9196de7dcad8e0304f3b70aa6b7a4f550",
+      "bytes": 55925
+    },
+    {
+      "file": "figma/state.json",
+      "sha256": "47f36d5d03ac7328855baa38741fbc6fbedfc38e4fa776285d84f802ae26f816",
+      "bytes": 2267
+    },
+    {
+      "file": "review/brief.md",
+      "sha256": "0415b17652cda1c4336c1146caace3180b5b5d0b9a4eeed7e4a0567ff75f8ebe",
+      "bytes": 3763
+    }
+  ],
+  "reviewersPerRound": 1,
+  "reviewMode": "ordinary; fix important issues; no numeric target",
+  "promptSha256": "fb76bafc352d54fbd97bc3d84855d16d296cb1677f72200d96a4d63ee0f27a4c",
+  "screenshots": {
+    "normal": "png/",
+    "narrow": "review/narrow/",
+    "figma": "figma/png/",
+    "overview": "review/overview.png",
+    "stress": "review/stress/"
+  },
+  "designScenarioDate": "2026-10-16",
+  "frozenMaterialSource": {
+    "file": "docs/evidence/project-defense-g0/fact-card-1-timetable.md",
+    "sha256": "4418b18911abba25d7a48ad9a332d2a3c8708dbcf29fd0de667cd4dc9f8be1e1"
+  }
+}

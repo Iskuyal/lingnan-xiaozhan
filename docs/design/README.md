@@ -61,6 +61,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
+- [岭南校园工具全流程新 UI（57 屏修订稿，待评审）](lingnan-ui-2026/README.md)（官网盾形校徽；本地 HTML/PNG 为当前评审件，Figma 44 屏初稿受额度限制待同步）
 - [全模块界面改版](campus-refresh/README.md)
 - [课表改版](timetable/README.md)
 - [课表主页可读性返工](timetable-readability/README.md)

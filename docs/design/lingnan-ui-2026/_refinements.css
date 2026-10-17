@@ -1,0 +1,51 @@
+/* 高频任务减少重复标题占位，保留原生导航标题。 */
+.screen.work .head h1,.screen.work .head .eyebrow{display:none}
+.screen.work .head{margin:0 0 4px;gap:0}
+.weekgrid{grid-template-rows:30px repeat(6,87.36px);min-height:0}
+.course{font-size:12px;line-height:1.55;padding:7px 5px}
+.course small{font-size:10px;margin-top:6px}
+.period{font-size:9px;white-space:nowrap}
+.brand.official{background:var(--brand-deep);border-color:var(--brand-deep);padding:12px 18px}
+.brand.official img{width:100%;max-width:320px;margin:auto}
+.hero-compact h1{font-family:"Noto Serif SC","Songti SC","SimSun",serif;font-size:23px;line-height:1.6}
+.hero-compact p{font-size:12px;color:var(--text-2);margin-top:4px}
+.week-toolbar{display:flex;gap:8px;margin-top:-2px}
+.week-toolbar a{display:flex;align-items:center;justify-content:center;flex:1;min-height:44px;border:1px solid #b9847c;border-radius:7px;color:var(--brand-deep);background:#fff;font-size:12px}
+.week-hint{font-size:11px;color:var(--text-2);margin-bottom:-10px}
+.week-scroll{width:100%;overflow-x:auto;border:1px solid #ded4cf;border-radius:9px;background:#fff;padding-bottom:4px;overscroll-behavior-x:contain}
+.weekgrid{max-width:none;border:0;border-radius:0}
+.course{font-size:12px;line-height:1.5;padding:6px 4px}
+.course small{font-size:11px;line-height:1.5}
+.course-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.course small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.weekdays .chip{padding:9px 0;font-size:13px;min-width:0}
+.review-tools{border:1px dashed #aa9990;margin:0 16px 20px;padding:12px;font-size:11px;color:var(--text-2);background:#fff}
+.review-tools strong{display:block;margin-bottom:8px}
+.review-tools a{display:block;min-height:44px;padding:12px 0;color:var(--brand-deep);text-decoration:underline}
+
+
+.course-row{padding:15px;background:#fff;border:1px solid #ded4cf;border-radius:9px}
+.course-row h3{font-size:15px;line-height:1.6}
+.course-row p{font-size:12px;color:var(--text-3);margin-top:5px}
+.row-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px}
+.row-actions a,.row-actions span{display:flex;align-items:center;justify-content:center;min-width:70px;min-height:44px;padding:8px 14px;border:1px solid #b9847c;border-radius:6px;color:var(--brand-deep);font-size:13px}
+.inline-feedback{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 12px;border-left:3px solid #147a70;background:#e8f3f0;color:#135b54;font-size:13px}
+.inline-feedback>span{flex:1}
+.inline-feedback>a{min-height:44px;min-width:44px;display:grid;place-items:center;text-decoration:underline}
+/* 节次与课程是并列区域，避免滚动网格本身对固定项的裁切。 */
+.week-shell{display:flex;width:100%;border:1px solid #ded4cf;border-radius:9px;overflow:hidden;background:#fff}
+.time-axis{flex:none;width:30px;display:grid;gap:3px;padding:6px 0;background:#fff;border-right:1px solid #bca99d;position:relative;z-index:2}
+.time-axis>div{display:grid;place-items:center;font-size:9px;white-space:nowrap;color:var(--text-2)}
+.week-scroll{width:auto;flex:1;min-width:0;border:0;border-radius:0;padding:0}
+.weekgrid{grid-template-columns:repeat(7,66px);width:492px}
+.weekgrid>div:first-child{position:static;background:transparent}
+@media(max-width:350px){.weekgrid{grid-template-columns:repeat(7,66px);width:492px}}
+.week-picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.week-choice{display:grid;place-items:center;min-height:44px;border:1px solid #aa9990;background:#fff;border-radius:6px;font-size:13px}
+.week-choice.selected{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+.material-index h2{font-size:16px;margin-bottom:10px}
+.material-index>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.material-index a{display:grid;place-items:center;min-height:44px;border:1px solid #b9847c;background:#fff;border-radius:6px;font-size:12px;color:var(--brand-deep)}
+[id^="F"],[id^="INV-"]{scroll-margin-top:16px}
+@media(max-width:350px){.hero-compact h1{font-size:21px}.brand.official{padding:10px 14px}.weekgrid{grid-template-columns:repeat(7,66px);gap:3px;padding:6px}.course{font-size:12px;padding:6px 4px}.course small{font-size:11px}}
