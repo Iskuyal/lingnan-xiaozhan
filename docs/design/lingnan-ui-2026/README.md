@@ -1,10 +1,10 @@
 # 岭南校园工具 · 全流程 UI 设计提案
 
-设计日期：2026-10-16；数值校核与收尾：2026-10-17。状态：**本地 57 屏修订稿待负责人评审；Figma 为 44 屏初稿，额度受限，尚未同步修订。未改小程序实现。**
+设计日期：2026-10-16；数值校核与收尾：2026-10-17。状态：**负责人已确认本设计（2026-10-17，见 [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)）；WXML/WXSS 重写尚未开始。Figma 为 44 屏初稿，额度受限，尚未同步修订。本地修订 PNG/HTML 是实现依据，未改小程序实现。**
 
-跟踪任务：[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)。保留为待负责人评审和远端同步，不关闭既有设计或验收任务。
+跟踪任务：[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)（设计评审与 Figma 同步）、[Issue #137](https://github.com/Iskuyal/wx-match/issues/137)（按本设计重写 UI）。保留 #135 的远端同步项，不关闭既有设计或验收任务。
 
-提交评审：[草稿 PR #136](https://github.com/Iskuyal/wx-match/pull/136)。全量56屏历史稿独立静态评分8.1/10；最终周次与材料定位补丁另有[局部核验](review/patch-verification.md)，未重算整套57屏分数，详见[各轮记录](review/revisions.md)。
+合并记录：PR #136 已于 2026-10-17 合入 main `fbb1b5b`（只改文档）。全量56屏历史稿独立静态评分8.1/10；最终周次与材料定位补丁另有[局部核验](review/patch-verification.md)，未重算整套57屏分数，详见[各轮记录](review/revisions.md)。
 
 [总览图](review/overview.png) · [从首页开始浏览静态稿](01-home.html) · [Figma 初稿](https://www.figma.com/design/rZS8zZHE1euLlZzuVGxvOH) · [校徽来源与许可记录](assets/README.md) · [本地检查](review/checks.json) · [评审修订记录](review/revisions.md)
 
@@ -101,9 +101,9 @@ npm run docs:check
 
 第一轮独立评审原文与输入清单分别见 [反馈](review/round-1.md)和[原清单](review/round-1-manifest.json)，输入源图已保存于 `e44588e`；各轮均按各自清单使用全新上下文评审，历史分数不代表修订稿。评分只是静态设计意见，不作为用户研究、学习效果或真机证据。未验证微信客户端、真实模型、云端保存、真实文件上传、剪贴板、读屏及系统字号适配。
 
-## 待负责人评审
+## 评审与实现状态
 
-评审当前 57 屏的任务组织、盾形校徽尺寸、周课表横向查看和空课时收起方式。接受后再定稿并进入 WXML/WXSS 实现；本轮没有替代此前目标日、校历、体测等设计票的负责人决定，也没有关闭任何效果或真机验收项。
+2026-10-17 更新：负责人已确认本设计作为 UI 重写依据（见 [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)），确认的是任务组织、盾形校徽尺寸、周课表横向查看和空课时收起方式；实现任务见 #137，本轮收尾未开始写 WXML/WXSS。此前目标日、校历、体测等设计票的负责人决定与各项效果/真机验收项均未被本轮替代或关闭。
 
 另保留P2：长材料中段的返回动作需要滚至顶部或底部；两个端点有返回分镜，固定返回及真实导航/草稿恢复仍需实现与端上验证。
 
