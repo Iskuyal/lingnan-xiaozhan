@@ -37,6 +37,24 @@ const NOT_DEPLOYED = /FUNCTION_NOT_FOUND|FunctionName parameter could not be fou
 const NO_PERMISSION = /permission denied|-501023/u;
 const TIMEOUT = /timeout|-504003/u;
 
+/**
+ * 网络类失败：请求根本没到云端（或响应没回来），与「云函数/模型出错」是两回事。
+ *
+ * 为什么必须单独认这一类：网络原文是英文技术描述，学生读不懂，而且带 `cloud.uploadFile`、
+ * `ERR_*`、`ECONNRESET` 这类内部字样——2026-10-08 开发者工具实测就把它原样递到了导入页：
+ * 「上传失败：cloud.uploadFile:fail undefined . uploadFile:fail Error: Client network socket
+ * disconnected before secure TLS connection was established」。
+ *
+ * 关键词取真实出现过的形态：开发者工具的 `Client network socket disconnected`、
+ * `request:fail` 系列 `net::ERR_*`/`errno:`、Node 侧 `socket hang up`/`ECONNRESET`/`ETIMEDOUT`，
+ * 以及 `uploadFile:`/`downloadFile:` 的 `:fail`（文件接口失败几乎都是链路问题）。
+ * **不含裸 `timeout`**——那句归上面的 TIMEOUT（云函数超时），措辞不同、指向的处理也不同。
+ */
+const NETWORK = /network socket|socket hang up|net::ERR_|request:fail|errno:|ECONNRESET|ETIMEDOUT|ENOTFOUND|EPIPE|uploadFile:|downloadFile:|Client network/iu;
+
+/** 网络类失败的统一文案；三个服务共用同一句，不按服务换措辞。 */
+export const NETWORK_MESSAGE = '网络连接不稳定，请检查网络后重试';
+
 export interface TransportCopyOptions {
   /** 服务名，用在「…暂时不可用」「没有权限使用…」「…响应超时」三句里，如 'AI 服务'、'课表服务'。 */
   service: string;
@@ -56,6 +74,11 @@ export function transportMessage(error: unknown, options: TransportCopyOptions):
   if (NOT_DEPLOYED.test(raw)) return `${options.service}暂时不可用（云函数尚未部署或正在部署），请稍后重试`;
   if (NO_PERMISSION.test(raw)) return `没有权限使用${options.service}，请确认已用微信登录后重试`;
   if (TIMEOUT.test(raw)) return `${options.service}响应超时，请稍后重试`;
+  // 网络类失败**不交给调用方的兜底策略**：兜底在课表侧是「原样透出」，会把英文原文递给学生。
+  if (NETWORK.test(raw)) {
+    console.error(`${options.logLabel}（网络）：`, raw);
+    return NETWORK_MESSAGE;
+  }
   if (raw === '') return options.fallback === '' ? '未知错误' : options.fallback;
   console.error(`${options.logLabel}：`, raw);
   return options.fallback === '' ? raw : options.fallback;

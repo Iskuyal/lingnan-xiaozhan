@@ -211,6 +211,31 @@ test('小程序侧与云函数侧的周次识别对真实样本的写法结果�
   }
 });
 
+test('网络类传输失败映射成可读文案，不把平台原文递给用户', () => {
+  const service = require('../dist/services/timetable/index.js');
+  const aiService = require('../dist/services/ai.js');
+  // 2026-10-08 开发者工具实测原文（开发机与云端之间一次瞬时连接失败，上传接口直接把它抛了出来）：
+  // 「Client network socket disconnected before secure TLS connection was established」。
+  // 这类英文网络错误学生读不懂，且带 cloud.uploadFile 这样的内部字样。
+  const networkCases = [
+    'cloud.uploadFile:fail undefined . uploadFile:fail Error: Client network socket disconnected before secure TLS connection was established',
+    'cloud.downloadFile:fail Error: socket hang up',
+    'request:fail net::ERR_CONNECTION_RESET',
+    'request:fail errno:600001 system error: ETIMEDOUT',
+    'cloud.callFunction:fail Error: read ECONNRESET',
+  ];
+  for (const raw of networkCases) {
+    const mapped = service.messageOf({ errMsg: raw });
+    assert.match(mapped, /网络|连接/u, `网络类失败应给出可读文案：${raw}`);
+    assert.doesNotMatch(mapped, /cloud\.|uploadFile|ERR_|ECONNRESET|ETIMEDOUT|TLS|socket/iu, `不应泄漏平台原文：${mapped}`);
+  }
+  // AI 侧共用同一套规则：网络类失败也要落到可读文案，而不是英文原文。
+  assert.match(aiService.transportMessage({ errMsg: networkCases[0] }), /网络|连接/u);
+  // 非网络类的未知错误仍按各自兜底策略处理（课表原样透出业务提示、AI 换兜底句）。
+  assert.equal(service.messageOf(new Error('未识别出课表矩阵')), '未识别出课表矩阵');
+  assert.equal(service.messageOf(undefined), '未知错误');
+});
+
 test('云调用的技术性错误映射成可理解的文案', () => {
   const service = require('../dist/services/timetable/index.js');
   assert.match(service.messageOf({ errMsg: 'cloud.callFunction:fail errCode: -501000  FunctionName parameter could not be found' }), /课表服务暂时不可用/u);
