@@ -3,7 +3,7 @@
   "designScenarioDate": "2026-10-16",
   "environment": "Windows Chrome headless / Playwright",
   "mode": "static design only",
-  "screens": 56,
+  "screens": 57,
   "viewports": [
     390,
     320
@@ -286,14 +286,14 @@
       "screen": "40",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
       "screen": "41",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -398,7 +398,14 @@
       "screen": "56",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 15,
+      "issues": []
+    },
+    {
+      "screen": "57",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 15,
       "issues": []
     },
     {
@@ -678,14 +685,14 @@
       "screen": "40",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 4,
+      "linkCount": 5,
       "issues": []
     },
     {
       "screen": "41",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -790,7 +797,14 @@
       "screen": "56",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 15,
+      "issues": []
+    },
+    {
+      "screen": "57",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 15,
       "issues": []
     }
   ],
@@ -935,6 +949,16 @@
       ],
       "staticLinks": "passed",
       "businessBehavior": "not tested"
+    },
+    {
+      "name": "reanswer-reference",
+      "screens": [
+        "41",
+        "57",
+        "41"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
     }
   ],
   "weekScrolling": [
@@ -999,6 +1023,28 @@
       "passed": true
     }
   ],
+  "nonContinuousWeeks": {
+    "notation": "2-6,8-17",
+    "selected": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "matchesParser": true
+  },
+  "materialF5Anchor": "passed",
   "contrastSamples": [
     {
       "foreground": "#ffffff",

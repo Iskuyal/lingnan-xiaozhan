@@ -41,4 +41,11 @@
 .weekgrid{grid-template-columns:repeat(7,66px);width:492px}
 .weekgrid>div:first-child{position:static;background:transparent}
 @media(max-width:350px){.weekgrid{grid-template-columns:repeat(7,66px);width:492px}}
+.week-picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.week-choice{display:grid;place-items:center;min-height:44px;border:1px solid #aa9990;background:#fff;border-radius:6px;font-size:13px}
+.week-choice.selected{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+.material-index h2{font-size:16px;margin-bottom:10px}
+.material-index>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.material-index a{display:grid;place-items:center;min-height:44px;border:1px solid #b9847c;background:#fff;border-radius:6px;font-size:12px;color:var(--brand-deep)}
+[id^="F"],[id^="INV-"]{scroll-margin-top:16px}
 @media(max-width:350px){.hero-compact h1{font-size:21px}.brand.official{padding:10px 14px}.weekgrid{grid-template-columns:repeat(7,66px);gap:3px;padding:6px}.course{font-size:12px;padding:6px 4px}.course small{font-size:11px}}

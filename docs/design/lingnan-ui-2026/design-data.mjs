@@ -353,10 +353,18 @@ get('40').blocks.splice(get('40').blocks.findIndex(b=>b.type==='button'),0,card(
 const material=readFileSync(new URL('../../evidence/project-defense-g0/fact-card-1-timetable.md',import.meta.url),'utf8');
 const clean=v=>v.replaceAll('**','').replaceAll('`','').trim();
 const materialBlocks=[note('本项目自有练习材料 · 冻结于 2026-09-30\n素材不是上线声明，也不证明学习效果。'),button('返回当前作答','31','secondary')];
-for(const line of material.split(/\r?\n/)){const parts=line.split('|').map(clean);if(parts.length>=5&&/^(INV-\d|F\d)$/.test(parts[1]))materialBlocks.push(card(parts[1]+' · '+parts[3],parts[2]));}
+for(const line of material.split(/\r?\n/)){const parts=line.split('|').map(clean);if(parts.length>=5&&/^(INV-\d|F\d)$/.test(parts[1]))materialBlocks.push({...card(parts[1]+' · '+parts[3],parts[2]),anchor:parts[1]});}
+materialBlocks.splice(2,0,{type:'materialIndex',items:['INV-1','INV-2','INV-3','F1','F2','F3','F4','F5','F6','F7','F8','F9']});
 materialBlocks.push(button('关闭材料，继续作答','31'),note('返回时保留当前轮次和草稿。'));
 screens.push(page('56','查看练习材料','FC-1 · 课表导入与校对 · 冻结素材','pages/defense/index',materialBlocks,{back:'31'}));
 
+// 保留已有自选周功能：同一JSP课程不含第7周，不能简化成连续每周。
+const editBlocks=get('10').blocks;
+const quickWeeks=editBlocks.find(b=>b.type==='chips'&&b.items.includes('双周'));quickWeeks.items=['每周','单周','双周','自选'];quickWeeks.selected=3;
+editBlocks.splice(editBlocks.indexOf(quickWeeks)+1,0,{type:'weekPicker',count:20,selected:[2,3,4,5,6,8,9,10,11,12,13,14,15,16,17]},note('当前已选第 2–6、8–17 周，共 15 周；第 7 周不选。只修改地点时，保存仍保留这组周次。'));
+for(const id of ['40','41'])get(id).blocks.push(button(id==='40'?'查看依据并去重答':'查看依据 F4 / F5','57#F4','secondary'));
+const reanswerMaterial=structuredClone(get('56').blocks).map(b=>b.type==='button'&&b.target==='31'?{...b,label:b.label.includes('关闭')?'关闭材料，返回重答':'返回重答草稿',target:'41'}:b);
+screens.push(page('57','查看重答依据','FC-1 · 重答阶段材料查阅示例','pages/defense/index',reanswerMaterial,{back:'41'}));
 export const icons={
  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 17h3"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M21 21v-3a6 6 0 0 0-3-5"/>',news:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h4M7 18h10"/>',flag:'<path d="M5 21V3M5 4h14l-3 5 3 5H5"/>',activity:'<path d="M2 13h5l3-9 4 16 3-7h5"/>',book:'<path d="M12 5c-3-2-7-2-10 0v15c3-2 7-2 10 0 3-2 7-2 10 0V5c-3-2-7-2-10 0v15"/>',chat:'<path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M7 8h10M7 12h7"/>',upload:'<path d="M12 16V3M7 8l5-5 5 5M3 15v6h18v-6"/>',edit:'<path d="m15 4 5 5M4 15 15 4l5 5L9 20H4z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z"/>',scan:'<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M6 12h12M9 8h6M9 16h6"/>',cloud:'<path d="M6 18a5 5 0 0 1-1-10 7 7 0 0 1 13-1 5 5 0 0 1 0 10M12 10v4M12 18v1"/>',check:'<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>'
 };

@@ -31,12 +31,21 @@ with sync_playwright() as p:
             if evidence['badText']: bad.append('text overflow '+str(evidence['badText']))
             if any(not i['ok'] for i in evidence['images']): bad.append('broken image')
             for link in evidence['links']:
-                if not (ROOT/link['href']).exists(): bad.append('missing target '+link['href'])
+                target_name,_,fragment=link['href'].partition('#')
+                target_file=ROOT/(target_name or s['file'])
+                if not target_file.exists(): bad.append('missing target '+link['href'])
+                elif fragment and ('id="'+fragment+'"') not in target_file.read_text(encoding='utf-8'): bad.append('missing fragment '+link['href'])
                 if link['width']<43.5 or link['height']<43.5: bad.append('small target '+link['text'][:18])
             if width==320: page.screenshot(path=str(ROOT/'review'/'narrow'/(file.stem+'.png')),full_page=True)
             item={'screen':s['id'],'width':width,'horizontalOverflow':evidence['scrollWidth']>width,'linkCount':len(evidence['links']),'issues':bad}
             results.append(item)
             if bad: failures.append(item)
+
+    # 核对同一课程的非连续周次，不让起止周快捷输入掩盖第7周排除状态。
+    week_expected=json.loads(subprocess.check_output(['node','-e',"process.stdout.write(JSON.stringify(require('./dist/services/timetable/weeks.js').parseWeekNotation('2-6,8-17').weeks))"],cwd=REPO,encoding='utf-8'))
+    page.goto((ROOT/next(s['file'] for s in SCREENS if s['id']=='10')).as_uri())
+    week_selected=[int(t) for t in page.locator('.week-choice.selected').all_text_contents()]
+    assert week_selected==week_expected and 7 not in week_selected,'non-continuous week selection preserved'
 
     # 画面跳转只验证静态演示链，不验证真实保存、AI、上传、复制或状态持久化。
     page.set_viewport_size({'width':390,'height':844})
@@ -53,14 +62,14 @@ with sync_playwright() as p:
       ('goal-delete',['22','51','47']),
       ('import-recovery',['49','05','07']),
       ('course-invalid',['50','10'])
-      ,('material-reference',['31','56','31'])
+      ,('material-reference',['31','56','31']),('reanswer-reference',['41','57','41'])
     ]
     by_id={s['id']:s for s in SCREENS}
     for label,seq in chains:
         page.goto((ROOT/by_id[seq[0]]['file']).as_uri())
         for target in seq[1:]:
-            page.locator('a[href="'+by_id[target]['file']+'"]').first.click()
-            assert page.url.endswith(by_id[target]['file']),label
+            page.locator('a[href="'+by_id[target]['file']+'"],a[href^="'+by_id[target]['file']+'#"]').first.click()
+            assert page.url.split('#')[0].endswith(by_id[target]['file']),label
         paths.append({'name':label,'screens':seq,'staticLinks':'passed','businessBehavior':'not tested'})
 
     # 真实浏览器局部水平滚动：验证固定列宽可查看周末；不外推微信手势。
@@ -98,6 +107,9 @@ with sync_playwright() as p:
     for label,offset in [('top',0),('middle',material_height/2-422),('bottom',material_height)]:
         page.evaluate('(y)=>scrollTo(0,y)',offset)
         page.screenshot(path=str(ROOT/'review'/'stress'/f'material-320-{label}.png'))
+    page.locator('a[href="#F5"]').click()
+    assert '#F5' in page.url and '确认前不写' in page.locator('#F5').inner_text()
+    page.screenshot(path=str(ROOT/'review'/'stress'/'material-320-F5.png'))
 
     # 用本轮截图生成宽幅目录，原图保持完整；它是评审导航，不导入 Figma。
     featured=['01','03','06','14','16','20','21','23','25','28','31','40']
@@ -128,7 +140,7 @@ table=next(b for b in fitness_screen['blocks'] if b['type']=='table')
 fitness_match=float(displayed['value'])==calculator['total'] and displayed['label']==calculator['grade'] and [int(r[-1]) for r in table['rows']]==[i['score'] for i in calculator['items']]
 fitness_example={'input':fitness_input,'calculatorTotal':calculator['total'],'displayedTotal':displayed['value'],'itemScores':[i['score'] for i in calculator['items']],'passed':fitness_match}
 if not fitness_match: failures.append({'fitnessExample':fitness_example})
-report={'date':'2026-10-17','designScenarioDate':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'weekScrolling':stress,'contrastSamples':contrast,'fitnessExample':fitness_example,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
+report={'date':'2026-10-17','designScenarioDate':'2026-10-16','environment':'Windows Chrome headless / Playwright','mode':'static design only','screens':len(SCREENS),'viewports':[390,320],'renderChecks':results,'staticNavigation':paths,'weekScrolling':stress,'nonContinuousWeeks':{'notation':'2-6,8-17','selected':week_selected,'matchesParser':True},'materialF5Anchor':'passed','contrastSamples':contrast,'fitnessExample':fitness_example,'failures':failures,'notVerified':['微信客户端/真机','模型与云端行为','真实文件/图片上传与保存','剪贴板实际写入','全部Figma画面渲染及原型连线','读屏/键盘表单/200%文字缩放']}
 (ROOT/'review'/'checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({'screens':len(SCREENS),'renderScenarios':len(results),'staticPaths':len(paths),'contrastSamples':len(contrast),'failures':failures},ensure_ascii=False))
 if failures: raise SystemExit(1)

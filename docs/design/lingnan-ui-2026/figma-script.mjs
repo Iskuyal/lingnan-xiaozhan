@@ -56,6 +56,8 @@ function cta(parent,label,target,tone='primary'){const main=buttonSet.children.f
 function block(parent,b){let n;
 switch(b.type){
 case 'reviewLinks':return null;
+case 'weekPicker':n=auto(parent,'自选教学周','VERTICAL',350,8);text(n,'已选：'+b.selected.join('、')+' 周',13,'deep','Medium',350);break;
+case 'materialIndex':n=auto(parent,'材料条目目录','VERTICAL',350,8);text(n,b.items.join(' / '),13,'deep','Medium',350);break;
 case 'toast':n=auto(parent,'原位结果提示','HORIZONTAL',350,8,'successBg',12);text(n,b.text,13,'success','Medium',282);break;
 case 'courseRow':n=auto(parent,b.title,'VERTICAL',350,8,'white',15);border(n);text(n,b.title,15,'text','Medium',320);text(n,b.text,12,'muted','Regular',320);const actions=auto(n,'当前课程操作','HORIZONTAL',320,12);action(text(actions,'编辑',13,'deep','Medium',100),b.edit);action(text(actions,'删除',13,'deep','Medium',100),b.remove);break;
 case 'heroCompact':n=auto(parent,'首页短标题','VERTICAL',350,4);text(n,b.title,24,'text','Bold',350,true);text(n,b.text,12,'secondary','Regular',350);break;

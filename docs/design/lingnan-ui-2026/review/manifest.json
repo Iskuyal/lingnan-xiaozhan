@@ -1,22 +1,22 @@
 {
-  "artifactVersion": "9b9aeca7eca2a12779a7cc7028f925212757401d09c3039b506ed183fb9010b8",
+  "artifactVersion": "a9ae2b233d600e79a07c1224091f85c5f9bd496bf7dc984d67e2b301b956d1a0",
   "date": "2026-10-17",
   "mode": "static design",
   "files": [
     {
       "file": "design-data.mjs",
-      "sha256": "312656ffcc71a3ef1b9b242f4e2c65a337b52830164806defb764ec20f7a84c1",
-      "bytes": 45686
+      "sha256": "f34161e6c27ac849c3ffa73eb1d8355046182ccffcd5ce065d6cba493cdd0e33",
+      "bytes": 46877
     },
     {
       "file": "figma-script.mjs",
-      "sha256": "ff1e8052cd8ae9f264b65355cd2ff07f81afd54a7eb34ee046a8aecdd1be05dc",
-      "bytes": 21784
+      "sha256": "3dfba5fc2fddf7121cd0418377532e0fbc562630fac834d606c3647b8274ad0e",
+      "bytes": 22066
     },
     {
       "file": "generate-html.mjs",
-      "sha256": "b8f5785b5e6ca5870ac95494c6a0a11d0199b63214ccbc8cd658e2bb449ae93f",
-      "bytes": 9355
+      "sha256": "77d0250323fab2bc175b863c0f3aaf6f038fcc4ba25a9435ee7aaa1a78d4d692",
+      "bytes": 9988
     },
     {
       "file": "_mockup.css",
@@ -25,8 +25,8 @@
     },
     {
       "file": "_refinements.css",
-      "sha256": "a9c65057a48c5b7017b3df0478ae15028f6e217cc91fc6acb91d4dbce57dca64",
-      "bytes": 3735
+      "sha256": "bb3f338f1f08fbf66cad3f1515756ea66a2b39b8b6de61ea5e953bca6e8de199",
+      "bytes": 4407
     },
     {
       "file": "_tokens.css",
@@ -80,8 +80,8 @@
     },
     {
       "file": "10-course-edit.html",
-      "sha256": "efd3964a25f49624324c4612c3741c23475a88ab56701bc373122f00c0353927",
-      "bytes": 2869
+      "sha256": "e31eedd91717b210297e3b2a9dfdadbddb5645713b628198cc65800ccbd77d66",
+      "bytes": 4675
     },
     {
       "file": "11-course-manage.html",
@@ -230,13 +230,13 @@
     },
     {
       "file": "40-defense-review.html",
-      "sha256": "cd779a191cc1fbc396c5e24ce68fdb3bdeae7eeefdb63a0acc922985297f166a",
-      "bytes": 2854
+      "sha256": "a804b2e2edaa328ff95d7ce6d4e5fe15c99f29661a830036bfd7705ce4a4968c",
+      "bytes": 2952
     },
     {
       "file": "41-defense-reanswer.html",
-      "sha256": "39bebd0bed103bbe3b2af14870d84efc1069423d6ae280ddde005003aebee1da",
-      "bytes": 1769
+      "sha256": "c78598f2a3d1a795733d5f5b8270d765e4c28b2a0a36378b318dbb44c7ea3758",
+      "bytes": 1863
     },
     {
       "file": "42-defense-done.html",
@@ -310,18 +310,23 @@
     },
     {
       "file": "56-defense-material-view.html",
-      "sha256": "4bdb9a9cb223c443a2482c64f960f289ca42ed2aa9149c919cdef15073d0b35e",
-      "bytes": 5261
+      "sha256": "7d43f82500962c3cc51b39f1aff77741f389c744e877f8528de71a16d253ca9e",
+      "bytes": 5725
+    },
+    {
+      "file": "57-defense-reanswer-material.html",
+      "sha256": "8e1c92cfe296aa168bafc52eca5226105975c6057c0ed5110ac581f6cf2b41bd",
+      "bytes": 5718
     },
     {
       "file": "screens.json",
-      "sha256": "da45ef63196c301fe2cfeccfe46c935811809b87396ef445c232bc999fdb53a7",
-      "bytes": 82402
+      "sha256": "6f706e94c9372066e156b6b7b196e5e58d54f3ea1075f6ee99ceb22fcd6ffc53",
+      "bytes": 89933
     },
     {
       "file": "verify-design.py",
-      "sha256": "bf08f4cbeffb7e3ede00acca27a10d09d01a5c4741a362d3d0a69d266211d1b8",
-      "bytes": 10527
+      "sha256": "6c1a95f0f2ebef3221a68a17517fb8f72d8ab0f3dff31a674a77183362f0d58d",
+      "bytes": 11826
     },
     {
       "file": "assets/lingnan-logo-horizontal.jpg",
@@ -385,8 +390,8 @@
     },
     {
       "file": "png/10-course-edit.png",
-      "sha256": "8805c03cc93e4481a9a895ee89c593ebe00684676159c6123dffd7349250064e",
-      "bytes": 160221
+      "sha256": "5cec57cca621f12d71dd09e782c9499d06c949e0432c9afb101b22cc6c113225",
+      "bytes": 198261
     },
     {
       "file": "png/11-course-manage.png",
@@ -535,13 +540,13 @@
     },
     {
       "file": "png/40-defense-review.png",
-      "sha256": "efbf3cdab3518af555aeb3572e4b6faf4d97582ef4d2930d7e7028350a05b7b7",
-      "bytes": 138813
+      "sha256": "4a2415c537c96c602b03d896262897578f991d90bd3c94a2435a6a2de9e7ac16",
+      "bytes": 145571
     },
     {
       "file": "png/41-defense-reanswer.png",
-      "sha256": "54a7662274399991d68916df72906b0a9d3eea8f91d8df1f074725007384380f",
-      "bytes": 116433
+      "sha256": "c3dbad879934c550729e8da9ff8bf1e1367117459cf413f84ea114c6269a32a9",
+      "bytes": 121500
     },
     {
       "file": "png/42-defense-done.png",
@@ -615,8 +620,13 @@
     },
     {
       "file": "png/56-defense-material-view.png",
-      "sha256": "6decfa28135781436664146d5d1b45f8691175a4b683e89cd0e9e73eb39dea39",
-      "bytes": 625834
+      "sha256": "8b6d10f8f8a65562e9288a5f69cd2c038177090f414723601f97e22aa5d80861",
+      "bytes": 641369
+    },
+    {
+      "file": "png/57-defense-reanswer-material.png",
+      "sha256": "aada00951cf34e98fdc5202a8f82bcf281f289052d1df50ea0b052b94c6eae71",
+      "bytes": 638814
     },
     {
       "file": "review/narrow/01-home.png",
@@ -665,8 +675,8 @@
     },
     {
       "file": "review/narrow/10-course-edit.png",
-      "sha256": "38234a52d5c4e781ac3bc8226885f61243935dfb52a95e95b097245a89cfb15f",
-      "bytes": 49991
+      "sha256": "2b5a925e8a4e28a5210674e85dd740c1bb84d813190ac78576aa284289aaf1bb",
+      "bytes": 60949
     },
     {
       "file": "review/narrow/11-course-manage.png",
@@ -815,13 +825,13 @@
     },
     {
       "file": "review/narrow/40-defense-review.png",
-      "sha256": "6fa4151a79cf2952bd44e799881709cb6c7a39c904359ab25e68db62b17c58f7",
-      "bytes": 39607
+      "sha256": "c50211e777b27bfe45c32c410a42ca373f436f0e072bb9d4acc83f6b1bd477d4",
+      "bytes": 41579
     },
     {
       "file": "review/narrow/41-defense-reanswer.png",
-      "sha256": "cc8bb59b27d20e29c9b986469ca343b31aea9605062415482f22dbbf6e13a95a",
-      "bytes": 33279
+      "sha256": "1595898ee39c9cc4dd2eeb3809f99408b3ca77b8179009471e158d306ded902e",
+      "bytes": 34726
     },
     {
       "file": "review/narrow/42-defense-done.png",
@@ -895,23 +905,33 @@
     },
     {
       "file": "review/narrow/56-defense-material-view.png",
-      "sha256": "c6280a26dab70d4eedc6963496e77405d4eba0f7810ecd22491eab8153a11b0c",
-      "bytes": 153117
+      "sha256": "61b48c173a3acc080c2e7f69b316ad91666b896abe2fa0289eec2cdbe36b729c",
+      "bytes": 158214
+    },
+    {
+      "file": "review/narrow/57-defense-reanswer-material.png",
+      "sha256": "99fa0eb738614e6a1f731157deb90560b3c080494bab2cf687af94763a7e2870",
+      "bytes": 157716
     },
     {
       "file": "review/stress/material-320-bottom.png",
-      "sha256": "2654bb6b1980a08d13deabdd5f7d6295152c70dde9e47b303d8a8e9b1f2c3da0",
-      "bytes": 45504
+      "sha256": "fea6cb5b42e111cddc0c06c9340d7a00d9d438397d19cca2d49dd6300233395b",
+      "bytes": 45479
+    },
+    {
+      "file": "review/stress/material-320-F5.png",
+      "sha256": "4e8f7bb90ab667815dcaf30effc4d694b95a43f004e6d0cd7790764c6d947d4f",
+      "bytes": 49918
     },
     {
       "file": "review/stress/material-320-middle.png",
-      "sha256": "e544627b958a474967cb6c7b5726fbb6e2dda2da6f1bcd5df2aad0f7738fe94f",
-      "bytes": 46863
+      "sha256": "57b96e5c230914a2dee845e6f63774895107b4298449fc2a49c6c7f1a3ae3ff0",
+      "bytes": 43777
     },
     {
       "file": "review/stress/material-320-top.png",
-      "sha256": "29255dbb4413785b0432bd7f6690216bad4ad597442fc69666cf1191f86b7138",
-      "bytes": 34164
+      "sha256": "e2829be6fb1c66e1e3a166a0ec7fb6304e670213c35d35b5c8e9e38949b3f021",
+      "bytes": 30510
     },
     {
       "file": "review/stress/week-320-left.png",
@@ -945,8 +965,8 @@
     },
     {
       "file": "review/overview.png",
-      "sha256": "86a98907f99079ddc56274a13ca2ab9fa976bcd0966b8a4e5f649cbcf641f12e",
-      "bytes": 770019
+      "sha256": "e6b021fbde7e4f0a21ffc5582e706ada5b397bf20326f3651ab1ea6285356200",
+      "bytes": 772021
     },
     {
       "file": "figma/png/01-home.png",
@@ -965,13 +985,13 @@
     },
     {
       "file": "figma/state.json",
-      "sha256": "47f36d5d03ac7328855baa38741fbc6fbedfc38e4fa776285d84f802ae26f816",
+      "sha256": "dd37bad3412539b960263d3e0e2e865ea37822dd842814f0c6f9095f2974ccb4",
       "bytes": 2267
     },
     {
       "file": "review/brief.md",
-      "sha256": "0415b17652cda1c4336c1146caace3180b5b5d0b9a4eeed7e4a0567ff75f8ebe",
-      "bytes": 3763
+      "sha256": "0781b5fa2d3e9407dc2e91690f4635bc146cb4824f7a29658ee0ba314055d9d7",
+      "bytes": 4014
     }
   ],
   "reviewersPerRound": 1,

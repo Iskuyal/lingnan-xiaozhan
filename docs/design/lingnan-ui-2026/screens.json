@@ -663,9 +663,37 @@
         "items": [
           "每周",
           "单周",
-          "双周"
+          "双周",
+          "自选"
         ],
-        "selected": 0
+        "selected": 3
+      },
+      {
+        "type": "weekPicker",
+        "count": 20,
+        "selected": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      {
+        "type": "note",
+        "text": "当前已选第 2–6、8–17 周，共 15 周；第 7 周不选。只修改地点时，保存仍保留这组周次。",
+        "tone": "neutral",
+        "title": ""
       },
       {
         "type": "field",
@@ -2460,6 +2488,12 @@
         "label": "退出练习",
         "target": "37",
         "tone": "tertiary"
+      },
+      {
+        "type": "button",
+        "label": "查看依据并去重答",
+        "target": "57#F4",
+        "tone": "secondary"
       }
     ],
     "back": "31",
@@ -2501,6 +2535,12 @@
         "type": "button",
         "label": "返回复盘",
         "target": "40",
+        "tone": "secondary"
+      },
+      {
+        "type": "button",
+        "label": "查看依据 F4 / F5",
+        "target": "57#F4",
         "tone": "secondary"
       }
     ],
@@ -3085,12 +3125,30 @@
         "tone": "secondary"
       },
       {
+        "type": "materialIndex",
+        "items": [
+          "INV-1",
+          "INV-2",
+          "INV-3",
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7",
+          "F8",
+          "F9"
+        ]
+      },
+      {
         "type": "card",
         "title": "INV-1 · —",
         "text": "本卡是素材，非上线声明，不证明学习效果",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "INV-1"
       },
       {
         "type": "card",
@@ -3098,7 +3156,8 @@
         "text": "「已完成」只表示仓库内有代码或测试记录，不等于真机通过：各轮验收均为 realDevice: false（模拟器）",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "INV-2"
       },
       {
         "type": "card",
@@ -3106,7 +3165,8 @@
         "text": "本卡不含真实教师姓名、班级人数与个人课表；仓库内确有这些信息，只引用路径不转载",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "INV-3"
       },
       {
         "type": "card",
@@ -3114,7 +3174,8 @@
         "text": "小程序不能浏览手机本地文件，只能用 wx.chooseMessageFile 从微信聊天记录选文件（含该 API 缺失时的兜底）。路径：教务系统下载 → 发到微信 → 小程序里选",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F1"
       },
       {
         "type": "card",
@@ -3122,7 +3183,8 @@
         "text": "文件先上传到本人 openid 下的云存储路径，由云函数 timetable 用 xlsx 解析成草稿；解析阶段不写课表记录，临时文件先删后解析",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F2"
       },
       {
         "type": "card",
@@ -3130,7 +3192,8 @@
         "text": "解析对象是网格矩阵：前几行元信息，表头「星期一 … 星期日」，其后每行一个大节。单元格形如 课程名 学分 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号；一格可有多门课，已实测单换行与空行两种分隔",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F3"
       },
       {
         "type": "card",
@@ -3138,7 +3201,8 @@
         "text": "识别不出的只标记不猜：用 warnings、weeksRecognized、weekText、problems 保留原值与提示，不擅自修复；未识别字段标待核对，由学生在确认页裁决",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F4"
       },
       {
         "type": "card",
@@ -3146,7 +3210,8 @@
         "text": "草稿经学生在确认页确认后才写库，确认前不写；「放弃导入」不写库、草稿清空（只存内存）。保存＝整份替换：替换本人全部课程，含手工添加的",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F5"
       },
       {
         "type": "card",
@@ -3154,7 +3219,8 @@
         "text": "个人课表按微信身份隔离：读写都在云函数内按调用上下文的 openid 过滤，课表路径客户端不直连数据库（公共资讯另有直连）；上传路径用 openid 哈希前缀，不接触教务账号",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F6"
       },
       {
         "type": "card",
@@ -3162,7 +3228,8 @@
         "text": "tests/fixtures/timetable/ 有 4 份真实教务导出（非手写样例）；Ticket 03 记录新增 43 项测试。入库 p4-b/verification.json 为 21 项全过、realDevice: false（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README（JSON 被 gitignore）",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F7"
       },
       {
         "type": "card",
@@ -3170,7 +3237,8 @@
         "text": "三项仍待验证，不得说成已完成：① 双账号界面隔离已由负责人确认通过（09-27，记录待归档），但服务端越权隔离只有桩测试、缺独立证据，不得说成「隔离已验证」；② 100 条以上的分页读取；③ 上传成功后若小程序被直接杀死，云存储可能残留临时文件（无 TTL），「临时文件已删除」的文案此时不成立",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F8"
       },
       {
         "type": "card",
@@ -3178,7 +3246,8 @@
         "text": "三处待核实的文档不一致：① p4-b/README 与 cloud/timetable.md:60 记 xlsx@0.18.5，而实际两份 package.json 均为 0.20.3（parse.ts 无版本声明）；② cloud-recheck/README 称导入页「没有存在性兜底」，实则 import/index.ts:174 就是该兜底且有测试；③ 同 README 记某轮「20 项全过」，入库 JSON 却是更晚的 21 项轮，未标注",
         "meta": "",
         "target": "",
-        "tone": "white"
+        "tone": "white",
+        "anchor": "F9"
       },
       {
         "type": "button",
@@ -3195,5 +3264,164 @@
     ],
     "back": "31",
     "file": "56-defense-material-view.html"
+  },
+  {
+    "id": "57",
+    "title": "查看重答依据",
+    "subtitle": "FC-1 · 重答阶段材料查阅示例",
+    "route": "pages/defense/index",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "本项目自有练习材料 · 冻结于 2026-09-30\n素材不是上线声明，也不证明学习效果。",
+        "tone": "neutral",
+        "title": ""
+      },
+      {
+        "type": "button",
+        "label": "返回重答草稿",
+        "target": "41",
+        "tone": "secondary"
+      },
+      {
+        "type": "materialIndex",
+        "items": [
+          "INV-1",
+          "INV-2",
+          "INV-3",
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7",
+          "F8",
+          "F9"
+        ]
+      },
+      {
+        "type": "card",
+        "title": "INV-1 · —",
+        "text": "本卡是素材，非上线声明，不证明学习效果",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "INV-1"
+      },
+      {
+        "type": "card",
+        "title": "INV-2 · —",
+        "text": "「已完成」只表示仓库内有代码或测试记录，不等于真机通过：各轮验收均为 realDevice: false（模拟器）",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "INV-2"
+      },
+      {
+        "type": "card",
+        "title": "INV-3 · —",
+        "text": "本卡不含真实教师姓名、班级人数与个人课表；仓库内确有这些信息，只引用路径不转载",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "INV-3"
+      },
+      {
+        "type": "card",
+        "title": "F1 · 已完成",
+        "text": "小程序不能浏览手机本地文件，只能用 wx.chooseMessageFile 从微信聊天记录选文件（含该 API 缺失时的兜底）。路径：教务系统下载 → 发到微信 → 小程序里选",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F1"
+      },
+      {
+        "type": "card",
+        "title": "F2 · 已完成",
+        "text": "文件先上传到本人 openid 下的云存储路径，由云函数 timetable 用 xlsx 解析成草稿；解析阶段不写课表记录，临时文件先删后解析",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F2"
+      },
+      {
+        "type": "card",
+        "title": "F3 · 已完成",
+        "text": "解析对象是网格矩阵：前几行元信息，表头「星期一 … 星期日」，其后每行一个大节。单元格形如 课程名 学分 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号；一格可有多门课，已实测单换行与空行两种分隔",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F3"
+      },
+      {
+        "type": "card",
+        "title": "F4 · 已完成",
+        "text": "识别不出的只标记不猜：用 warnings、weeksRecognized、weekText、problems 保留原值与提示，不擅自修复；未识别字段标待核对，由学生在确认页裁决",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F4"
+      },
+      {
+        "type": "card",
+        "title": "F5 · 已完成（确认框交互未验证）",
+        "text": "草稿经学生在确认页确认后才写库，确认前不写；「放弃导入」不写库、草稿清空（只存内存）。保存＝整份替换：替换本人全部课程，含手工添加的",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F5"
+      },
+      {
+        "type": "card",
+        "title": "F6 · 代码与桩测试已完成；服务端隔离待验证",
+        "text": "个人课表按微信身份隔离：读写都在云函数内按调用上下文的 openid 过滤，课表路径客户端不直连数据库（公共资讯另有直连）；上传路径用 openid 哈希前缀，不接触教务账号",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F6"
+      },
+      {
+        "type": "card",
+        "title": "F7 · 已完成",
+        "text": "tests/fixtures/timetable/ 有 4 份真实教务导出（非手写样例）；Ticket 03 记录新增 43 项测试。入库 p4-b/verification.json 为 21 项全过、realDevice: false（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README（JSON 被 gitignore）",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F7"
+      },
+      {
+        "type": "card",
+        "title": "F8 · 待验证",
+        "text": "三项仍待验证，不得说成已完成：① 双账号界面隔离已由负责人确认通过（09-27，记录待归档），但服务端越权隔离只有桩测试、缺独立证据，不得说成「隔离已验证」；② 100 条以上的分页读取；③ 上传成功后若小程序被直接杀死，云存储可能残留临时文件（无 TTL），「临时文件已删除」的文案此时不成立",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F8"
+      },
+      {
+        "type": "card",
+        "title": "F9 · 待核实",
+        "text": "三处待核实的文档不一致：① p4-b/README 与 cloud/timetable.md:60 记 xlsx@0.18.5，而实际两份 package.json 均为 0.20.3（parse.ts 无版本声明）；② cloud-recheck/README 称导入页「没有存在性兜底」，实则 import/index.ts:174 就是该兜底且有测试；③ 同 README 记某轮「20 项全过」，入库 JSON 却是更晚的 21 项轮，未标注",
+        "meta": "",
+        "target": "",
+        "tone": "white",
+        "anchor": "F9"
+      },
+      {
+        "type": "button",
+        "label": "关闭材料，返回重答",
+        "target": "41",
+        "tone": "primary"
+      },
+      {
+        "type": "note",
+        "text": "返回时保留当前轮次和草稿。",
+        "tone": "neutral",
+        "title": ""
+      }
+    ],
+    "back": "41",
+    "file": "57-defense-reanswer-material.html"
   }
 ]

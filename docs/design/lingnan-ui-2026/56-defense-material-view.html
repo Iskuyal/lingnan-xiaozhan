@@ -2,17 +2,18 @@
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>查看练习材料 · 岭南 UI 设计提案</title><link rel="stylesheet" href="_tokens.css"><link rel="stylesheet" href="_mockup.css"><link rel="stylesheet" href="_refinements.css"></head><body><div class="status"><span>9:41</span><span>▴ ▴ ▰</span></div><nav class="navbar" aria-label="页面导航"><a class="back" href="31-defense-practice.html">‹</a><div class="navtitle">查看练习材料</div><span class="capsule" aria-label="微信胶囊示意">··· | ◉</span></nav><div class="design-label">静态设计提案 · 示例内容 / 非小程序运行截图</div><main class="screen work"><header class="head"><div class="eyebrow">LINGNAN / 56</div><h1>查看练习材料</h1><p class="subtitle">FC-1 · 课表导入与校对 · 冻结素材</p></header><aside class="note neutral">本项目自有练习材料 · 冻结于 2026-09-30
 素材不是上线声明，也不证明学习效果。</aside>
 <a class="btn secondary" href="31-defense-practice.html">返回当前作答</a>
-<section class="card white"><h3>INV-1 · —</h3><p>本卡是素材，非上线声明，不证明学习效果</p><div class="meta"></div></section>
-<section class="card white"><h3>INV-2 · —</h3><p>「已完成」只表示仓库内有代码或测试记录，不等于真机通过：各轮验收均为 realDevice: false（模拟器）</p><div class="meta"></div></section>
-<section class="card white"><h3>INV-3 · —</h3><p>本卡不含真实教师姓名、班级人数与个人课表；仓库内确有这些信息，只引用路径不转载</p><div class="meta"></div></section>
-<section class="card white"><h3>F1 · 已完成</h3><p>小程序不能浏览手机本地文件，只能用 wx.chooseMessageFile 从微信聊天记录选文件（含该 API 缺失时的兜底）。路径：教务系统下载 → 发到微信 → 小程序里选</p><div class="meta"></div></section>
-<section class="card white"><h3>F2 · 已完成</h3><p>文件先上传到本人 openid 下的云存储路径，由云函数 timetable 用 xlsx 解析成草稿；解析阶段不写课表记录，临时文件先删后解析</p><div class="meta"></div></section>
-<section class="card white"><h3>F3 · 已完成</h3><p>解析对象是网格矩阵：前几行元信息，表头「星期一 … 星期日」，其后每行一个大节。单元格形如 课程名 学分 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号；一格可有多门课，已实测单换行与空行两种分隔</p><div class="meta"></div></section>
-<section class="card white"><h3>F4 · 已完成</h3><p>识别不出的只标记不猜：用 warnings、weeksRecognized、weekText、problems 保留原值与提示，不擅自修复；未识别字段标待核对，由学生在确认页裁决</p><div class="meta"></div></section>
-<section class="card white"><h3>F5 · 已完成（确认框交互未验证）</h3><p>草稿经学生在确认页确认后才写库，确认前不写；「放弃导入」不写库、草稿清空（只存内存）。保存＝整份替换：替换本人全部课程，含手工添加的</p><div class="meta"></div></section>
-<section class="card white"><h3>F6 · 代码与桩测试已完成；服务端隔离待验证</h3><p>个人课表按微信身份隔离：读写都在云函数内按调用上下文的 openid 过滤，课表路径客户端不直连数据库（公共资讯另有直连）；上传路径用 openid 哈希前缀，不接触教务账号</p><div class="meta"></div></section>
-<section class="card white"><h3>F7 · 已完成</h3><p>tests/fixtures/timetable/ 有 4 份真实教务导出（非手写样例）；Ticket 03 记录新增 43 项测试。入库 p4-b/verification.json 为 21 项全过、realDevice: false（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README（JSON 被 gitignore）</p><div class="meta"></div></section>
-<section class="card white"><h3>F8 · 待验证</h3><p>三项仍待验证，不得说成已完成：① 双账号界面隔离已由负责人确认通过（09-27，记录待归档），但服务端越权隔离只有桩测试、缺独立证据，不得说成「隔离已验证」；② 100 条以上的分页读取；③ 上传成功后若小程序被直接杀死，云存储可能残留临时文件（无 TTL），「临时文件已删除」的文案此时不成立</p><div class="meta"></div></section>
-<section class="card white"><h3>F9 · 待核实</h3><p>三处待核实的文档不一致：① p4-b/README 与 cloud/timetable.md:60 记 xlsx@0.18.5，而实际两份 package.json 均为 0.20.3（parse.ts 无版本声明）；② cloud-recheck/README 称导入页「没有存在性兜底」，实则 import/index.ts:174 就是该兜底且有测试；③ 同 README 记某轮「20 项全过」，入库 JSON 却是更晚的 21 项轮，未标注</p><div class="meta"></div></section>
+<section class="material-index" id="material-index"><h2>定位材料条目</h2><div><a href="#INV-1">INV-1</a><a href="#INV-2">INV-2</a><a href="#INV-3">INV-3</a><a href="#F1">F1</a><a href="#F2">F2</a><a href="#F3">F3</a><a href="#F4">F4</a><a href="#F5">F5</a><a href="#F6">F6</a><a href="#F7">F7</a><a href="#F8">F8</a><a href="#F9">F9</a></div></section>
+<section id="INV-1" class="card white"><h3>INV-1 · —</h3><p>本卡是素材，非上线声明，不证明学习效果</p><div class="meta"></div></section>
+<section id="INV-2" class="card white"><h3>INV-2 · —</h3><p>「已完成」只表示仓库内有代码或测试记录，不等于真机通过：各轮验收均为 realDevice: false（模拟器）</p><div class="meta"></div></section>
+<section id="INV-3" class="card white"><h3>INV-3 · —</h3><p>本卡不含真实教师姓名、班级人数与个人课表；仓库内确有这些信息，只引用路径不转载</p><div class="meta"></div></section>
+<section id="F1" class="card white"><h3>F1 · 已完成</h3><p>小程序不能浏览手机本地文件，只能用 wx.chooseMessageFile 从微信聊天记录选文件（含该 API 缺失时的兜底）。路径：教务系统下载 → 发到微信 → 小程序里选</p><div class="meta"></div></section>
+<section id="F2" class="card white"><h3>F2 · 已完成</h3><p>文件先上传到本人 openid 下的云存储路径，由云函数 timetable 用 xlsx 解析成草稿；解析阶段不写课表记录，临时文件先删后解析</p><div class="meta"></div></section>
+<section id="F3" class="card white"><h3>F3 · 已完成</h3><p>解析对象是网格矩阵：前几行元信息，表头「星期一 … 星期日」，其后每行一个大节。单元格形如 课程名 学分 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号；一格可有多门课，已实测单换行与空行两种分隔</p><div class="meta"></div></section>
+<section id="F4" class="card white"><h3>F4 · 已完成</h3><p>识别不出的只标记不猜：用 warnings、weeksRecognized、weekText、problems 保留原值与提示，不擅自修复；未识别字段标待核对，由学生在确认页裁决</p><div class="meta"></div></section>
+<section id="F5" class="card white"><h3>F5 · 已完成（确认框交互未验证）</h3><p>草稿经学生在确认页确认后才写库，确认前不写；「放弃导入」不写库、草稿清空（只存内存）。保存＝整份替换：替换本人全部课程，含手工添加的</p><div class="meta"></div></section>
+<section id="F6" class="card white"><h3>F6 · 代码与桩测试已完成；服务端隔离待验证</h3><p>个人课表按微信身份隔离：读写都在云函数内按调用上下文的 openid 过滤，课表路径客户端不直连数据库（公共资讯另有直连）；上传路径用 openid 哈希前缀，不接触教务账号</p><div class="meta"></div></section>
+<section id="F7" class="card white"><h3>F7 · 已完成</h3><p>tests/fixtures/timetable/ 有 4 份真实教务导出（非手写样例）；Ticket 03 记录新增 43 项测试。入库 p4-b/verification.json 为 21 项全过、realDevice: false（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README（JSON 被 gitignore）</p><div class="meta"></div></section>
+<section id="F8" class="card white"><h3>F8 · 待验证</h3><p>三项仍待验证，不得说成已完成：① 双账号界面隔离已由负责人确认通过（09-27，记录待归档），但服务端越权隔离只有桩测试、缺独立证据，不得说成「隔离已验证」；② 100 条以上的分页读取；③ 上传成功后若小程序被直接杀死，云存储可能残留临时文件（无 TTL），「临时文件已删除」的文案此时不成立</p><div class="meta"></div></section>
+<section id="F9" class="card white"><h3>F9 · 待核实</h3><p>三处待核实的文档不一致：① p4-b/README 与 cloud/timetable.md:60 记 xlsx@0.18.5，而实际两份 package.json 均为 0.20.3（parse.ts 无版本声明）；② cloud-recheck/README 称导入页「没有存在性兜底」，实则 import/index.ts:174 就是该兜底且有测试；③ 同 README 记某轮「20 项全过」，入库 JSON 却是更晚的 21 项轮，未标注</p><div class="meta"></div></section>
 <a class="btn primary" href="31-defense-practice.html">关闭材料，继续作答</a>
 <aside class="note neutral">返回时保留当前轮次和草稿。</aside></main><footer class="footer">广东岭南职业技术学院 · 校园工具 UI 提案 · 2026-10-16</footer></body></html>
