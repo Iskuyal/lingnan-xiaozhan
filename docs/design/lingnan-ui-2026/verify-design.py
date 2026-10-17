@@ -53,6 +53,7 @@ with sync_playwright() as p:
       ('goal-delete',['22','51','47']),
       ('import-recovery',['49','05','07']),
       ('course-invalid',['50','10'])
+      ,('material-reference',['31','56','31'])
     ]
     by_id={s['id']:s for s in SCREENS}
     for label,seq in chains:
@@ -78,12 +79,25 @@ with sync_playwright() as p:
                 page.wait_for_timeout(200)
             value=scroller.evaluate('(e)=>({left:e.scrollLeft,max:e.scrollWidth-e.clientWidth})')
             if position!='left': assert value['left']>0,'week horizontal scrolling'
-            axis=page.locator('.period').evaluate_all('(nodes)=>nodes.map(e=>({text:e.textContent,left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}))')
+            axis=page.locator('.period-label').evaluate_all('''(nodes)=>nodes.map(e=>{
+                const b=e.getBoundingClientRect(),r=document.createRange();r.selectNodeContents(e);const t=r.getBoundingClientRect();
+                return {text:e.textContent,left:b.left,right:b.right,textLeft:t.left,textRight:t.right};
+            })''')
             viewport=scroller.bounding_box()
-            assert all(a['left']>=viewport['x'] and a['right']<=viewport['x']+viewport['width'] for a in axis),'sticky period axis visible'
+            shell=page.locator('.week-shell').bounding_box()
+            assert all(a['left']>=shell['x'] and a['right']<=viewport['x']+1 for a in axis),'period axis outside horizontal scrolling'
+            assert all(a['textLeft']>=a['left'] and a['textRight']<=a['right'] for a in axis),'whole period text inside fixed axis'
             assert [a['text'] for a in axis]==['1–2','3–4','5–6','7–8','9–10','11–12']
             page.screenshot(path=str(ROOT/'review'/'stress'/f'week-{width}-{position}.png'),full_page=True)
             stress.append({'viewport':width,'position':position,'horizontalScroll':value,'periodAxisVisible':True,'passed':True})
+
+    # 长材料的上/中/下三个实际视口，用来检查查阅及关闭入口。
+    page.set_viewport_size({'width':320,'height':844})
+    page.goto((ROOT/by_id['56']['file']).as_uri())
+    material_height=page.evaluate('document.documentElement.scrollHeight')
+    for label,offset in [('top',0),('middle',material_height/2-422),('bottom',material_height)]:
+        page.evaluate('(y)=>scrollTo(0,y)',offset)
+        page.screenshot(path=str(ROOT/'review'/'stress'/f'material-320-{label}.png'))
 
     # 用本轮截图生成宽幅目录，原图保持完整；它是评审导航，不导入 Figma。
     featured=['01','03','06','14','16','20','21','23','25','28','31','40']

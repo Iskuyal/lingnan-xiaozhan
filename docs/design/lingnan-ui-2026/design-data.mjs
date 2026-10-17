@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 // 静态设计内容；不是生产数据，也不会被小程序构建引用。
 export const figmaFileKey = 'rZS8zZHE1euLlZzuVGxvOH';
 export const colors = { brand:'#c41c23', deep:'#8c1614', gold:'#c69a28', paper:'#fdf7f5', shade:'#faeee9', text:'#2b2422', secondary:'#6b5d57', muted:'#746760', white:'#ffffff', line:'#ded4cf', warn:'#9a5b1e', warnBg:'#fff4e4', success:'#147a70', successBg:'#e8f3f0', blue:'#2f5f9e', blueBg:'#e9eff6' };
@@ -226,17 +227,17 @@ export const screens = [
  ],{back:'31'}),
  page('40','三轮练习复盘','复盘示例 · 三轮反馈完成后','pages/defense/index',[
   steps(['选材料','三轮练习','复盘'],2),
-  row('问题与目标','已反馈 · 对照 F1、F4'),row('方案及取舍','已反馈 · 对照 F4、INV-1'),row('验证与限制','已反馈 · F8 待验证仍保留'),
+  row('问题与目标','已反馈 · 对照 F1、F4'),row('方案及取舍','已反馈 · 对照 F4、F5'),row('验证与限制','已反馈 · F8 待验证仍保留'),
   note('仅整理各维度反馈和待验证事项，不评判项目质量，也不生成分数。'),
   button('复制复盘文字','40','secondary'),button('重答一处薄弱项','41'),button('退出练习','37','tertiary')
  ],{back:'31'}),
  page('41','重答一处薄弱项','本次仅一次 · 补充可回核的依据','pages/defense/index',[
   card('要补充的地方','解释为什么必须先校对，再确认保存。','材料：课表导入与校对'),
-  {type:'textarea',label:'重新写一段回答',value:'识别不出的字段只标记不猜，学生核对后才确认保存。[F4] 草稿与已保存课表分开；未确认前不写入。[INV-1]',hint:'20–500 字；必须自己新写'},
+  {type:'textarea',label:'重新写一段回答',value:'识别不出的字段只标记不猜，学生核对后才确认保存。[F4] 草稿与已保存课表分开；未确认前不写入。[F5]',hint:'20–500 字；必须自己新写'},
   note('只把句子写长不算增加依据；材料中的待验证项继续保留。'),button('提交这次重答','42'),button('返回复盘','40','secondary')
  ],{back:'40'}),
  page('42','这次练习到这里','重答已结束 · 静态示例','pages/defense/index',[
-  card('新增了可回核的依据','重答加入了 [F4] 与 [INV-1] 的对应说明。','示例反馈，不是学习效果证明'),note('[F8] 中的待验证事项仍未解决。\n会话不会长期保存，离开前可复制复盘。','warning'),button('复制复盘文字','42','secondary'),button('回到首页','01')
+  card('新增了可回核的依据','重答加入了 [F4] 与 [F5] 的对应说明。','示例反馈，不是学习效果证明'),note('[F8] 中的待验证事项仍未解决。\n会话不会长期保存，离开前可复制复盘。','warning'),button('复制复盘文字','42','secondary'),button('回到首页','01')
  ],{back:'40'}),
  page('43','课程已更新','确认保存成功后的状态示意','pages/timetable/index',[
   note('已按你的确认新增「数据库实验」。','neutral','变更已保存'),card('数据库实验','周三 · 第 7–8 节 · 第 1–16 周','B305 · 示例课程','','blue'),metric('4','门课程','本次变更：3 → 4\n只在保存成功后显示这条结果'),button('继续使用课表助手','13','secondary'),button('返回首页','01','tertiary')
@@ -315,7 +316,7 @@ screens.push(
   steps(['问题与目标','方案取舍','验证限制'],2),card('验证与限制','哪些部分验证过、哪些还没验证？请如实说明依据与限制。'),{type:'textarea',label:'你的回答',value:'我能说明文件选择、草稿和确认保存的设计。[F1][F4] 但材料中 F8 列出的隔离、分页与临时文件问题仍待验证，不把它们说成已通过。',hint:'20–500 字 · 依据不足可以说明仍待验证'},button('提交第 3 轮','54'),button('退出练习','37','secondary')
  ],{back:'39'}),
  page('53','第 2 轮的依据核对','材料：课表导入与校对','pages/defense/index',[
-  section('引用核对'),card('[F4] [INV-1] 可回核','先校对草稿，再由本人确认，才能成为已保存课表。'),section('是否对应回答'),note('本轮说明了草稿和保存之间的区别。'),section('待验证保留'),note('[F8] 的待验证事项继续保留。','warning'),section('追问'),card('第 3 轮 · 验证与限制','哪些部分已有依据，哪些仍未验证？'),button('开始第 3 轮','52')
+  section('引用核对'),card('[F4] [F5] 可回核','先校对草稿，再由本人确认，才能成为已保存课表。'),section('是否对应回答'),note('本轮说明了草稿和保存之间的区别。'),section('待验证保留'),note('[F8] 的待验证事项继续保留。','warning'),section('追问'),card('第 3 轮 · 验证与限制','哪些部分已有依据，哪些仍未验证？'),button('开始第 3 轮','52')
  ],{back:'39'}),
  page('54','第 3 轮的依据核对','三轮已完成反馈后进入复盘','pages/defense/index',[
   section('引用核对'),card('[F1] [F4] [F8] 可回核','已完成的说明与仍待验证的事项分别保留。'),section('是否对应回答'),note('本轮讨论验证依据和限制。'),section('待验证保留'),note('没有新证据支持 [F8] 已完成，本轮继续保留待验证。','warning'),section('追问'),note('本轮为最后一轮；可以整理三轮复盘，再重答一处。'),button('查看三轮复盘','40')
@@ -343,6 +344,18 @@ get('20').blocks.find(b=>b.type==='article').paragraphs=[
 get('35').title='资讯详情';get('35').subtitle=get('20').subtitle;get('35').back='19';get('35').blocks=[{type:'toast',text:'原文链接已复制',target:'20'},...structuredClone(get('20').blocks)];
 get('43').title='我的课表';get('43').subtitle='第 8 周 · 确认保存后的示例';get('43').blocks=[{type:'toast',text:'已新增「数据库实验」，现有 4 门课程。'}, {type:'weeknav'},{type:'week',rows:4,added:true},note('周三第 7–8 节 · 数据库实验 · B305\n第 1–16 周，已按你确认的内容保存。'),button('继续使用课表助手','13','secondary'),button('返回首页','01','tertiary')];
 get('44').title='我的课表';get('44').subtitle='第 8 周 · 删除成功后的示例';get('44').blocks=[{type:'toast',text:'「大学英语」已删除，其余 2 门课程保留。'},{type:'weeknav'},{type:'week',rows:2,removed:true},button('新增课程','10','secondary'),button('返回首页','01','tertiary')];
+
+
+// 查阅视图是待实现的设计提案；正文直接取自冻结素材，不把旧材料更新成当前验收。
+for(const id of ['30','31','39','52'])get(id).blocks.push(button('查看完整练习材料','56','secondary'));
+get('40').blocks=get('40').blocks.map(b=>b.type==='row'?({...b,text:b.title==='问题与目标'?'已说明学生、聊天选文件和校对草稿 [F1][F4]':b.title==='方案及取舍'?'已提到草稿与保存分开；可补充确认的理由 [F4][F5]':'已保留 [F8] 待验证，未说成已完成'}):b);
+get('40').blocks.splice(get('40').blocks.findIndex(b=>b.type==='button'),0,card('本次选择补充：方案及取舍','为什么先校对，再由学生确认保存？','依据 [F4][F5]，与下一页重答题对应','','blue'));
+const material=readFileSync(new URL('../../evidence/project-defense-g0/fact-card-1-timetable.md',import.meta.url),'utf8');
+const clean=v=>v.replaceAll('**','').replaceAll('`','').trim();
+const materialBlocks=[note('本项目自有练习材料 · 冻结于 2026-09-30\n素材不是上线声明，也不证明学习效果。'),button('返回当前作答','31','secondary')];
+for(const line of material.split(/\r?\n/)){const parts=line.split('|').map(clean);if(parts.length>=5&&/^(INV-\d|F\d)$/.test(parts[1]))materialBlocks.push(card(parts[1]+' · '+parts[3],parts[2]));}
+materialBlocks.push(button('关闭材料，继续作答','31'),note('返回时保留当前轮次和草稿。'));
+screens.push(page('56','查看练习材料','FC-1 · 课表导入与校对 · 冻结素材','pages/defense/index',materialBlocks,{back:'31'}));
 
 export const icons={
  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M14 14h3M7 17h3"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M21 21v-3a6 6 0 0 0-3-5"/>',news:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h4M7 18h10"/>',flag:'<path d="M5 21V3M5 4h14l-3 5 3 5H5"/>',activity:'<path d="M2 13h5l3-9 4 16 3-7h5"/>',book:'<path d="M12 5c-3-2-7-2-10 0v15c3-2 7-2 10 0 3-2 7-2 10 0V5c-3-2-7-2-10 0v15"/>',chat:'<path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z"/><path d="M7 8h10M7 12h7"/>',upload:'<path d="M12 16V3M7 8l5-5 5 5M3 15v6h18v-6"/>',edit:'<path d="m15 4 5 5M4 15 15 4l5 5L9 20H4z"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z"/>',scan:'<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M6 12h12M9 8h6M9 16h6"/>',cloud:'<path d="M6 18a5 5 0 0 1-1-10 7 7 0 0 1 13-1 5 5 0 0 1 0 10M12 10v4M12 18v1"/>',check:'<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>'

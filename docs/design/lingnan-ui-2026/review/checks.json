@@ -3,7 +3,7 @@
   "designScenarioDate": "2026-10-16",
   "environment": "Windows Chrome headless / Playwright",
   "mode": "static design only",
-  "screens": 55,
+  "screens": 56,
   "viewports": [
     390,
     320
@@ -216,14 +216,14 @@
       "screen": "30",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
       "screen": "31",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -279,7 +279,7 @@
       "screen": "39",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -370,7 +370,7 @@
       "screen": "52",
       "width": 390,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -392,6 +392,13 @@
       "width": 390,
       "horizontalOverflow": false,
       "linkCount": 11,
+      "issues": []
+    },
+    {
+      "screen": "56",
+      "width": 390,
+      "horizontalOverflow": false,
+      "linkCount": 3,
       "issues": []
     },
     {
@@ -601,14 +608,14 @@
       "screen": "30",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
       "screen": "31",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -664,7 +671,7 @@
       "screen": "39",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -755,7 +762,7 @@
       "screen": "52",
       "width": 320,
       "horizontalOverflow": false,
-      "linkCount": 3,
+      "linkCount": 4,
       "issues": []
     },
     {
@@ -777,6 +784,13 @@
       "width": 320,
       "horizontalOverflow": false,
       "linkCount": 11,
+      "issues": []
+    },
+    {
+      "screen": "56",
+      "width": 320,
+      "horizontalOverflow": false,
+      "linkCount": 3,
       "issues": []
     }
   ],
@@ -911,6 +925,16 @@
       ],
       "staticLinks": "passed",
       "businessBehavior": "not tested"
+    },
+    {
+      "name": "material-reference",
+      "screens": [
+        "31",
+        "56",
+        "31"
+      ],
+      "staticLinks": "passed",
+      "businessBehavior": "not tested"
     }
   ],
   "weekScrolling": [
@@ -919,7 +943,7 @@
       "position": "left",
       "horizontalScroll": {
         "left": 0,
-        "max": 177
+        "max": 174
       },
       "periodAxisVisible": true,
       "passed": true
@@ -928,8 +952,8 @@
       "viewport": 390,
       "position": "middle",
       "horizontalScroll": {
-        "left": 89,
-        "max": 177
+        "left": 87,
+        "max": 174
       },
       "periodAxisVisible": true,
       "passed": true
@@ -938,8 +962,8 @@
       "viewport": 390,
       "position": "right",
       "horizontalScroll": {
-        "left": 177,
-        "max": 177
+        "left": 174,
+        "max": 174
       },
       "periodAxisVisible": true,
       "passed": true
@@ -949,7 +973,7 @@
       "position": "left",
       "horizontalScroll": {
         "left": 0,
-        "max": 239
+        "max": 236
       },
       "periodAxisVisible": true,
       "passed": true
@@ -958,8 +982,8 @@
       "viewport": 320,
       "position": "middle",
       "horizontalScroll": {
-        "left": 120,
-        "max": 239
+        "left": 118,
+        "max": 236
       },
       "periodAxisVisible": true,
       "passed": true
@@ -968,8 +992,8 @@
       "viewport": 320,
       "position": "right",
       "horizontalScroll": {
-        "left": 239,
-        "max": 239
+        "left": 236,
+        "max": 236
       },
       "periodAxisVisible": true,
       "passed": true
