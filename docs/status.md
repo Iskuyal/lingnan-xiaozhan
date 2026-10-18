@@ -1,10 +1,12 @@
 # 项目当前状态
 
-核对日期：2026-10-17（项目收尾；其他实测仍按记录日期）。收尾前基线为 `main@fbb1b5b`：PR #136 的 57 屏全流程 UI 设计稿已合入，v8 演示材料在 `40513b2`。收尾范围与完成项见[收尾记录](evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)；历史收尾见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)、[升学优化记录](evidence/advancement-optimization-2026-10-03/README.md)、[入口维护记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
+核对日期：2026-10-18（UI合入main与仓库同步；其他实测仍按记录日期）。收尾前基线为 `main@fbb1b5b`：PR #136 的 57 屏全流程 UI 设计稿已合入，v8 演示材料在 `40513b2`。收尾范围与完成项见[收尾记录](evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)；历史收尾见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)、[升学优化记录](evidence/advancement-optimization-2026-10-03/README.md)、[入口维护记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
+
+2026-10-18 合入核对：UI实现PR #139已合并，16页原生重写的代码与离线验证记录已进入main；实现票#137按本次范围收尾。767项测试、模拟器和辅助布局仍属于10-17记录，不外推新一轮真机或真实云端验收。
 
 ## 已实现与实际证据
 
-2026-10-17 UI 设计更新：[全流程 UI 提案](design/lingnan-ui-2026/README.md)已完成本地 57 屏 HTML/PNG 修订及 390/320px 静态检查，负责人已确认作为 UI 重写依据（[Issue #137](https://github.com/Iskuyal/wx-match/issues/137)），设计文档随 PR #136 合入 main；[本轮原生实现与验证](evidence/lingnan-ui-2026-10-17/README.md)在当前实现分支覆盖16条在用页面，包含固定节次轴、完整冻结材料查阅与草稿返回。整合主线后767项本机测试及390px原生模拟器10项离线交互通过，8个320px浏览器辅助画面无横向溢出；320px原生与真机另计。Figma 已创建 44 屏初稿，但 MCP Starter 额度已耗尽，盾形校徽替换、修订同步和全量远端复核未完成（[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)）。负责人本轮说明已获校长许可使用校徽，并选择官网 EST.2001 盾形横版；[许可与官方来源](design/lingnan-ui-2026/assets/README.md)已记录，此确认不自动扩大到学校其他使用许可或真实学生数据。
+2026-10-17 UI 设计更新：[全流程 UI 提案](design/lingnan-ui-2026/README.md)已完成本地 57 屏 HTML/PNG 修订及 390/320px 静态检查，负责人已确认作为 UI 重写依据（[Issue #137](https://github.com/Iskuyal/wx-match/issues/137)），设计文档随 PR #136 合入 main；[本轮原生实现与验证](evidence/lingnan-ui-2026-10-17/README.md)已通过[PR #139](https://github.com/Iskuyal/wx-match/pull/139)合入main `a35ec6c`，覆盖16条在用页面，包含固定节次轴、完整冻结材料查阅与草稿返回。整合主线后767项本机测试及390px原生模拟器10项离线交互通过，8个320px浏览器辅助画面无横向溢出；320px原生与真机另计。Figma 已创建 44 屏初稿，但 MCP Starter 额度已耗尽，盾形校徽替换、修订同步和全量远端复核未完成（[Issue #135](https://github.com/Iskuyal/wx-match/issues/135)）。负责人本轮说明已获校长许可使用校徽，并选择官网 EST.2001 盾形横版；[许可与官方来源](design/lingnan-ui-2026/assets/README.md)已记录，此确认不自动扩大到学校其他使用许可或真实学生数据。
 
 | 对象 | 当前成果 | 证明边界 |
 | --- | --- | --- |

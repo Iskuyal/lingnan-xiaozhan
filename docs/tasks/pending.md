@@ -1,12 +1,12 @@
 # 待办总表
 
-核对日期：2026-10-17（项目收尾；真实实测仍按各记录日期）。收尾前基线 `main@fbb1b5b`（PR #136 设计稿已合入）；本轮收尾见[收尾记录](../evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)，旧清单完整保存在[收尾前快照](../archive/pending-before-closeout-2026-10-03.md)。当前结果见[项目状态](../status.md)、[收尾证据](../evidence/agent-closeout-2026-10-03/README.md)与[任务维护记录](../evidence/agent-maintenance-2026-10-07/README.md)。代码合入、云端部署、模拟器、真机和效果达标分别判断。
+核对日期：2026-10-18（UI合入main与仓库同步；真实实测仍按各记录日期）。收尾前基线 `main@fbb1b5b`（PR #136 设计稿已合入）；本轮收尾见[收尾记录](../evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)，旧清单完整保存在[收尾前快照](../archive/pending-before-closeout-2026-10-03.md)。当前结果见[项目状态](../status.md)、[收尾证据](../evidence/agent-closeout-2026-10-03/README.md)与[任务维护记录](../evidence/agent-maintenance-2026-10-07/README.md)。代码合入、云端部署、模拟器、真机和效果达标分别判断。
 
 ## 已从待执行清单移除
 
 - 2026-10-08 遗留的两处修复已提交并随收尾 PR #138 合入：网络类传输失败可读文案（不再把平台英文原文递给用户）、`verify:wechat` 等终态并以 `skipped` 记录本机网络阻断。它们不再是未提交材料。
-- 57 屏全流程 UI 设计（PR #136）已按负责人确认合入 `main@fbb1b5b`，设计稿不再是待评审件；[Issue #137](https://github.com/Iskuyal/wx-match/issues/137) 的16页原生重写已实现，767项本机测试与390px模拟器10项离线交互通过，见[证据](../evidence/lingnan-ui-2026-10-17/README.md)；320px浏览器辅助8画面无横向溢出；320px原生、真机及真实云端仍单列，不能写成全面端上验收。
-- 2026-09-22 起未跟踪的 [Ticket 12](tickets/12-timetable-page-tidy.md) 与 [云配置向导](../../scripts/wizard-cloud-config.ps1) 已归档入仓；Ticket 12 的历史遗留项留给 #137 实现时核对。
+- 57 屏全流程 UI 设计（PR #136）已按负责人确认合入 `main@fbb1b5b`，设计稿不再是待评审件；[Issue #137](https://github.com/Iskuyal/wx-match/issues/137) 的16页原生重写已由[PR #139](https://github.com/Iskuyal/wx-match/pull/139)合入main `a35ec6c`，767项本机测试与390px模拟器10项离线交互通过，见[证据](../evidence/lingnan-ui-2026-10-17/README.md)；320px浏览器辅助8画面无横向溢出；320px原生、真机及真实云端仍单列，不能写成全面端上验收。
+- 2026-09-22 起未跟踪的 [Ticket 12](tickets/12-timetable-page-tidy.md) 与 [云配置向导](../../scripts/wizard-cloud-config.ps1) 已归档入仓；Ticket 12 已补记本轮UI核对结果；其历史决策与真实验收仍按票内边界保留。
 
 - 答辩练习 G0 素材、G1 真实首评、G2 设计件、G3 最小流程和 G4 部分真实/真机验证已交付，不能再写「页面未实现」或「真实首评从未执行」。负责人设计接受与阶段验收另计。
 - PR #129 已合入 main（3dfbfe8）：依赖审计修复、75 秒客户端兜底、G5 三份素材；本轮补严文档目标必须被 Git 跟踪，改正三份素材中的旧 30 秒表述。它们不再是待编码任务。

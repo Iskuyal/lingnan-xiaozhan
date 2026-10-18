@@ -2,6 +2,8 @@
 
 日期：2026-10-17。负责人已批准 [57 屏设计](../../design/lingnan-ui-2026/README.md)，实现跟踪 [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)。本次将 16 条在用页面改写为原生 WXML/WXSS；初始源码提交 `153e0ad`，随后在 `4141f01` 整合 main 的网络提示与收尾记录。当前渲染版本及截图哈希见 [manifest.json](manifest.json)。
 
+2026-10-18合入补记：[PR #139](https://github.com/Iskuyal/wx-match/pull/139)已合入main `a35ec6c`；本记录的测试和截图仍为10-17证据。合入不表示部署或新版本真机验收。
+
 ## 已实现
 
 - 首页采用官网 EST.2001 盾形横版校徽；统一岭南红、纸白表面、边框、文字层级、44/48px 控件和来源动作。
