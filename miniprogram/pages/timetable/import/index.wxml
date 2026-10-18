@@ -13,10 +13,10 @@
       <view class="imp-step">2. 把文件发到微信，例如发给「文件传输助手」</view>
       <view class="imp-step">3. 回到这里点下面的按钮，从聊天记录里选它</view>
     </view>
-    <button id="choose-file" class="home-button" hover-class="pressed" bindtap="chooseFile">从微信聊天记录选择课表文件</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="choose-file" class="home-button" hover-class="pressed" bindtap="chooseFile">从微信聊天记录选择课表文件</button>
     <view class="imp-guide imp-guide-note">{{photoGuide}}</view>
-    <button id="choose-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="choosePhoto">拍照或从相册选择课表截图</button>
-    <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="choose-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="choosePhoto">拍照或从相册选择课表截图</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
   </view>
 
   <view wx:elif="{{step === 'parsing'}}" class="imp-block">
@@ -31,12 +31,12 @@
     <view id="import-error" class="imp-error">{{errorMessage}}</view>
     <view class="imp-cap" wx:if="{{capWarning !== ''}}">{{capWarning}}</view>
     <view class="imp-copy">没有写入任何课表数据；如果问题出在文件本身，可以重新导出后再试。</view>
-    <button id="retry-import" class="home-button" hover-class="pressed" bindtap="retryChoose">重新选择文件</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-import" class="home-button" hover-class="pressed" bindtap="retryChoose">重新选择文件</button>
     <block wx:if="{{photoError}}">
-      <button id="retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
-      <button id="to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
     </block>
-    <button id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
   </view>
 
   <block wx:else>
@@ -44,18 +44,21 @@
     <view class="imp-summary">
       <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
       <view class="imp-title">解析完成，请核对</view>
-      <view class="imp-rows">
+      <view class="imp-head-meta">{{courseCount}} 门课程 · {{warningCount}} 门待核对 · {{blockedCount}} 门待补全</view>
+      <view class="imp-quiet" wx:if="{{blockedCount > 0}}">补全后才能保存</view>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="import-meta-toggle" class="imp-meta-toggle" hover-class="pressed" aria-expanded="{{metaExpanded}}" bindtap="toggleMetaDetails">{{metaExpanded ? '收起文件与解析信息' : '查看文件与解析信息'}}</button>
+      <view wx:if="{{metaExpanded}}" class="imp-rows">
         <view class="imp-sheet-row" wx:for="{{metaRows}}" wx:key="key">
           <text class="imp-sheet-key">{{item.key}}</text>
           <text class="imp-sheet-val">{{item.value}}</text>
         </view>
-      </view>
       <view class="imp-summary-line" wx:for="{{metaLines}}" wx:key="*this">{{item}}</view>
       <view class="imp-head-meta">{{metaLine}}</view>
+      </view>
       <view class="imp-summary-line imp-problem" wx:if="{{problemsText !== ''}}">{{problemsText}}</view>
     </view>
 
-    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加的课程）；下面这些内容还没写入任何数据，随时可以放弃</view>
+    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加课程）；确认前不写入，可随时放弃。</view>
 
     <!-- 金杠小标题 + 右侧「列表 / 课表」切换（与主页 .seg 同一套写法）。 -->
     <view class="section-head imp-result-head">
@@ -81,8 +84,8 @@
               <view class="imp-card-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
             </view>
             <view class="imp-card-ops">
-              <button class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
-              <button class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
+              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
+              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
             </view>
           </view>
         </block>
@@ -98,8 +101,8 @@
             <view class="imp-quiet" wx:else>这一行没有可核对的原文（截图识别只给重新表述过的字段）</view>
             <view class="imp-unrecognized-hint">{{item.blocking}}</view>
             <view class="imp-unrecognized-ops">
-              <button class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">补录</button>
-              <button class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="skipItem">跳过</button>
+              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">补录</button>
+              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="skipItem">跳过</button>
             </view>
           </view>
         </block>
@@ -112,44 +115,32 @@
     <block wx:else>
       <view class="imp-quiet">课表视图按节次落位，不筛周次，也不出现具体时刻（学校作息未核实）；草稿一律虚线框，待核对换成琥珀虚线框。</view>
       <view class="imp-callout-warn" wx:if="{{gridHintWarn !== ''}}">{{gridHintWarn}}</view>
-      <view id="draft-grid" class="grid">
-        <view class="grid-row grid-head">
-          <view class="grid-rail"></view>
-          <view
-            class="grid-th {{column.narrow ? 'grid-th-narrow' : ''}}"
-            wx:for="{{draftGrid.columns}}"
-            wx:for-item="column"
-            wx:key="weekday"
-          >
-            <view class="grid-th-day">{{column.narrow ? column.shortLabel : column.label}}</view>
-          </view>
+      <view class="grid-instruction">左右滑动查看周一至周日，左侧节次保持可见</view>
+      <view id="draft-grid" class="grid-shell">
+        <view class="grid-axis">
+          <view class="grid-axis-head">节</view>
+          <view class="grid-no" wx:for="{{draftGridUi.sectionPairs}}" wx:key="label" style="height:{{item.heightPx}}px">{{item.label}}</view>
         </view>
-        <view class="grid-body">
-          <view class="grid-rail">
-            <view class="grid-no" wx:for="{{draftGrid.sectionNumbers}}" wx:key="*this">{{item}}</view>
-          </view>
-          <view class="grid-cols">
-            <view
-              class="grid-col {{column.narrow ? 'grid-col-narrow' : ''}}"
-              wx:for="{{draftGrid.columns}}"
-              wx:for-item="column"
-              wx:key="weekday"
-            >
-              <view class="grid-line" wx:for="{{draftGrid.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
-              <view
-                class="grid-block {{block.needsReview ? 'grid-block-review' : ''}}"
-                wx:for="{{column.blocks}}"
-                wx:for-item="block"
-                wx:key="primaryId"
-                style="top:{{block.topRpx}}rpx;height:{{block.heightRpx}}rpx;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}"
-              >
-                <view class="grid-block-name">{{block.name}}</view>
-                <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
-                <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
+        <scroll-view class="grid-scroll" scroll-x enhanced show-scrollbar style="height:{{draftGridUi.totalHeightPx}}px">
+          <view class="grid" style="width:{{draftGridUi.widthPx}}px">
+            <view class="grid-row grid-head">
+              <view class="grid-th" wx:for="{{draftGridUi.columns}}" wx:for-item="column" wx:key="weekday">
+                <view class="grid-th-day">{{column.shortLabel}}</view>
+              </view>
+            </view>
+            <view class="grid-cols" style="height:{{draftGridUi.heightPx}}px">
+              <view class="grid-col" wx:for="{{draftGridUi.columns}}" wx:for-item="column" wx:key="weekday">
+                <view class="grid-line" wx:for="{{draftGridUi.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
+                <view class="grid-block {{block.needsReview ? 'grid-block-review' : ''}}" wx:for="{{column.blocks}}" wx:for-item="block" wx:key="primaryId"
+                  style="top:{{block.topPx}}px;height:{{block.heightPx}}px;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}">
+                  <view class="grid-block-name">{{block.name}}</view>
+                  <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
+                  <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
+                </view>
               </view>
             </view>
           </view>
-        </view>
+        </scroll-view>
       </view>
     </block>
 
@@ -157,16 +148,16 @@
     <view class="imp-actions">
       <view class="imp-quiet">保存前不会写入任何数据</view>
       <view class="imp-btn-row">
-        <button id="confirm-save" class="imp-btn" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认保存</button>
-        <button id="abandon-import" class="imp-btn imp-btn-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
+        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="confirm-save" class="imp-btn" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认保存</button>
+        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="abandon-import" class="imp-btn imp-btn-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
       </view>
     </view>
 
     <block wx:if="{{isPhoto}}">
       <view class="imp-guide imp-guide-note">{{reviewExitsNote}}</view>
-      <button id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
-      <button id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
-      <button id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
     </block>
     <view class="imp-privacy">{{privacyText}}</view>
   </block>

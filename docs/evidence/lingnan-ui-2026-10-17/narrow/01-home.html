@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>320px 浏览器辅助检查</title><style>body{margin:0}div,button{box-sizing:border-box}button,input,textarea{font:inherit}button{border:0}img{height:auto}.native-nav{height:88px;padding:45px 10px 0;background:white;text-align:center;font-size:12px}.scope{padding:4px 12px;font-size:10px;background:#fff4e4;color:#78420e}button { min-width:0; max-width:100%; box-sizing:border-box; border-radius:8px; }
+input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14px; }
+.page { min-height:100vh; padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.ui-icon { flex:none; display:block; width:24px; height:24px; }
+.ui-sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); }
+.eyebrow,.quiet { color:var(--text-3, #746760); font-size:12px; line-height:1.75; }
+.section-title { color:var(--text, #2b2422); font-size:17px; line-height:1.5; font-weight:700; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin:24px 0 12px; gap:8px; }
+.section-note { color:var(--text-3, #746760); font-size:11px; }
+.section-bar { display:none; }
+.home-button { display:block; width:100%; max-width:none; min-height:48px; margin:16px 0 0; padding:12px 16px; border-radius:8px; background:var(--brand, #c41c23); color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.home-button.secondary,.source-button { background:var(--surface, #ffffff); color:var(--brand-deep, #8c1614); border:1px solid #b9847c; }
+.source-button { display:block; width:100%; min-height:48px; margin-top:14px; padding:12px; border-radius:8px; font-size:13px; line-height:1.7; text-align:center; }
+.status-page { padding-top:46px; }
+.status-title { color:var(--text, #2b2422); font-size:22px; line-height:1.5; margin-bottom:14px; }
+.status-copy { color:var(--text-2, #6b5d57); font-size:14px; line-height:1.9; }
+.status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
+.pressed { opacity:.72; }
+button[disabled] { opacity:.5; }
+@media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }
+
+/**
+ * 全局样式与设计令牌。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
+ */
+body {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-divide: rgba(255,255,255,0.70);
+  --glass-drop: rgba(92,28,26,0.13);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+  --glass-blur: 16px;
+  --r-chip: 5.12px;
+  --r-control: 8.533333333333333px;
+  --r-card: 10.24px;
+  --r-panel: 13.653333333333334px;
+  --r-pill: 426.24px;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+view,button { box-sizing:border-box; }
+button { margin:0; padding:0; font:inherit; color:inherit; background:transparent; }
+button::after { border:0; }
+.status-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; background:#faeee9; border-radius:8px; }
+.status-icon image { width:28px; height:28px; }
+.home { min-height:100vh; padding-top:14px; }
+.home-brand { padding:12px 18px; background:var(--brand-deep, #8c1614); }
+.school-logo { display:block; width:100%; max-width:320px; margin:0 auto; }
+.home-intro { margin:16px 0; }
+.home-title { font-family:"Songti SC","STSong","SimSun",serif; font-size:23px; line-height:1.6; font-weight:700; }
+.home-copy { margin-top:4px; font-size:12px; color:var(--text-2, #6b5d57); }
+.home-primary { padding:20px; min-height:112px; color:#fff; border-radius:12px; background:var(--brand, #c41c23); text-align:left; }
+.primary-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.entry-label { font-size:11px; }
+.entry-title { margin-top:6px; font-size:16px; font-weight:700; line-height:1.5; color:var(--text, #2b2422); }
+.entry-description { margin-top:6px; font-size:11px; line-height:1.6; color:var(--text-3, #746760); }
+.home-primary .entry-title { font-size:24px; color:#fff; }
+.home-primary .entry-description { font-size:13px; color:#fff; }
+.primary-symbol { flex:none; display:flex; align-items:center; justify-content:center; width:56px; height:56px; border:1px solid #ed9ba0; border-radius:12px; }
+.primary-symbol .ui-icon { width:30px; height:30px; }
+.entry-pair { display:flex; gap:10px; margin-top:10px; }
+.home-entry { flex:1; width:0; min-width:0; min-height:116px; padding:15px 13px; text-align:left; border:1px solid var(--line, #ded4cf); background:var(--surface, #ffffff); border-radius:10px; }
+.home-entry .entry-description { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.goal-strip-value { margin-top:4px; font-size:12px; font-weight:600; color:var(--brand-deep, #8c1614); }
+.home-wide-entry { padding:12px 0; min-height:76px; border-bottom:1px solid var(--line, #ded4cf); text-align:left; border-radius:0; }
+.entry-row { display:flex; align-items:center; gap:12px; }
+.entry-main { flex:1; min-width:0; }
+.entry-main .entry-title { margin:0; font-size:15px; }
+.entry-main .entry-description { margin-top:4px; font-size:12px; }
+.entry-arrow { color:var(--text-3, #746760); font-size:23px; }
+.news-section { margin-top:24px; }
+.recent-news-item { margin-top:12px; padding:16px; background:var(--surface, #ffffff); border:1px solid var(--line, #ded4cf); border-radius:10px; }
+.recent-title { font-size:16px; font-weight:600; line-height:1.7; }
+.recent-date,.news-source { margin-top:10px; font-size:11px; line-height:1.75; color:var(--text-3, #746760); }
+.news-hint { padding:14px 15px; background:var(--surface, #ffffff); border-left:3px solid var(--line, #ded4cf); font-size:13px; line-height:1.8; }
+.news-hint-error { background:var(--warn-soft, rgba(255,244,228,0.86)); border-color:var(--warn, #9a5b1e); color:var(--warn, #9a5b1e); }
+.school-about { margin-top:24px; }
+.introduction { padding:14px 15px; background:var(--surface, #ffffff); border-left:3px solid var(--line, #ded4cf); font-size:13px; line-height:1.9; }
+.source-area { margin-top:14px; color:var(--text-3, #746760); font-size:11px; line-height:1.8; }
+.home-footer { margin-top:34px; text-align:center; font-size:11px; color:var(--text-3, #746760); }
+@media (max-width:350px) { .home-title { font-size:21px; } .home-brand { padding:10px 14px; } .entry-main .entry-title { font-size:14px; } }
+.grid-scroll{overflow-x:auto}.reader-scroll{overflow-y:auto}body:has(.reader-mask){height:568px;overflow:hidden}.reader-mask{top:88px}body:has(.reader-mask) .scope{display:none}</style><body><div class="native-nav">320px 浏览器布局辅助</div><div class="scope">实际渲染树 + WXSS；非320px微信截图</div><div class="home page"><div class="home-brand"><img class="school-logo" aria-label="广东岭南职业技术学院" src="../../../../miniprogram/assets/lingnan-logo-official.png" mode="widthFix"></img><div class="school-name ui-sr-only">广东岭南职业技术学院</div></div><div class="home-intro"><div class="home-title">把校园日常，安排好。</div><div class="home-copy">读资讯、找组织、查课表。</div></div><button id="timetable-entry" class="home-primary" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" aria-label="打开我的课表，可导入课程并按周查看" hover-class="pressed"><div class="primary-inner"><div><div class="entry-label">每周安排</div><div class="entry-title">我的课表</div><div class="entry-description">导入课程，安排每一周</div></div><div class="primary-symbol"><img class="ui-icon" src="../../../../miniprogram/assets/ui/calendar-white.svg"></img></div></div></button><div class="section-head"><div class="section-title">校园与日常</div><div class="section-note">常用入口</div></div><div class="entry-pair"><button id="departments-entry" class="home-entry" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" aria-label="学生部门，查看已核实的组织名录" hover-class="pressed"><img class="ui-icon" src="../../../../miniprogram/assets/ui/people.svg"></img><div class="entry-title">学生部门</div><div class="entry-description">了解组织与职责</div></button><button id="news-entry" class="home-entry" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" aria-label="校园资讯，阅读官网动态与通知" hover-class="pressed"><img class="ui-icon" src="../../../../miniprogram/assets/ui/news.svg"></img><div class="entry-title">校园资讯</div><div class="entry-description">官网信息与来源</div></button></div><div class="entry-pair"><button id="calendar-entry" class="home-entry" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" aria-label="校历与考试，查看官方日期和来源" hover-class="pressed"><img class="ui-icon" src="../../../../miniprogram/assets/ui/calendar.svg"></img><div class="entry-title">校历与考试</div><div class="entry-description">查日期，也查依据</div></button><button id="goal-days-entry" class="home-entry goal-strip" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" aria-label="目标日，查看最近的目标日与剩余天数" hover-class="pressed"><img class="ui-icon" src="../../../../miniprogram/assets/ui/flag.svg"></img><div class="entry-title">目标日</div><div class="entry-description goal-strip-name">课程项目展示（布局示例）</div><div class="goal-strip-value">13天后</div></button></div><div class="section-head"><div class="section-title">学习与成长</div></div><button id="fitness-entry" class="home-wide-entry" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" hover-class="pressed"><div class="entry-row"><img class="ui-icon" src="../../../../miniprogram/assets/ui/activity.svg"></img><div class="entry-main"><div class="entry-title">体测估算</div><div class="entry-description">按国家标准估算，缺项不猜</div></div><span class="entry-arrow">›</span></div></button><button id="advancement-entry" class="home-wide-entry" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" hover-class="pressed"><div class="entry-row"><img class="ui-icon" src="../../../../miniprogram/assets/ui/book.svg"></img><div class="entry-main"><div class="entry-title">升学与实习问答</div><div class="entry-description">从官方原文中找依据</div></div><span class="entry-arrow">›</span></div></button><button id="defense-entry" class="home-wide-entry" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" hover-class="pressed"><div class="entry-row"><img class="ui-icon" src="../../../../miniprogram/assets/ui/chat.svg"></img><div class="entry-main"><div class="entry-title">项目讲解与答辩练习</div><div class="entry-description">三轮练习，一次复盘</div></div><span class="entry-arrow">›</span></div></button><div class="news-section"><div class="section-head"><div class="section-title">校园资讯</div><div class="section-note">最近动态</div></div><div class="recent-news-list"><div class="recent-news-item news-recent-item" hover-class="pressed" data-id="mock-news"><div class="recent-title news-recent-title">校园资讯布局验证示例：长标题与来源保持完整可读</div><div class="recent-date news-recent-date">2026-10-16</div></div></div><div class="news-source">来源：学校官网 · 最近写入：2026-10-16 08:00</div><button id="news-view-all" class="source-button" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">查看全部校园资讯</button></div><div class="school-about"><div class="section-head"><div class="section-title">认识岭南</div></div><div class="introduction">学校设有广州、清远两个校区，以大健康类专业为主体，同时开设电子信息、智能制造、财经商贸与文化艺术等领域专业。</div><div class="source-area"><div>资料来源：学校官网 · 学院简介</div><div>核查于 2026-09-17 · 广州校区 / 清远校区</div><button id="copy-source" class="source-button" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">复制学校官网链接</button></div></div><div class="home-footer">从了解校园，到安排每一天</div></div></body></html>

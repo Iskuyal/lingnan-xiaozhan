@@ -1,0 +1,220 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>320px 浏览器辅助检查</title><style>body{margin:0}div,button{box-sizing:border-box}button,input,textarea{font:inherit}img{height:auto}.native-nav{height:88px;padding:45px 10px 0;background:white;text-align:center;font-size:12px}.scope{padding:4px 12px;font-size:10px;background:#fff4e4;color:#78420e}button { min-width:0; max-width:100%; box-sizing:border-box; border-radius:8px; }
+input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14px; }
+.page { min-height:100vh; padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.ui-icon { flex:none; display:block; width:24px; height:24px; }
+.ui-sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); }
+.eyebrow,.quiet { color:var(--text-3, #746760); font-size:12px; line-height:1.75; }
+.section-title { color:var(--text, #2b2422); font-size:17px; line-height:1.5; font-weight:700; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin:24px 0 12px; gap:8px; }
+.section-note { color:var(--text-3, #746760); font-size:11px; }
+.section-bar { display:none; }
+.home-button { display:block; width:100%; max-width:none; min-height:48px; margin:16px 0 0; padding:12px 16px; border-radius:8px; background:var(--brand, #c41c23); color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.home-button.secondary,.source-button { background:var(--surface, #ffffff); color:var(--brand-deep, #8c1614); border:1px solid #b9847c; }
+.source-button { display:block; width:100%; min-height:48px; margin-top:14px; padding:12px; border-radius:8px; font-size:13px; line-height:1.7; text-align:center; }
+.status-page { padding-top:46px; }
+.status-title { color:var(--text, #2b2422); font-size:22px; line-height:1.5; margin-bottom:14px; }
+.status-copy { color:var(--text-2, #6b5d57); font-size:14px; line-height:1.9; }
+.status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
+.pressed { opacity:.72; }
+button[disabled] { opacity:.5; }
+@media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }
+
+/**
+ * 全局样式与设计令牌。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
+ */
+body {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-divide: rgba(255,255,255,0.70);
+  --glass-drop: rgba(92,28,26,0.13);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+  --glass-blur: 16px;
+  --r-chip: 5.12px;
+  --r-control: 8.533333333333333px;
+  --r-card: 10.24px;
+  --r-panel: 13.653333333333334px;
+  --r-pill: 426.24px;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+view,button { box-sizing:border-box; }
+button { margin:0; padding:0; font:inherit; color:inherit; background:transparent; }
+button::after { border:0; }
+.status-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; background:#faeee9; border-radius:8px; }
+.status-icon image { width:28px; height:28px; }
+.tt-heading { margin-bottom:8px; }
+.head-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.head-top .eyebrow { flex:1; min-width:0; }
+.head-link { flex:none; min-height:44px; padding:11px 10px; border:1px solid #b9847c; border-radius:7px; color:#8c1614; font-size:12px; }
+.week-row { display:flex; align-items:center; gap:10px; margin:8px 0 6px; }
+.week-nav { flex:none; width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; border:1px solid #aa9990; border-radius:7px; background:#fff; font-size:23px; }
+.week-pick { flex:1; min-width:0; text-align:center; }
+.week-now { font-size:20px; line-height:1.5; font-weight:700; }
+.week-range,.tt-meta { font-size:11px; line-height:1.7; color:#746760; }
+.tt-meta { text-align:center; }
+.actionbar { display:flex; gap:8px; margin:12px 0; }
+.actionbar-item { flex:1; width:0; min-width:0; min-height:44px; padding:10px 6px; border:1px solid #b9847c; border-radius:7px; background:#fff; color:#8c1614; font-size:12px; }
+.today { display:flex; gap:12px; align-items:center; padding:16px; margin:16px 0; border:1px solid #bca99d; border-radius:10px; background:#fff; }
+.today-dot { width:8px; height:8px; flex:none; background:#147a70; border-radius:50%; }
+.today-body { flex:1; min-width:0; }
+.today-kicker,.today-sub { font-size:11px; color:#746760; line-height:1.8; }
+.today-name { margin:5px 0; font-size:15px; font-weight:600; }
+.today-pill { color:#147a70; font-size:12px; }
+.setup-hint { display:flex; align-items:center; gap:10px; margin:12px 0; padding:10px 12px; border-left:3px solid #ded4cf; background:#fff; color:#6b5d57; font-size:12px; line-height:1.8; }
+.setup-hint-text { flex:1; min-width:0; }
+.setup-hint-btn { flex:none; width:60px; min-height:44px; padding:11px 5px; color:#8c1614; text-align:center; border:1px solid #b9847c; border-radius:7px; white-space:nowrap; }
+.tt-hint,.tt-empty,.tt-empty-week { padding:36px 0; }
+.tt-hint-copy,.tt-empty-copy { margin-top:14px; color:#6b5d57; font-size:13px; line-height:1.9; }
+.tt-guide,.tt-privacy { margin-top:16px; font-size:12px; line-height:1.9; color:#746760; }
+.tt-guide-note { padding:14px 15px; background:#fff; border-left:3px solid #ded4cf; }
+.tt-empty-title { font-size:22px; font-weight:700; }
+.seg { display:flex; gap:6px; }
+.seg-item { min-height:44px; min-width:54px; padding:10px; border:1px solid #aa9990; border-radius:7px; background:#fff; color:#6b5d57; font-size:12px; text-align:center; }
+.seg-item-on { border-color:#8c1614; color:#fff; background:#8c1614; }
+.grid-instruction { margin:8px 0; color:#6b5d57; font-size:11px; line-height:1.8; }
+.grid-shell { display:flex; width:100%; border:1px solid #ded4cf; border-radius:9px; overflow:hidden; background:#fff; }
+.grid-axis { flex:none; width:30px; border-right:1px solid #bca99d; background:#fff; }
+.grid-axis-head { height:30px; display:flex; align-items:center; justify-content:center; color:#6b5d57; font-size:9px; }
+.grid-no { display:flex; align-items:center; justify-content:center; color:#6b5d57; font-size:9px; white-space:nowrap; }
+.grid-scroll { flex:1; width:0; min-width:0; }
+.grid-row,.grid-cols { display:flex; }
+.grid-head { height:30px; }
+.grid-th { flex:0 0 66px; width:66px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; font-size:11px; line-height:1.3; }
+.grid-th-today { color:#fff; background:#8c1614; border-radius:5px; }
+.grid-th-date { font-size:9px; }
+.grid-col { flex:0 0 66px; width:66px; position:relative; }
+.grid-line { height:44px; border-bottom:1px solid #eee6e2; }
+.grid-block { position:absolute; overflow:hidden; padding:4px; border-left:2px solid var(--blk-solid, rgba(148,134,127,0.55)); border-radius:5px; background:var(--blk-tint, rgba(255,255,255,0.72)); color:var(--blk-solid, rgba(148,134,127,0.55)); }
+.grid-block-review { border-color:#9a5b1e; background:#fff4e4; }
+.grid-block-now { outline:2px solid #147a70; }
+.grid-block-name { font-size:12px; line-height:1.4; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; word-break:break-all; }
+.grid-block-name-name { -webkit-line-clamp:2; }
+.grid-block-meta { margin-top:4px; font-size:11px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.grid-block-badge { position:absolute; top:2px; right:2px; background:#fff; color:#8c1614; font-size:9px; padding:1px 3px; border-radius:3px; }
+.grid-expand { min-height:44px; padding:12px; margin-top:12px; border:1px solid #b9847c; color:#8c1614; background:#fff; font-size:12px; line-height:1.8; }
+.day-block { margin-top:20px; }
+.day-title { display:flex; align-items:center; gap:8px; font-size:16px; font-weight:600; }
+.day-dot { width:6px; height:6px; background:#8c1614; border-radius:50%; }
+.day-date,.day-today { color:#746760; font-size:11px; }
+.course-item { display:flex; gap:12px; padding:16px; margin-top:12px; border:1px solid #ded4cf; border-left:3px solid var(--blk-solid, rgba(148,134,127,0.55)); border-radius:10px; background:#fff; }
+.course-item-review { border-color:#cbaa88; background:#fff4e4; }
+.course-main { flex:1; min-width:0; }
+.course-name { font-size:15px; line-height:1.6; font-weight:600; }
+.course-tag { margin-left:6px; color:#746760; font-size:10px; }
+.course-line { margin-top:7px; color:#6b5d57; font-size:12px; line-height:1.8; }
+.course-warning { margin-top:8px; color:#9a5b1e; font-size:12px; }
+.course-ops { width:54px; flex:none; }
+.course-op { width:54px; min-height:44px; padding:8px 4px; margin-bottom:8px; border:1px solid #b9847c; color:#8c1614; font-size:12px; }
+.tt-footer { margin-top:16px; padding:14px 15px; background:#fff; border-left:3px solid #ded4cf; color:#746760; font-size:11px; line-height:1.8; }
+.tt-back-home { min-height:44px; width:100%; margin-top:14px; padding:12px; font-size:13px; color:#8c1614; text-align:center; }
+.tt-qa { padding:16px; margin-top:16px; border:1px solid #ded4cf; background:#fff; border-radius:10px; }
+.qa-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.qa-title { font-size:16px; font-weight:700; color:#8c1614; }
+.qa-close { width:52px; min-height:44px; flex:none; border:1px solid #b9847c; color:#8c1614; font-size:12px; }
+.qa-msg { padding:13px 15px; margin-top:12px; font-size:14px; line-height:1.9; border:1px solid #ded4cf; border-radius:10px; white-space:pre-wrap; }
+.qa-msg-user { margin-left:16px; background:#faeee9; border-color:#d4b9ac; }
+.qa-msg-ai { background:#e9eff6; border-color:#bdcde0; }
+.qa-error,.qa-warn,.qa-cap { margin-top:12px; padding:12px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
+.qa-input-row { display:flex; align-items:center; gap:8px; margin-top:16px; }
+.qa-input { flex:1; min-width:0; height:48px; padding:10px 12px; border:1px solid #aa9990; background:#fff; border-radius:7px; font-size:14px; }
+.qa-send { flex:none; width:64px; min-height:48px; padding:12px 8px; background:#c41c23; color:#fff; font-size:14px; }
+.qa-note { margin-top:12px; color:#746760; font-size:11px; line-height:1.8; }
+.sheet-mask { position:fixed; top:0; right:0; bottom:0; left:0; z-index:50; background:rgba(43,36,34,.32); }
+.sheet { position:fixed; left:0; right:0; bottom:0; z-index:51; width:100%; max-height:86vh; border-radius:16px 16px 0 0; background:#fdf7f5; overflow:hidden; display:flex; flex-direction:column; }
+.sheet-handle { width:36px; height:4px; margin:10px auto 0; border-radius:3px; background:#bca99d; }
+.sheet-head { padding:16px 20px; border-bottom:1px solid #ded4cf; }
+.sheet-name { font-size:20px; font-weight:700; line-height:1.6; }
+.sheet-sub { margin-top:6px; color:#746760; font-size:12px; }
+.sheet-warn { padding:12px; margin-bottom:16px; background:#fff4e4; color:#78420e; font-size:12px; }
+.sheet-key { flex:none; width:56px; color:#746760; }
+.sheet-val { flex:1; min-width:0; word-break:break-all; }
+.sheet-title { flex:1; font-size:20px; line-height:1.6; font-weight:700; }
+.sheet-close { flex:none; min-width:44px; min-height:44px; padding:10px; color:#8c1614; font-size:13px; }
+.sheet-scroll { max-height:56vh; }
+.sheet-body { box-sizing:border-box; max-height:52vh; padding:16px 20px; }
+.sheet-row { display:flex; gap:12px; margin-bottom:12px; font-size:13px; line-height:1.8; }
+.sheet-label { flex:none; width:48px; color:#746760; }
+.sheet-value { flex:1; min-width:0; word-break:break-all; }
+.sheet-group { margin:14px 0 10px; color:#746760; font-size:12px; }
+.sheet-member { padding:12px; margin-bottom:10px; border:1px solid #ded4cf; border-radius:8px; background:#fff; }
+.sheet-member-name { font-size:14px; font-weight:600; }
+.sheet-member-sub { margin-top:5px; color:#746760; font-size:12px; }
+.sheet-foot { display:flex; gap:10px; padding:16px 20px calc(16px + env(safe-area-inset-bottom)); }
+.sheet-btn { flex:1; width:0; min-height:48px; padding:12px; background:#c41c23; color:#fff; font-size:14px; }
+.sheet-btn-warn { background:#fff; color:#8c1614; border:1px solid #b9847c; }
+
+.imp-block { margin-top:20px; }
+.imp-copy,.imp-guide { margin-top:14px; color:#6b5d57; font-size:13px; line-height:1.9; }
+.imp-guide-note { padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; }
+.imp-steps { margin-top:18px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.imp-step { margin-bottom:8px; font-size:13px; line-height:1.9; }
+.imp-secondary { background:#fff; color:#8c1614; border:1px solid #b9847c; }
+.imp-file,.imp-progress { margin-top:14px; font-size:12px; color:#746760; line-height:1.8; word-break:break-all; }
+.imp-error,.imp-cap,.imp-problem,.imp-notice,.imp-callout-warn { margin:16px 0; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
+.imp-summary { padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.imp-meta-toggle { display:block; min-height:44px; padding:10px; margin-top:12px; border:1px solid #b9847c; border-radius:7px; background:#fff; color:#8c1614; font-size:12px; }
+.imp-title { margin:8px 0 16px; font-size:22px; font-weight:700; line-height:1.5; }
+.imp-sheet-row { display:flex; gap:12px; margin-top:10px; font-size:13px; line-height:1.8; }
+.imp-sheet-key { flex:none; width:54px; color:#746760; }
+.imp-sheet-val { flex:1; min-width:0; }
+.imp-summary-line,.imp-head-meta { margin-top:10px; color:#746760; font-size:11px; line-height:1.8; }
+.imp-summary .imp-problem { color:#78420e; }
+.imp-result-head { margin-top:24px; }
+.imp-card { display:flex; gap:0; padding:16px; margin-top:12px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.imp-card-review { border-color:#cbaa88; background:#fff4e4; }
+.imp-card-bar { display:none; }
+.imp-card-main { flex:1; min-width:0; }
+.imp-card-name { font-size:16px; font-weight:600; line-height:1.6; }
+.imp-card-line { margin-top:8px; font-size:13px; line-height:1.8; }
+.imp-card-warn { margin-top:8px; color:#9a5b1e; font-size:12px; line-height:1.8; }
+.imp-card-raw { margin-top:10px; color:#746760; font-size:11px; line-height:1.8; word-break:break-all; }
+.imp-chip { margin-left:6px; color:#9a5b1e; font-size:10px; }
+.imp-card-ops { width:58px; flex:none; display:flex; flex-direction:column; gap:8px; margin-left:12px; }
+.imp-op { width:58px; min-height:44px; padding:10px 4px; border:1px solid #b9847c; border-radius:6px; color:#8c1614; background:#fff; font-size:12px; }
+.imp-quiet,.imp-view-hint,.imp-privacy { margin-top:14px; color:#746760; font-size:11px; line-height:1.8; }
+.imp-unrecognized { padding:16px; margin-top:12px; border:1px solid #cbaa88; border-radius:10px; background:#fff4e4; }
+.imp-unrecognized-head { font-weight:600; font-size:14px; }
+.imp-unrecognized-row,.imp-unrecognized-hint { margin-top:10px; color:#78420e; font-size:12px; line-height:1.8; }
+.imp-unrecognized-ops,.imp-btn-row { display:flex; gap:10px; margin-top:12px; }
+.imp-actions { margin-top:20px; }
+.imp-btn { flex:1; min-width:0; min-height:48px; padding:12px; border-radius:8px; background:#c41c23; color:#fff; font-size:14px; }
+.imp-btn-secondary { background:#fff; border:1px solid #b9847c; color:#8c1614; }
+.grid-block { border:1px dashed var(--blk-solid, rgba(148,134,127,0.55)); }
+.grid-block-review { border-color:#9a5b1e; }
+.grid-scroll{overflow-x:auto}.reader-scroll{overflow-y:auto}body:has(.reader-mask){height:568px;overflow:hidden}.reader-mask{top:88px}body:has(.reader-mask) .scope{display:none}</style><body><div class="native-nav">320px 浏览器布局辅助</div><div class="scope">实际渲染树 + WXSS；非320px微信截图</div><div class="page imp-review-page"><div class="imp-summary"><div class="eyebrow">导入课表 · 先看解析结果再保存</div><div class="imp-title">解析完成，请核对</div><div class="imp-head-meta">3 门课程 · 0 门待核对 · 0 门待补全</div><button id="import-meta-toggle" class="imp-meta-toggle" style="margin-left:0;margin-right:0;width:100%;max-width:none" aria-expanded="false" hover-class="pressed">查看文件与解析信息</button></div><div class="imp-notice">保存会替换当前已保存的课表（含手工添加课程）；确认前不写入，可随时放弃。</div><div class="section-head imp-result-head"><div class="section-bar"></div><div class="section-title">解析结果</div><div id="draft-view-switch" class="seg"><div class="seg-item seg-item-on" data-mode="list">列表</div><div class="seg-item" data-mode="grid">课表</div></div></div><div id="draft-list" class="imp-list"><div class="imp-card"><div class="imp-card-bar" style="background:#6a5aa8"></div><div class="imp-card-main"><div class="imp-card-name">高等数学（布局示例）</div><div class="imp-card-line">星期一 · 第 1-2 节 · 第 1-20 周 · 崇礼楼306</div><div class="imp-card-line">教师：示例教师 · 清远校区 · 布局验证示例</div></div><div class="imp-card-ops"><button class="imp-op imp-op-edit" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="0">修正</button><button class="imp-op imp-op-del" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="0">删除</button></div></div><div class="imp-card"><div class="imp-card-bar" style="background:#2f5f9e"></div><div class="imp-card-main"><div class="imp-card-name">JSP程序设计（布局示例）</div><div class="imp-card-line">星期三 · 第 3-4 节 · 第 2-6、8-17 周 · 实训楼B305</div><div class="imp-card-line">教师：示例教师 · 清远校区 · 布局验证示例</div></div><div class="imp-card-ops"><button class="imp-op imp-op-edit" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="1">修正</button><button class="imp-op imp-op-del" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="1">删除</button></div></div><div class="imp-card"><div class="imp-card-bar" style="background:#1f7fa8"></div><div class="imp-card-main"><div class="imp-card-name">晚间课程（布局示例）</div><div class="imp-card-line">星期日 · 第 11-12 节 · 第 1-20 周 · 实训楼A205</div><div class="imp-card-line">教师：示例教师 · 清远校区 · 布局验证示例</div></div><div class="imp-card-ops"><button class="imp-op imp-op-edit" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="2">修正</button><button class="imp-op imp-op-del" style="margin-left:0;margin-right:0;width:58px;max-width:none" hover-class="pressed" data-index="2">删除</button></div></div></div><div class="imp-quiet imp-view-hint">课表视图 · 切到课表可以看它落到哪一节，草稿态用虚线框</div><div class="imp-actions"><div class="imp-quiet">保存前不会写入任何数据</div><div class="imp-btn-row"><button id="confirm-save" class="imp-btn" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" hover-class="pressed">确认保存</button><button id="abandon-import" class="imp-btn imp-btn-secondary" style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" hover-class="pressed">放弃导入</button></div></div><div class="imp-privacy">保存后才写入数据库，且只写入你自己的课表；临时文件在解析后已从云存储删除。</div></div></body></html>

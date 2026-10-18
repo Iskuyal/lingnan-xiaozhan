@@ -1,0 +1,846 @@
+{
+  "version": "1ff00ef251d8fbdb45484064626c4c09654c06e7a387d67c15d1a71eedebc0ec",
+  "mode": "native-mini-program-mock-plus-browser-layout",
+  "viewport": {
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "pixelRatio": 3
+  },
+  "sourceFiles": [
+    {
+      "path": "miniprogram/app.json",
+      "sha256": "1200e158e549e53ace7d9152775f5d94e957a6aa67d3b17bf7041263046f8a44"
+    },
+    {
+      "path": "miniprogram/app.ts",
+      "sha256": "8663ecdefe26bbb368a96c43c361ec92f0a47f3e9fea86c8b0650a803a15db2f"
+    },
+    {
+      "path": "miniprogram/app.wxss",
+      "sha256": "f3de9764bf164789a56c7d32190156906e80d253a1a900f1ef5be094d207dc57"
+    },
+    {
+      "path": "miniprogram/assets/departments.svg",
+      "sha256": "1dd032764e87f2305f81ea6bcec0b970a69b752a192316145d2d261a0a13e379"
+    },
+    {
+      "path": "miniprogram/assets/lingnan-gate.svg",
+      "sha256": "03e5982a9c0653b1db879a20b0fd2cd7e07a8093b4eaf0b50b57ef51c0530fa9"
+    },
+    {
+      "path": "miniprogram/assets/lingnan-logo-official.png",
+      "sha256": "178540625568f852dcd3f66c72590f31aba7c90fa069d02a5d3bd546e5b3ff3e"
+    },
+    {
+      "path": "miniprogram/assets/lost-found.svg",
+      "sha256": "fe3ac27f7c63b8e784f7188ea4c3a1ed6597b048b2924969af2103ce00c39f46"
+    },
+    {
+      "path": "miniprogram/assets/timetable.svg",
+      "sha256": "990261ad1950f880e90b20d2fb6ea9a8f7deb634378e47deea5c28b98dda012b"
+    },
+    {
+      "path": "miniprogram/assets/ui/activity.svg",
+      "sha256": "696c1e5b19d62e463a681fbbcd99ae77e5fa606b76875ee05767eaafedb14dd3"
+    },
+    {
+      "path": "miniprogram/assets/ui/arrow.svg",
+      "sha256": "763d1c4c189f03d4eea01b14fb2978c636953ef77f0dff034aac1978b4ffa8c9"
+    },
+    {
+      "path": "miniprogram/assets/ui/book.svg",
+      "sha256": "86492ec657485be02ae22c6db6c4be39544fce828107093123f45a8a94f78fb9"
+    },
+    {
+      "path": "miniprogram/assets/ui/calendar-white.svg",
+      "sha256": "0286099901d179ee478c3c444ded131fcf0098a48ed631b951feafe198392bd3"
+    },
+    {
+      "path": "miniprogram/assets/ui/calendar.svg",
+      "sha256": "0772783a420f55d6161cd779fc614122321fd36223046944761bf79403c0d6f5"
+    },
+    {
+      "path": "miniprogram/assets/ui/chat.svg",
+      "sha256": "5c16e42bd7d26e0c16f32917810f62373e7b73d3cc4535388c7389e3c507bf88"
+    },
+    {
+      "path": "miniprogram/assets/ui/check.svg",
+      "sha256": "c5602bdcdabe00a7efaf57a367bc531bc4f092a7dd0a1915a7fd3160488e8d0d"
+    },
+    {
+      "path": "miniprogram/assets/ui/cloud.svg",
+      "sha256": "3de10dc9abdb873faf83bd0354ebc1d5294b4d03ceec5663b1b0ef49c424435a"
+    },
+    {
+      "path": "miniprogram/assets/ui/edit.svg",
+      "sha256": "1fdcfc7237e73268bc6d40aec7276f2e770d3e7b11381d09c6d77738c87a0f87"
+    },
+    {
+      "path": "miniprogram/assets/ui/flag.svg",
+      "sha256": "2209218e970f631a4ab12f6e95e0d5c14d436450f38dc54c0158f3258a71c30b"
+    },
+    {
+      "path": "miniprogram/assets/ui/news.svg",
+      "sha256": "fb14a1c2c6a6ed3dcdf80f1bafef1a1fefb20baa68b2a67bc107824330329b9b"
+    },
+    {
+      "path": "miniprogram/assets/ui/people.svg",
+      "sha256": "3d8aa1e2c1ca8e02c211c8f760aa838c722909c6deaa83a6fda03a3060749782"
+    },
+    {
+      "path": "miniprogram/assets/ui/scan.svg",
+      "sha256": "afaa074743462352bb30706fca67a1ea0db44dabdaf361842edf0d5a4a4c9336"
+    },
+    {
+      "path": "miniprogram/assets/ui/settings.svg",
+      "sha256": "d2727e344a4c3efb440770b255c1804457d15d930a5d365c07c662249a501bfc"
+    },
+    {
+      "path": "miniprogram/assets/ui/upload.svg",
+      "sha256": "721a9e6d66dfde2b545e54f1cef87c7946e2205619df9a93d724865949a019b3"
+    },
+    {
+      "path": "miniprogram/pages/advancement/index.json",
+      "sha256": "73a09df3bc7ee965f65815830a802f3bd48f3321d6cd239e5ece9687efa3ebdb"
+    },
+    {
+      "path": "miniprogram/pages/advancement/index.ts",
+      "sha256": "5fc92e1e919474e76632e8d1352177c816fe3b22169610547a1e06b1cb463081"
+    },
+    {
+      "path": "miniprogram/pages/advancement/index.wxml",
+      "sha256": "41f77790199720de64e69c706d442f1c6036a2b99583e56effa4ed8655c9b1ab"
+    },
+    {
+      "path": "miniprogram/pages/advancement/index.wxss",
+      "sha256": "3f0b49aaa3d55f57f81a95100bff5dfa8c26511e0a660d7f118d17404024936f"
+    },
+    {
+      "path": "miniprogram/pages/calendar/index.json",
+      "sha256": "b6bec869e9673b0cbfd2d1926e3d14f0eb1ae403e2ac698806227e88c4119321"
+    },
+    {
+      "path": "miniprogram/pages/calendar/index.ts",
+      "sha256": "a1ee1c7a1b32fce7e0d07080b6c6b193e6239a9c62df6f159974cb538b7c88d3"
+    },
+    {
+      "path": "miniprogram/pages/calendar/index.wxml",
+      "sha256": "3252e3c1bd2c6d3bf7ec0497d6d733606b138b72133476e340848e20b086757c"
+    },
+    {
+      "path": "miniprogram/pages/calendar/index.wxss",
+      "sha256": "68ac05055486c7a69ba2b044f6dd3a90e384ba6ef8e229a2e296834f5a095746"
+    },
+    {
+      "path": "miniprogram/pages/defense/index.json",
+      "sha256": "01273336d75ea326491c9b24c696dfda8ad625e19d73949332fd7641f845b5c4"
+    },
+    {
+      "path": "miniprogram/pages/defense/index.ts",
+      "sha256": "3e6e58da88dc44081ec948d6f1a9dee1c5b0c607810c7fbbccd8f75ee2ee5665"
+    },
+    {
+      "path": "miniprogram/pages/defense/index.wxml",
+      "sha256": "b1e36611b20ba343c7a9c49d85bc38c83739d4a23053a0c5e5dafbb37692db75"
+    },
+    {
+      "path": "miniprogram/pages/defense/index.wxss",
+      "sha256": "2e130f7985ba1d17209ad7a6b2117cba3fc3b5673546c9acd0525e08b75c56a2"
+    },
+    {
+      "path": "miniprogram/pages/departments/detail/index.json",
+      "sha256": "7aff8effbddda2c5e4f9d6574195c37d21757d5169c0f2c268ce253105626668"
+    },
+    {
+      "path": "miniprogram/pages/departments/detail/index.ts",
+      "sha256": "9ca8dcb2225fe3fd2e764c4d00fe8dd414f500fe76e9323ead81b3c1deff2e86"
+    },
+    {
+      "path": "miniprogram/pages/departments/detail/index.wxml",
+      "sha256": "0c49e13e234ff15ffebcc370f547c482ba58b9e553da907aac04aa741e322513"
+    },
+    {
+      "path": "miniprogram/pages/departments/detail/index.wxss",
+      "sha256": "f6398fca3717e92e48f9d04eb06f35e74f8a55392b0f35c17b41746dc59062aa"
+    },
+    {
+      "path": "miniprogram/pages/departments/index.json",
+      "sha256": "27effebfea107687c78cab99a7a9b450fbbba9c469105a66a62cd6ecf1f1c2d3"
+    },
+    {
+      "path": "miniprogram/pages/departments/index.ts",
+      "sha256": "132f2500164a84e63916bd486d32e3502190d0780b0cf0834b13523d4b7fed3f"
+    },
+    {
+      "path": "miniprogram/pages/departments/index.wxml",
+      "sha256": "9fb002ef10d75615e894f218778415a8961f560ad910f8bd53322536fb3e9582"
+    },
+    {
+      "path": "miniprogram/pages/departments/index.wxss",
+      "sha256": "c0fdb33d6457dcd18172575c22583b2744b507d7dbf0b68e6eef0c0bcbdef64e"
+    },
+    {
+      "path": "miniprogram/pages/departments/qa.ts",
+      "sha256": "9b072fc5e4b53446da4b4287c3d055afd0104d82394cc223d33cce3978c3484a"
+    },
+    {
+      "path": "miniprogram/pages/departments/qa.wxml",
+      "sha256": "d84391721daef9f02bd30f42dd1e92aef87e809bcf6714b55e63915bd260ef41"
+    },
+    {
+      "path": "miniprogram/pages/departments/qa.wxss",
+      "sha256": "9486e120eca1eb08228fb125bd897118cf43c6b6e6938ca221a688ee0663825d"
+    },
+    {
+      "path": "miniprogram/pages/fitness/index.json",
+      "sha256": "f7dbe4c5b7f42a57897006e924b050476d3ac61608db44f6d249d942851d70ef"
+    },
+    {
+      "path": "miniprogram/pages/fitness/index.ts",
+      "sha256": "bd075ef59c6d66137784f831fa27700dcadf87b6e161f717a039f9e8038d6e0d"
+    },
+    {
+      "path": "miniprogram/pages/fitness/index.wxml",
+      "sha256": "db920f65434cca916305989378d482dd5462593aa41e06a60cbc8d80ce340d9d"
+    },
+    {
+      "path": "miniprogram/pages/fitness/index.wxss",
+      "sha256": "895ed3ff08a986317fbcddc12d3c6ae2ec89e7ef5c3bf2ae050c1ec01979fb7b"
+    },
+    {
+      "path": "miniprogram/pages/goals/edit/index.json",
+      "sha256": "13ad0db6d45584a0611214c33ccd129f2b33ed696e6cdad43a4d135359da7acf"
+    },
+    {
+      "path": "miniprogram/pages/goals/edit/index.ts",
+      "sha256": "db190f3ca796522bae8f567841267fc01280fa94809a5e63466f8b06d83dbfd6"
+    },
+    {
+      "path": "miniprogram/pages/goals/edit/index.wxml",
+      "sha256": "6d6b43f2a65dc0e96e6da5936de88703cead0f4f1297402ce51882843c0a0e06"
+    },
+    {
+      "path": "miniprogram/pages/goals/edit/index.wxss",
+      "sha256": "d0b014afa91264ca6450a55fc1335e8929610b8e148b40f504cfacba7c1e9e21"
+    },
+    {
+      "path": "miniprogram/pages/goals/index.json",
+      "sha256": "13ad0db6d45584a0611214c33ccd129f2b33ed696e6cdad43a4d135359da7acf"
+    },
+    {
+      "path": "miniprogram/pages/goals/index.ts",
+      "sha256": "f19dfabb22444269eb32eea68192a09f9ac260745d7c971b7b8c8837911180ec"
+    },
+    {
+      "path": "miniprogram/pages/goals/index.wxml",
+      "sha256": "00f72bd89aa228df58a51c5b7bfff88332c138b31882d0b56b9cd57fe2bc206f"
+    },
+    {
+      "path": "miniprogram/pages/goals/index.wxss",
+      "sha256": "0c0012ad27311ad7cc93951a802ac88c358c94563e6450829c67b389dd389938"
+    },
+    {
+      "path": "miniprogram/pages/home/index.json",
+      "sha256": "039451fc4e317cf29602caf6899f26c89baefb26c6bf858c7ca8ab5e2ad4fd19"
+    },
+    {
+      "path": "miniprogram/pages/home/index.ts",
+      "sha256": "4e0a79a56dad2d4fe561aedc71420d46e657edfbae9fceaacb90494914344d01"
+    },
+    {
+      "path": "miniprogram/pages/home/index.wxml",
+      "sha256": "a0c78df5c8a105eda562bba854731e90754b70a50d363075a056b7a8379bf3e6"
+    },
+    {
+      "path": "miniprogram/pages/home/index.wxss",
+      "sha256": "6aeb4440445163ae1b5cfa7ce175a85561ad172480e9821a8eed169440372ab8"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/claim/index.json",
+      "sha256": "4602b0d14230ea7dbad6fad1f2a0d8f0cf07fd430315ea85954d92bb42ed9ae5"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/claim/index.ts",
+      "sha256": "0b15ee20953d7e0155832fe939dc081d7d2744f8652f0a667e475659d0393a45"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/claim/index.wxml",
+      "sha256": "65e25fec5ab3dbcfdb33dffc61d8e8ffa28ff0dd6589ef5d5f189ece68d943f8"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/claim/index.wxss",
+      "sha256": "955b13ee8bf37b4add222e3e2c9c75844439f9aee32795f9b761ee58db276dbb"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/common.wxss",
+      "sha256": "f1b082e1a7dc502a3318f27f533a50972e9329de1a5e0b956508a41a777970cb"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/detail/index.ts",
+      "sha256": "9824ed78645fcccd7ae08f1d28d69027694f23d24d5d973a86dfaf14a8bef435"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/detail/index.wxml",
+      "sha256": "45cc7bbef3e3e6043843c54d7684bdbc4e3796e71bb2ab0efabeb1a4ce3e9b21"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/index.json",
+      "sha256": "e6ff1ad790d47c3916f5675d2d4f05a9b0c6e6758bbee394861f00a014717cb8"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/index.ts",
+      "sha256": "8fd73d57d148539b4f181be7d971cec22446b242cc0f2e2c48bc720b4d1c7b0c"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/index.wxml",
+      "sha256": "2f55728236d90483c9d0c852fb8ca6c1457e5840a2753ae82142c316a954eb4b"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/index.wxss",
+      "sha256": "4fc4d3339e94c150e9634f8ce0b61315fb6d16720b3af60de792684b7a7334f8"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/mine/index.json",
+      "sha256": "d3e4a8bfe200a9cd61b48c191a6e458c1cfde83a84bba28fb208511f5daae3e0"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/mine/index.ts",
+      "sha256": "f92d59b36bd964b2d0347ea63517f75f92fa0c76984e6a63f8da71472ac8f0f8"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/mine/index.wxml",
+      "sha256": "7728c250c98e6ac3623ca16b44f207e7d65611d61fcd0f56a037954688c08e6d"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/mine/index.wxss",
+      "sha256": "955b13ee8bf37b4add222e3e2c9c75844439f9aee32795f9b761ee58db276dbb"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/publish/index.json",
+      "sha256": "28eb5252801c5eeefef6e303fa533600ee4084e037c2268741557280a069c130"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/publish/index.ts",
+      "sha256": "b51b58ea3fe54ed644f5d834f026ff4df108b298586f3fca7efbe800bb8dfd5a"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/publish/index.wxml",
+      "sha256": "a5bdff560d36481340f3d367e9179a7abc5420856453baad747adec2c900a6ca"
+    },
+    {
+      "path": "miniprogram/pages/lost-found/publish/index.wxss",
+      "sha256": "955b13ee8bf37b4add222e3e2c9c75844439f9aee32795f9b761ee58db276dbb"
+    },
+    {
+      "path": "miniprogram/pages/news/detail/index.json",
+      "sha256": "4d37507a3ce89e4c515b8a76bdaa362902214ddd866bac614902225aa015b936"
+    },
+    {
+      "path": "miniprogram/pages/news/detail/index.ts",
+      "sha256": "2e2b3147e3df4596ae90dec53d43e2baddab25fad934b7b444acecb82d7fe304"
+    },
+    {
+      "path": "miniprogram/pages/news/detail/index.wxml",
+      "sha256": "e2dcdb5ff1277e73e3917620956133ff661ad784ed2b8b90690838fa85649611"
+    },
+    {
+      "path": "miniprogram/pages/news/detail/index.wxss",
+      "sha256": "331d364a71364f6febaacfde39653a3d645befd730f1595543e54da80978b939"
+    },
+    {
+      "path": "miniprogram/pages/news/index.json",
+      "sha256": "7c90588e285c2573569e49ad5a724ba6ce3b06b775bdd30695d622dfd6bc483a"
+    },
+    {
+      "path": "miniprogram/pages/news/index.ts",
+      "sha256": "5a32a8eaf2ff1d8a4df8d283378bba26e263385823e469a2821b0c1c121cedac"
+    },
+    {
+      "path": "miniprogram/pages/news/index.wxml",
+      "sha256": "0d72cbde65d6c3a57715c9796ef259356b06e64a66eda4c8acc9e8f5cfd04eb8"
+    },
+    {
+      "path": "miniprogram/pages/news/index.wxss",
+      "sha256": "65efe3ee995cd366b8983d4317659d4e66e561aa3bf175f58a589f32d20500d5"
+    },
+    {
+      "path": "miniprogram/pages/timetable/edit/index.json",
+      "sha256": "f5f298bfc77789dbbbae8c5a30733e945183e27bc0f23883fa78eae642513996"
+    },
+    {
+      "path": "miniprogram/pages/timetable/edit/index.ts",
+      "sha256": "b4345c8eabe57a747ec30cecf6d1a5b2015eea97fb2812c6a292a2a026bb0e35"
+    },
+    {
+      "path": "miniprogram/pages/timetable/edit/index.wxml",
+      "sha256": "60efb1b0a0f025df0ee9b50f36795ff97d2b6c4f26a9ced8bab92c90f9e12e4a"
+    },
+    {
+      "path": "miniprogram/pages/timetable/edit/index.wxss",
+      "sha256": "a5dabfa0871bb7519c4e9f94b99509085f8fdb8f981f0bbd21d8abd70bdfa359"
+    },
+    {
+      "path": "miniprogram/pages/timetable/import/draft-grid.ts",
+      "sha256": "4fea88e2d3a4f7ba2241e4f6519afd5290228e282a70ae6907423c8f7ec3f7c7"
+    },
+    {
+      "path": "miniprogram/pages/timetable/import/index.json",
+      "sha256": "8ee4e68c646e967eef93b57df2c45b4d329b0114194fa8a70fe428540ff977aa"
+    },
+    {
+      "path": "miniprogram/pages/timetable/import/index.ts",
+      "sha256": "1844fabeb588d606f6b1c164e9230d9c8c7036abb9d307cb9bdc4c8bb9e235f1"
+    },
+    {
+      "path": "miniprogram/pages/timetable/import/index.wxml",
+      "sha256": "dd8face8b6d225425ea1dfe73a3a9c02c4c92e01c915a3efc2415f324a5cb20d"
+    },
+    {
+      "path": "miniprogram/pages/timetable/import/index.wxss",
+      "sha256": "7e9716778d51d4ae6f62eb00be0440b285c057ea6517373cb62cc4103933aafc"
+    },
+    {
+      "path": "miniprogram/pages/timetable/index.json",
+      "sha256": "bd9c340f454b500e7c61c670d477fb79f41793b8977661eba3638b0bbb974bba"
+    },
+    {
+      "path": "miniprogram/pages/timetable/index.ts",
+      "sha256": "fbd65fe86f4ed8d50e1afe2aae97f37d20ffa161f69e5a73f55493bfedbf89ad"
+    },
+    {
+      "path": "miniprogram/pages/timetable/index.wxml",
+      "sha256": "a79fa7ae92605dfcb54ee166209285c88266b7d56325bbe15aa12cee3c6e7ed8"
+    },
+    {
+      "path": "miniprogram/pages/timetable/index.wxss",
+      "sha256": "d6a94784e06aa673749694cd58f65c8fbf765b1a9fc1815f6a0399972384fc70"
+    },
+    {
+      "path": "miniprogram/pages/timetable/manage/index.json",
+      "sha256": "9295f46524a8e07712ddc50fe0103e3d4f4c9ec49066739dc57e1463d6c51434"
+    },
+    {
+      "path": "miniprogram/pages/timetable/manage/index.ts",
+      "sha256": "c59bb7dcc86e58e1b46d476cd86b3b815596dd14831965dd1e6751e27f635177"
+    },
+    {
+      "path": "miniprogram/pages/timetable/manage/index.wxml",
+      "sha256": "023746ed40b3fc1a4804eee7779b579b742a536d7e6dd2d0985cd1c582808ce2"
+    },
+    {
+      "path": "miniprogram/pages/timetable/manage/index.wxss",
+      "sha256": "13e1fdd41e14c09779054e2c4dcd7475a835514758cc608f184557288f180442"
+    },
+    {
+      "path": "miniprogram/pages/timetable/settings/index.json",
+      "sha256": "cd0742b8b5a493c52c0bdf7fc68c44db2b19f44fc88e388d4077e6387d32e0cf"
+    },
+    {
+      "path": "miniprogram/pages/timetable/settings/index.ts",
+      "sha256": "d4f7dffc1aa03809a40ed4e5d9230318d47d4d8986a2d12018b43b3f767ee7a1"
+    },
+    {
+      "path": "miniprogram/pages/timetable/settings/index.wxml",
+      "sha256": "9f34d4ddc4df8b2cfefdc399073184c369fddd8f64c438b603190567552440f2"
+    },
+    {
+      "path": "miniprogram/pages/timetable/settings/index.wxss",
+      "sha256": "87bdfd8169989dd75f7987635dc56ad8d3743cdc8141561e3abfd34a7dfb43c6"
+    },
+    {
+      "path": "miniprogram/services/advancement/corpus.ts",
+      "sha256": "e721a16e4e339ab8c0939a6b04cb0fc119ea37644bca7125c56cc48ffe246286"
+    },
+    {
+      "path": "miniprogram/services/advancement/index.ts",
+      "sha256": "ac27a8035656a91a7ab292a78c8244295baf759229ac5a76dd3af28b1c1f98f7"
+    },
+    {
+      "path": "miniprogram/services/advancement/model.ts",
+      "sha256": "12b1b824b3ac65a902103a2f60ac950daa94024c5e0279f7f9ad7fae8a81168f"
+    },
+    {
+      "path": "miniprogram/services/ai.ts",
+      "sha256": "f6bf034d5caedb30edce1c4832c3d9127b30118dcdcbeea0a0c6870d049fd031"
+    },
+    {
+      "path": "miniprogram/services/calendar/events.ts",
+      "sha256": "838da4791f087e612f3a6ed95d692ebc9ce3df5b5db610e79a47a03420e9c960"
+    },
+    {
+      "path": "miniprogram/services/calendar/index.ts",
+      "sha256": "fdc2d802822a93a1f96a5281c5154245972153fbd91c5d8fba8dfa72635e1d43"
+    },
+    {
+      "path": "miniprogram/services/cloud.ts",
+      "sha256": "9f1292ae58cae315640e3c5c86162ef1e1280b4cfe64cbea8b1d7762de1b4965"
+    },
+    {
+      "path": "miniprogram/services/dates/index.ts",
+      "sha256": "207fda649c1ed2f1bcaf96a336e7552598535e7df4752a1f1165a45fcc28dfac"
+    },
+    {
+      "path": "miniprogram/services/defense/index.ts",
+      "sha256": "6271cb2123c3567f7d52b2522a97cb02a911161beb0e73925289bae3839fff34"
+    },
+    {
+      "path": "miniprogram/services/defense/reader-data.ts",
+      "sha256": "1d69ecd04dfc8e33e3695ebc78df8b0570a7c29246cea7de980970a58ce5b405"
+    },
+    {
+      "path": "miniprogram/services/defense/reader.ts",
+      "sha256": "38839dad8f26c7a657cd4008ade92d1a16573267a4ac0d9efd69b5e6f3b50a64"
+    },
+    {
+      "path": "miniprogram/services/departments.ts",
+      "sha256": "e635179be0b0a9a97477d6faf8bbd581245a82b2580f3d7630531dddf91c4847"
+    },
+    {
+      "path": "miniprogram/services/fitness/index.ts",
+      "sha256": "3f20247696df4e98c2ef7d29933ec99ba4ad2be9f2307fc1f490ac9e3b6e3b82"
+    },
+    {
+      "path": "miniprogram/services/fitness/standard.ts",
+      "sha256": "e6bcaed5797e6ae74ab8fb75bd9b4ba8d93d0abc6b0daba1ded79ef01cc2e2b0"
+    },
+    {
+      "path": "miniprogram/services/goals/index.ts",
+      "sha256": "08b9df10fc8b0c4b697502432143aa56060274f33516710edf66713d59625ed6"
+    },
+    {
+      "path": "miniprogram/services/lost-found/index.ts",
+      "sha256": "3f5bb6f50d5ce3d5223cd63bbee7b1fbe032205cd23ad1af482ac7149f72ea6f"
+    },
+    {
+      "path": "miniprogram/services/lost-found/types.ts",
+      "sha256": "80d0ae809eb0c8df36c82383d45b776a98a4acca0d80208c4a8b7be84dad38ec"
+    },
+    {
+      "path": "miniprogram/services/news/index.ts",
+      "sha256": "7c84e49662a8238dcb9bee031bc01edf146e71c484305ca92495064b56c0c4cf"
+    },
+    {
+      "path": "miniprogram/services/news/types.ts",
+      "sha256": "7d9c4decd372142a979bb689b9bd0b4028f933cc7517e2e1a5b3137b7960c9d8"
+    },
+    {
+      "path": "miniprogram/services/school.ts",
+      "sha256": "2ceff6c42ef9d972bc9f571165356dc4defd2f5f00f897e89e6f80612c50696d"
+    },
+    {
+      "path": "miniprogram/services/timetable/assistant.ts",
+      "sha256": "e982b299ed9ebabcb66da498bec4cfa9afc53cd7a4da6d712af8e18f93b77044"
+    },
+    {
+      "path": "miniprogram/services/timetable/draft.ts",
+      "sha256": "7e50d53c630fb2804d502454e0b67f059e292855be7839df93a7f3da6d015a00"
+    },
+    {
+      "path": "miniprogram/services/timetable/form.ts",
+      "sha256": "eb1d332ddc97c4f1604ff5d0c86b491ca0fce6087fff4e23de9e70fe0b048af8"
+    },
+    {
+      "path": "miniprogram/services/timetable/index.ts",
+      "sha256": "52d1704aeb9561eb8328271cef241146c6a6164b6d1f8f2c2e2b31a73da33caa"
+    },
+    {
+      "path": "miniprogram/services/timetable/now.ts",
+      "sha256": "ba57ecad6a1f6393c50ef9042c8334f882991a0622776246b83270229a3d97c1"
+    },
+    {
+      "path": "miniprogram/services/timetable/palette.ts",
+      "sha256": "c3e3efc709be56f5875212ffc7037ee9073470c4e65ed9335832fa8d4a193654"
+    },
+    {
+      "path": "miniprogram/services/timetable/photo.ts",
+      "sha256": "221309ff7e5e8f3b08cf5d2e6555e63ac09fbcdf0c5e87875e02c33331840b67"
+    },
+    {
+      "path": "miniprogram/services/timetable/presentation.ts",
+      "sha256": "8fded7fb8ddaa2e46ec76c68ceb490d90f643f409dec1604d4dc3677c4161f2b"
+    },
+    {
+      "path": "miniprogram/services/timetable/semester.ts",
+      "sha256": "e945feab65e3fecded9aef5765c88c4a144c94c5b2dc31be1f9b8f40a35745ad"
+    },
+    {
+      "path": "miniprogram/services/timetable/settings.ts",
+      "sha256": "d029f4ec9f13273f1e1dac5970009811093b28af1129d9900761e5fb71d0ca6b"
+    },
+    {
+      "path": "miniprogram/services/timetable/types.ts",
+      "sha256": "66becd721c6ea2e1a43420b4965029577638916955c55583a867d19447f4cf55"
+    },
+    {
+      "path": "miniprogram/services/timetable/view.ts",
+      "sha256": "714edea06223160a06aec7dc0e54bbd5e9e5f76e64f754b267317ab3799e7e35"
+    },
+    {
+      "path": "miniprogram/services/timetable/weeks-editor.ts",
+      "sha256": "9a30df2af1ef84a06ba08eed2be1bc1600e98a383aecc207d45e7e1236288d6d"
+    },
+    {
+      "path": "miniprogram/services/timetable/weeks.ts",
+      "sha256": "19e43c5e00b7b7b2a36e34b016e6d6e1c09096955c727c444fe7d09f49df447c"
+    },
+    {
+      "path": "miniprogram/sitemap.json",
+      "sha256": "cf2c798b9fd21a5f00bdd0ec2aeda271a770ba7b96ce5cc381821fa40789f568"
+    },
+    {
+      "path": "miniprogram/styles/ui.wxss",
+      "sha256": "ae1d26e89364385a66148df5995709ffa8aa2a25156c0c1149c5c87e68e7d15c"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-home.png",
+      "page": "pages/home/index",
+      "rasterWidth": 379,
+      "sha256": "f70af3b744f37192939a26587b9e39804209dadb9bb6f51e616a01ed88c89d95"
+    },
+    {
+      "file": "02-timetable.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379,
+      "sha256": "e59d9f41ac9d4aa34a274d49520e9c84fc2b1a7ec1617f8f6b3a8b71756f6f7b"
+    },
+    {
+      "file": "03-timetable-right.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379,
+      "sha256": "a72fcf9d2e6acd27e3b65b4adac408a930cdc9e88f4cfd47840b36fd84b6d04f"
+    },
+    {
+      "file": "04-course-sheet.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379,
+      "sha256": "6e75dc1da7042266738c702543f3d0ef6bec7fd83b8f558f20544d967fccf61e"
+    },
+    {
+      "file": "05-course-edit.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 379,
+      "sha256": "bba976cf3cd4a72c6c654cce4ea3571dd8405ce847b9ddbd93abb31669bf5b75"
+    },
+    {
+      "file": "06-course-weeks.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 379,
+      "sha256": "d37d3b05ef75b60c8e9a89201fc78f0039890437fef5f3edac272d5cea8cf2da"
+    },
+    {
+      "file": "07-course-manage.png",
+      "page": "pages/timetable/manage/index",
+      "rasterWidth": 379,
+      "sha256": "b17baba33f140a100490975d978fbf1d3ec48b2446a8b23ee9ab9dbb4fac5fba"
+    },
+    {
+      "file": "08-timetable-settings.png",
+      "page": "pages/timetable/settings/index",
+      "rasterWidth": 379,
+      "sha256": "049d8d770d22a7e97bd71a4500153213a63af2ebd189f11620a6db98bff5b3ab"
+    },
+    {
+      "file": "09-import-guide.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379,
+      "sha256": "050b0442fdcd26418f6971329f5769620338c9cabbf8e307c7da0d81fc5f32d9"
+    },
+    {
+      "file": "09b-import-review.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379,
+      "sha256": "ad90efb9304d6a61a427874aa6cc375bc20d03e6512ddf5fdf733bb96aed8956"
+    },
+    {
+      "file": "09d-import-metadata.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379,
+      "sha256": "238c170c677d9ed7513d7fde80ff4bb03632c5c11fa0d97cfaa92c82abd18228"
+    },
+    {
+      "file": "09c-import-grid.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 379,
+      "sha256": "f746725b68181b8b9f3cf70367008a5ba7f2be5b5f594d2faf97f2026363f5df"
+    },
+    {
+      "file": "10-departments.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 379,
+      "sha256": "2f5e9d05990355309a9bc96e8d4734e6ce4b8439c826aadab4d5b233b5656247"
+    },
+    {
+      "file": "11-department-detail.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 379,
+      "sha256": "d9498c1aef02bb4d37b546cd30d5864bb94262af00ac986acfe76856b7707fe6"
+    },
+    {
+      "file": "12-department-qa.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 379,
+      "sha256": "a28aa81d4ebc3d3a8480fb17b3b5c85fc692f24af7c71b1c93f15b9f7ad1d31e"
+    },
+    {
+      "file": "13-news.png",
+      "page": "pages/news/index",
+      "rasterWidth": 379,
+      "sha256": "51192ae8b7bf298266240c947c1bb709f665c95157506a998feda39757c6d808"
+    },
+    {
+      "file": "14-news-detail.png",
+      "page": "pages/news/detail/index",
+      "rasterWidth": 379,
+      "sha256": "8c602038e3b525bc34496a9ad31fce623b7003fafd04eaf5a13ee8e264a37582"
+    },
+    {
+      "file": "15-goals.png",
+      "page": "pages/goals/index",
+      "rasterWidth": 379,
+      "sha256": "27ae42070c86c83c6e12cbafc8d0213dafbd8e18026d81785b6bcc868d3fa276"
+    },
+    {
+      "file": "16-goal-edit.png",
+      "page": "pages/goals/edit/index",
+      "rasterWidth": 379,
+      "sha256": "503fcdf07df890b7e0033acabb3a1c7ff8a30c93d88aba6c9c9bd895f09b119e"
+    },
+    {
+      "file": "17-calendar.png",
+      "page": "pages/calendar/index",
+      "rasterWidth": 379,
+      "sha256": "9bb34dc4ea8a1aa64b74f48691ad9e8da789d98afc5a23b1d38351c2e2a55030"
+    },
+    {
+      "file": "18-fitness-result.png",
+      "page": "pages/fitness/index",
+      "rasterWidth": 379,
+      "sha256": "99bda423d2eef2430f1f98413be5e8d8354499203114f44c79c33735b0ea7e20"
+    },
+    {
+      "file": "19-advancement-fallback.png",
+      "page": "pages/advancement/index",
+      "rasterWidth": 379,
+      "sha256": "935287d2a5f7aa809ba3ddfe427625d8b0edc34d1859b45e1d3f11a84ff1aadb"
+    },
+    {
+      "file": "20-defense-materials.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "547daffd4f751891187879a58117beabd8fcf1d16a7a84764a51f099ba641646"
+    },
+    {
+      "file": "21-defense-practice.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "50042288d09f211ec79c33059f37e85ba9d17a69bd424952d0f976e8c4d3e823"
+    },
+    {
+      "file": "22-defense-reader.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "5961bc57fe8024db2d1dda2ee87cca5f963aa6289a330df7aaf0c7883eadf247"
+    },
+    {
+      "file": "23-defense-feedback.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "c71f2194109cf54172296fba9b1c87a5046ad11e986250415d479c23e174fff3"
+    },
+    {
+      "file": "24-defense-review.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "ce23146b65339025b6382e83afee049b684325b3e718fcaf60fc23868bc25804"
+    },
+    {
+      "file": "25-defense-reanswer.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 379,
+      "sha256": "cbe18a86eafb89b5465b34ea735c3fd100f1dbc61d6a8922dd1ba6b8199ba071"
+    },
+    {
+      "file": "26-timetable-empty.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379,
+      "sha256": "cd7d776ef8ec80656a1dbc934343143c923969e065bc896c09277f49cdba1d47"
+    },
+    {
+      "file": "27-timetable-error.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 379,
+      "sha256": "a3e1f8d59909f1f1226080e5c2d5da5df5c5dfe308b09ec9574d80c92b1a29a0"
+    }
+  ],
+  "narrowScreenshots": [
+    {
+      "file": "01-home.png",
+      "sha256": "cf4e77dfb80d31f6c7ba237ef0215626ece96a5f5267d39effe32d5f3da32ca2",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "02-timetable.png",
+      "sha256": "34fffb3cff4e19f83d9483e59342e29743394529782615982c5e6121065e1fd5",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "03-course-edit.png",
+      "sha256": "5b57d533ac3892ec440daa31facd8b94b1a6906bb5e78cb7eb98dde811d5edc1",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "04-import-review.png",
+      "sha256": "e95137ef742c4a1c3b65ade9252b043f358fa4bf3dead7d38a54723b5e8490bf",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "05-import-metadata.png",
+      "sha256": "a3d1a1568540981ec2c1aad1cada97361a3940f121c7576f1c1fcea295b60438",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "06-department-qa.png",
+      "sha256": "c82d7d1f035755170bf5a5b3379ef45ee68d080a9336b37d7230da75dfb161be",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "07-defense-materials.png",
+      "sha256": "1361d311a35135e2c855329a68517fe9bc03310f2f4433443e181cc474f97ffc",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    },
+    {
+      "file": "08-defense-reader.png",
+      "sha256": "4330a63c5ecdb0dc5c6e1a658d0656b47f17c25e962dbff2e925d3f19a67f99b",
+      "mode": "browser_layout_from_native_tree",
+      "width": 320,
+      "viewportHeight": 568
+    }
+  ],
+  "reviewers": 1,
+  "reviewMode": "ordinary",
+  "promptSha256": "fb76bafc352d54fbd97bc3d84855d16d296cb1677f72200d96a4d63ee0f27a4c",
+  "helperHashes": {
+    "scripts/verify-lingnan-ui.cjs": "cad2e3fb2b877378b09b70cfcf2049b5917bfe94577ffd84fbb67e91b10aebcf",
+    "scripts/render-lingnan-narrow.cjs": "e34b189442053d58a9baca4d7a118a7447bb809393b951e50b1b443680121d7f",
+    "scripts/render-mockups.mjs": "f397827bb1d4899400407db44da9f86ef8cfe1fe7410401df5c70050b5992418",
+    "scripts/lib/ui-capture-window.ps1": "674776a8b0050e936f77a8362a0e5b72c41ce4dcf63dedb2129c2f6c55501374"
+  }
+}

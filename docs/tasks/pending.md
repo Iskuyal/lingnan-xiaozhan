@@ -5,7 +5,7 @@
 ## 已从待执行清单移除
 
 - 2026-10-08 遗留的两处修复已提交并随收尾 PR #138 合入：网络类传输失败可读文案（不再把平台英文原文递给用户）、`verify:wechat` 等终态并以 `skipped` 记录本机网络阻断。它们不再是未提交材料。
-- 57 屏全流程 UI 设计（PR #136）已按负责人确认合入 `main@fbb1b5b`，设计稿不再是待评审件；**按设计重写 UI 另立 [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)，不能写成已完成**。
+- 57 屏全流程 UI 设计（PR #136）已按负责人确认合入 `main@fbb1b5b`，设计稿不再是待评审件；[Issue #137](https://github.com/Iskuyal/wx-match/issues/137) 的16页原生重写已实现，767项本机测试与390px模拟器10项离线交互通过，见[证据](../evidence/lingnan-ui-2026-10-17/README.md)；320px浏览器辅助8画面无横向溢出；320px原生、真机及真实云端仍单列，不能写成全面端上验收。
 - 2026-09-22 起未跟踪的 [Ticket 12](tickets/12-timetable-page-tidy.md) 与 [云配置向导](../../scripts/wizard-cloud-config.ps1) 已归档入仓；Ticket 12 的历史遗留项留给 #137 实现时核对。
 
 - 答辩练习 G0 素材、G1 真实首评、G2 设计件、G3 最小流程和 G4 部分真实/真机验证已交付，不能再写「页面未实现」或「真实首评从未执行」。负责人设计接受与阶段验收另计。

@@ -7,6 +7,8 @@ import { buildCorpusPayload, renderCorpusModule } from './lib/generate-departmen
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = resolve(root, 'dist');
+const requireReader = createRequire(import.meta.url);
+requireReader('./lib/generate-defense-reader.cjs').generateDefenseReader(root);
 // 仅清理仓库内固定生成目录，拒绝符号链接或联接点。
 if (relative(root, output) !== 'dist' || (existsSync(output) && lstatSync(output).isSymbolicLink())) {
   throw new Error('构建输出目录必须是仓库内的 dist 实体目录');

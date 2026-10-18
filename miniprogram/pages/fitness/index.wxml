@@ -58,7 +58,7 @@
     <view id="fit-run-hint" class="fit-hint" wx:if="{{runHint !== ''}}">{{runHint}}</view>
   </view>
 
-  <button id="fit-calc" class="home-button fit-calc" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="calculate">估算</button>
+  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="fit-calc" class="home-button fit-calc" hover-class="pressed" bindtap="calculate">估算</button>
 
   <!-- 结果区 -->
   <block wx:if="{{hasResult}}">
@@ -100,7 +100,7 @@
       <view>你的输入只在这台手机上参与计算，不上传、不保存。</view>
     </view>
 
-    <button id="fit-again" class="home-button fit-again" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="focusForm">改一个数字重算</button>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="fit-again" class="home-button fit-again" hover-class="pressed" bindtap="focusForm">改一个数字重算</button>
   </block>
 
   <view class="quiet fit-foot">填了的项目才参与计算；留空的项目不会按 0 分算。</view>

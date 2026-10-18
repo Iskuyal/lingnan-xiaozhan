@@ -201,6 +201,28 @@ Page({
   resetFilter() {
     this.setData(viewPatch(this.data.courses, this.data.selectedIds, 'all'));
   },
+  editRow(event: DatasetEvent) {
+    const course = this.data.courses.find((item) => item.id === event.currentTarget.dataset.id);
+    if (this.data.deleting || !course) return;
+    wx.navigateTo({ url: `/pages/timetable/edit/index?id=${encodeURIComponent(course.id)}` });
+  },
+  deleteRow(event: DatasetEvent) {
+    const course = this.data.courses.find((item) => item.id === event.currentTarget.dataset.id);
+    if (!course || this.data.deleting) return;
+    return new Promise<void>((resolve) => {
+      wx.showModal({
+        title: '删除这门课程？',
+        content: `将删除「${course.name}」及其全部分段，无法撤销。`,
+        confirmText: '删除',
+        confirmColor: '#8c1614',
+        success: (result) => {
+          if (result.confirm) void this.removeSelected([course.id]).then(resolve);
+          else resolve();
+        },
+        fail: () => resolve(),
+      });
+    });
+  },
   toggleRow(event: DatasetEvent) {
     const id = event.currentTarget.dataset.id;
     // 删除进行中不再接受勾选：那批 id 已经定下，中途改动只会让人以为改动生效了。

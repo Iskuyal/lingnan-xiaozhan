@@ -6,7 +6,7 @@
     <view class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。</view>
   </view>
 
-  <button id="department-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到部门问答">
+  <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="department-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到部门问答">
     <view class="qa-entry-copy">
       <view class="qa-entry-title">问问部门</view>
       <view class="qa-entry-note">选一个组织，或直接提问 · 仅依据官网已核实资料</view>
@@ -56,7 +56,8 @@
     <view class="departments-source-label">资料来源：{{view.source.label}}</view>
     <view class="departments-verified-date">核查于 {{view.source.verifiedAt}}</view>
     <view class="departments-source-note">{{view.source.note}}</view>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-directory-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
   </view>
 
-  <button id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
 </view>

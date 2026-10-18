@@ -7,7 +7,7 @@
   <view wx:elif="{{status === 'error'}}" class="edit-block">
     <view class="section-title">打不开这门课程</view>
     <view class="edit-error">{{errorMessage}}</view>
-    <button id="back-from-edit" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-edit" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
   </view>
 
   <block wx:else>
@@ -177,8 +177,8 @@
       <view class="edit-quiet edit-mini-note">预览只画你正在编辑的这节课</view>
     </view>
 
-    <button id="save-course" class="home-button edit-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
-    <button id="delete-course" wx:if="{{deletable}}" class="home-button edit-delete" hover-class="pressed" bindtap="remove">删除这节课</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="save-course" class="home-button edit-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
+    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="delete-course" wx:if="{{deletable}}" class="home-button edit-delete" hover-class="pressed" bindtap="remove">删除这节课</button>
     <view id="back-from-edit" class="edit-cancel" hover-class="pressed" bindtap="goBack">取消</view>
     <view class="edit-footnote" wx:if="{{footnote !== ''}}">{{footnote}}</view>
   </block>

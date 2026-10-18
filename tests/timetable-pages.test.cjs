@@ -477,7 +477,8 @@ test('课表页面模板里不出现具体时刻（学校作息未核实）', ()
 // 「问问课表助手」曾经只有 .tt-assistant，没写 color，于是继承了正文色，红底上是一片深字。
 test('课表主页：品牌红底上的主按钮写明白字，「手工新增」用次级样式', () => {
   const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
-  const appWxss = fs.readFileSync(path.resolve('miniprogram/app.wxss'), 'utf8');
+  const appWxss = fs.readFileSync(path.resolve('miniprogram/app.wxss'), 'utf8')
+    + fs.readFileSync(path.resolve('miniprogram/styles/ui.wxss'), 'utf8');
 
   const assistant = wxml.match(/<button[^>]*id="assistant-open"[^>]*>/u);
   assert.ok(assistant !== null, '助手入口按钮应当存在');
@@ -493,24 +494,18 @@ test('课表主页：品牌红底上的主按钮写明白字，「手工新增�
   assert.match(manual[0], /class="[^"]*\bsecondary\b[^"]*"/u, '次级动作要用 .secondary（.tt-secondary 没有定义）');
 });
 
-// 空白天曾经被整列去掉（2026-09-26 为了省宽度），负责人当天就报了 BUG：
-// 「当天没课的话直接不显示天数了」——整列消失会分不清「那天没课」和「表被截了」。
-// 所以七天都留在表里，没课的天只收窄（32rpx）并写单字星期。
-test('周网格七天都在表里：没课的天收窄不消失', () => {
-  const templates = [
-    'miniprogram/pages/timetable/index.wxml',
-    'miniprogram/pages/timetable/import/index.wxml',
-  ];
-  for (const file of templates) {
+// 无课的星期也保留；已确认设计采用等宽七天和横向滚动，节次轴始终在滚动区域外。
+test('周网格保留完整七天，节次轴独立于横向滚动区域', () => {
+  for (const file of ['miniprogram/pages/timetable/index.wxml', 'miniprogram/pages/timetable/import/index.wxml']) {
     const wxml = fs.readFileSync(path.resolve(file), 'utf8');
-    assert.ok(!/wx:if="\{\{!column\.narrow\}\}"/u.test(wxml), `${file}: 不应按有没有课跳过整列`);
-    const narrow = wxml.match(/column\.narrow \?/gu) ?? [];
-    assert.equal(narrow.length, 3, `${file}: 表头与网格体都要按 narrow 加细列样式与单字星期`);
-    assert.match(wxml, /grid-th-narrow/u, `${file}: 表头要有细列样式`);
-    assert.match(wxml, /grid-col-narrow/u, `${file}: 网格体要有细列样式`);
+    assert.ok(!/wx:if="\{\{!column\.narrow\}\}"/u.test(wxml), `${file}: 不得跳过空白天`);
+    assert.match(wxml, /class="grid-axis"[\s\S]*?<\/view>\s*<scroll-view class="grid-scroll"/u, `${file}: 节次轴不随课程横向滚动`);
+    assert.match(wxml, /scroll-x/u);
+    assert.match(wxml, /wx:for="\{\{(?:gridUi|draftGridUi)\.columns\}\}"/u);
+    assert.doesNotMatch(wxml, /column\.narrow \?/u, `${file}: 七天采用相同列宽`);
   }
   const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
-  assert.match(wxss, /\.grid-col-narrow \{ flex:0 0 32rpx; \}/u, '细列宽度写在样式里');
+  assert.match(wxss, /\.grid-col\s*\{[^}]*width:66px/u);
 });
 
 test('周课表主页：填了开学日与作息后，日期、今日列、速查条与详情弹层都到位', async () => {

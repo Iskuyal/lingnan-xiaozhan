@@ -1,0 +1,136 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>320px 浏览器辅助检查</title><style>body{margin:0}div,button{box-sizing:border-box}button,input,textarea{font:inherit}button{border:0}img{height:auto}.native-nav{height:88px;padding:45px 10px 0;background:white;text-align:center;font-size:12px}.scope{padding:4px 12px;font-size:10px;background:#fff4e4;color:#78420e}button { min-width:0; max-width:100%; box-sizing:border-box; border-radius:8px; }
+input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14px; }
+.page { min-height:100vh; padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.ui-icon { flex:none; display:block; width:24px; height:24px; }
+.ui-sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); }
+.eyebrow,.quiet { color:var(--text-3, #746760); font-size:12px; line-height:1.75; }
+.section-title { color:var(--text, #2b2422); font-size:17px; line-height:1.5; font-weight:700; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin:24px 0 12px; gap:8px; }
+.section-note { color:var(--text-3, #746760); font-size:11px; }
+.section-bar { display:none; }
+.home-button { display:block; width:100%; max-width:none; min-height:48px; margin:16px 0 0; padding:12px 16px; border-radius:8px; background:var(--brand, #c41c23); color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.home-button.secondary,.source-button { background:var(--surface, #ffffff); color:var(--brand-deep, #8c1614); border:1px solid #b9847c; }
+.source-button { display:block; width:100%; min-height:48px; margin-top:14px; padding:12px; border-radius:8px; font-size:13px; line-height:1.7; text-align:center; }
+.status-page { padding-top:46px; }
+.status-title { color:var(--text, #2b2422); font-size:22px; line-height:1.5; margin-bottom:14px; }
+.status-copy { color:var(--text-2, #6b5d57); font-size:14px; line-height:1.9; }
+.status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
+.pressed { opacity:.72; }
+button[disabled] { opacity:.5; }
+@media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }
+
+/**
+ * 全局样式与设计令牌。
+ * 岭南红与校徽金沿用项目确定的品牌色；纸白底、清晰分区和方正轮廓构成本次全模块改版。
+ * 令牌引用必须带相同字面回退值，见 tests/wxss.test.cjs。
+ */
+body {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --gold: #c69a28;
+  --gold-deep: #a67f1c;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+
+  /* Legacy design tokens remain available to the archived timetable mockups; active page styles do not use glass. */
+  --glass: rgba(255,255,255,0.52);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-edge: rgba(255,255,255,0.92);
+  --glass-line: rgba(255,255,255,0.62);
+  --glass-divide: rgba(255,255,255,0.70);
+  --glass-drop: rgba(92,28,26,0.13);
+  --glass-drop-strong: rgba(140,22,20,0.26);
+  --glass-blur: 16px;
+  --r-chip: 5.12px;
+  --r-control: 8.533333333333333px;
+  --r-card: 10.24px;
+  --r-panel: 13.653333333333334px;
+  --r-pill: 426.24px;
+
+  --warn: #9a5b1e;
+  --warn-soft: rgba(255,244,228,0.86);
+  --warn-line: rgba(214,160,90,0.55);
+
+  /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
+  --blk-tint: rgba(255,255,255,0.72);
+  --blk-line: rgba(255,255,255,0.62);
+  --blk-solid: rgba(148,134,127,0.55);
+
+  background: var(--paper, #fdf7f5);
+  color: var(--text, #2b2422);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+view,button { box-sizing:border-box; }
+button { margin:0; padding:0; font:inherit; color:inherit; background:transparent; }
+button::after { border:0; }
+.status-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; background:#faeee9; border-radius:8px; }
+.status-icon image { width:28px; height:28px; }
+.defense { padding:22px 20px calc(34px + env(safe-area-inset-bottom)); }
+.defense-title { margin:14px 0 18px; color:#2b2422; font-size:24px; line-height:1.5; font-weight:700; }
+.note,.bound { margin-top:14px; padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; font-size:13px; line-height:1.9; color:#6b5d57; }
+.bound { padding:10px 15px; }
+.card { margin-top:14px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.material { min-height:120px; }
+.material-selected { border-color:#bdcde0; background:#e9eff6; }
+.material-head { display:flex; align-items:flex-start; gap:10px; justify-content:space-between; }
+.material-name { flex:1; font-size:16px; font-weight:600; line-height:1.6; }
+.pick { flex:none; padding:5px 8px; color:#8c1614; border:1px solid #b9847c; border-radius:6px; font-size:11px; }
+.material-selected .pick { color:#fff; background:#8c1614; border-color:#8c1614; }
+.chip { display:inline-block; padding:4px 8px; margin:10px 0 4px; border-radius:5px; background:#faeee9; color:#8c1614; font-size:11px; line-height:1.7; }
+.chip-warn { color:#78420e; background:#fff4e4; }
+.material .chip { display:block; padding:8px 10px; font-size:12px; font-weight:600; }
+.fact { margin-top:8px; font-size:12px; color:#6b5d57; line-height:1.9; }
+.question { margin-top:18px; padding:16px; background:#fff; border:1px solid #ded4cf; border-radius:10px; }
+.question-tag { display:block; font-size:12px; font-weight:600; color:#8c1614; }
+.question-text { display:block; margin-top:10px; font-size:15px; line-height:1.9; }
+.answer-input { display:block; width:100%; height:180px; margin-top:18px; padding:13px; border:1px solid #aa9990; border-radius:7px; background:#fff; font-size:14px; line-height:1.8; }
+.input-foot { display:flex; justify-content:space-between; gap:8px; margin-top:7px; color:#746760; font-size:11px; line-height:1.7; }
+.cheat { margin-top:20px; padding-top:14px; border-top:1px solid #bca99d; }
+.cheat-title { color:#8c1614; font-size:13px; font-weight:600; }
+.cheat-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.cheat-chip { min-height:36px; padding:8px 10px; border:1px solid #ded4cf; border-radius:6px; background:#fff; font-size:11px; }
+.hint,.fail { margin-top:16px; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.9; }
+.primary,.secondary { display:block; width:100%; max-width:none; min-height:48px; padding:12px 16px; margin-top:16px; border-radius:8px; background:#c41c23; color:#fff; font-size:15px; line-height:1.6; font-weight:600; text-align:center; }
+.secondary { color:#8c1614; background:#fff; border:1px solid #b9847c; font-size:13px; }
+.pending { margin-top:20px; padding:20px 16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.pending-title,.frame-title,.ask-label,.dim-name,.fail-title { display:block; font-size:15px; line-height:1.8; font-weight:600; color:#2b2422; }
+.pending-body,.frame-body,.ask-text,.dim-body,.fail-body,.kept-text { display:block; margin-top:10px; font-size:14px; line-height:1.9; white-space:pre-wrap; }
+.pending-foot,.dim-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; font-size:12px; color:#746760; }
+.progress { height:4px; margin-top:18px; overflow:hidden; border-radius:3px; background:#faeee9; }
+.progress-bar { width:42%; height:4px; background:#c41c23; }
+.ask { margin-top:18px; padding:16px; background:#e9eff6; border:1px solid #bdcde0; border-radius:10px; }
+.frame-title { color:#8c1614; }
+.dim-head { margin-top:0; }
+.dim-body { font-size:13px; color:#6b5d57; }
+.reader-mask { position:fixed; top:0; right:0; bottom:0; left:0; z-index:80; background:rgba(43,36,34,.36); }
+.reader-panel { position:absolute; top:5%; right:0; bottom:0; left:0; display:flex; flex-direction:column; background:#fdf7f5; border-radius:16px 16px 0 0; overflow:hidden; }
+.reader-head { display:flex; align-items:flex-start; gap:12px; padding:18px 20px 12px; background:#fff; border-bottom:1px solid #ded4cf; }
+.reader-head>view { flex:1; min-width:0; }
+.reader-title { font-size:18px; font-weight:700; line-height:1.6; }
+.reader-close { flex:none; width:52px; min-height:44px; padding:10px; border:1px solid #b9847c; color:#8c1614; background:#fff; font-size:13px; }
+.reader-index { display:flex; flex-wrap:wrap; gap:6px; padding:12px 20px; background:#fff; }
+.reader-index-toggle { flex:none; min-height:44px; padding:10px 20px; background:#fff; color:#8c1614; font-size:12px; text-align:left; border-radius:0; border-bottom:1px solid #ded4cf; }
+.reader-index-item { width:calc((100% - 18px) / 4); min-height:44px; padding:10px 4px; border:1px solid #b9847c; border-radius:6px; background:#fff; color:#8c1614; font-size:12px; }
+.reader-scroll { flex:1; height:0; min-height:0; }
+.reader-note { margin:16px 20px; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:12px; line-height:1.9; }
+.reader-entry { margin:14px 20px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
+.reader-entry-head { font-size:15px; font-weight:600; line-height:1.8; }
+.reader-entry-body { margin-top:10px; font-size:13px; line-height:1.9; word-break:break-all; }
+.reader-footer { padding:12px 20px calc(16px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid #ded4cf; }
+.reader-footer .primary { margin-top:0; }
+@media(max-width:350px) { .defense { padding-left:16px; padding-right:16px; } .reader-head,.reader-index,.reader-footer { padding-left:16px; padding-right:16px; } }
+.grid-scroll{overflow-x:auto}.reader-scroll{overflow-y:auto}body:has(.reader-mask){height:568px;overflow:hidden}.reader-mask{top:88px}body:has(.reader-mask) .scope{display:none}</style><body><div class="native-nav">320px 浏览器布局辅助</div><div class="scope">实际渲染树 + WXSS；非320px微信截图</div><div class="defense"><div class="eyebrow">材料：课表导入与校对 · 本项目自有材料</div><div class="section-head"><span class="section-title">第 1 轮 / 共 3 轮</span><span class="section-note">问题与目标</span></div><div class="question"><span class="question-tag">第 1 轮 · 问题与目标</span><span class="question-text">这个功能是给谁、解决什么问题的？请用两三句话说清。</span></div><textarea class="answer-input" value="" maxlength="500" placeholder="按材料里的条目说，不确定的就写「还没验证」"></textarea><div class="input-foot"><span>已写 0 字 / 最多 500 字</span><span>草稿留在本页</span></div><div class="cheat"><span class="cheat-title">材料速查（可引用的条目编号）</span><div class="cheat-list"><span class="cheat-chip">INV-1</span><span class="cheat-chip">INV-2</span><span class="cheat-chip">INV-3</span><span class="cheat-chip">F1</span><span class="cheat-chip">F2</span><span class="cheat-chip">F3</span><span class="cheat-chip">F4</span><span class="cheat-chip">F5</span><span class="cheat-chip">F6</span><span class="cheat-chip">F7</span><span class="cheat-chip">F8</span><span class="cheat-chip">F9</span></div></div><button class="primary" style="margin-left:0;margin-right:0;width:100%;max-width:none" hover-class="pressed">提交这一轮，拿反馈与追问</button><div class="quiet">提交后会调用一次模型（实测 20–45 秒），期间可以取消并保留上面的草稿。</div><button id="defense-material-open" class="secondary" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" data-anchor="">查看完整练习材料与依据</button><div class="reader-mask"><div class="reader-panel"><div class="reader-head"><div><div class="reader-title">课表导入与校对</div><div class="quiet">本项目自有材料 · 冻结 2026-09-30</div></div><button id="material-close-top" class="reader-close" style="margin-left:0;margin-right:0;width:52px;max-width:none">关闭</button></div><button id="material-index-toggle" class="reader-index-toggle" style="margin-left:0;margin-right:0;width:100%;max-width:none" aria-expanded="false">条目目录 · 展开 12 项</button><div id="material-reader" class="reader-scroll" scroll-y="true" scroll-into-view="" enable-back-to-top="false" enhanced="true"><div class="reader-note">以下是冻结练习素材，不是当前上线声明，也不证明学习效果。设计情景不代表已有功能。</div><div class="reader-entry reader-entry-body">性质：本项目自有材料，由维护者从已合入 main 的代码、测试与证据文档提炼。基线 42cfd320（PR #117 合入后的 main）。冻结日期：2026-09-30。路径见 sources.json 的 evidenceMap。
+只给模型短说明，不含源码全文、账号、密钥、个人课表与身份信息。</div><div id="material-INV-1" class="reader-entry"><div class="reader-entry-head">INV-1 · —</div><div class="reader-entry-body">本卡是素材，非上线声明，不证明学习效果</div></div><div id="material-INV-2" class="reader-entry"><div class="reader-entry-head">INV-2 · —</div><div class="reader-entry-body">「已完成」只表示仓库内有代码或测试记录，不等于真机通过：各轮验收均为 realDevice: false（模拟器）</div></div><div id="material-INV-3" class="reader-entry"><div class="reader-entry-head">INV-3 · —</div><div class="reader-entry-body">本卡不含真实教师姓名、班级人数与个人课表；仓库内确有这些信息，只引用路径不转载</div></div><div id="material-F1" class="reader-entry"><div class="reader-entry-head">F1 · 已完成</div><div class="reader-entry-body">小程序不能浏览手机本地文件，只能用 wx.chooseMessageFile 从微信聊天记录选文件（含该 API 缺失时的兜底）。路径：教务系统下载 → 发到微信 → 小程序里选</div></div><div id="material-F2" class="reader-entry"><div class="reader-entry-head">F2 · 已完成</div><div class="reader-entry-body">文件先上传到本人 openid 下的云存储路径，由云函数 timetable 用 xlsx 解析成草稿；解析阶段不写课表记录，临时文件先删后解析</div></div><div id="material-F3" class="reader-entry"><div class="reader-entry-head">F3 · 已完成</div><div class="reader-entry-body">解析对象是网格矩阵：前几行元信息，表头「星期一 … 星期日」，其后每行一个大节。单元格形如 课程名 学分 教师 [周次]周 起-止节 楼-房间-用途 校区 场地编号；一格可有多门课，已实测单换行与空行两种分隔</div></div><div id="material-F4" class="reader-entry"><div class="reader-entry-head">F4 · 已完成</div><div class="reader-entry-body">识别不出的只标记不猜：用 warnings、weeksRecognized、weekText、problems 保留原值与提示，不擅自修复；未识别字段标待核对，由学生在确认页裁决</div></div><div id="material-F5" class="reader-entry"><div class="reader-entry-head">F5 · 已完成（确认框交互未验证）</div><div class="reader-entry-body">草稿经学生在确认页确认后才写库，确认前不写；「放弃导入」不写库、草稿清空（只存内存）。保存＝整份替换：替换本人全部课程，含手工添加的</div></div><div id="material-F6" class="reader-entry"><div class="reader-entry-head">F6 · 代码与桩测试已完成；服务端隔离待验证</div><div class="reader-entry-body">个人课表按微信身份隔离：读写都在云函数内按调用上下文的 openid 过滤，课表路径客户端不直连数据库（公共资讯另有直连）；上传路径用 openid 哈希前缀，不接触教务账号</div></div><div id="material-F7" class="reader-entry"><div class="reader-entry-head">F7 · 已完成</div><div class="reader-entry-body">tests/fixtures/timetable/ 有 4 份真实教务导出（非手写样例）；Ticket 03 记录新增 43 项测试。入库 p4-b/verification.json 为 21 项全过、realDevice: false（模拟器）；更晚一轮 24 项记在 timetable-ui-rework/README（JSON 被 gitignore）</div></div><div id="material-F8" class="reader-entry"><div class="reader-entry-head">F8 · 待验证</div><div class="reader-entry-body">三项仍待验证，不得说成已完成：① 双账号界面隔离已由负责人确认通过（09-27，记录待归档），但服务端越权隔离只有桩测试、缺独立证据，不得说成「隔离已验证」；② 100 条以上的分页读取；③ 上传成功后若小程序被直接杀死，云存储可能残留临时文件（无 TTL），「临时文件已删除」的文案此时不成立</div></div><div id="material-F9" class="reader-entry"><div class="reader-entry-head">F9 · 待核实</div><div class="reader-entry-body">三处待核实的文档不一致：① p4-b/README 与 cloud/timetable.md:60 记 xlsx@0.18.5，而实际两份 package.json 均为 0.20.3（parse.ts 无版本声明）；② cloud-recheck/README 称导入页「没有存在性兜底」，实则 import/index.ts:174 就是该兜底且有测试；③ 同 README 记某轮「20 项全过」，入库 JSON 却是更晚的 21 项轮，未标注</div></div><div class="reader-note reader-entry-body">- F9 只要求核对，不推断哪一方是错的。</div></div><div class="reader-footer"><button id="material-close-bottom" class="primary" style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none">返回当前练习，保留内容</button></div></div></div></div></body></html>

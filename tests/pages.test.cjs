@@ -34,19 +34,22 @@ test('首页两个入口分别进入部门和课表，目标均是已注册页�
   }
 });
 
-test('首页保持定稿校园服务布局，不显示失物招领入口', () => {
+test('首页保持已确认的校园服务入口与资讯，不显示失物招领入口', () => {
   const wxml = fs.readFileSync('dist/pages/home/index.wxml', 'utf8');
   const wxss = fs.readFileSync('dist/pages/home/index.wxss', 'utf8');
 
   assert.equal(wxml.includes('id="lost-found-entry"'), false, '定稿首页没有失物招领快捷入口');
-  assert.match(wxml, /class="home-hero"/);
+  assert.match(wxml, /src="\/assets\/lingnan-logo-official.png"/);
   assert.match(wxml, /id="timetable-entry"[\s\S]*?class="home-primary"/);
   assert.match(wxml, /class="entry-pair"/);
   assert.match(wxml, /id="departments-entry"/);
   assert.match(wxml, /id="news-entry"/);
-  assert.match(wxml, /recent-news-item-feature/);
+  for (const id of ['calendar-entry', 'goal-days-entry', 'fitness-entry', 'advancement-entry', 'defense-entry', 'news-retry']) {
+    assert.ok(wxml.includes(`id="${id}"`), `${id} 保留可到达入口`);
+  }
+  assert.match(wxml, /wx:for="\{\{recentNews\}\}"/);
   assert.match(wxss, /\.home-primary\s*\{/);
-  assert.match(wxss, /\.recent-news-item-feature\s*\{/);
+  assert.match(wxss, /\.recent-news-item\s*\{/);
 });
 
 test('首页来源复制成功和失败都有正确反馈', () => {

@@ -26,6 +26,7 @@ import {
   startReanswer,
   submitAnswer,
 } from '../../services/defense/index';
+import { materialForReading, MaterialEntry } from '../../services/defense/reader';
 
 interface SectionView {
   title: string;
@@ -36,6 +37,9 @@ interface ReviewRow {
   dimension: string;
   status: string;
   excerpt: string;
+  summary: string;
+  basis: string;
+  followup: string;
 }
 
 /** 一轮反馈里【追问】的内容，作为下一轮的回答引导。 */
@@ -48,12 +52,16 @@ function askOf(sections: SectionView[]): string {
 function reviewRows(session: DefenseSession): ReviewRow[] {
   return DEFENSE_QUESTIONS.map((question) => {
     const feedback = session.feedbacks.find((item) => item.round === question.round);
-    if (feedback === undefined) return { dimension: question.dimension, status: '未完成', excerpt: '' };
-    const kept = parseSections(feedback.text).find((section) => section.title === '【待验证保留】');
+    if (feedback === undefined) return { dimension: question.dimension, status: '未完成', excerpt: '', summary: '', basis: '', followup: '' };
+    const sections = parseSections(feedback.text);
+    const body = (title: string) => sections.find(section => section.title === title)?.body ?? '';
     return {
       dimension: question.dimension,
       status: '已反馈',
-      excerpt: kept === undefined ? '' : kept.body.slice(0, 80),
+      excerpt: body('【待验证保留】'),
+      summary: body('【是否对应回答】'),
+      basis: body('【引用核对】'),
+      followup: body('【追问】'),
     };
   });
 }
@@ -68,6 +76,16 @@ Page({
     materialNote: '',
     materialFacts: [] as string[],
     materialEntries: [] as string[],
+    selectedMaterialId: 'FC-1',
+    materialOpen: false,
+    materialIndexOpen: false,
+    materialReaderName: '',
+    materialReaderKind: '',
+    materialFrozenAt: '',
+    materialPreface: '',
+    materialBoundary: '',
+    materialRows: [] as MaterialEntry[],
+    materialAnchor: '',
     round: 0,
     dimension: '',
     question: '',
@@ -105,6 +123,34 @@ Page({
       clearInterval(this.timer);
       this.timer = 0;
     }
+  },
+  onSelectMaterial(event: { currentTarget: { dataset: { id?: string } } }) {
+    const id = String(event.currentTarget.dataset.id ?? '');
+    if (DEFENSE_MATERIALS.some(material => material.id === id)) this.setData({ selectedMaterialId: id });
+  },
+  onBegin() {
+    this.onPickMaterial({ currentTarget: { dataset: { id: this.data.selectedMaterialId } } });
+  },
+  onOpenMaterial(event?: { currentTarget: { dataset: { anchor?: string } } }) {
+    const material = materialForReading(this.data.materialId || this.data.selectedMaterialId);
+    if (material === null) return;
+    const anchor = event?.currentTarget.dataset.anchor ?? '';
+    this.setData({ materialOpen: true, materialIndexOpen: false, materialReaderName: material.name, materialReaderKind: material.kindLabel,
+      materialFrozenAt: material.frozenAt, materialRows: material.entries, materialPreface: material.preface, materialBoundary: material.boundary,
+      materialAnchor: material.entries.some(entry => entry.id === anchor) ? `material-${anchor}` : '',
+    });
+  },
+  onCloseMaterial() {
+    this.setData({ materialOpen: false, materialIndexOpen: false, materialAnchor: '' });
+  },
+  toggleMaterialIndex() {
+    this.setData({ materialIndexOpen: !this.data.materialIndexOpen });
+  },
+  stopMaterialTap() {},
+  onLocateMaterial(event: { currentTarget: { dataset: { id?: string } } }) {
+    const id = String(event.currentTarget.dataset.id ?? '');
+    if (!this.data.materialRows.some(entry => entry.id === id)) return;
+    this.setData({ materialIndexOpen: false, materialAnchor: '' }, () => this.setData({ materialAnchor: `material-${id}` }));
   },
 
   startTimer() {
@@ -204,7 +250,11 @@ Page({
   onCopyReview() {
     const lines = [`材料：${this.data.materialName}`];
     for (const row of this.data.reviewRows) {
-      lines.push(`${row.dimension}：${row.status}${row.excerpt === '' ? '' : `（${row.excerpt}）`}`);
+      lines.push(`${row.dimension}：${row.status}`);
+      if (row.summary !== '') lines.push(`对应回答：${row.summary}`);
+      if (row.basis !== '') lines.push(`引用核对：${row.basis}`);
+      if (row.followup !== '') lines.push(`本轮追问：${row.followup}`);
+      if (row.excerpt !== '') lines.push(`待验证保留：${row.excerpt}`);
     }
     wx.setClipboardData({
       data: lines.join('\n'),

@@ -37,7 +37,7 @@
         <view class="cal-source-text">
           {{card.sourceLabel}}<block wx:if="{{card.publishedAt !== ''}}"> · 公告发布 {{card.publishedAt}}</block><br />适用 {{card.scope}} · 核查 {{card.verifiedAt}}
         </view>
-        <view id="copy-source-{{card.id}}" class="cal-copy" hover-class="pressed" data-url="{{card.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
+        <view id="copy-source-{{card.id}}" class="cal-copy-link" hover-class="pressed" data-url="{{card.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
       </view>
     </view>
   </view>

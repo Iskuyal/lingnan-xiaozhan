@@ -3,7 +3,7 @@
     <view class="ge-missing">
       <view class="ge-missing-title">这条目标日已经不在了</view>
       <view class="ge-missing-copy">它可能已经在列表里被删掉。返回列表看看现在还有哪些目标日。</view>
-      <button id="goal-missing-back" class="home-button ge-missing-btn" hover-class="pressed" bindtap="goBack">返回目标日</button>
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="goal-missing-back" class="home-button ge-missing-btn" hover-class="pressed" bindtap="goBack">返回目标日</button>
     </view>
   </block>
 
@@ -53,8 +53,8 @@
       <view class="ge-hint">预览按现在的日期算一次；保存后列表里会随每天变化重新计算。</view>
     </view>
 
-    <button id="goal-save" class="home-button ge-save" style="display:block;width:100%;max-width:none" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
-    <button id="goal-remove" wx:if="{{mode === 'edit'}}" class="ge-delete" style="display:flex;width:100%;max-width:none" hover-class="pressed" bindtap="remove">删除这一条</button>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="goal-save" class="home-button ge-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存</button>
+    <button style="margin-left:0;margin-right:0;display:flex;width:100%;max-width:none" id="goal-remove" wx:if="{{mode === 'edit'}}" class="ge-delete" hover-class="pressed" bindtap="remove">删除这一条</button>
     <view id="goal-cancel" class="ge-cancel" hover-class="pressed" bindtap="goBack">取消</view>
     <view class="quiet ge-note">保存失败时不会改动原来的记录；删除需要再确认一次。</view>
   </block>

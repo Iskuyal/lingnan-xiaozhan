@@ -58,14 +58,14 @@
       </view>
     </view>
 
-    <button id="goal-new" class="home-button goal-new" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="goal-new" class="home-button goal-new" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
   </block>
 
   <view wx:else class="goal-empty">
     <view class="goal-empty-mark">◎</view>
     <view class="goal-empty-title">还没有目标日</view>
     <view class="goal-empty-copy">自己写一个日期，剩下多少天由小程序替你数。第一件事可以是一场考试的日期、一个报名或交材料的截止日，或者一个项目节点。</view>
-    <button id="goal-new" class="home-button goal-new" style="display:block;width:100%;max-width:none" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="goal-new" class="home-button goal-new" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
   </view>
 
   <view class="quiet goal-note">目标日只存在本机，换设备或删除小程序后不再恢复；这里的日期由你填写，不代表学校已公布的安排。今天（北京时间）{{todayText}}</view>
