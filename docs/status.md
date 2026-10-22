@@ -4,7 +4,9 @@
 
 2026-10-18 合入核对：UI实现PR #139已合并，16页原生重写的代码与离线验证记录已进入main；实现票#137按本次范围收尾。767项测试、模拟器和辅助布局仍属于10-17记录，不外推新一轮真机或真实云端验收。
 
-2026-10-22 仓库收尾：远端与本地分支均只剩 `main`（代码基线 `00f95d6`）；已合入的 `codex/lingnan-ui-design`、`codex/lingnan-ui-implementation`、`fix/agent-closeout-20261017` 与 6 个遗留 worktree 已清理，PR #136/#138/#139 的合并记录保留；本地保留 3 条 2026-09-19 的历史 stash，未做丢弃。本轮只改文档，未重新部署、未重跑真机或真实模型。
+2026-10-22 仓库收尾：远端与本地分支均只剩 `main`（代码基线 `00f95d6`）；已合入的 `codex/lingnan-ui-design`、`codex/lingnan-ui-implementation`、`fix/agent-closeout-20261017` 与 6 个遗留 worktree 已清理，PR #136/#138/#139 的合并记录保留；本地保留 3 条 2026-09-19 的历史 stash，未做丢弃。本轮未重新部署、未重跑真机或真实模型。
+
+2026-10-22 依赖安全修复：`follow-redirects` 1.16.0→1.16.1（新披露 GHSA-q3jh-wrc6-jgq8 / GHSA-8r9p-f939-6h3c）；根与 ai/timetable/newsSync 三份锁文件 `npm audit --audit-level=low` 均 0 漏洞。本机 `typecheck` 通过、767/767 测试通过，[CI run 39806450256](https://github.com/Iskuyal/wx-match/actions/runs/39806450256) 全步骤成功。
 
 ## 已实现与实际证据
 
