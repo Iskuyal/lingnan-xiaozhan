@@ -1,8 +1,10 @@
 # 项目当前状态
 
-核对日期：2026-10-18（UI合入main与仓库同步；其他实测仍按记录日期）。收尾前基线为 `main@fbb1b5b`：PR #136 的 57 屏全流程 UI 设计稿已合入，v8 演示材料在 `40513b2`。收尾范围与完成项见[收尾记录](evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)；历史收尾见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)、[升学优化记录](evidence/advancement-optimization-2026-10-03/README.md)、[入口维护记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
+核对日期：2026-10-22（仓库与分支收尾；其他实测仍按记录日期）。收尾前基线为 `main@fbb1b5b`：PR #136 的 57 屏全流程 UI 设计稿已合入，v8 演示材料在 `40513b2`。收尾范围与完成项见[收尾记录](evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)；历史收尾见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)、[升学优化记录](evidence/advancement-optimization-2026-10-03/README.md)、[入口维护记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
 
 2026-10-18 合入核对：UI实现PR #139已合并，16页原生重写的代码与离线验证记录已进入main；实现票#137按本次范围收尾。767项测试、模拟器和辅助布局仍属于10-17记录，不外推新一轮真机或真实云端验收。
+
+2026-10-22 仓库收尾：远端与本地分支均只剩 `main`（`00f95d6`）；已合入的 `codex/lingnan-ui-design`、`codex/lingnan-ui-implementation`、`fix/agent-closeout-20261017` 与 6 个遗留 worktree 已清理，PR #136/#138/#139 的合并记录保留；本地保留 3 条 2026-09-19 的历史 stash，未做丢弃。本轮只改文档，未重新部署、未重跑真机或真实模型。
 
 ## 已实现与实际证据
 
@@ -18,8 +20,8 @@
 | CI、文档交付、客户端超时 | PR #129已合入：axios 0.34.0、75秒兜底、G5素材；本轮再修「未跟踪目标被放过」并更正旧30秒材料，有先红后绿测试。10-17收尾另提交网络类失败可读文案与验收脚本「等终态/网络阻断记skipped」修正 | 本地/CI不证明真机兜底；迟到结果由已结束Promise丢弃，复用既有失败态；10-08开发者工具22项通过+1项因本机网络skipped（realDevice=false），10-17未重跑 |
 | 云端 | 前轮收尾时ai回读20/20属于历史快照；当前实读PR #131运行代码a1a156e的22文件，与其部署归档22/22一致，见[当前云版复核](evidence/department-heldout-2026-10-03/cloud-version-review.json)；维护者用量可读 | 回读时与当时本地主线有7项根文件差异（含2新增），现PR #131已合入；部门RAG/语料一致，本轮不部署；timetable/newsSync见前轮证据，函数部署/触发器/定时实际执行分别核对 |
 | 云端只读核查 | 资讯10条，第一页10条、第二页0条，无重复id；旧课表list成功51门；sync_state普通客户端拒读 | 不证明真实多页、定时执行或整份替换。此次未写课表、设置或公共资讯数据 |
-| 10-08与P6材料 | [校长审核材料](competition/principal-2026-10-08/README.md)的16页PPT/PDF定稿为v6.5并冻结；3分54秒v7代码动画覆盖12项功能，配套源码、字幕、试听与讲稿，49项本地演示检查通过，见[验证](competition/principal-2026-10-08/validation-v7.md)；另有2026-10-10的v8镜头推近动画候选（自审，待负责人评审，未取代v7）；七项作品说明内部稿及源码审查包准备见收尾记录；G5三份参考素材已挂索引 | 正式名称、团队字段、历史成果、最终真机录屏、学校授权与提交回执未完成；材料为合成数据与固定业务AI响应的代码复现，配音生成使用线上语音服务，不能替代小程序、云端或模型验收；e项真实截图与最终视频须在UI重写后重做 |
-| 全流程UI设计（57屏） | [57屏设计提案](design/lingnan-ui-2026/README.md)随PR #136合入`main@fbb1b5b`，负责人已确认为实现依据（#137）；静态检查覆盖57×2视口、14条画面跳转链、7组正文对比色及课表横向滚动，另复算体测样例84.0 | 设计图不是微信界面、真机或模型验收；Figma 44屏初稿、盾形校徽同步与远端原型复核未完成（#135）；WXML/WXSS重写（#137）尚未开始，现有小程序界面仍是旧版 |
+| 10-08与P6材料 | [校长审核材料](competition/principal-2026-10-08/README.md)的16页PPT/PDF定稿为v6.5并冻结；3分54秒v7代码动画覆盖12项功能，配套源码、字幕、试听与讲稿，49项本地演示检查通过，见[验证](competition/principal-2026-10-08/validation-v7.md)；另有2026-10-10的v8镜头推近动画候选（自审，待负责人评审，未取代v7）；七项作品说明内部稿及源码审查包准备见收尾记录；G5三份参考素材已挂索引 | 正式名称、团队字段、历史成果、最终真机录屏、学校授权与提交回执未完成；材料为合成数据与固定业务AI响应的代码复现，配音生成使用线上语音服务，不能替代小程序、云端或模型验收；e项真实截图与最终视频须按新UI重做（见下行） |
+| 全流程UI（57屏设计 + 原生实现） | [57屏设计提案](design/lingnan-ui-2026/README.md)随PR #136合入`main@fbb1b5b`，负责人已确认为实现依据；16条在用页面的原生WXML/WXSS重写随[PR #139](https://github.com/Iskuyal/wx-match/pull/139)合入`main@a35ec6c`，767项本机测试、390px模拟器10项离线交互与320px浏览器辅助8画面见[实现证据](evidence/lingnan-ui-2026-10-17/README.md) | 设计图与离线截图不是真机、读屏、系统字号或模型验收；320px原生与真机未取得；Figma 44屏初稿、盾形校徽同步与远端原型复核未完成（#135）；e项真实截图与最终视频须按新UI重做 |
 | 失物招领 | 非AI基线和已有修复保留 | 09-30负责人明确暂缓后续，当前不部署、不做AI匹配或验收 |
 
 ## 2026-10-17 收尾

@@ -17,7 +17,14 @@
 
 **代码、部署、模拟器验证和真机验证分开记录。** 2026-09-27 负责人确认人工验收 A1–C1 通过，但被测版本、原始样本和逐项结果仍待归档；不能据此宣称当前分支或全部 AI 指标已通过。详见 [项目状态](docs/status.md) 与 [人工验收清单](docs/testing/manual-acceptance.md)。
 
-**规划中的新增主线**是[课程项目答辩陪练（文字版）](docs/planning/ai-project-defense-plan.md)，尚未实现、未验收。校园通知 RAG 与 OCR 属于后续探索，不计入已完成能力。历史选题和当前规划在 [规划索引](docs/planning/README.md) 中区分。
+**课程项目答辩陪练（文字版）已实现并随 PR #124–#127 合入 main**：G0 素材、G1 首评、G2 设计、G3 最小流程、G4 部署与部分真机验证已交付；G5 素材及 #111/#112/#115/#116 的人类验收仍开放。校园通知 RAG 与 OCR 属于后续探索，不计入已完成能力。历史选题和当前规划在 [规划索引](docs/planning/README.md) 中区分。
+
+## 当前版本与仓库收尾（2026-10-22）
+
+- 代码基线：`main@00f95d6`，含 [PR #139](https://github.com/Iskuyal/wx-match/pull/139) 的岭南 UI 原生重写（16 条在用页面）。
+- 仓库收尾：远端仅保留 `main`；已合入的 3 条远端分支、2 条本地分支与 6 个遗留 worktree 已清理，合并历史保留在 PR 中。
+- 验证边界：最近一次 `main` CI 成功（2026-10-18）；本机 767 项测试为 2026-10-17 记录，本轮未重跑，也未重新部署或做真机验收。
+- 赛事提交：七项说明内部稿已有；正式作品名/团队、最终真机录屏、学校授权与提交回执仍待负责人，见 [提交清单](docs/competition/submission.md)。
 
 ## 快速开始
 
@@ -63,6 +70,7 @@ AGENTS.md          项目协作约定
 CONTEXT.md         领域术语
 dist/              构建输出（不提交）
 artifacts/         本地验证输出（不提交）
+submission-output/ 本地交付材料输出（不提交）
 ```
 
 技术路线为 **原生微信小程序 + TypeScript/WXML/WXSS + 微信云开发**，不额外引入跨端框架。取舍见 [ADR-0001](docs/adr/0001-native-wechat-typescript.md)。
@@ -70,7 +78,8 @@ artifacts/         本地验证输出（不提交）
 ## 协作与交付
 
 - 开始前阅读 [AGENTS.md](AGENTS.md)，按 [规格](docs/product/spec.md)、[阶段](docs/development/phases.md) 和任务验收标准推进。
-- 阶段任务用 GitHub Issues；当前 11 张执行票保留在 [本地 Ticket](docs/tasks/tickets/README.md)，不重复建票。新增主线规划不自动变成已批准的实施任务。
+- 阶段任务用 GitHub Issues；当前 12 张执行票保留在 [本地 Ticket](docs/tasks/tickets/README.md)，不重复建票。新增主线规划不自动变成已批准的实施任务。
+- 分支策略：从 `main` 开短期分支，PR 合入后即删；2026-10-22 已把仓库收尾为仅 `main` 分支。
 - 界面改动先做 HTML 设计图并渲染 PNG，评审定稿后再改页面；见 [设计约定](docs/design/README.md)。
 - 密钥只在运行环境配置；真实样本、第三方模型处理和试点边界见 [数据使用说明](docs/product/data-usage.md)。
-- 提交说明与交付报告使用中文；材料中的功能和效果必须有对应版本的证据。[提交清单](docs/competition/submission.md)仍是待填模板，不是已完成参赛材料。
+- 提交说明与交付报告使用中文；材料中的功能和效果必须有对应版本的证据。[提交清单](docs/competition/submission.md) 已按 2026-10-22 状态补充证据索引；七项说明内部稿已有，正式作品名、最终真机录屏、参赛包与学校回执仍待负责人。

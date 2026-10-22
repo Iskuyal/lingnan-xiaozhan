@@ -28,7 +28,7 @@
 
 ## 各票一览
 
-状态核对日期：2026-10-17（项目收尾；原实测日期保留）。每张票的历史过程与逐项验收保留在票内；部署、评测与材料见[收尾记录](../../evidence/agent-closeout-2026-10-03/README.md)、[维护记录](../../evidence/agent-maintenance-2026-10-07/README.md)与[2026-10-17收尾记录](../../evidence/agent-closeout-2026-10-17/README.md)，跨票版本边界见[项目状态](../../status.md)。当前唯一的 ready-for-agent 新增执行入口是 GitHub [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)（57 屏 UI 重写，本轮收尾未开始）；不能从 `in-progress` 推断仍需重复开发。
+状态核对日期：2026-10-22（仓库与分支收尾；原实测日期保留）。每张票的历史过程与逐项验收保留在票内；部署、评测与材料见[收尾记录](../../evidence/agent-closeout-2026-10-03/README.md)、[维护记录](../../evidence/agent-maintenance-2026-10-07/README.md)与[2026-10-17收尾记录](../../evidence/agent-closeout-2026-10-17/README.md)，跨票版本边界见[项目状态](../../status.md)。当前无 ready-for-agent 新增执行入口：GitHub [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)（57 屏 UI 重写）已由 PR #139 完成并关闭；不能从 `in-progress` 推断仍需重复开发。
 
 | # | Ticket | 状态 | 尚待完成的核心项 | Blocked by |
 | --- | --- | --- | --- | --- |
@@ -40,10 +40,10 @@
 | 06 | [课表 AI 助手](06-timetable-ai-assistant.md) | in-progress | 负责人确认验收通过；10题明细、取消/确认与设备版本证据待归档 | 01、03代码已有；当前版本独立证据另计 |
 | 07 | [部门 AI 问答](07-department-ai-qa.md) | in-progress | PR #132独立14题与采集器已合入；固定10题与标题级收紧是既有证据，新题首评三项评分仍待定 | 01代码已有；共享旧失败费用核账待确认，新首评及真机另计 |
 | 08 | [发布后单页模式](08-post-publish-single-page-mode.md) | wontfix | 本次参赛不走发布路径，未实测 | 外部发布条件 |
-| 09 | [参赛材料与包](09-p6-submission.md) | needs-info | 七项内部稿、源码审查包、v6.5 PPT/PDF与v7代码动画、v8候选已有；57屏UI重写（#137）未开始，e项截图与最终视频需实现后重做；正式名称、校内收口、最终真机视频与回执仍缺 | 04、05、06、07的交付验收边界及负责人材料字段 |
+| 09 | [参赛材料与包](09-p6-submission.md) | needs-info | 七项内部稿、源码审查包、v6.5 PPT/PDF与v7代码动画、v8候选已有；57屏UI重写已随PR #139完成，e项截图与最终视频需按新UI重做；正式名称、校内收口、最终真机视频与回执仍缺 | 04、05、06、07的交付验收边界及负责人材料字段 |
 | 10 | [校园通知 RAG](10-campus-rag-qa.md) | needs-info | 等待可用语料与指标决策；国赛版方向 | 11、语料入库 |
 | 11 | [OCR / 文档解析](11-ocr-document-parsing.md) | in-progress | 外部 OCR 密钥、真实调用和人工抽检 | 外部服务与密钥 |
-| 12 | [课表页「收纳版」整理](12-timetable-page-tidy.md) | in-progress | 2026-09-22 事后补票；第 4 项已有页面测试，第 1–3 项未逐项复核，由 #137 UI 重写时核对；Issue #24 三个决策框未结清 | #24、#137 |
+| 12 | [课表页「收纳版」整理](12-timetable-page-tidy.md) | in-progress | 2026-09-22 事后补票；第 4 项已有页面测试，第 1–3 项未逐项复核记录；#137 UI 重写已合入，逐项复核仍待做；Issue #24 三个决策框未结清 | #24 |
 
 本轮人工操作按[验收清单](../../testing/manual-acceptance.md)记录。早期模型超时与合成小图成功分别是历史故障和局部验证，都不能替代真实课表截图成绩。
 
