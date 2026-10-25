@@ -1,5 +1,13 @@
 # 项目当前状态
 
+**2026-10-23只读云包回读**：ai/timetable/newsSync业务根文件（除锁文件外）分别21/21、6/6、7/7与e389e6a候选构建一致；三份锁文件仍为follow-redirects 1.16.0，下载包内已装版本为1.16.1。[哈希与差异](evidence/competition-closeout-2026-10-23/cloud-readback.json)已归档；未部署。后文“未取得本轮回读”的描述属于本次读取前状态，当前剩余为锁文件一致性及其他独立线上验收。
+
+**2026-10-23材料续办**：[收尾责任表](tasks/closeout-2026-10-23.md)已细分赛事材料、内部验收与学校交接；新增[技术附录](competition/technical-appendix-2026-10-23.md)（系统图、页面图、16条路由及4段固定源码）和[包内运行说明](competition/runbook-candidate-2026-10-23.md)。图示已渲染查看；新候选收录全部30张本轮离线截图，包验证见本轮证据。未改变业务代码/云配置，未增加真实模型调用，正式名仍未定；其他关口不因材料补齐而关闭。
+
+**2026-10-23 重启后复跑**：390px原生模拟器离线交互10/10通过，归档30张新截图；含导入草稿、周日晚间课、材料定位、三轮复盘及重答草稿保持。[结果与截图](evidence/competition-closeout-2026-10-23/native-after-restart/report.json)绑定e389e6a候选，先前启动/RPC失败保留历史。云函数、数据库及存储由内存夹具接管，真实业务AI调用0次；不代替真实上传保存、真机或模型效果。
+
+**2026-10-23 初轮收尾推进（历史，UI结果以后续重启复跑为准）**：负责人已要求按检查结果执行；正式作品名仍未定。源码候选固定 `e389e6aa142512d38ed445c8ab379a3ac37b4f4a`，在独立目录干净安装并通过 typecheck、767/767 测试及根/ai/timetable/newsSync 四份锁文件审计（0漏洞）。新增[七项候选稿](competition/submission-candidate-2026-10-23.md)、[演示脚本](competition/demo-script-2026-10-23.md)和[回归步骤](testing/submission-rehearsal-2026-10-23.md)，[执行卡](tasks/closeout-2026-10-23.md)跟踪剩余工作，[本轮证据](evidence/competition-closeout-2026-10-23/README.md)记录包检查及实际结果。新worktree的模拟器启动两次报skeletonCache/EEXIST；原项目重建后开启9420端口，但自动化RPC持续无响应，停止脚本，业务检查未开始；Android adb 无设备，未取得新 UI、真机或真实业务结果。AI旧失败核账与预算决定未解除，未发起计费业务模型调用、未部署。报名/C组/队伍及校徽具体许可沿用既有确认；其余内容许可、最终字段、原始证据、录屏与学校回执仍缺。下方带日期段落保留历史，尤其10-17的“UI尚未开始”不再描述当前实现。
+
 核对日期：2026-10-22（仓库与分支收尾；其他实测仍按记录日期）。收尾前基线为 `main@fbb1b5b`：PR #136 的 57 屏全流程 UI 设计稿已合入，v8 演示材料在 `40513b2`。收尾范围与完成项见[收尾记录](evidence/agent-closeout-2026-10-17/README.md)与[PR #138](https://github.com/Iskuyal/wx-match/pull/138)；历史收尾见[agent 收尾记录](evidence/agent-closeout-2026-10-03/README.md)、[升学优化记录](evidence/advancement-optimization-2026-10-03/README.md)、[入口维护记录](evidence/agent-maintenance-2026-10-07/README.md)。历史状态完整保存在[收尾前快照](archive/status-before-closeout-2026-10-03.md)。当前待执行项统一见[待办总表](tasks/pending.md)，不从历史记录推断当前状态。
 
 2026-10-18 合入核对：UI实现PR #139已合并，16页原生重写的代码与离线验证记录已进入main；实现票#137按本次范围收尾。767项测试、模拟器和辅助布局仍属于10-17记录，不外推新一轮真机或真实云端验收。

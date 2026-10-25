@@ -1,0 +1,344 @@
+{
+  "date": "2026-10-22T18:35:37.253Z",
+  "sourceCommit": "e389e6aa142512d38ed445c8ab379a3ac37b4f4a",
+  "mode": "wechat_simulator_mock",
+  "boundary": "原生模拟器；云函数/数据库/本机存储接管为示例。接管后真实云请求0次；不含连接前启动读取，不证明模型、部署或真机。",
+  "passed": true,
+  "realDevice": false,
+  "paidBusinessAiCalls": 0,
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "platform": "devtools",
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "SDKVersion": "3.17.2",
+    "version": "8.0.5"
+  },
+  "checks": [
+    {
+      "name": "首页主入口进入已注册课表页",
+      "passed": true
+    },
+    {
+      "name": "课表含周日晚间课程、横向滚动与详情",
+      "passed": true
+    },
+    {
+      "name": "不连续周次继续使用自选周次",
+      "passed": true
+    },
+    {
+      "name": "文件上传与解析均模拟，列表和七天预览读取同一草稿，未保存",
+      "passed": true
+    },
+    {
+      "name": "部门入口与详情导航",
+      "passed": true
+    },
+    {
+      "name": "资讯列表进入正文",
+      "passed": true
+    },
+    {
+      "name": "体测输入计算与结果渲染",
+      "passed": true
+    },
+    {
+      "name": "模型模拟失败后展示原文依据",
+      "passed": true
+    },
+    {
+      "name": "材料定位F5再返回，回答草稿与第一轮保持",
+      "passed": true
+    },
+    {
+      "name": "三轮模拟反馈、复盘、一次重答查阅后草稿不丢失",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-home.png",
+      "page": "pages/home/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "02-timetable.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "03-timetable-right.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "04-course-sheet.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "05-course-edit.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "06-course-weeks.png",
+      "page": "pages/timetable/edit/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "07-course-manage.png",
+      "page": "pages/timetable/manage/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "08-timetable-settings.png",
+      "page": "pages/timetable/settings/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "09-import-guide.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "09b-import-review.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "09d-import-metadata.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "09c-import-grid.png",
+      "page": "pages/timetable/import/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "10-departments.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "11-department-detail.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "12-department-qa.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "13-news.png",
+      "page": "pages/news/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "14-news-detail.png",
+      "page": "pages/news/detail/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "15-goals.png",
+      "page": "pages/goals/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "16-goal-edit.png",
+      "page": "pages/goals/edit/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "17-calendar.png",
+      "page": "pages/calendar/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "18-fitness-result.png",
+      "page": "pages/fitness/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "19-advancement-fallback.png",
+      "page": "pages/advancement/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "20-defense-materials.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "21-defense-practice.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "22-defense-reader.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "23-defense-feedback.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "24-defense-review.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "25-defense-reanswer.png",
+      "page": "pages/defense/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "26-timetable-empty.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 324
+    },
+    {
+      "file": "27-timetable-error.png",
+      "page": "pages/timetable/index",
+      "rasterWidth": 324
+    }
+  ],
+  "mockCallCount": 16,
+  "sourceComparison": {
+    "nonCloudBuildFiles": 147,
+    "allEqualAfterLineEndingNormalization": true,
+    "lineEndingOnlyDifferences": [
+      "pages/advancement/index.wxml"
+    ]
+  },
+  "windowRestored": true,
+  "screenshotHashes": [
+    {
+      "file": "01-home.png",
+      "sha256": "5f0d8b7a35b784c09292e49ff868e1d315b55db0399b8d17388834850b07ce18"
+    },
+    {
+      "file": "02-timetable.png",
+      "sha256": "fe527523175ce36cd7158514b3381ae82c54cbe4784ceb4fdbf4ddd08849dbbf"
+    },
+    {
+      "file": "03-timetable-right.png",
+      "sha256": "08d57cd6ca62baca161c6e000216c81ead645af56b0909d651a18113b051a0b7"
+    },
+    {
+      "file": "04-course-sheet.png",
+      "sha256": "6c0f3dbacb347d8214d474933afb9e73d37454c7b21fbc224652e0a880d34674"
+    },
+    {
+      "file": "05-course-edit.png",
+      "sha256": "472b7497442308801f4f29a89fdda8a42e3a7db6424bbc7fa314b6ac0f1f4b2f"
+    },
+    {
+      "file": "06-course-weeks.png",
+      "sha256": "4e1c7e1f5a5e887d524f05c5f5fcd81b2f980bb461c534a4959789698e464c4a"
+    },
+    {
+      "file": "07-course-manage.png",
+      "sha256": "234601cd3b7722af2c2d13c7f6f0bb07692f898d70cde7570026107c457c61f7"
+    },
+    {
+      "file": "08-timetable-settings.png",
+      "sha256": "680abf680abcc9c210531f6f3f9f34c16a2afc5f3dc9626ae4eb306e219be65b"
+    },
+    {
+      "file": "09-import-guide.png",
+      "sha256": "1c68e9c90f9e99fc0e8b00bb86949669bab9d438f75e0b3b6296512963048e9b"
+    },
+    {
+      "file": "09b-import-review.png",
+      "sha256": "e639dcf45759dcfeac45df568557c49f324e6d326a4b6d8544706c9c65ac12f7"
+    },
+    {
+      "file": "09d-import-metadata.png",
+      "sha256": "5d912ad22636a6c95986fa343e000d87b887730467aea80798ec49e352d91ad0"
+    },
+    {
+      "file": "09c-import-grid.png",
+      "sha256": "ccb2cd73aa2f09a53abd39950fd052a738bc1771e98ab1936afc580b6bf74075"
+    },
+    {
+      "file": "10-departments.png",
+      "sha256": "ff2a964f0602abc67c2251715429e2af3b3e032d6adf8e5ee6602589b57b9070"
+    },
+    {
+      "file": "11-department-detail.png",
+      "sha256": "95519bcad5bab97662577d9f8e69760648770de6c767c8abdf6de90525e61ebc"
+    },
+    {
+      "file": "12-department-qa.png",
+      "sha256": "1f1cf157776246d3d3e770cad1fdb118bda7dbc89d8c15eaca8e7aff9994b957"
+    },
+    {
+      "file": "13-news.png",
+      "sha256": "b305c58a1d30ec6b749365403fe176d356d07403edf9807d362a895d543068b3"
+    },
+    {
+      "file": "14-news-detail.png",
+      "sha256": "63f7c7d0df3601fe28f6221b00bca87c6c41e8d2aab6005c19bf7c88f740c028"
+    },
+    {
+      "file": "15-goals.png",
+      "sha256": "94b9892fd3417e2468a2a74fd02c43f70b13263e045ccf666015a6b19b0c20d2"
+    },
+    {
+      "file": "16-goal-edit.png",
+      "sha256": "abfe7eeb4fedc0e97a22746e15dc5efaf06fdde5dcaee24a9729448cf714b880"
+    },
+    {
+      "file": "17-calendar.png",
+      "sha256": "94ad13f5964aa2f1971d6880ab427dbda363f9891c3234be5f1b7d4c2f191cf3"
+    },
+    {
+      "file": "18-fitness-result.png",
+      "sha256": "2fa659cda24acfe97dc54d16ca8e3076a285cc5905dded5c40291101dab03302"
+    },
+    {
+      "file": "19-advancement-fallback.png",
+      "sha256": "33341054eedb0a2e7a1584677dc41e3be6958d7ca348dd16ed595a5397e4558e"
+    },
+    {
+      "file": "20-defense-materials.png",
+      "sha256": "556cd7f5873de0299b4f67cfc6896c01e382962f1252b5c5af9ddc86ee6ac2c3"
+    },
+    {
+      "file": "21-defense-practice.png",
+      "sha256": "9e9c0a6d6632818e10512bc302e49ba1c743f58783daf98e60a8abc86e495631"
+    },
+    {
+      "file": "22-defense-reader.png",
+      "sha256": "35f17d4c342d91e131a0bc9fd2b7fc8c9ee96bbd213831b8b16d5a12ae2579f4"
+    },
+    {
+      "file": "23-defense-feedback.png",
+      "sha256": "58297d890b16246e1b15c97498a7da75aa5529154252ae71814bf052927e360f"
+    },
+    {
+      "file": "24-defense-review.png",
+      "sha256": "7d2d9a0735eca4ff63ff40da5477009c54ee25f12fbfce2bddc0605330d03a96"
+    },
+    {
+      "file": "25-defense-reanswer.png",
+      "sha256": "6fbc7eb25616e32f66fe52a3573a0be8144e4901d93b215e39ad9fc13f391e24"
+    },
+    {
+      "file": "26-timetable-empty.png",
+      "sha256": "f252a647caa345b437ca81e6df2fb4d972abef4999f453a06aeb5fd6ad532cf7"
+    },
+    {
+      "file": "27-timetable-error.png",
+      "sha256": "5cd94c52c871800d39856f26f075eb27470330bcab51690646a4d196f44bf1bd"
+    }
+  ],
+  "previousAttempts": "Initial EEXIST and RPC no-response records retained in parent README and private artifacts"
+}

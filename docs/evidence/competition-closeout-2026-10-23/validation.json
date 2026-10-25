@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "e389e6aa142512d38ed445c8ab379a3ac37b4f4a",
+  "formalSubmission": false,
+  "nameStatus": "undecided",
+  "sourceCheckout": "isolated_detached_worktree",
+  "checks": {
+    "cleanInstall": "passed",
+    "typecheck": "passed",
+    "repositoryTests": {
+      "status": "passed",
+      "passed": 767,
+      "failed": 0,
+      "skipped": 0
+    },
+    "dependencyAudit": {
+      "status": "passed",
+      "rootVulnerabilities": 0,
+      "aiVulnerabilities": 0,
+      "timetableVulnerabilities": 0,
+      "newsSyncVulnerabilities": 0,
+      "provesCloudRuntimeUpdated": false
+    },
+    "sourceReviewZip": {
+      "status": "passed",
+      "sourceFiles": 257,
+      "bytes": 809002,
+      "sha256": "8e8186d7a6f826e83e920ca6046964952332d808233b7b84ccc55270883fc6a7",
+      "crcPassed": true,
+      "forbiddenPathCheckPassed": true,
+      "completeTestsIncluded": false
+    },
+    "sourceZipCleanExtract": {
+      "install": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "fullTests": "not_included"
+    },
+    "newNativeUi": {
+      "status": "passed",
+      "mode": "wechat_simulator_mock",
+      "checksPassed": 10,
+      "screenshots": 30,
+      "realDevice": false,
+      "paidBusinessAiCalls": 0,
+      "evidence": "native-after-restart/report.json",
+      "previousAttempt": {
+        "status": "blocked",
+        "reason": "New checkout auto: skeletonCache EEXIST twice; reset-fileutils did not resolve. Existing project auto opened port 9420, but automation RPC never returned; run stopped before business checks",
+        "automationPortOpenedOnThirdAttempt": true,
+        "businessChecksStarted": false,
+        "newScreenshots": 0,
+        "diagnosticBlackScreenshotUsedAsEvidence": false
+      }
+    },
+    "realDevice": {
+      "status": "not_run",
+      "androidAdbDevices": 0,
+      "iosEvidence": false
+    },
+    "paidBusinessAi": {
+      "status": "not_run",
+      "calls": 0,
+      "historicalBillingGateCleared": false
+    },
+    "cloudDeployment": "not_run",
+    "productionCourseWrites": 0,
+    "cloudPackageReadback": {
+      "status": "read_only_completed_with_lock_difference",
+      "functions": [
+        "ai",
+        "timetable",
+        "newsSync"
+      ],
+      "nonLockRootFilesMatched": [
+        21,
+        6,
+        7
+      ],
+      "lockFollowRedirectsVersion": "1.16.0",
+      "downloadedNodeModulesFollowRedirectsVersion": "1.16.1",
+      "deployedByThisRun": false,
+      "evidence": "cloud-readback.json"
+    }
+  },
+  "candidateBundle": {
+    "validation": "reported_separately_in_external_package_check_to_avoid_self_hash",
+    "formalSubmission": false,
+    "currentVideoIncluded": false,
+    "screenshotsScope": "2026-10-23 native simulator offline fixtures after restart; not real device or real model"
+  }
+}
