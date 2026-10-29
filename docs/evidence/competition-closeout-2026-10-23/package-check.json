@@ -1,0 +1,24 @@
+{
+  "file": "校园工具-内部候选包-e389e6a-2026-10-23-r6.zip",
+  "formalSubmission": false,
+  "sourceCommit": "e389e6aa142512d38ed445c8ab379a3ac37b4f4a",
+  "bytes": 2363296,
+  "sha256": "46466e47495501cf3c2ee63ad8fd17534d3fd8f067c475b37ddbf2df654a6bb7",
+  "crcPassed": true,
+  "pathFilterPassed": true,
+  "fileHashesPassed": true,
+  "markdownLocalLinkTargetsPassed": true,
+  "htmlLocalLinkTargetsPassed": true,
+  "under300MB": true,
+  "entries": 310,
+  "sourceFileCount": 257,
+  "currentOfflineScreenshots": 30,
+  "finalVideoIncluded": false,
+  "fullTestsIncluded": false,
+  "nameStatus": "undecided",
+  "sourceExtraction": {
+    "install": 0,
+    "typecheck": 0,
+    "build": 0
+  }
+}

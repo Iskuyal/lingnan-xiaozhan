@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29T12:00:24.432Z",
+  "mode": "native_simulator_cloud",
+  "boundary": "真实上传到云存储并由 timetable 云函数解析；不调用 AI 模型，不写入课表（草稿均放弃）",
+  "passed": true,
+  "checks": [
+    "不可解析文件的错误文案可读且不含平台原文",
+    "真实样本放弃导入后课表条数保持 51 门，草稿清空并回到引导态",
+    "无学分版式解析出 3 门课，课程名/教师正确，且留下 3 条待核对提示"
+  ],
+  "skipped": [],
+  "paidBusinessAiCalls": 0,
+  "screenshots": [
+    "excel-import-error.png",
+    "excel-import-review.png",
+    "excel-import-nocredits.png"
+  ],
+  "windowGeometry": {
+    "prepared": true
+  },
+  "filePickerAvailable": true,
+  "bogusMessage": "课表操作失败：未识别出课表矩阵：文件里没有找到「星期一 … 星期日」表头行与可解析的课程单元格。已检查工作表：Sheet1",
+  "courseCountBefore": 51,
+  "courseCountAfter": 51,
+  "noCreditsRows": [
+    "劳动教育（一）｜夏舜丽",
+    "大学美育｜程晓明",
+    "5+3 真创项目｜陈实"
+  ],
+  "noCreditsWarnings": 3,
+  "windowRestored": true
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-29T11:53:55.897Z",
+  "mode": "native_simulator_mock",
+  "boundary": "云函数、数据库、上传及本机存储接管为内存示例；不证明真实模型、审核、保存或真机",
+  "passed": true,
+  "checks": [
+    "具体缺失范围与日期边界可在实际页面数据中读取",
+    "可信来源保留，模拟无依据事实未进入展示正文，原模型留档"
+  ],
+  "paidBusinessAiCallsAfterInterception": 0,
+  "answerScreenshot": "clarity-native-answer.png",
+  "screenshot": "clarity-native.png",
+  "displayText": "当前资料仅提供以下活动条目（标题级原文）及官网发布时间。标题未列明的主办承办、人员姓名或名单、人数、入选条件和当前最新进度，均无法据此核实；官网发布时间不能直接当作活动或会议召开日期。\n\n广东岭南职业技术学院第十四次学生代表大会顺利召开\n官网发布时间：2026-03-09\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_27001",
+  "replaced": true,
+  "environment": {
+    "model": "iPhone 12/13 (Pro)",
+    "platform": "devtools",
+    "SDKVersion": "3.17.2",
+    "windowWidth": 390,
+    "windowHeight": 753
+  },
+  "sourceHashes": {
+    "miniprogram/pages/departments/qa.ts": "a08feee8fe96c78bef989d37d8e9ce9423f843e1c41c8cf3128dad4483b77042",
+    "dist/pages/departments/qa.js": "3146c4c6201204544549199c89aa29016fdd7e75643148430952fcda8f7eb1ea"
+  },
+  "windowRestored": true
+}

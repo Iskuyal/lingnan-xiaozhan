@@ -4,6 +4,18 @@
 
 [当前状态](../../status.md) · [云开发总览](README.md)
 
+## 2026-10-29：有overrides时随包上传已锁定依赖
+
+本轮在三条函数下载包中复现：`--remote-npm-install`部署后，业务文件与锁文件虽与本地一致，实际依赖仍命中axios、lodash.set、lodash.unset通告。不能只审锁文件或只比根文件就称运行依赖安全。以下流程优先于后文带日期的旧远端安装步骤。
+
+1. 从已通过CI的提交执行`npm run build`，先下载旧函数完整原包作为代码回退；环境变量另按实际能取得的字段登记，不将代码包称为完整环境备份。
+2. 依次执行`npm ci --ignore-scripts --prefix dist/cloudfunctions/ai`，以及timetable/newsSync对应命令；审计这三份依赖并检查没有需要按目标平台构建的原生`.node`模块。存在原生模块时不能直接把Windows安装包上传Linux运行时。
+3. **安装完部署依赖后不要再执行build**，它会清理dist。CLI部署三条函数时**不加`--remote-npm-install`或`-r`**，随包上传已干净安装的node_modules；不改模型、审核、额度、环境变量或既有触发规则。
+4. 再次完整下载，分别核对根文件哈希、node_modules的实际包版本与安全通告；不把实际安装版本与锁文件一致性混成一个结论。
+5. 通过小程序端先做只读usage等验证；真实业务按授权预算与冻结样例执行。函数Active、部署成功和定时实际运行仍分别判断，业务写入及真机另计。
+
+本轮具体初次不合格回读、改用本地依赖后的结果与停止边界见[10-29收尾证据](../../evidence/closeout-2026-10-29/README.md)。旧部署记录不覆盖。
+
 ## 安全整改部署关卡（2026-09-24）
 
 1. 从已通过 CI 的提交构建 `dist/`；确认 `dist/cloudfunctions/{ai,newsSync,timetable}/package-lock.json` 存在。部署前把旧云函数版本或控制台配置记下，便于出错时回退。

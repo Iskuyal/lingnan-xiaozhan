@@ -28,6 +28,8 @@
 
 ## 各票一览
 
+2026-10-23：[收尾执行卡](../closeout-2026-10-23.md)已承接Ticket 09可离线完成的材料与候选包准备；阶段票仍待真实业务/真机、人工事实和学校回执，不因离线材料完成而标done。Ticket 12的历史第1–4项已补逐项依据，不再笼统列为“未复核”。
+
 状态核对日期：2026-10-22（仓库与分支收尾；原实测日期保留）。每张票的历史过程与逐项验收保留在票内；部署、评测与材料见[收尾记录](../../evidence/agent-closeout-2026-10-03/README.md)、[维护记录](../../evidence/agent-maintenance-2026-10-07/README.md)与[2026-10-17收尾记录](../../evidence/agent-closeout-2026-10-17/README.md)，跨票版本边界见[项目状态](../../status.md)。当前无 ready-for-agent 新增执行入口：GitHub [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)（57 屏 UI 重写）已由 PR #139 完成并关闭；不能从 `in-progress` 推断仍需重复开发。
 
 | # | Ticket | 状态 | 尚待完成的核心项 | Blocked by |
@@ -43,7 +45,7 @@
 | 09 | [参赛材料与包](09-p6-submission.md) | needs-info | 七项内部稿、源码审查包、v6.5 PPT/PDF与v7代码动画、v8候选已有；57屏UI重写已随PR #139完成，e项截图与最终视频需按新UI重做；正式名称、校内收口、最终真机视频与回执仍缺 | 04、05、06、07的交付验收边界及负责人材料字段 |
 | 10 | [校园通知 RAG](10-campus-rag-qa.md) | needs-info | 等待可用语料与指标决策；国赛版方向 | 11、语料入库 |
 | 11 | [OCR / 文档解析](11-ocr-document-parsing.md) | in-progress | 外部 OCR 密钥、真实调用和人工抽检 | 外部服务与密钥 |
-| 12 | [课表页「收纳版」整理](12-timetable-page-tidy.md) | in-progress | 2026-09-22 事后补票；第 4 项已有页面测试，第 1–3 项未逐项复核记录；#137 UI 重写已合入，逐项复核仍待做；Issue #24 三个决策框未结清 | #24 |
+| 12 | [课表页「收纳版」整理](12-timetable-page-tidy.md) | in-progress | 10-23按当前实现/测试补核历史第1–4项：管理可达、按钮恢复、列表指引一致、滑层测试；#24决策、判断项及新版端上记录仍待 | #24 |
 
 本轮人工操作按[验收清单](../../testing/manual-acceptance.md)记录。早期模型超时与合成小图成功分别是历史故障和局部验证，都不能替代真实课表截图成绩。
 

@@ -632,7 +632,7 @@ export function guardTurn(answer: string, departmentId: string, question = '', c
     return {
       role: 'assistant',
       text: entries.length > 0
-        ? '当前资料仅提供以下活动条目（标题级原文）；组织角色和其他细节无法据此核实。\n\n' + entries.join('\n\n')
+        ? '当前资料仅提供以下活动条目（标题级原文）及官网发布时间。标题未列明的主办承办、人员姓名或名单、人数、入选条件和当前最新进度，均无法据此核实；官网发布时间不能直接当作活动或会议召开日期。\n\n' + entries.join('\n\n')
         : '当前返回的活动来源无法与随包资料核对，请查看官方原文。',
       warning: `条目来自核查于 ${departmentsSource.verifiedAt} 的资料快照，不代表当前完整活动进度。`,
       replaced: true,

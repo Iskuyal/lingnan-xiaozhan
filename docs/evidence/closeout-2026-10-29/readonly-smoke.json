@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-29T08:54:33.140Z",
+  "mode": "miniprogram_readonly_cloud_smoke",
+  "courseContentRecorded": false,
+  "courseWrites": 0,
+  "newsSyncSourceWritesExpected": false,
+  "rows": [
+    {
+      "done": true,
+      "name": "timetable",
+      "ok": true,
+      "count": 51,
+      "returnedCourses": 51,
+      "refused": false,
+      "error": ""
+    },
+    {
+      "done": true,
+      "name": "newsSync",
+      "ok": false,
+      "refused": true,
+      "errorCode": -1,
+      "error": "Permission denied; client cannot invoke newsSync (trace and call identifier omitted)",
+      "platformErrorCode": -501023
+    }
+  ],
+  "originalPrivateRecordSha256": "0b6d26203101fab47a3d87ef2ccdeeb89507d7bd5cecd2a6de4ad84361175861"
+}

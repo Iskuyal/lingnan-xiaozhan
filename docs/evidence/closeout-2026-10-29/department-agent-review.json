@@ -1,0 +1,208 @@
+{
+  "datasetId": "department-heldout-20261003-a",
+  "questionSetSha256": "758ac27c02e3e8c1c0fef0bf164320de2d7d5270c0b769950a24fb370f7b2ba9",
+  "reviewer": "implementation-context agent using frozen sources; not independent human review",
+  "humanReview": "pending_for_this_new_batch; prior G4 owner confirmation is separate",
+  "scope": "Node product guardTurn reconstruction from real cloud results, not real-device or rendered GUI evidence",
+  "questionOrExpectedAnswerEdits": false,
+  "collectorVersionAtFirstRun": "1bf906c",
+  "rows": [
+    {
+      "id": "d01",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": null,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": false,
+      "reason": "结构与五部门均逐项对应来源；无增加部门。"
+    },
+    {
+      "id": "d02",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": null,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": false,
+      "reason": "注册登记、备案年审、组织建设、活动管理、工作保障均对应简介。"
+    },
+    {
+      "id": "d03",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": null,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": false,
+      "reason": "退役大学生、宣秘团、督勤部与来源一致。"
+    },
+    {
+      "id": "d04",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": true,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": true,
+      "reason": "在提问限定的已核实资料范围内说明电话/邮箱未提供；引用了快照的联系方式字段，不外推全网。"
+    },
+    {
+      "id": "d05",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": null,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": false,
+      "reason": "重算展示含所问体测动态的完整标题与官网发布时间；附带其他真实来源条目，影响聚焦但不新增事实。"
+    },
+    {
+      "id": "d06",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": null,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": false,
+      "reason": "重算展示含所问热血动态的完整标题与发布时间；未补献血人数。"
+    },
+    {
+      "id": "d07",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": true,
+        "missingExplained": true,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": true,
+      "reason": "重算展示明确说组织角色无法由标题资料核实，覆盖所问主办/承办；不指认举办组织。"
+    },
+    {
+      "id": "d08",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": false,
+        "missingExplained": false,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": true,
+      "reason": "原模型明确解释姓名/人数/条件缺失；展示守门替换后仅泛称其他细节无法核实，没有逐项回应所问范围。"
+    },
+    {
+      "id": "d09",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": false,
+        "missingExplained": false,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": true,
+      "reason": "原模型区分快照第三期与当前最新进度；展示只列标题和通用快照提示，没有明确回答当前最新期数无法确认。"
+    },
+    {
+      "id": "d10",
+      "reviewStatus": "agent_source_review",
+      "scores": {
+        "supportedAnswer": false,
+        "missingExplained": false,
+        "unsupportedDisplay": false
+      },
+      "rawModelUnsupportedFact": false,
+      "missingInformationApplicable": true,
+      "reason": "原模型明确不能由发布时间推出会议日期；展示仅列条目，未回答两类日期不能直接等同。"
+    },
+    {
+      "id": "d11",
+      "reviewStatus": "no_answer_or_not_called",
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "rawModelUnsupportedFact": null,
+      "missingInformationApplicable": false,
+      "reason": "输入审核某次请求6000ms超时，主模型未执行、usage为空；费用未知停止，不作语义评分。"
+    },
+    {
+      "id": "d12",
+      "reviewStatus": "no_answer_or_not_called",
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "rawModelUnsupportedFact": null,
+      "missingInformationApplicable": true,
+      "reason": "按费用未知停止规则未调用，不填0或正确。"
+    },
+    {
+      "id": "d13",
+      "reviewStatus": "no_answer_or_not_called",
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "rawModelUnsupportedFact": null,
+      "missingInformationApplicable": true,
+      "reason": "按费用未知停止规则未调用，不填0或正确。"
+    },
+    {
+      "id": "d14",
+      "reviewStatus": "no_answer_or_not_called",
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "rawModelUnsupportedFact": null,
+      "missingInformationApplicable": true,
+      "reason": "按费用未知停止规则未调用，不填0或正确。"
+    }
+  ],
+  "summary": {
+    "plannedQuestions": 14,
+    "cloudAttempts": 11,
+    "successfulAnswers": 10,
+    "failedBeforeBusinessModel": 1,
+    "notCalled": 3,
+    "supportedAnswers": {
+      "passed": 7,
+      "assessed": 10,
+      "planned": 14,
+      "completeSetRate": null
+    },
+    "missingExplained": {
+      "passed": 2,
+      "assessed": 5,
+      "planned": 8,
+      "completeSetRate": null
+    },
+    "unsupportedDisplay": {
+      "found": 0,
+      "assessed": 10,
+      "completeSetRate": null
+    },
+    "responseKnownCostYuan": 0.003231,
+    "observedMonthlyLedgerIncreaseYuan": 0.007192,
+    "actualTotalCostYuan": null,
+    "costBoundary": "Response usage does not establish total third-party billing; ledger increase can include concurrent calls and review subcalls; d11 timeout cost unknown",
+    "verdict": "NO-GO: incomplete first batch, display answers lost specific missing-field explanations; no repeat or tuning on frozen questions"
+  }
+}

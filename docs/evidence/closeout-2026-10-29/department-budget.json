@@ -1,0 +1,23 @@
+{
+  "registeredAt": "2026-10-29T08:46:30.993210+00:00",
+  "accountingReconciled": false,
+  "maxCloudCalls": 14,
+  "maxEstimatedCostYuan": 0.05,
+  "usageSnapshot": "docs/evidence/closeout-2026-10-29/usage-before-eval.json",
+  "safetyQuota": "Latest owner-restored openai safety; no independent remaining quota API. Stop on safety/accounting/quota failure; no retries.",
+  "personalDailyLimit": {
+    "day": "2026-10-29",
+    "used": 11,
+    "limit": 60,
+    "remaining": 49
+  },
+  "historicalCostAcceptance": {
+    "status": "unknown_preserved_delegated_resume",
+    "date": "2026-10-29",
+    "preserveUnknown": true,
+    "authorizationEvidence": "docs/evidence/closeout-2026-10-29/authorization.md",
+    "authorizationSha256": "8c6f5c8d176ac8727274a141db944d9c7c0a16bbc6c4f0121e55b06b995d5968"
+  },
+  "configurationChanges": false,
+  "sourceCommit": "1bf906c661b87fa98614efd3b85de41f4249cf4b"
+}

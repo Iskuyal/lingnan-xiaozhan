@@ -1,0 +1,61 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-29T08:01:28.692Z",
+  "request": {
+    "action": "probe"
+  },
+  "elapsedMs": 4527,
+  "result": {
+    "ok": true,
+    "action": "probe",
+    "failureClass": "",
+    "message": "微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。",
+    "detail": "{\"probedAt\":\"2026-10-29T08:01:23.381Z\",\"timeZone\":\"Asia/Shanghai（UTC+8）\",\"env\":\"cloudbase-d2gjtbbwu3575cd7b\",\"openidPresent\":true,\"declaredOpenApi\":[\"security.msgSecCheck\",\"security.imgSecCheck\"],\"checks\":[{\"api\":\"security.msgSecCheck\",\"form\":\"v2（带 openid）\",\"errCode\":0,\"errMsg\":\"openapi.security.msgSecCheck:ok\",\"verdict\":\"pass\",\"note\":\"调用成功\",\"elapsedMs\":646},{\"api\":\"security.imgSecCheck\",\"form\":\"v2（带 openid）\",\"errCode\":0,\"errMsg\":\"openapi.security.imgSecCheck:ok\",\"verdict\":\"pass\",\"note\":\"调用成功\",\"elapsedMs\":538}],\"valid\":true,\"invalidReason\":\"\",\"conclusion\":\"微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。\",\"recommendedProvider\":\"wechat\"}",
+    "feature": "probe",
+    "provider": "wechat",
+    "model": "security.msgSecCheck / security.imgSecCheck",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": null,
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": {
+      "probedAt": "2026-10-29T08:01:23.381Z",
+      "timeZone": "Asia/Shanghai（UTC+8）",
+      "env": "cloudbase-d2gjtbbwu3575cd7b",
+      "openidPresent": true,
+      "declaredOpenApi": [
+        "security.msgSecCheck",
+        "security.imgSecCheck"
+      ],
+      "checks": [
+        {
+          "api": "security.msgSecCheck",
+          "form": "v2（带 openid）",
+          "errCode": 0,
+          "errMsg": "openapi.security.msgSecCheck:ok",
+          "verdict": "pass",
+          "note": "调用成功",
+          "elapsedMs": 646
+        },
+        {
+          "api": "security.imgSecCheck",
+          "form": "v2（带 openid）",
+          "errCode": 0,
+          "errMsg": "openapi.security.imgSecCheck:ok",
+          "verdict": "pass",
+          "note": "调用成功",
+          "elapsedMs": 538
+        }
+      ],
+      "valid": true,
+      "invalidReason": "",
+      "conclusion": "微信官方内容安全接口可调用（文本与图片均返回 errcode 0）：保持 AI_SAFETY_PROVIDER=wechat（默认）。",
+      "recommendedProvider": "wechat"
+    },
+    "elapsedMs": 1237
+  }
+}

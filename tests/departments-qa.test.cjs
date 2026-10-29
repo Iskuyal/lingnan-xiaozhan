@@ -56,12 +56,25 @@ test('动态问答：标题级来源不能被扩写成举办方、官网缺失�
   const activity = department.activities.find((a) => a.sourceUrl.endsWith('content_27004'));
   const citation = { ...activity, departmentId: department.id, departmentName: department.name, score: 1 };
   const turn = guardTurn('校学生会举办了最新一届校园提案大赛，收录日期2026-03-09；获奖名单官网未公布。', department.id, '校学生会办过校园提案大赛吗？', [citation]);
-  assert.doesNotMatch(turn.text, /举办|最新|收录日期|官网未公布/);
+  assert.doesNotMatch(turn.text, /校学生会举办|最新一届|收录日期|获奖名单官网未公布/);
   assert.ok(turn.text.includes(activity.title));
   assert.ok(turn.text.includes(`官网发布时间：${activity.publishedAt}`));
   assert.ok(turn.text.includes(activity.sourceUrl));
   assert.equal(turn.replaced, true);
   assert.ok(turn.modelText.includes('举办'), '保留原始模型回答便于复核，不能冒充模型自己答对');
+});
+
+test('标题资料的缺失说明点明人数、条件、名单、进度及实际日期，不只泛称其他细节', () => {
+  const department = require('../dist/services/departments.js').departments.find(d => d.id === 'student-union');
+  const activity = department.activities[0];
+  const raw = '共有500人，报名条件已经确定。';
+  const turn = qa().guardTurn(raw, department.id, '这项活动的报名人数、条件和开展日期能确认吗？', [{ ...activity, departmentId: department.id, departmentName: department.name, score: 1 }]);
+  assert.match(turn.text, /标题未列明[\s\S]*名单[\s\S]*人数[\s\S]*入选条件[\s\S]*最新进度[\s\S]*无法据此核实/u);
+  assert.match(turn.text, /官网发布时间不能直接当作活动或会议召开日期/u);
+  assert.doesNotMatch(turn.text, /共有500人|条件已经确定/u);
+  assert.ok(turn.text.includes(activity.title));
+  assert.equal(turn.modelText, raw);
+  assert.equal(turn.replaced, true);
 });
 
 test('动态问答：伪造标题或日期不能进入原文展示，基础问题仍沿用既有守卫', () => {
@@ -284,6 +297,81 @@ test('AI 服务:callAi 透传 safety/warnings,未知分类收敛成空串', asyn
     assert.equal(result.safety.checked, false, 'checked 必须透传到调用方');
     assert.equal(result.safety.provider, 'off');
     assert.deepEqual(Array.from(result.warnings), ['内容安全检测未完整执行（checked=false）'], '非字符串告警要丢掉');
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
+test('AI 服务:失败时把服务端 detail 打进控制台,但用户文案不变(2026-10-29 排查口径)', async () => {
+  const detail = '内容安全检测不可用：HTTP 401（鉴权失败，检查 AI_API_KEY 与账号权限）：{"error":{"code":"UNAUTHORIZED"}}'
+    + '（AI_SAFETY_FAIL_MODE=closed，拒绝调用）';
+  const wx = {
+    cloud: {
+      callFunction: async () => ({
+        result: {
+          ok: false,
+          failureClass: 'internal',
+          message: 'AI 服务内部错误，请稍后重试。',
+          detail,
+          text: '',
+          capWarning: '',
+          safety: null,
+          warnings: [],
+        },
+      }),
+    },
+  };
+  const logs = [];
+  const fakeConsole = {
+    log: () => undefined,
+    warn: () => undefined,
+    error: (...args) => logs.push(args.map((item) => String(item)).join(' ')),
+  };
+  // services/cloud.js 由 Node 的真实 require 加载,外层全局也要给 wx。
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat', feature: 'timetable-assistant' });
+    // detail 是本次故障唯一的决定性信息：客户端必须原样保留,不能像修复前那样丢掉。
+    assert.equal(result.detail, detail, '服务端 detail 必须透传给调用方');
+    assert.equal(client.userMessage(result), 'AI 服务内部错误，请稍后重试。', 'detail 不上屏,用户仍只看服务端文案');
+    const line = logs.join('\n');
+    assert.match(line, /timetable-assistant/u, '控制台日志要带 feature,便于分辨是哪个 AI 落点');
+    assert.match(line, /internal/u, '控制台日志要带 failureClass');
+    assert.match(line, /HTTP 401/u, '控制台日志要带 detail 原文');
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
+test('AI 服务:成功调用不打失败日志(日志只在失败时出现,不刷屏)', async () => {
+  const wx = { cloud: { callFunction: async () => ({ result: { ok: true, text: '答案', safety: null, warnings: [] } }) } };
+  const logs = [];
+  const fakeConsole = { log: () => undefined, warn: () => undefined, error: (...args) => logs.push(args.join(' ')) };
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat' });
+    assert.equal(result.ok, true);
+    assert.deepEqual(logs, []);
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
+test('AI 服务:客户端超时带上可读 detail,与「服务端说失败」分开', async () => {
+  const wx = { cloud: { callFunction: () => new Promise(() => {}) } };
+  const fakeConsole = { log: () => undefined, warn: () => undefined, error: () => undefined };
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat' }, 20);
+    assert.equal(result.failureClass, 'model_unavailable');
+    assert.match(result.detail, /客户端.*毫秒/u, '超时也要给出 detail,而不是空串');
+    assert.ok(result.warnings.includes(client.CLIENT_TIMEOUT_WARNING));
   } finally {
     globalThis.wx = saved;
   }

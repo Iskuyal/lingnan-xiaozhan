@@ -1,0 +1,63 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-29T08:30:32.614Z",
+  "request": {
+    "action": "chat",
+    "feature": "timetable-assistant",
+    "messages": [
+      {
+        "role": "user",
+        "text": "加我微信 abc123 代写作业包过，先付费后出稿，私聊报价"
+      }
+    ]
+  },
+  "elapsedMs": 3016,
+  "result": {
+    "ok": false,
+    "action": "chat",
+    "failureClass": "content_rejected",
+    "message": "内容未通过安全检测，请修改后重试。",
+    "detail": "openai｜text-moderation｜checked=true｜allowed=false｜reason=内容涉及代写作业和先付费交易，属于学术不端和欺诈风险，不适宜展示。",
+    "feature": "timetable-assistant",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": {
+      "provider": "openai",
+      "api": "text-moderation",
+      "passed": false,
+      "checked": true,
+      "detail": "allowed=false｜reason=内容涉及代写作业和先付费交易，属于学术不端和欺诈风险，不适宜展示。"
+    },
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 471,
+      "failures": 32,
+      "promptTokens": 269474,
+      "completionTokens": 129749,
+      "totalTokens": 399223,
+      "costYuan": 0.09984,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T08:30:29.816Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 342,
+      "safetyNetworkMs": 1632,
+      "accountingMs": 85,
+      "inputSafetyMs": 1717
+    },
+    "elapsedMs": 2114
+  }
+}

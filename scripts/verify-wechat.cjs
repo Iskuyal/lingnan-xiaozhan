@@ -262,12 +262,8 @@ async function run() {
     await (await homeAgain.$('#timetable-entry')).tap();
     const timetable = await waitForPage('pages/timetable/index');
     await timetable.waitFor(800);
-    // 头部的主角是「第 N 周」（学期在副标题），课表本体在「本周课表」小标题下：
-    // 原来断言的是「我的课表」，那是旧版头部的标题，2026-09-20 改版后由导航栏承担。
-    const week = await timetable.$('.week-now');
-    assert.ok(week !== null, '课表页头部应有周次');
-    assert.match(await week.text(), /第 \d+ 周/u, '头部应显示当前周次');
-    // 云函数冷启动时页面会停在 loading，此时两种入口都还没渲染——等到脱离中间态再判定。
+    // 云函数冷启动时页面会停在 loading，头部（含 `.week-now`）与导入/重试入口都还没渲染：
+    // 先等终态，再按 ready / 错误态分别断言。此前先断言周次，冷启动时会误报「头部应有周次」。
     const settled = await waitForTimetableSettled(timetable);
     assert.ok(
       settled.importEntry || settled.retryLoad,
@@ -278,8 +274,13 @@ async function run() {
       assert.ok(errorText.length > 0, '读取失败时应给出说明文案');
       console.log(`课表读取状态（错误态可重试）：${errorText}`);
     } else {
+      // 头部的主角是「第 N 周」（学期在副标题），课表本体在「本周课表」小标题下：
+      // 原来断言的是「我的课表」，那是旧版头部的标题，2026-09-20 改版后由导航栏承担。
+      const week = await timetable.$('.week-now');
+      assert.ok(week !== null, '课表页头部应有周次');
+      assert.match(await week.text(), /第 \d+ 周/u, '头部应显示当前周次');
       const hint = await timetable.$('.tt-meta');
-    console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
+      console.log(`课表读取状态（已就绪）：${hint ? await hint.text() : '(无元信息行)'}`);
     }
     await mini.screenshot({ path: path.join(output, 'timetable.png') });
 
