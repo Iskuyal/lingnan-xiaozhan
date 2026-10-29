@@ -1,0 +1,259 @@
+{
+  "datasetId": "department-fresh-20261029-round2",
+  "frozenAt": "2026-10-29T13:17:08.487108+00:00",
+  "source": "maintainer_design",
+  "realStudentSamples": 0,
+  "sourceSnapshotFile": "source-snapshot.json",
+  "sourceSnapshotSha256": "8ca99a9913f7eb0ef43b7376608ac82eed1dfa82591972e68e58e0672aea61fb",
+  "sourceSnapshotHashBasis": "raw_bytes_sha256",
+  "judgeRules": {
+    "supportedAnswer": "逐题回答全部子问，事实有冻结来源支持；来源不足时有明确对应的有限范围说明。只有安全标题或相关命中不能自动计问题正确。分母为全部14题，未执行分数null。",
+    "missingExplained": "对missingFields登记的缺失项明确解释当前标题/快照未提供或无法核实；不把快照缺失写成官网/现实不存在。仅列标题而未说明所问缺失范围不自动正确。",
+    "unsupportedDisplay": "逐项核对上屏正文、警示、标题/日期/链接及来源条，任何来源不能支持的主语、角色、细节、时间或最新进度断言记为存在无依据事实。安全与有用分别记录。",
+    "rawModel": "原始模型独立留档，未上屏错误不能宣称原模型防幻觉通过。",
+    "independence": "首次结果产生后不改题面/预期/判据。若用于修复，本批仅回归，另冻结新批才重新估计独立效果。"
+  },
+  "independenceBoundary": "New questions not used to change current implementation. Same limited corpus and related task categories; not new-source or whole-school generalization. No expected-answer edits after model responses.",
+  "questions": [
+    {
+      "id": "r01",
+      "kind": "base",
+      "q": "按这份已核实资料，校学生团委直属的四个部门分别叫什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "秘书处、组织部、宣传部、广播台；不与学生会五部门混淆。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "units",
+          "value": [
+            "秘书处",
+            "组织部",
+            "宣传部",
+            "广播台"
+          ]
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r02",
+      "kind": "base",
+      "q": "校学生社团管理部下设的是哪三个职能部门？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "策划部、秘书部、宣传部。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "units",
+          "value": [
+            "策划部",
+            "秘书部",
+            "宣传部"
+          ]
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r03",
+      "kind": "base",
+      "q": "青年志愿者联合会的志愿精神有哪四项，建有什么志愿服务队？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "奉献、友爱、互助、进步；红小荔志愿服务队。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "introduction",
+          "value": "青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。"
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r04",
+      "kind": "base",
+      "q": "资料写明退役军人事务服务部成立于哪一年哪一月、隶属哪里？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "2022年5月，隶属校团委。",
+      "sourceRefs": [
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "introduction",
+          "value": "退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。"
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r05",
+      "kind": "base",
+      "q": "青年志愿者联合会这份资料明确列出哪两个校区？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "广州校区、清远校区，不称只有一个。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "campus",
+          "value": "广州校区、清远校区"
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r06",
+      "kind": "activity",
+      "q": "校学生团委的对话榜样这条动态，原始标题及官网发布时间是什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "对话榜样｜笃行团务，砺己争先；2026-06-30。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "activities",
+          "value": {
+            "title": "对话榜样｜笃行团务，砺己争先",
+            "publishedAt": "2026-06-30",
+            "sourceUrl": "https://lnc.edu.cn/tw/kjcx/qcby/content_30203"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r07",
+      "kind": "activity",
+      "q": "权益小摊这条学生会资料，原始标题中说了什么、官网发布时间是哪天？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "我为同学做实事|校园摆起 \"权益小摊\"，校学生会为校园消费撑起 \"保护伞\"；2025-03-31，不改成年份2026。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "我为同学做实事|校园摆起 \"权益小摊\"，校学生会为校园消费撑起 \"保护伞\"",
+            "publishedAt": "2025-03-31",
+            "sourceUrl": "https://lnc.edu.cn/tw/lndt/wwtxzss/content_22115"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r08",
+      "kind": "activity",
+      "q": "学生社团招新2025这条资料的完整标题和官网发布时间能列出吗？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "学生社团招新 2025“社“聚新能量，青春燃校园；2025-10-27，不推断当前仍在招新。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "activities",
+          "value": {
+            "title": "学生社团招新 2025“社“聚新能量，青春燃校园",
+            "publishedAt": "2025-10-27",
+            "sourceUrl": "https://lnc.edu.cn/tw/xywt/stfc/content_24789"
+          }
+        }
+      ],
+      "missingFields": []
+    },
+    {
+      "id": "r09",
+      "kind": "detail_missing",
+      "q": "青young行绘彩童心专项行三十一这条标题资料能核实参与者姓名和人数吗？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "标题/发布时间不包含名单及人数，明确当前标题资料无法确认；可提供标题和来源。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "“青”young行 绘彩童心专项行（三十一）",
+            "publishedAt": "2026-03-10",
+            "sourceUrl": "https://lnc.edu.cn/tw/lnpp/zyhd/content_27027"
+          }
+        }
+      ],
+      "missingFields": [
+        "参与者姓名",
+        "参与人数"
+      ]
+    },
+    {
+      "id": "r10",
+      "kind": "detail_missing",
+      "q": "校长接待日后勤诉求全回应这条标题，能证明所有具体诉求都已实际解决吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "标题表述不证明所有具体诉求已解决，当前资料没有逐项处理结果，不能把回应当解决。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "校长接待日｜校长面对面，这些后勤诉求全回应！",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27006"
+          }
+        }
+      ],
+      "missingFields": [
+        "具体诉求处理结果"
+      ]
+    },
+    {
+      "id": "r11",
+      "kind": "event_date_unknown",
+      "q": "稻香伴星影这条志愿动态的官网发布时间能直接作为活动实际开展日期吗？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "不能直接等同；可核对官网发布时间2026-03-09，但具体开展日期当前标题资料无法核实。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "“青”志愿 稻香伴“星“影，田垄齐漫步",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/lnpp/zyhd/content_26998"
+          }
+        }
+      ],
+      "missingFields": [
+        "实际开展日期"
+      ]
+    },
+    {
+      "id": "r12",
+      "kind": "detail_missing",
+      "q": "仅在已核实的退役军人事务服务部资料范围内，能给出个人负责人姓名和直拨电话吗？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "当前资料未提供个人负责人和直拨电话，不猜姓名号码，不声称全网不存在。",
+      "sourceRefs": [
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "contacts",
+          "value": []
+        },
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "introduction",
+          "value": "退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。"
+        }
+      ],
+      "missingFields": [
+        "个人负责人姓名",
+        "直拨电话"
+      ]
+    }
+  ],
+  "preFirstModelCallCorrections": [
+    {
+      "id": "r03",
+      "before": "青年志愿者联合会的四字志愿精神有哪四项，建有什么志愿服务队？",
+      "after": "青年志愿者联合会的志愿精神有哪四项，建有什么志愿服务队？",
+      "reason": "人工字面核对去掉四字歧义，模型调用前完成"
+    },
+    {
+      "id": "r12",
+      "reason": "补简介出处绑定负责人缺失范围；未改题面或预期"
+    }
+  ]
+}
