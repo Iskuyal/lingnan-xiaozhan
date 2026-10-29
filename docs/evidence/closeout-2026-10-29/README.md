@@ -35,7 +35,7 @@
 
 修补只把标题级来源的缺失范围写具体；先画图、先复现再修复，模型/云配置未变，未追加真实调用。最终typecheck及778/778测试通过；另补预算按服务器账本增量保守停止的回归，避免只按响应主模型费用漏掉审核成本。新模拟器结果另记，旧缓存失败不抹掉。
 
-[原生复核状态](clarity-recheck-status.json)：首次仍读到旧编译前缀，失败原件见[首次记录](clarity-native-first-failure.json)。其后close项目及reset-fileutils成功，但重新auto停在AppID权限加载且未开放9420端口，已停止本次重开；不将该项记通过。源码/离线回归通过与原生复核blocked分别记录，[文案设计图](../../design/department-qa-clarity-2026-10-29/README.md)不是新实测截图。
+[原生复核状态](clarity-recheck-status.json)：**已通过（2026-10-29 19:53 CST 复跑）**。首次仍读到旧编译前缀，失败原件见[首次记录](clarity-native-first-failure.json)，该历史保留不抹。其后 close 项目及 reset-fileutils 成功，但重新 auto 停在 AppID 权限加载且未开放 9420 端口，本次重开被停止；之后重建 `dist` 并复用已开放的自动化端口 9420 复跑，原生模拟器实际页面显示新的缺失范围与日期边界文案（[回答截图](clarity-native-answer.png)、[页面底部截图](clarity-native.png)），断言「标题未列明…名单…人数…入选条件…最新进度…无法据此核实」与「官网发布时间不能直接当作活动或会议召开日期」通过，可信标题/发布时间/来源保留，模拟的无依据事实未进入展示正文且原模型回答留档；付费业务 AI 调用 0 次。**边界：仍是原生模拟器 + 内存 mock，不是真机，也不是真实模型或审核结果**；[文案设计图](../../design/department-qa-clarity-2026-10-29/README.md)仍不是实测截图。
 
 [部署后只读冒烟](readonly-smoke.json)显示本人课表只读返回51门，未记录课程内容、未写入；普通客户端伪造Timer调用newsSync仍被平台-501023拒绝，不据此宣称真实定时已执行。
 

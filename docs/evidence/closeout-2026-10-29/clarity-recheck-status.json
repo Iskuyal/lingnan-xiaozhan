@@ -3,10 +3,19 @@
   "sourceFix": "implemented_and_unit_regression_passed",
   "fullRepositoryTests": { "passed": 778, "failed": 0, "skipped": 0 },
   "typecheck": "passed",
-  "nativeUiRecheck": "blocked",
+  "nativeUiRecheck": "passed",
+  "nativeUiRecheckAt": "2026-10-29T11:53:55.897Z",
+  "nativeUiMode": "native_simulator_mock",
+  "nativeUiBoundary": "原生模拟器 + 内存夹具（云函数/数据库/上传/本机存储均为 mock）；不是真机，也不是真实模型或审核结果",
+  "nativeUiChecks": [
+    "具体缺失范围与日期边界可在实际页面数据中读取",
+    "可信来源保留，模拟无依据事实未进入展示正文，原模型留档"
+  ],
+  "nativeUiEnvironment": { "model": "iPhone 12/13 (Pro)", "platform": "devtools", "SDKVersion": "3.17.2" },
+  "nativeUiScreenshots": ["clarity-native-answer.png", "clarity-native.png"],
   "firstAttempt": "native page returned previous compiled prefix; preserved in clarity-native-first-failure.json",
-  "retry": "compile cache command timed out; project close and reset-fileutils succeeded; auto remained in AppID permissions loading without port 9420 and was stopped",
-  "newNativeScreenshot": false,
+  "retryHistory": "compile cache command timed out; project close and reset-fileutils succeeded; auto stalled at AppID permissions loading without port 9420 and was stopped. Later rebuilt dist and reused automation port 9420; rerun passed.",
+  "newNativeScreenshot": true,
   "paidBusinessAiCallsDuringMockRecheck": 0,
-  "statement": "Static design and unit tests are not real-device or successful native UI evidence"
+  "statement": "Native simulator mock passed the department clarity check; static design, unit tests and this mock run are not real-device or real-model evidence"
 }
