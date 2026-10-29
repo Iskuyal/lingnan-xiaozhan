@@ -1,0 +1,59 @@
+{
+  "sourceCommit": "95997fd41a0280ae90871dc3c9ae0ad5f841509e",
+  "verifiedAt": "2026-10-29T16:52:50.578373+00:00",
+  "validatedDraftSha256": "389b6611e98919aa363834a53535acbcc9fe16aa3d5ad0666b7ea50d2b0d36bf",
+  "cleanExtraction": true,
+  "realCloudCalls": 0,
+  "realBusinessModelCalls": 0,
+  "realDevice": false,
+  "steps": [
+    {
+      "name": "install",
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "exitCode": 0,
+      "elapsedSeconds": 10.43,
+      "passed": true
+    },
+    {
+      "name": "typecheck",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "elapsedSeconds": 4.05,
+      "passed": true
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "elapsedSeconds": 4.34,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "criticalArtifactsPresent": true,
+  "nonGeneratedSourceBytesUnchanged": true,
+  "generatedSourceNormalization": [
+    {
+      "path": "源代码/miniprogram/services/defense/reader-data.ts",
+      "change": "build generator normalizes CRLF to LF; normalized content identical",
+      "beforeSHA256": "9c96bfa89627fbb6226bc4bc131aaf33bc8fb5a49a72fb6027aa6841bafa5ab9",
+      "afterSHA256": "1d69ecd04dfc8e33e3695ebc78df8b0570a7c29246cea7de980970a58ce5b405"
+    }
+  ],
+  "builtTitle": "岭南小栈",
+  "sourceFileCount": 260,
+  "validationScope": "clean extracted source: install, typecheck and build; not full tests, live cloud, AI availability or device acceptance",
+  "originalValidatedDraftSha256": "0a866771eb2b189238b1f0f3ef8fb506e0cf0df5e7d3dfd8c8d893c609e55f2b",
+  "payloadRecheck": {
+    "sourceBytesIdenticalToTestedDraft": true,
+    "allOtherMaterialBytesIdentical": true,
+    "changes": [
+      {
+        "path": "作品说明.md",
+        "change": "remove two trailing Markdown spaces; rendered PDF unchanged"
+      }
+    ],
+    "commandsRerun": false,
+    "reason": "Only trailing Markdown spaces changed; installed, typechecked and built source bytes are identical."
+  }
+}
