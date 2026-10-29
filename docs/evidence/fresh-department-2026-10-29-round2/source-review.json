@@ -1,0 +1,103 @@
+{
+  "summary": {
+    "planned": 12,
+    "attempts": 2,
+    "successfulAnswers": 1,
+    "failed": 1,
+    "notCalled": 10,
+    "fullSetRate": null,
+    "responseKnownCostYuan": 0.000265,
+    "monthlyLedgerIncreaseYuan": 0.000835,
+    "actualTotalCostYuan": null,
+    "verdict": "NO-GO: incomplete; upstream business-model timeout with unknown fee; no retry",
+    "humanReview": "not_performed_for_this_new_batch; prior owner G4 confirmation is separate",
+    "productChangesDuringSampling": false,
+    "reviewer": "agent with implementation context, not independent human"
+  },
+  "rows": [
+    {
+      "id": "r01",
+      "supportedAnswer": true,
+      "unsupportedDisplay": false,
+      "status": "agent_source_review",
+      "reason": "四部门逐项对应冻结units字段，未添加部门"
+    },
+    {
+      "id": "r02",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "failed_no_answer",
+      "reason": "主模型请求30秒超时、费用未知；停止后不评分"
+    },
+    {
+      "id": "r03",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r04",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r05",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r06",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r07",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r08",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r09",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r10",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r11",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    },
+    {
+      "id": "r12",
+      "supportedAnswer": null,
+      "unsupportedDisplay": null,
+      "status": "not_called",
+      "reason": "按新费用未知停止规则保留未调用，不填0"
+    }
+  ]
+}

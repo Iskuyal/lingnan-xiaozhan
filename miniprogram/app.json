@@ -23,7 +23,7 @@
     "pages/defense/index"
   ],
   "window": {
-    "navigationBarTitleText": "校园工具",
+    "navigationBarTitleText": "课表小栈",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fdf7f5"
