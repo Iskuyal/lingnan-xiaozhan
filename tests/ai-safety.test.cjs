@@ -242,6 +242,15 @@ test('配额文案可由环境变量覆盖（改措辞不改代码）', async ()
   assert.equal(failure.message, '今天先不试了，明天再来。');
 });
 
+test('审核超时默认值按提供方区分：微信 6000、第三方 30000（2026-10-29 审核尾部实测）', () => {
+  const harness = createHarness();
+  // 测试默认 env 不设置 AI_SAFETY_TIMEOUT_MS；总截止按线上值 40000 验证默认值本身。
+  const openai = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'openai', AI_TOTAL_DEADLINE_MS: '40000' }).config;
+  assert.equal(openai.safety.timeoutMs, 30000, '第三方审核默认超时应为 30000ms');
+  const wechat = loadConfigFor(harness, { AI_SAFETY_PROVIDER: 'wechat', AI_TOTAL_DEADLINE_MS: '40000' }).config;
+  assert.equal(wechat.safety.timeoutMs, 6000, '微信官方云调用默认超时保持 6000ms');
+});
+
 test('检测调用超时：归入「模型不可用或超时」（可重试），不是笼统的内部错误', async () => {
   const harness = createHarness();
   const safety = harness.load('safety.js');

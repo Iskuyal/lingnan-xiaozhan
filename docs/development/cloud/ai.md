@@ -90,7 +90,7 @@
 | `AI_SAFETY_REVIEW_AS` | `reject` | 微信 `suggest=review`（需人工复审）的处置：默认按拒绝 |
 | `AI_SAFETY_OPENAI_MODE` | `chat` | 第三方审核的调用方式：`chat`（用审核提示词，任何兼容中转可用）/ `moderations`（走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`）。**接口格式由 `AI_SAFETY_PROVIDER` 决定**（选 `anthropic` 就用 Anthropic 格式），没有单独的 `AI_SAFETY_FORMAT` 开关 |
 | `AI_SAFETY_BASE_URL` / `AI_SAFETY_API_KEY` / `AI_SAFETY_MODEL` | 取模型配置 | 第三方审核的地址、密钥、模型（默认复用模型配置） |
-| `AI_SAFETY_TIMEOUT_MS` | `6000` | **访问微信云调用与第三方审核的单次超时**（毫秒）；第三方审核另有一层同值 +1 秒的兜底定时器。超时归入「模型不可用或超时」（可重试） |
+| `AI_SAFETY_TIMEOUT_MS` | 微信 `6000` / 第三方 `30000` | **访问微信云调用与第三方审核的单次超时**（毫秒）；第三方审核另有一层同值 +1 秒的兜底定时器。超时归入「模型不可用或超时」（可重试）。**2026-10-29 按提供方分别设默认值**：实测第三方审核中位约 2.9s、尾部 6.1s、当晚进一步退化到 >12s，旧的统一 6000 会让尾部超时直接 fail-closed；微信官方云调用通常 <1s，保持 6000 |
 | `AI_SAFETY_CALL_PRICE_YUAN` | `0` | 每次审核调用的固定价（元）：接口不返回 token 用量时（`/moderations`）按它记账；`0` 表示不计入金额，但记录会带 `usageUnknown: true` 且返回值有告警 |
 | `AI_SAFETY_MAX_TOKENS` / `AI_SAFETY_SCENE` | `256` / `1` | 审核最大输出 token、微信 `msgSecCheck` 的 scene（1 资料 / 2 评论 / 3 论坛 / 4 社交日志） |
 | `AI_MSG_MODEL_UNAVAILABLE` / `AI_MSG_CONTENT_REJECTED` / `AI_MSG_CONTENT_REJECTED_IMAGE` / `AI_MSG_QUOTA_EXHAUSTED` / `AI_MSG_INVALID_REQUEST` / `AI_MSG_INTERNAL` / `AI_MSG_CITATION_UNVERIFIED` | 见下表 | 覆盖用户可见文案，**改措辞不用改代码**；`AI_MSG_CONTENT_REJECTED_IMAGE` 只覆盖「用户上传的图片被拒」这一种输入（05 截图路径），缺省时不回落到图片专属文案而是用 `AI_MSG_CONTENT_REJECTED` |

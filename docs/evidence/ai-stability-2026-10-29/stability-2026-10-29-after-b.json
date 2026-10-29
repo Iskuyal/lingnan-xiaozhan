@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-29T14:43:41.248Z",
+  "mode": "direct_cloud_call",
+  "set": "b",
+  "boundary": "直发模式，无页面 system 提示词；同一 ai 云函数/审核/模型链路；顺序调用；结果为稳定性判断，不是页面端到端时延或效果评分",
+  "cases": [
+    {
+      "index": 1,
+      "feature": "department-qa",
+      "question": "校学生社团管理部是做什么的？",
+      "clientElapsedMs": 7565,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {
+        "preflightMs": 280,
+        "accountingMs": 74,
+        "inputSafetyMs": 6081
+      },
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 2,
+      "feature": "department-qa",
+      "question": "青年志愿者联合会最近有什么活动？",
+      "clientElapsedMs": 7564,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {
+        "preflightMs": 252,
+        "accountingMs": 114,
+        "inputSafetyMs": 6123
+      },
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 3,
+      "feature": "timetable-assistant",
+      "question": "周三第 3-4 节有什么课？",
+      "clientElapsedMs": 15129,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 327,
+        "safetyNetworkMs": 3634,
+        "accountingMs": 277,
+        "inputSafetyMs": 3727,
+        "modelNetworkMs": 3942,
+        "modelMs": 4031,
+        "outputSafetyMs": 6101
+      },
+      "usage": {
+        "promptTokens": 41,
+        "completionTokens": 166,
+        "totalTokens": 207,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000052,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常的课程查询，不涉及任何违规信息。"
+      }
+    },
+    {
+      "index": 4,
+      "feature": "timetable-assistant",
+      "question": "我这周一共几节课？",
+      "clientElapsedMs": 7570,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {
+        "preflightMs": 250,
+        "accountingMs": 88,
+        "inputSafetyMs": 6095
+      },
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 5,
+      "feature": "department-qa",
+      "question": "校学生会主席团由哪些人组成？",
+      "clientElapsedMs": 21165,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 266,
+        "safetyNetworkMs": 3697,
+        "accountingMs": 272,
+        "inputSafetyMs": 3807,
+        "modelNetworkMs": 10085,
+        "modelMs": 10165,
+        "outputSafetyMs": 6093
+      },
+      "usage": {
+        "promptTokens": 39,
+        "completionTokens": 826,
+        "totalTokens": 865,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000216,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园学生会组织构成的正常询问，不涉及违规信息。"
+      }
+    }
+  ],
+  "paidBusinessAiCalls": 5,
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 586 次调用、461718 token、0.11547599999999993 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 586,
+      "failures": 45,
+      "promptTokens": 323344,
+      "completionTokens": 138374,
+      "totalTokens": 461718,
+      "costYuan": 0.11547599999999993,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T14:44:55.313Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 35
+    },
+    "elapsedMs": 35,
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 52,
+      "limit": 60,
+      "remaining": 8
+    }
+  },
+  "summary": {
+    "total": 5,
+    "successes": 0,
+    "failures": 5,
+    "failureClasses": [
+      "model_unavailable"
+    ],
+    "modelNetworkMs": {
+      "min": 3942,
+      "median": 10085,
+      "max": 10085
+    },
+    "timeouts": 5,
+    "ackedAt": "2026-10-29T14:44:58.408Z"
+  }
+}

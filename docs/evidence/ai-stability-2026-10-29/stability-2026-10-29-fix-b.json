@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-29T14:54:53.103Z",
+  "mode": "direct_cloud_call",
+  "set": "b",
+  "boundary": "直发模式，无页面 system 提示词；同一 ai 云函数/审核/模型链路；顺序调用；结果为稳定性判断，不是页面端到端时延或效果评分",
+  "cases": [
+    {
+      "index": 1,
+      "feature": "department-qa",
+      "question": "校学生社团管理部是做什么的？",
+      "clientElapsedMs": 14122,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "校学生社团管理部（有的学校叫“社团联合会”“社团管理中心”等）通常是校团委指导下的学生组织，主要职责是**统筹、服务和管理全校学生社团**。常见工作包括：\n\n1. **社团注册与备案**：负责新社团成立申请、注册登记、年审、变更和注销等。\n",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 299,
+        "safetyNetworkMs": 4958,
+        "accountingMs": 288,
+        "inputSafetyMs": 2701,
+        "modelNetworkMs": 6384,
+        "modelMs": 6488,
+        "outputSafetyMs": 2441
+      },
+      "usage": {
+        "promptTokens": 39,
+        "completionTokens": 464,
+        "totalTokens": 503,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000126,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园学生组织职责介绍，属于正常校园管理信息，无违规内容。"
+      }
+    },
+    {
+      "index": 2,
+      "feature": "department-qa",
+      "question": "青年志愿者联合会最近有什么活动？",
+      "clientElapsedMs": 15124,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "根据官网已核实资料，青年志愿者联合会近期有以下动态：\n\n1. **2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行**（2026-04-15）  \n   来源：https://lnc.edu.cn/tw/djxf/djhd/conte",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 260,
+        "safetyNetworkMs": 8384,
+        "accountingMs": 273,
+        "inputSafetyMs": 6484,
+        "modelNetworkMs": 5062,
+        "modelMs": 5147,
+        "outputSafetyMs": 2089
+      },
+      "usage": {
+        "promptTokens": 230,
+        "completionTokens": 305,
+        "totalTokens": 535,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000134,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园志愿活动动态，来源官网，无违规信息。"
+      }
+    },
+    {
+      "index": 3,
+      "feature": "timetable-assistant",
+      "question": "周三第 3-4 节有什么课？",
+      "clientElapsedMs": 1012,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 4,
+      "feature": "timetable-assistant",
+      "question": "我这周一共几节课？",
+      "clientElapsedMs": 1012,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 5,
+      "feature": "department-qa",
+      "question": "校学生会主席团由哪些人组成？",
+      "clientElapsedMs": 1011,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    }
+  ],
+  "paidBusinessAiCalls": 5,
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 608 次调用、466977 token、0.11679199999999991 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 608,
+      "failures": 47,
+      "promptTokens": 326395,
+      "completionTokens": 140582,
+      "totalTokens": 466977,
+      "costYuan": 0.11679199999999991,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T14:55:31.116Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 37
+    },
+    "elapsedMs": 37,
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 63,
+      "limit": 60,
+      "remaining": 0
+    }
+  },
+  "summary": {
+    "total": 5,
+    "successes": 2,
+    "failures": 3,
+    "failureClasses": [
+      "quota_exhausted"
+    ],
+    "modelNetworkMs": {
+      "min": 5062,
+      "median": 6384,
+      "max": 6384
+    },
+    "timeouts": 0,
+    "ackedAt": "2026-10-29T14:55:43.520Z"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-29T15:00:40.914Z",
+  "mode": "direct_cloud_call",
+  "set": "b",
+  "boundary": "直发模式，无页面 system 提示词；同一 ai 云函数/审核/模型链路；顺序调用；结果为稳定性判断，不是页面端到端时延或效果评分",
+  "cases": [
+    {
+      "index": 1,
+      "feature": "department-qa",
+      "question": "校学生社团管理部是做什么的？",
+      "clientElapsedMs": 1014,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 2,
+      "feature": "department-qa",
+      "question": "青年志愿者联合会最近有什么活动？",
+      "clientElapsedMs": 1013,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 3,
+      "feature": "timetable-assistant",
+      "question": "周三第 3-4 节有什么课？",
+      "clientElapsedMs": 1013,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 4,
+      "feature": "timetable-assistant",
+      "question": "我这周一共几节课？",
+      "clientElapsedMs": 2020,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    },
+    {
+      "index": 5,
+      "feature": "department-qa",
+      "question": "校学生会主席团由哪些人组成？",
+      "clientElapsedMs": 1518,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "quota_exhausted",
+      "detail": "今日调用次数超过 60 次",
+      "textHead": "",
+      "provider": "",
+      "model": "",
+      "timings": {},
+      "usage": null,
+      "safety": null
+    }
+  ],
+  "paidBusinessAiCalls": 5,
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 608 次调用、466977 token、0.11679199999999991 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 608,
+      "failures": 47,
+      "promptTokens": 326395,
+      "completionTokens": 140582,
+      "totalTokens": 466977,
+      "costYuan": 0.11679199999999991,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T14:55:31.116Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 39
+    },
+    "elapsedMs": 40,
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 73,
+      "limit": 60,
+      "remaining": 0
+    }
+  },
+  "summary": {
+    "total": 5,
+    "successes": 0,
+    "failures": 5,
+    "failureClasses": [
+      "quota_exhausted"
+    ],
+    "modelNetworkMs": {
+      "min": null,
+      "median": null,
+      "max": null
+    },
+    "timeouts": 0,
+    "ackedAt": "2026-10-29T15:01:05.658Z"
+  }
+}

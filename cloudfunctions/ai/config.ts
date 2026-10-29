@@ -173,8 +173,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       model: envString(env, 'AI_SAFETY_MODEL', model),
       anthropicVersion: envString(env, 'AI_SAFETY_ANTHROPIC_VERSION', anthropicVersion),
       openaiMode: envString(env, 'AI_SAFETY_OPENAI_MODE', 'chat') === 'moderations' ? 'moderations' : 'chat',
-      // 微信云调用与云存储下载都用这条超时；下限 1 秒，避免配出必然超时的值。
-      timeoutMs: Math.floor(clamp(envNumber(env, 'AI_SAFETY_TIMEOUT_MS', Math.min(timeoutMs, 6000)), 1000, totalDeadlineMs)),
+      // 微信云调用与第三方审核共用这条单次超时。默认按提供方区分：
+      // - 微信官方云调用通常 <1s，6s 足够；
+      // - 第三方审核是模型调用，2026-10-29 实测中位约 2.9s、尾部 6.1s，当晚进一步退化到 >12s，
+      //   旧的统一 6000 默认值会让尾部超时直接 fail-closed 拒绝整次调用（线上控制台虽配了 30000，
+      //   但运行实例实际读到的是默认值）。第三方场景默认 30000，仍受 totalDeadlineMs 约束。
+      timeoutMs: Math.floor(clamp(
+        envNumber(env, 'AI_SAFETY_TIMEOUT_MS', safetyProvider === 'wechat' ? 6000 : 30000),
+        1000,
+        totalDeadlineMs,
+      )),
       // 接口不返回 token 用量时（如 OpenAI /moderations）的每次固定价；0 表示不计入金额，但会标记 usageUnknown。
       fixedPriceYuan: Math.max(0, envNumber(env, 'AI_SAFETY_CALL_PRICE_YUAN', 0)),
       scene: Math.floor(clamp(envNumber(env, 'AI_SAFETY_SCENE', 1), 1, 4)),
