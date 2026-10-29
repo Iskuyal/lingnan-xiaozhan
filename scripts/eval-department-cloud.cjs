@@ -137,14 +137,23 @@ function validateBudget(file, calls) {
     if (!file)
         throw Error('真实调用前须--budget登记用量与核账状态');
     const b = JSON.parse(fs.readFileSync(path.resolve(root, file), 'utf8'));
-    if (b.accountingReconciled !== true)
-        throw Error('此前记账故障未确认核账，保持停止');
-    if (!Number.isInteger(b.maxCloudCalls) || b.maxCloudCalls < calls || !b.usageSnapshot || b.safetyQuota === undefined)
+    const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+    if (b.accountingReconciled !== true) {
+        const a = b.historicalCostAcceptance;
+        const bounded = b.accountingReconciled === false && a?.status === 'unknown_preserved_delegated_resume'
+            && a.date === today && a.preserveUnknown === true && typeof a.authorizationEvidence === 'string'
+            && typeof a.authorizationSha256 === 'string' && Number.isInteger(b.maxCloudCalls) && b.maxCloudCalls <= 14
+            && Number.isFinite(b.maxEstimatedCostYuan) && b.maxEstimatedCostYuan > 0 && b.maxEstimatedCostYuan <= 0.05;
+        if (!bounded || hash(path.resolve(root, a.authorizationEvidence)) !== a.authorizationSha256)
+            throw Error('此前费用未完成核账：缺少当日有证据哈希的有界恢复授权，保持停止');
+        // 保留accountingReconciled=false和旧原始记录；这是另开的有界评测，不是补造核账结果。
+    }
+    if (!Number.isInteger(b.maxCloudCalls) || b.maxCloudCalls < calls || !b.usageSnapshot || b.safetyQuota === undefined
+        || !Number.isFinite(b.maxEstimatedCostYuan) || b.maxEstimatedCostYuan <= 0)
         throw Error('预算登记不完整');
     const s = JSON.parse(fs.readFileSync(path.resolve(root, b.usageSnapshot), 'utf8')).result;
     if (s?.ok !== true || s.usageSummary?.exceeded || s.capWarning || !Number.isInteger(s.userDailyLimit?.remaining) || s.userDailyLimit.remaining < calls)
         throw Error('用量快照异常或日余量不足');
-    const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
     if (s.userDailyLimit.day !== today)
         throw Error('日余量快照不是当前东八区日期');
     return b;
@@ -180,6 +189,14 @@ async function collect(report, o, request, save, qa, pace = sleep) {
         applyResult(row, state, qa);
         row.fingerprint = { questionSetSha256: report.questionSetSha256, collectorSha256: report.collectorSha256, buildHashes: report.buildHashes, deployedCloudHashes: report.deployedCloudHashes };
         report.stoppedReason = row.clientTimedOut ? 'client_timeout' : stopReason(row.result, row.error);
+        if (Number.isFinite(report.budget?.maxEstimatedCostYuan)) {
+            const cost = row.result?.usage?.costYuan;
+            if (!Number.isFinite(cost) || cost < 0) report.stoppedReason ||= 'call_cost_unknown';
+            else {
+                report.accountedCostYuan = Number(((report.accountedCostYuan || 0) + cost).toFixed(8));
+                if (report.accountedCostYuan >= report.budget.maxEstimatedCostYuan) report.stoppedReason ||= 'estimated_cost_budget';
+            }
+        }
         save(row);
         console.log(`  ${row.id}: ${row.done ? 'returned' : row.result?.failureClass || row.error}；端到端${row.clientElapsedMs ?? '未知'}ms，尚未语义评分`);
         if (!report.stoppedReason && Date.now() - start < 12000)

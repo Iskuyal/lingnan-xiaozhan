@@ -99,6 +99,16 @@ export interface AiCallResult {
   failureClass: FailureClass | '';
   /** 服务端用户可见文案；成功时为空串。 */
   message: string;
+  /**
+   * 服务端排查细节（密钥已由服务端剔除）。**只用于控制台排查，不上屏**：
+   * 里面常含「内容安全检测不可用：HTTP 401（鉴权失败…）」这类决定性信息，
+   * 而用户可见的 `internal` 文案是同一句「稍后重试」——不看 detail 就无法区分
+   * 「模型超时」「审核服务鉴权失效」「记账闸门占用」。
+   *
+   * 2026-10-29 的教训：客户端当时直接丢弃了这个字段，一次真实故障只能靠
+   * `probe-ai-raw-response.cjs` 从端上抓原始返回才定位到根因。
+   */
+  detail: string;
   text: string;
   capWarning: string;
   /** 内容安全结论；服务端没返回时为 null（按「未检测」处理，不当作干净）。 */
@@ -408,11 +418,12 @@ function withTimeout<T>(call: Promise<T>, timeoutMs: number): Promise<T | typeof
  * 契约要求超时「按 `model_unavailable` 结束」，所以这里不抛错：抛错会走 transportMessage 那套
  * 「没能发出去」的文案，而契约要的是「模型没有返回结果」这一条。
  */
-export function timedOutResult(): AiCallResult {
+export function timedOutResult(detail = ''): AiCallResult {
   return {
     ok: false,
     failureClass: 'model_unavailable',
     message: '',
+    detail,
     text: '',
     capWarning: '',
     safety: null,
@@ -437,9 +448,17 @@ export async function callAi(data: Record<string, unknown>, timeoutMs: number = 
   if (response === TIMED_OUT) {
     // 平台调用无法取消：晚到的结果被丢掉（调用方另有请求代号，拦截过期结果上屏）。
     console.warn(`AI 调用超过 ${timeoutMs} 毫秒仍未返回，按 model_unavailable 结束`);
-    return timedOutResult();
+    return timedOutResult(`客户端在 ${timeoutMs} 毫秒内没有收到云函数返回`);
   }
-  return aiResultOf(response === null || response === undefined ? undefined : response.result);
+  const result = aiResultOf(response === null || response === undefined ? undefined : response.result);
+  // 失败原因只进控制台：`detail` 是维护者信息（服务端已剔除密钥），用户文案走 `userMessage`。
+  // 没有这一行时，`internal` 的六种成因在端上完全同形，只能靠原始返回排查。
+  if (!result.ok) {
+    const feature = typeof data.feature === 'string' && data.feature !== '' ? data.feature : '(未标注)';
+    console.error(`AI 调用失败：feature=${feature} failureClass=${result.failureClass === '' ? '(空)' : result.failureClass}`
+      + ` detail=${result.detail === '' ? '(服务端未给 detail)' : result.detail}`);
+  }
+  return result;
 }
 
 /** 产品页与评测重放共用返回解析，保证上屏来源经过同一字段筛选。 */
@@ -452,6 +471,7 @@ export function aiResultOf(result: unknown): AiCallResult {
     ok: source.ok === true,
     failureClass: failureClassOf(source.failureClass),
     message: typeof source.message === 'string' ? source.message : '',
+    detail: typeof source.detail === 'string' ? source.detail : '',
     text: typeof source.text === 'string' ? source.text : '',
     capWarning: typeof source.capWarning === 'string' ? source.capWarning : '',
     safety: safetyOf(source.safety),

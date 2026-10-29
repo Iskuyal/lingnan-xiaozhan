@@ -159,10 +159,73 @@
 - **第三方**：`AI_SAFETY_PROVIDER=openai` / `anthropic` 时，用对应接口格式调一个「审核判定」提示词，读回 `{"allowed":bool,"reason":"..."}`；`AI_SAFETY_OPENAI_MODE=moderations` 时改走 OpenAI 官方 `/moderations` 接口读 `results[0].flagged`。**该做法是 Ticket 01 的实现选择**（见票面「决策」），要换成别的第三方审核服务时只需新增一个适配器分支。
 - **不可用 / 超时的处置**：默认 fail closed（拒绝调用），避免未检测内容上屏。原因不同、分类也不同：
   - **超时**（微信云调用、第三方审核、云存储下载）→ `model_unavailable`（可重试，与模型超时同类）；
-  - **配置 / 权限 / 协议类不可用**（如 `cloud.openapi.security` 缺失、48001、判定 JSON 解析不了）→ `internal`（要改配置）；
+  - **配置 / 权限 / 协议类不可用**（如 `cloud.openapi.security` 缺失、48001、第三方适配器 **401/403 鉴权失败**、判定 JSON 解析不了）→ `internal`（要改配置）；
   - **`AI_SAFETY_FAIL_MODE=open`** → 放行，但报告 `checked: false`、`detail` 写明「未检测」，并进 `warnings`。
     该开关与 `AI_SAFETY_PROVIDER=off` 都是**仅限开发与排障的逃生口，生产不得使用**：规格把「AI 生成的文字与用户上传的图片都要过内容安全检测」列为硬约束，发布前必须确认这两项是默认值（`wechat` / `closed`）。
 - 违规判定与「检测失败」在返回值里区分：违规是 `content_rejected`，检测服务本身出错是 `internal` / `model_unavailable`（或按 fail-open 放行并注明 `checked: false`）。
+
+### 排障：所有 AI 功能都返回「AI 服务内部错误」
+
+页面上 `internal` 只有一句通用文案，**真正的原因在返回值的 `detail` 里，必须先看 `detail` 再判断方向**。
+2026-10-29 起客户端也会把 `feature / failureClass / detail` 打到**控制台**（只进控制台、不上屏，服务端已剔除密钥），改前端后就不必再手工抓原始返回。
+
+从小程序端读原始返回（云调用只能由小程序端触发，控制台/CLI 触发会拿到 `-501001`）：
+
+```text
+"<微信开发者工具目录>\cli.bat" auto --project <仓库>/dist --auto-port 9420 --trust-project
+node scripts/probe-ai-raw-response.cjs --feature=timetable-assistant --text="这周有几门课？"
+node scripts/probe-ai-raw-response.cjs --payload-file=<写着 {"action":"probe"} 的 UTF-8 无 BOM 文件>
+```
+
+| `detail` 关键字 | 含义 | 下一步 |
+| --- | --- | --- |
+| `内容安全检测不可用：HTTP 401` / `403` … `authentication_error` | 第三方审核的密钥失效或被吊销，fail-closed 拒绝整次调用 | 控制台把 `AI_SAFETY_PROVIDER` 改回 `wechat`（默认值）先恢复，或换有效的 `AI_SAFETY_API_KEY`；**此时模型还没跑，不能用这次调用判断模型密钥**。实例见 [2026-10-29 证据](../../evidence/ai-safety-401-2026-10-29/README.md) |
+| `45009` / `fail reach max api daily quota limit` | 微信当日检测配额用尽（未上架小程序约 100 次/天） | 归 `quota_exhausted`，次日恢复；上线前按配额倒排脚本 |
+| `AI 记账闸门正在使用或待核对` | 上一笔收费调用的记账没确认或被异常中断，闸门留着 | 并发请求瞬时撞门可重试；持续出现要维护者核账，**不得未核账就删闸门** |
+| `本月 AI 调用记录多于月度汇总` | 漏记冻结（明细多于汇总） | 维护者核对后修复账目 |
+| `AI 服务未配置：缺少云函数环境变量` | `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL` 等缺失 | 控制台补齐环境变量 |
+| `读取月度用量失败` / `无法核对本月 AI 调用记录数` | 数据库读失败，按 fail-closed 拒绝 | 查集合权限/索引与云数据库状态 |
+| `回答超过` … `已丢弃` | 模型输出超 `MAX_OUTPUT_CHARS`（4 万字），检不完全部输出 | 精简输入或重试；不要改成放行未检测内容 |
+
+`probe` 动作（管理员限定、不花模型额度）只验证微信官方两条检测接口能不能调，**不能**用它的结论推断第三方审核或模型密钥是否有效。
+
+### 恢复第三方审核（先本地验证，再改线上）
+
+第三方审核是**模型调用**（走中转），不是免费接口；它的密钥失效会因 fail-closed 把**全部** AI 功能一起挡住（2026-10-29 实例见 [证据](../../evidence/ai-safety-401-2026-10-29/README.md)）。因此顺序固定为「先验证、后切换」，不要在线上试错。
+
+**前置事实（10-02/10-29 实测）**
+
+- 中转是 OpenAI 兼容接口（本项目记录为 CommandCode，`https://api.commandcode.ai/provider/v1`），`/chat/completions` 可用，`/moderations` 返回 **404** ⇒ `AI_SAFETY_OPENAI_MODE` 必须是 `chat`。
+- 审核模型必须是 `deepseek/deepseek-v4-flash-fast` 这类「短输出」模型；业务模型 `deepseek/deepseek-v4.1-flash` 在 `AI_SAFETY_MAX_TOKENS`（夹在 2048 以内）下只输出 reasoning、正文为空，审核 JSON 解析不了 ⇒ 又会被 fail-closed 挡住。
+- 模型密钥与审核密钥可以是两把。2026-10-29 的故障里模型密钥仍然有效（业务模型正常返回），只是审核那把失效；所以**先用有效的那把复用**通常是最省事的恢复路径。
+
+**步骤**
+
+1. 取得一把有效密钥（二选一）：
+   - **复用模型密钥**：删掉 `AI_SAFETY_API_KEY` 这个覆盖项即可（代码默认回落到 `AI_API_KEY`），不必新申请；
+   - 或在服务商控制台**新建一把密钥**（账号密钥轮换/吊销后旧值不能再用；新密钥只放云函数环境变量，不进仓库与命令行历史）。
+2. **本地先验证**（不碰线上配置）：
+
+   ```text
+   npm run build
+   $env:AI_SAFETY_API_KEY='<候选密钥>'
+   npm run probe:safety-key -- --base-url=https://api.commandcode.ai/provider/v1 --model=deepseek/deepseek-v4-flash-fast
+   ```
+
+   脚本（`scripts/probe-safety-key.cjs`）直接复用云函数的审核实现，用 4 类样本验证「良性放行 + 广告/辱骂/赌博拦截」。**只有退出码 0 才继续**；失败时会打印 401/超时/JSON 解析失败的具体 `detail`。
+3. 在 **云开发控制台 → 云函数 → ai → 配置 → 环境变量** 设置（CLI 不支持环境变量）：
+
+   | 变量 | 值 |
+   | --- | --- |
+   | `AI_SAFETY_PROVIDER` | `openai` |
+   | `AI_SAFETY_OPENAI_MODE` | `chat`（填 `moderations` 会 404） |
+   | `AI_SAFETY_MODEL` | `deepseek/deepseek-v4-flash-fast`（**不要用业务模型**） |
+   | `AI_SAFETY_BASE_URL` | 可删（默认取 `AI_BASE_URL`），保留则与模型地址一致 |
+   | `AI_SAFETY_API_KEY` | 第 1 步的密钥；若选择复用模型密钥则**删除**这一项 |
+
+4. 线上复测（从小程序端）：`node scripts/probe-ai-raw-response.cjs --feature=timetable-assistant --text="这周有几门课？"`，确认 `ok=true` 且 `safety.provider=openai`、`checked=true`；失败会带可读 `detail`。
+5. **回滚**：`AI_SAFETY_PROVIDER` 改回 `wechat`（默认值）；其余 `AI_SAFETY_*` 可保留不生效。
+6. **记录**：按下文「成本」小节把代价写进当轮证据——第三方审核每次 1.7–2.9 秒、一次业务请求要过 2–4 次审核，且按 token 计入月度上限；切换期间的批次不能与 `wechat` 配置下的结果混算。
 
 <a id="微信内容安全探测记录"></a>
 

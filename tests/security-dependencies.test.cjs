@@ -82,3 +82,31 @@ test('开发者工具自动化使用已修复的图像依赖，并保留 SDK 所
   assert.equal(typeof jimp.Jimp?.read, 'function', 'Jimp 1.x 应提供新的静态 read API');
   assert.equal(typeof jimp.default?.read, 'function', '兼容层应向旧 SDK 暴露 default.read');
 });
+
+test('超出长度约束的集合在遍历元素前拒绝，避免按攻击输入数量累积校验开销', () => {
+  const { z } = require('zod');
+  let visited = 0;
+  const schema = z.array(z.any().superRefine(() => { visited += 1; })).max(2);
+  const result = schema.safeParse(Array(200).fill('oversized'));
+  assert.equal(result.success, false);
+  assert.equal(visited, 0, '长度已经超限时不应继续校验每个元素');
+});
+
+test('查询串逗号数组遇到非函数toString不抛未捕获TypeError', () => {
+  const qs = require('qs');
+  assert.doesNotThrow(() => qs.stringify({ items: [{ toString: 42 }] }, { arrayFormat: 'comma' }));
+  assert.equal(qs.stringify({ items: ['a', 'b'] }, { arrayFormat: 'comma' }), 'items=a%2Cb');
+});
+
+test('升级校验依赖后仍可经SDK兼容入口读取PNG并缩放后重新解码', async () => {
+  require('../scripts/lib/mini-connect.cjs');
+  const jimp = require(require.resolve('jimp', { paths: [path.join(root, 'node_modules/miniprogram-automator')] }));
+  const original = new jimp.Jimp({ width: 4, height: 4, color: 0xff0000ff });
+  const png = await original.getBuffer('image/png');
+  const decoded = await jimp.default.read(png);
+  decoded.resize({ w: 2, h: 2 });
+  const resized = await jimp.default.read(await decoded.getBuffer('image/png'));
+  assert.equal(resized.bitmap.width, 2);
+  assert.equal(resized.bitmap.height, 2);
+  assert.equal(resized.getPixelColor(0, 0), 0xff0000ff);
+});

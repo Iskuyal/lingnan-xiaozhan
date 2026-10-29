@@ -1,0 +1,56 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-29T08:00:46.970Z",
+  "request": {
+    "action": "chat",
+    "feature": "timetable-assistant",
+    "messages": [
+      {
+        "role": "user",
+        "text": "这周有几门课？"
+      }
+    ]
+  },
+  "elapsedMs": 3022,
+  "result": {
+    "ok": false,
+    "action": "chat",
+    "failureClass": "internal",
+    "message": "AI 服务内部错误，请稍后重试。",
+    "detail": "内容安全检测不可用：HTTP 401（鉴权失败，检查 AI_API_KEY 与账号权限）：{\"error\":{\"message\":\"Invalid 'Authorization' header or token.\",\"type\":\"authentication_error\",\"code\":\"UNAUTHORIZED\"}}（AI_SAFETY_FAIL_MODE=closed，拒绝调用；可切换第三方适配器或改为 open，见 docs/development/cloud/ai.md）",
+    "feature": "timetable-assistant",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 461,
+      "failures": 32,
+      "promptTokens": 268850,
+      "completionTokens": 129263,
+      "totalTokens": 398113,
+      "costYuan": 0.099562,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T08:00:43.566Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 356,
+      "accountingMs": 97,
+      "inputSafetyMs": 1093
+    },
+    "elapsedMs": 1498
+  }
+}

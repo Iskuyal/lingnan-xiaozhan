@@ -1,0 +1,75 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-29T08:13:32.388Z",
+  "request": {
+    "action": "chat",
+    "feature": "timetable-assistant",
+    "messages": [
+      {
+        "role": "user",
+        "text": "这周有几门课？"
+      }
+    ]
+  },
+  "elapsedMs": 6027,
+  "result": {
+    "ok": true,
+    "action": "chat",
+    "failureClass": "",
+    "message": "",
+    "detail": "",
+    "feature": "timetable-assistant",
+    "provider": "openai",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "text": "我这边看不到你的课表，无法确定这周有几门课。请把本周课程表或日期范围发给我，我帮你数。",
+    "safety": {
+      "provider": "wechat",
+      "api": "security.msgSecCheck",
+      "passed": true,
+      "checked": true,
+      "detail": "v2（scene=1）｜errcode=0｜errmsg=openapi.security.msgSecCheck:ok｜suggest=pass｜label=100"
+    },
+    "usage": {
+      "promptTokens": 36,
+      "completionTokens": 92,
+      "totalTokens": 128,
+      "estimated": false,
+      "usageUnknown": false,
+      "costYuan": 0.000032,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25
+    },
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 464,
+      "failures": 32,
+      "promptTokens": 268886,
+      "completionTokens": 129355,
+      "totalTokens": 398241,
+      "costYuan": 0.099594,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T08:13:29.501Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 369,
+      "safetyNetworkMs": 1132,
+      "accountingMs": 303,
+      "inputSafetyMs": 565,
+      "modelNetworkMs": 3139,
+      "modelMs": 3252,
+      "outputSafetyMs": 758
+    },
+    "elapsedMs": 4993
+  }
+}

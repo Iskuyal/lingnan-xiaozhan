@@ -10,6 +10,7 @@
   },
   "overrides": {
     "axios": "0.34.0",
+    "qs": "6.16.1",
     "lodash.set": "npm:set-value@4.1.0",
     "lodash.unset": "4.18.0"
   }

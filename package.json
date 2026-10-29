@@ -11,6 +11,7 @@
     "verify:wechat": "node scripts/verify-wechat.cjs",
     "verify:goals": "node scripts/verify-goals.cjs",
     "probe:wechat": "node scripts/probe-wechat.cjs",
+    "probe:safety-key": "node scripts/probe-safety-key.cjs",
     "probe:ai-window": "node scripts/probe-ai-window.cjs",
     "smoke:ai": "node scripts/smoke-ai.cjs",
     "smoke:settings": "node scripts/smoke-settings.cjs",
@@ -42,6 +43,8 @@
   },
   "overrides": {
     "axios": "0.34.0",
+    "qs": "6.16.1",
+    "zod": "4.6.6",
     "lodash.set": "npm:set-value@4.1.0",
     "lodash.unset": "4.18.0",
     "miniprogram-automator": {

@@ -289,6 +289,81 @@ test('AI 服务:callAi 透传 safety/warnings,未知分类收敛成空串', asyn
   }
 });
 
+test('AI 服务:失败时把服务端 detail 打进控制台,但用户文案不变(2026-10-29 排查口径)', async () => {
+  const detail = '内容安全检测不可用：HTTP 401（鉴权失败，检查 AI_API_KEY 与账号权限）：{"error":{"code":"UNAUTHORIZED"}}'
+    + '（AI_SAFETY_FAIL_MODE=closed，拒绝调用）';
+  const wx = {
+    cloud: {
+      callFunction: async () => ({
+        result: {
+          ok: false,
+          failureClass: 'internal',
+          message: 'AI 服务内部错误，请稍后重试。',
+          detail,
+          text: '',
+          capWarning: '',
+          safety: null,
+          warnings: [],
+        },
+      }),
+    },
+  };
+  const logs = [];
+  const fakeConsole = {
+    log: () => undefined,
+    warn: () => undefined,
+    error: (...args) => logs.push(args.map((item) => String(item)).join(' ')),
+  };
+  // services/cloud.js 由 Node 的真实 require 加载,外层全局也要给 wx。
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat', feature: 'timetable-assistant' });
+    // detail 是本次故障唯一的决定性信息：客户端必须原样保留,不能像修复前那样丢掉。
+    assert.equal(result.detail, detail, '服务端 detail 必须透传给调用方');
+    assert.equal(client.userMessage(result), 'AI 服务内部错误，请稍后重试。', 'detail 不上屏,用户仍只看服务端文案');
+    const line = logs.join('\n');
+    assert.match(line, /timetable-assistant/u, '控制台日志要带 feature,便于分辨是哪个 AI 落点');
+    assert.match(line, /internal/u, '控制台日志要带 failureClass');
+    assert.match(line, /HTTP 401/u, '控制台日志要带 detail 原文');
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
+test('AI 服务:成功调用不打失败日志(日志只在失败时出现,不刷屏)', async () => {
+  const wx = { cloud: { callFunction: async () => ({ result: { ok: true, text: '答案', safety: null, warnings: [] } }) } };
+  const logs = [];
+  const fakeConsole = { log: () => undefined, warn: () => undefined, error: (...args) => logs.push(args.join(' ')) };
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat' });
+    assert.equal(result.ok, true);
+    assert.deepEqual(logs, []);
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
+test('AI 服务:客户端超时带上可读 detail,与「服务端说失败」分开', async () => {
+  const wx = { cloud: { callFunction: () => new Promise(() => {}) } };
+  const fakeConsole = { log: () => undefined, warn: () => undefined, error: () => undefined };
+  const saved = globalThis.wx;
+  globalThis.wx = wx;
+  try {
+    const client = loadWithGlobals('dist/services/ai.js', { wx, setTimeout, clearTimeout, console: fakeConsole });
+    const result = await client.callAi({ action: 'chat' }, 20);
+    assert.equal(result.failureClass, 'model_unavailable');
+    assert.match(result.detail, /客户端.*毫秒/u, '超时也要给出 detail,而不是空串');
+    assert.ok(result.warnings.includes(client.CLIENT_TIMEOUT_WARNING));
+  } finally {
+    globalThis.wx = saved;
+  }
+});
+
 test('传输层错误映射:两个服务共用同一套规则,只换服务名与兜底策略', () => {
   const aiService = ai();
   const timetableService = loadCompiled('dist/services/timetable/index.js');
