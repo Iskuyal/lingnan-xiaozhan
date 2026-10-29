@@ -1,0 +1,885 @@
+{
+  "startedAt": "2026-10-29T13:19:51.523Z",
+  "gitSha": "4ad05b16c481926358c128d02accf4950b50ebc7",
+  "datasetId": "department-fresh-20261029-round2",
+  "frozenAt": "2026-10-29T13:17:08.487108+00:00",
+  "questionSetSha256": "901c0b5c4853779712a94d28aa8f5ada5c13128f662b39ca01734feb8049698e",
+  "collectorSha256": "87053d272b53edf10442e5713b312769cf90ce6a5457aaffbc75fb34b94f4d57",
+  "buildHashes": {
+    "client/ai.js": "d6894d37ab055f76362ac5cbda6a40f3a1b0c86285ad41041da5033113040cec",
+    "client/cloud.js": "408966daeabf6f13960051bc37be25ceabf8c5081bb4daf8fa292a15a1ce6c85",
+    "client/departments.js": "4816fc427139e4281f5b4d333f7175025a1c2e04da19022635869065aff42578",
+    "client/qa.js": "3146c4c6201204544549199c89aa29016fdd7e75643148430952fcda8f7eb1ea",
+    "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+    "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+    "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+    "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+    "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+    "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+    "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+    "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+    "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+    "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+    "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+    "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+    "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+    "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+    "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+    "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+    "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+    "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+    "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+    "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+    "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+    "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+  },
+  "judgeRules": {
+    "supportedAnswer": "逐题回答全部子问，事实有冻结来源支持；来源不足时有明确对应的有限范围说明。只有安全标题或相关命中不能自动计问题正确。分母为全部14题，未执行分数null。",
+    "missingExplained": "对missingFields登记的缺失项明确解释当前标题/快照未提供或无法核实；不把快照缺失写成官网/现实不存在。仅列标题而未说明所问缺失范围不自动正确。",
+    "unsupportedDisplay": "逐项核对上屏正文、警示、标题/日期/链接及来源条，任何来源不能支持的主语、角色、细节、时间或最新进度断言记为存在无依据事实。安全与有用分别记录。",
+    "rawModel": "原始模型独立留档，未上屏错误不能宣称原模型防幻觉通过。",
+    "independence": "首次结果产生后不改题面/预期/判据。若用于修复，本批仅回归，另冻结新批才重新估计独立效果。"
+  },
+  "proofBoundary": "真实产品qaChatEvent/guardTurn；guardTurn重算页面数据不是真实截图。检索、安全通过、标题安全不等于问题回答正确。",
+  "cloudAttempts": 2,
+  "stoppedReason": "call_cost_unknown",
+  "humanReview": "pending",
+  "rows": [
+    {
+      "id": "r01",
+      "kind": "base",
+      "q": "按这份已核实资料，校学生团委直属的四个部门分别叫什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "秘书处、组织部、宣传部、广播台；不与学生会五部门混淆。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "units",
+          "value": [
+            "秘书处",
+            "组织部",
+            "宣传部",
+            "广播台"
+          ]
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "按这份已核实资料，校学生团委直属的四个部门分别叫什么？"
+          }
+        ]
+      },
+      "execution": "cloud_returned",
+      "done": true,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "cloudElapsedMs": 11268,
+      "clientTimedOut": false,
+      "clientElapsedMs": 11268,
+      "clientElapsedSource": "miniprogram_callback_measured",
+      "result": {
+        "ok": true,
+        "action": "chat",
+        "failureClass": "",
+        "message": "",
+        "detail": "",
+        "feature": "department-qa",
+        "provider": "openai",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "text": "校学生团委直属的 4 个部门分别是：**秘书处、组织部、宣传部、广播台**。\n\n来源：学校官网学生组织页面。",
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为学校官方学生组织信息，无违规内容。"
+        },
+        "usage": {
+          "promptTokens": 994,
+          "completionTokens": 66,
+          "totalTokens": 1060,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000265,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 531,
+          "failures": 33,
+          "promptTokens": 316349,
+          "completionTokens": 133121,
+          "totalTokens": 449470,
+          "costYuan": 0.112406,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-29T13:20:08.616Z"
+        },
+        "capWarning": "",
+        "warnings": [],
+        "citations": [],
+        "advancement": null,
+        "probe": null,
+        "timings": {
+          "preflightMs": 340,
+          "safetyNetworkMs": 5578,
+          "accountingMs": 278,
+          "inputSafetyMs": 3047,
+          "modelNetworkMs": 4252,
+          "modelMs": 4339,
+          "outputSafetyMs": 2724
+        },
+        "elapsedMs": 10493
+      },
+      "error": "",
+      "rawModelText": "校学生团委直属的 4 个部门分别是：**秘书处、组织部、宣传部、广播台**。\n\n来源：学校官网学生组织页面。",
+      "serverElapsedMs": 10493,
+      "usage": {
+        "promptTokens": 994,
+        "completionTokens": 66,
+        "totalTokens": 1060,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000265,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "rawCitations": [],
+      "displayTurn": {
+        "role": "assistant",
+        "text": "校学生团委直属的 4 个部门分别是：**秘书处、组织部、宣传部、广播台**。\n\n来源：学校官网学生组织页面。"
+      },
+      "displayText": "校学生团委直属的 4 个部门分别是：**秘书处、组织部、宣传部、广播台**。\n\n来源：学校官网学生组织页面。",
+      "displayWarning": "",
+      "displayCitations": [],
+      "failureMessage": "",
+      "displayProof": "Node运行产品guardTurn重算页面数据，非真实页面截图或真机",
+      "fingerprint": {
+        "questionSetSha256": "901c0b5c4853779712a94d28aa8f5ada5c13128f662b39ca01734feb8049698e",
+        "collectorSha256": "87053d272b53edf10442e5713b312769cf90ce6a5457aaffbc75fb34b94f4d57",
+        "buildHashes": {
+          "client/ai.js": "d6894d37ab055f76362ac5cbda6a40f3a1b0c86285ad41041da5033113040cec",
+          "client/cloud.js": "408966daeabf6f13960051bc37be25ceabf8c5081bb4daf8fa292a15a1ce6c85",
+          "client/departments.js": "4816fc427139e4281f5b4d333f7175025a1c2e04da19022635869065aff42578",
+          "client/qa.js": "3146c4c6201204544549199c89aa29016fdd7e75643148430952fcda8f7eb1ea",
+          "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+          "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+          "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+          "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+          "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+          "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+          "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+          "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+          "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+          "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+          "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+          "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+          "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+          "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+          "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+          "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+          "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+          "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+          "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+          "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+          "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+          "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+        },
+        "deployedCloudHashes": {
+          "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+          "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+          "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+          "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+          "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+          "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+          "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+          "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+          "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+          "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+          "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+          "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+          "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+          "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+          "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+          "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+          "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+          "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+          "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+          "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+          "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+          "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+        }
+      }
+    },
+    {
+      "id": "r02",
+      "kind": "base",
+      "q": "校学生社团管理部下设的是哪三个职能部门？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "策划部、秘书部、宣传部。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "units",
+          "value": [
+            "策划部",
+            "秘书部",
+            "宣传部"
+          ]
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "校学生社团管理部下设的是哪三个职能部门？"
+          }
+        ]
+      },
+      "execution": "cloud_returned",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "cloudElapsedMs": 33275,
+      "clientTimedOut": false,
+      "clientElapsedMs": 33275,
+      "clientElapsedSource": "miniprogram_callback_measured",
+      "result": {
+        "ok": false,
+        "action": "chat",
+        "failureClass": "model_unavailable",
+        "message": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+        "detail": "模型调用超时：请求超时（30000ms）：https://api.commandcode.ai/provider/v1/chat/completions",
+        "feature": "department-qa",
+        "provider": "openai",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "text": "",
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为校园组织信息问答，不涉及违规内容。"
+        },
+        "usage": null,
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 533,
+          "failures": 34,
+          "promptTokens": 317393,
+          "completionTokens": 133144,
+          "totalTokens": 450537,
+          "costYuan": 0.112673,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-29T13:20:42.515Z"
+        },
+        "capWarning": "",
+        "warnings": [],
+        "citations": [],
+        "advancement": null,
+        "probe": null,
+        "timings": {
+          "preflightMs": 337,
+          "safetyNetworkMs": 1684,
+          "accountingMs": 189,
+          "inputSafetyMs": 1777,
+          "modelMs": 30111
+        },
+        "elapsedMs": 32275
+      },
+      "error": "",
+      "rawModelText": "",
+      "serverElapsedMs": 32275,
+      "usage": null,
+      "rawCitations": [],
+      "displayTurn": null,
+      "displayText": "",
+      "displayWarning": "",
+      "displayCitations": [],
+      "failureMessage": "AI 模型暂时不可用或响应超时，请稍后重试；已保存的课表与部门资料仍可正常查看。",
+      "displayProof": "Node运行产品guardTurn重算页面数据，非真实页面截图或真机",
+      "fingerprint": {
+        "questionSetSha256": "901c0b5c4853779712a94d28aa8f5ada5c13128f662b39ca01734feb8049698e",
+        "collectorSha256": "87053d272b53edf10442e5713b312769cf90ce6a5457aaffbc75fb34b94f4d57",
+        "buildHashes": {
+          "client/ai.js": "d6894d37ab055f76362ac5cbda6a40f3a1b0c86285ad41041da5033113040cec",
+          "client/cloud.js": "408966daeabf6f13960051bc37be25ceabf8c5081bb4daf8fa292a15a1ce6c85",
+          "client/departments.js": "4816fc427139e4281f5b4d333f7175025a1c2e04da19022635869065aff42578",
+          "client/qa.js": "3146c4c6201204544549199c89aa29016fdd7e75643148430952fcda8f7eb1ea",
+          "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+          "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+          "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+          "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+          "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+          "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+          "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+          "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+          "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+          "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+          "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+          "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+          "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+          "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+          "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+          "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+          "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+          "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+          "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+          "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+          "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+          "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+        },
+        "deployedCloudHashes": {
+          "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+          "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+          "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+          "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+          "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+          "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+          "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+          "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+          "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+          "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+          "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+          "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+          "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+          "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+          "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+          "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+          "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+          "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+          "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+          "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+          "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+          "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+        }
+      }
+    },
+    {
+      "id": "r03",
+      "kind": "base",
+      "q": "青年志愿者联合会的志愿精神有哪四项，建有什么志愿服务队？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "奉献、友爱、互助、进步；红小荔志愿服务队。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "introduction",
+          "value": "青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。"
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "青年志愿者联合会的志愿精神有哪四项，建有什么志愿服务队？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r04",
+      "kind": "base",
+      "q": "资料写明退役军人事务服务部成立于哪一年哪一月、隶属哪里？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "2022年5月，隶属校团委。",
+      "sourceRefs": [
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "introduction",
+          "value": "退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。"
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "资料写明退役军人事务服务部成立于哪一年哪一月、隶属哪里？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r05",
+      "kind": "base",
+      "q": "青年志愿者联合会这份资料明确列出哪两个校区？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "广州校区、清远校区，不称只有一个。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "campus",
+          "value": "广州校区、清远校区"
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "青年志愿者联合会这份资料明确列出哪两个校区？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r06",
+      "kind": "activity",
+      "q": "校学生团委的对话榜样这条动态，原始标题及官网发布时间是什么？",
+      "expectedDepartmentId": "student-youth-league",
+      "expectedAnswer": "对话榜样｜笃行团务，砺己争先；2026-06-30。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-youth-league",
+          "field": "activities",
+          "value": {
+            "title": "对话榜样｜笃行团务，砺己争先",
+            "publishedAt": "2026-06-30",
+            "sourceUrl": "https://lnc.edu.cn/tw/kjcx/qcby/content_30203"
+          }
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "校学生团委的对话榜样这条动态，原始标题及官网发布时间是什么？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r07",
+      "kind": "activity",
+      "q": "权益小摊这条学生会资料，原始标题中说了什么、官网发布时间是哪天？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "我为同学做实事|校园摆起 \"权益小摊\"，校学生会为校园消费撑起 \"保护伞\"；2025-03-31，不改成年份2026。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "我为同学做实事|校园摆起 \"权益小摊\"，校学生会为校园消费撑起 \"保护伞\"",
+            "publishedAt": "2025-03-31",
+            "sourceUrl": "https://lnc.edu.cn/tw/lndt/wwtxzss/content_22115"
+          }
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "权益小摊这条学生会资料，原始标题中说了什么、官网发布时间是哪天？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r08",
+      "kind": "activity",
+      "q": "学生社团招新2025这条资料的完整标题和官网发布时间能列出吗？",
+      "expectedDepartmentId": "student-club-management",
+      "expectedAnswer": "学生社团招新 2025“社“聚新能量，青春燃校园；2025-10-27，不推断当前仍在招新。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-club-management",
+          "field": "activities",
+          "value": {
+            "title": "学生社团招新 2025“社“聚新能量，青春燃校园",
+            "publishedAt": "2025-10-27",
+            "sourceUrl": "https://lnc.edu.cn/tw/xywt/stfc/content_24789"
+          }
+        }
+      ],
+      "missingFields": [],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "学生社团招新2025这条资料的完整标题和官网发布时间能列出吗？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r09",
+      "kind": "detail_missing",
+      "q": "青young行绘彩童心专项行三十一这条标题资料能核实参与者姓名和人数吗？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "标题/发布时间不包含名单及人数，明确当前标题资料无法确认；可提供标题和来源。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "“青”young行 绘彩童心专项行（三十一）",
+            "publishedAt": "2026-03-10",
+            "sourceUrl": "https://lnc.edu.cn/tw/lnpp/zyhd/content_27027"
+          }
+        }
+      ],
+      "missingFields": [
+        "参与者姓名",
+        "参与人数"
+      ],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "青young行绘彩童心专项行三十一这条标题资料能核实参与者姓名和人数吗？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r10",
+      "kind": "detail_missing",
+      "q": "校长接待日后勤诉求全回应这条标题，能证明所有具体诉求都已实际解决吗？",
+      "expectedDepartmentId": "student-union",
+      "expectedAnswer": "标题表述不证明所有具体诉求已解决，当前资料没有逐项处理结果，不能把回应当解决。",
+      "sourceRefs": [
+        {
+          "departmentId": "student-union",
+          "field": "activities",
+          "value": {
+            "title": "校长接待日｜校长面对面，这些后勤诉求全回应！",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27006"
+          }
+        }
+      ],
+      "missingFields": [
+        "具体诉求处理结果"
+      ],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "校长接待日后勤诉求全回应这条标题，能证明所有具体诉求都已实际解决吗？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r11",
+      "kind": "event_date_unknown",
+      "q": "稻香伴星影这条志愿动态的官网发布时间能直接作为活动实际开展日期吗？",
+      "expectedDepartmentId": "young-volunteers",
+      "expectedAnswer": "不能直接等同；可核对官网发布时间2026-03-09，但具体开展日期当前标题资料无法核实。",
+      "sourceRefs": [
+        {
+          "departmentId": "young-volunteers",
+          "field": "activities",
+          "value": {
+            "title": "“青”志愿 稻香伴“星“影，田垄齐漫步",
+            "publishedAt": "2026-03-09",
+            "sourceUrl": "https://lnc.edu.cn/tw/lnpp/zyhd/content_26998"
+          }
+        }
+      ],
+      "missingFields": [
+        "实际开展日期"
+      ],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "稻香伴星影这条志愿动态的官网发布时间能直接作为活动实际开展日期吗？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    },
+    {
+      "id": "r12",
+      "kind": "detail_missing",
+      "q": "仅在已核实的退役军人事务服务部资料范围内，能给出个人负责人姓名和直拨电话吗？",
+      "expectedDepartmentId": "veteran-affairs-service",
+      "expectedAnswer": "当前资料未提供个人负责人和直拨电话，不猜姓名号码，不声称全网不存在。",
+      "sourceRefs": [
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "contacts",
+          "value": []
+        },
+        {
+          "departmentId": "veteran-affairs-service",
+          "field": "introduction",
+          "value": "退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。"
+        }
+      ],
+      "missingFields": [
+        "个人负责人姓名",
+        "直拨电话"
+      ],
+      "event": {
+        "action": "chat",
+        "feature": "department-qa",
+        "system": "你是校园学生部门问答助手，只能依据下面「已核实资料」回答。\n必须遵守：\n1. 资料里有的内容，按资料回答，必要时注明「来源：学校官网学生组织页面」；\n2. 资料里没有的信息（例如联系方式、负责人、所属校区、招新时间等），一律回答「官网未公布」，绝不编造；\n3. 不要添加资料之外的任何信息，不要推测，不要替学校承诺任何事项。\n4. 部门动态（活动）只能依据提问下方【部门动态检索结果】里的条目回答；检索结果里没有的动态一律回答「官网未公布」，不要补全活动细节。\n5. 动态条目仅包含标题和官网发布时间。归属哪个组织的资料不等于该组织主办或承办；未提供的细节说「当前资料未提供，无法核实」，不要断言官网没有。快照不证明当前最新进度，发布时间不叫收录日期。\n\n以下是从学校官网核实的学生组织资料（来源：学校官网 · 团委 · 学生组织 https://lnc.edu.cn/tw/sygk/xszz，核查日期 2026-09-18）。\n\n【校学生团委】\n所属校区：官网未标注所属校区\n简介：共青团广东岭南职业技术学院委员会是团组织联系广大团员青年的桥梁和窗口，负责规划、统筹全校各级学生组织的基层团建及团员青年思想政治教育工作，指导全校各级学生组织开展工作和活动。目前校学生团委直属部门包括秘书处、组织部、宣传部、广播台 4 个部门。\n下设部门：秘书处、组织部、宣传部、广播台\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生会】\n所属校区：官网未标注所属校区\n简介：校学生会是在校党委正确领导和校团委具体指导下的全校性学生组织（以下简称学生会）。学生会组织架构为“主席团+工作部门”模式，设权益部、文娱部、器材部、体育部、学创部 5 大部门。学生会围绕以加强对同学的思想引领为根本，以全心全意为同学服务为宗旨，发挥联系广大同学的主要桥梁和纽带作用。\n下设部门：权益部、文娱部、器材部、体育部、学创部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【校学生社团管理部】\n所属校区：官网未标注所属校区\n简介：校学生社团管理部阳光外向，理智独立，是学生社团健康发展的引航员，统筹全校学生社团建设管理，负责社团的注册登记、备案年审、组织建设、活动管理、工作保障等工作。校学生社团管理部下设策划部、秘书部、宣传部 3 个职能部门。\n下设部门：策划部、秘书部、宣传部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【青年志愿者联合会】\n所属校区：广州校区、清远校区\n简介：青年志愿者联合会隶属校团委，依“奉献、友爱、互助、进步”的志愿者精神为行动纲领，以“立足校园、发挥优势、奉献爱心、服务社会”为服务宗旨，通过组织全校青年志愿者向全校和社会提供志愿服务，培养学生成为具有高度社会责任感的时代新人，是大学生社会实践中重要的实践平台。青年志愿者联合会设主席团及职能部门 4 个：青枢部、青创部、青拓部，青宣部，建有“红小荔”志愿服务队。\n下设部门：青枢部、青创部、青拓部、青宣部、“红小荔”志愿服务队\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准\n\n【退役军人事务服务部】\n所属校区：官网未标注所属校区\n简介：退役军人事务服务部隶属校团委，成立于 2022 年 5 月，是一个由退役大学生组成的组织。服务站是退役军人学子回归校园、适应校园、融入校园的重要平台，也是服务帮扶同学、维护同学权益、维护校规校纪的重要平台。服务站下设 2 个职能部门：宣秘团、督勤部。\n下设部门：宣秘团、督勤部\n联系方式：官网未公布联系方式\n活动动态：官网已收录若干条，具体内容以提问时注入的【部门动态检索结果】为准",
+        "messages": [
+          {
+            "role": "user",
+            "text": "仅在已核实的退役军人事务服务部资料范围内，能给出个人负责人姓名和直拨电话吗？"
+          }
+        ]
+      },
+      "execution": "not_called",
+      "done": false,
+      "scores": {
+        "supportedAnswer": null,
+        "missingExplained": null,
+        "unsupportedDisplay": null
+      },
+      "notCalledReason": "call_cost_unknown"
+    }
+  ],
+  "budget": {
+    "registeredAt": "2026-10-29T13:19:29.020094+00:00",
+    "accountingReconciled": false,
+    "maxCloudCalls": 12,
+    "maxEstimatedCostYuan": 0.05,
+    "usageSnapshot": "docs/evidence/fresh-department-2026-10-29-round2/usage-before.json",
+    "safetyQuota": "owner-approved openai; stop on any safety/accounting/quota or unknown cost failure",
+    "historicalCostAcceptance": {
+      "status": "unknown_preserved_delegated_resume",
+      "date": "2026-10-29",
+      "preserveUnknown": true,
+      "authorizationEvidence": "docs/evidence/fresh-department-2026-10-29-round2/authorization.md",
+      "authorizationSha256": "d0f5d38ded33394b17d9ab3518807bd8ee91b6e492e541e7565c2354344069c7"
+    }
+  },
+  "deployedCloudHashes": {
+    "cloud/access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+    "cloud/advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+    "cloud/advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+    "cloud/advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+    "cloud/advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+    "cloud/config.js": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39",
+    "cloud/config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+    "cloud/defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+    "cloud/defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+    "cloud/department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+    "cloud/errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+    "cloud/http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+    "cloud/index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+    "cloud/package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+    "cloud/package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+    "cloud/probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+    "cloud/providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+    "cloud/rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+    "cloud/safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+    "cloud/types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+    "cloud/usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+    "cloud/vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+  },
+  "env": {
+    "model": "iPhone 12/13 (Pro)",
+    "platform": "devtools",
+    "SDKVersion": "3.17.2",
+    "windowWidth": 390,
+    "windowHeight": 753
+  },
+  "usageBefore": {
+    "done": true,
+    "result": {
+      "ok": true,
+      "action": "usage",
+      "failureClass": "",
+      "message": "",
+      "detail": "当月累计 528 次调用、447199 token、0.11183799999999995 元（上限 50 元，告警线 40 元）",
+      "feature": "usage",
+      "provider": "",
+      "model": "",
+      "text": "",
+      "safety": null,
+      "usage": null,
+      "usageSummary": {
+        "month": "2026-10",
+        "calls": 528,
+        "failures": 33,
+        "promptTokens": 314190,
+        "completionTokens": 133009,
+        "totalTokens": 447199,
+        "costYuan": 0.11183799999999995,
+        "capYuan": 50,
+        "warnRatio": 0.8,
+        "warnThresholdYuan": 40,
+        "warn": false,
+        "exceeded": false,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25,
+        "updatedAt": "2026-10-29T12:30:41.399Z"
+      },
+      "capWarning": "",
+      "warnings": [],
+      "citations": [],
+      "advancement": null,
+      "probe": null,
+      "timings": {
+        "preflightMs": 122
+      },
+      "elapsedMs": 122,
+      "userDailyLimit": {
+        "day": "2026-10-29",
+        "used": 27,
+        "limit": 60,
+        "remaining": 33
+      }
+    },
+    "elapsedMs": 2082
+  },
+  "accountedCostYuan": 0.000265,
+  "observedLedgerIncreaseYuan": 0.000568,
+  "finishedAt": "2026-10-29T13:20:43.341Z",
+  "completed": 1,
+  "pending": [
+    "r02",
+    "r03",
+    "r04",
+    "r05",
+    "r06",
+    "r07",
+    "r08",
+    "r09",
+    "r10",
+    "r11",
+    "r12"
+  ],
+  "scores": {
+    "supportedAnswer": null,
+    "missingExplained": null,
+    "unsupportedDisplay": null,
+    "reason": "未做逐题语义复核；未调用不填0或正确"
+  },
+  "originalPrivateRecordSha256": "561ec686a84f7791cca840cacd61055bb7495045763634804a069b4b194ff579"
+}

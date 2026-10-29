@@ -61,6 +61,8 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
+- [正式作品名同步（明确命名下的导航文字更新）](app-name-2026-10-29/README.md)
+
 - [部门动态缺失范围文案修补（本轮委托执行、自查；不改布局）](department-qa-clarity-2026-10-29/README.md)
 
 - [岭南校园工具全流程新 UI（57 屏修订稿，负责人已确认为实现依据，重写见 #137）](lingnan-ui-2026/README.md)（官网盾形校徽；本地 HTML/PNG 为实现依据，Figma 44 屏初稿受额度限制待同步）

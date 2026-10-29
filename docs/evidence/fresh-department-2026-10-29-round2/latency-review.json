@@ -1,0 +1,14 @@
+{
+  "source": "2026-10-03 historical advancement model_answer records; not new advancement evidence",
+  "samples": 6,
+  "medianClientMs": 13128.5,
+  "medianInputSafetyMs": 2700.5,
+  "medianModelMs": 5375.0,
+  "medianOutputSafetyMs": 2820.0,
+  "currentDepartmentFailure": {
+    "id": "r02",
+    "modelWaitMs": 30111,
+    "detail": "模型调用超时：请求超时（30000ms）：https://api.commandcode.ai/provider/v1/chat/completions"
+  },
+  "warning": "Safety network/accounting subcomponents not summed twice; historical data not current advancement benchmark"
+}

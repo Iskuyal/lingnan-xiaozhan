@@ -1,0 +1,15 @@
+{
+  "registeredAt": "2026-10-29T13:19:29.020094+00:00",
+  "accountingReconciled": false,
+  "maxCloudCalls": 12,
+  "maxEstimatedCostYuan": 0.05,
+  "usageSnapshot": "docs/evidence/fresh-department-2026-10-29-round2/usage-before.json",
+  "safetyQuota": "owner-approved openai; stop on any safety/accounting/quota or unknown cost failure",
+  "historicalCostAcceptance": {
+    "status": "unknown_preserved_delegated_resume",
+    "date": "2026-10-29",
+    "preserveUnknown": true,
+    "authorizationEvidence": "docs/evidence/fresh-department-2026-10-29-round2/authorization.md",
+    "authorizationSha256": "d0f5d38ded33394b17d9ab3518807bd8ee91b6e492e541e7565c2354344069c7"
+  }
+}
