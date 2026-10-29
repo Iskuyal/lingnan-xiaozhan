@@ -1,0 +1,372 @@
+{
+  "date": "2026-10-29",
+  "phase": "after",
+  "localGitHead": "1bf906c661b87fa98614efd3b85de41f4249cf4b",
+  "localSnapshot": "compiled_working_tree_bytes_hashes",
+  "method": "CLI full source package download; no environment variables exported",
+  "functions": [
+    {
+      "function": "ai",
+      "files": [
+        {
+          "name": "access.js",
+          "local": {
+            "sha256": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9"
+          },
+          "remote": {
+            "sha256": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9"
+          }
+        },
+        {
+          "name": "advancement-corpus.js",
+          "local": {
+            "sha256": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da"
+          },
+          "remote": {
+            "sha256": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da"
+          }
+        },
+        {
+          "name": "advancement-query-corpus.js",
+          "local": {
+            "sha256": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752"
+          },
+          "remote": {
+            "sha256": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752"
+          }
+        },
+        {
+          "name": "advancement-query.js",
+          "local": {
+            "sha256": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037"
+          },
+          "remote": {
+            "sha256": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037"
+          }
+        },
+        {
+          "name": "advancement.js",
+          "local": {
+            "sha256": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce"
+          },
+          "remote": {
+            "sha256": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce"
+          }
+        },
+        {
+          "name": "config.js",
+          "local": {
+            "sha256": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39"
+          },
+          "remote": {
+            "sha256": "59f65fc5b8187db297e2454f158799313d229726e074aa7a442ecd11963b5f39"
+          }
+        },
+        {
+          "name": "config.json",
+          "local": {
+            "sha256": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320"
+          },
+          "remote": {
+            "sha256": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320"
+          }
+        },
+        {
+          "name": "defense-materials.js",
+          "local": {
+            "sha256": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f"
+          },
+          "remote": {
+            "sha256": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f"
+          }
+        },
+        {
+          "name": "defense.js",
+          "local": {
+            "sha256": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f"
+          },
+          "remote": {
+            "sha256": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f"
+          }
+        },
+        {
+          "name": "department-corpus.js",
+          "local": {
+            "sha256": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e"
+          },
+          "remote": {
+            "sha256": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e"
+          }
+        },
+        {
+          "name": "errors.js",
+          "local": {
+            "sha256": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f"
+          },
+          "remote": {
+            "sha256": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f"
+          }
+        },
+        {
+          "name": "http.js",
+          "local": {
+            "sha256": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741"
+          },
+          "remote": {
+            "sha256": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741"
+          }
+        },
+        {
+          "name": "index.js",
+          "local": {
+            "sha256": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d"
+          },
+          "remote": {
+            "sha256": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d"
+          }
+        },
+        {
+          "name": "package-lock.json",
+          "local": {
+            "sha256": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd"
+          },
+          "remote": {
+            "sha256": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd"
+          }
+        },
+        {
+          "name": "package.json",
+          "local": {
+            "sha256": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4"
+          },
+          "remote": {
+            "sha256": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4"
+          }
+        },
+        {
+          "name": "probe.js",
+          "local": {
+            "sha256": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c"
+          },
+          "remote": {
+            "sha256": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c"
+          }
+        },
+        {
+          "name": "providers.js",
+          "local": {
+            "sha256": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1"
+          },
+          "remote": {
+            "sha256": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1"
+          }
+        },
+        {
+          "name": "rag.js",
+          "local": {
+            "sha256": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08"
+          },
+          "remote": {
+            "sha256": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08"
+          }
+        },
+        {
+          "name": "safety.js",
+          "local": {
+            "sha256": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301"
+          },
+          "remote": {
+            "sha256": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301"
+          }
+        },
+        {
+          "name": "types.js",
+          "local": {
+            "sha256": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230"
+          },
+          "remote": {
+            "sha256": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230"
+          }
+        },
+        {
+          "name": "usage.js",
+          "local": {
+            "sha256": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e"
+          },
+          "remote": {
+            "sha256": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e"
+          }
+        },
+        {
+          "name": "vision.js",
+          "local": {
+            "sha256": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+          },
+          "remote": {
+            "sha256": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+          }
+        }
+      ],
+      "differentFiles": [],
+      "downloadedDependencies": {
+        "follow-redirects": "1.16.2",
+        "qs": "6.17.1"
+      }
+    },
+    {
+      "function": "timetable",
+      "files": [
+        {
+          "name": "index.js",
+          "local": {
+            "sha256": "3138bb51e0e3dba41abea36fad9aa4220e3df366f3776aea516877f3e72d1bab"
+          },
+          "remote": {
+            "sha256": "3138bb51e0e3dba41abea36fad9aa4220e3df366f3776aea516877f3e72d1bab"
+          }
+        },
+        {
+          "name": "package-lock.json",
+          "local": {
+            "sha256": "82ffae4709f5a7b159311d282feb86560fa3f7a95e75769f8cbe35bac58ff5eb"
+          },
+          "remote": {
+            "sha256": "82ffae4709f5a7b159311d282feb86560fa3f7a95e75769f8cbe35bac58ff5eb"
+          }
+        },
+        {
+          "name": "package.json",
+          "local": {
+            "sha256": "5556a2c15ef61043facadc98b213fd218cf3dd506bbff6ecbb75f197a84f2e21"
+          },
+          "remote": {
+            "sha256": "5556a2c15ef61043facadc98b213fd218cf3dd506bbff6ecbb75f197a84f2e21"
+          }
+        },
+        {
+          "name": "parse.js",
+          "local": {
+            "sha256": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe"
+          },
+          "remote": {
+            "sha256": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe"
+          }
+        },
+        {
+          "name": "record.js",
+          "local": {
+            "sha256": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281"
+          },
+          "remote": {
+            "sha256": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281"
+          }
+        },
+        {
+          "name": "settings.js",
+          "local": {
+            "sha256": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637"
+          },
+          "remote": {
+            "sha256": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637"
+          }
+        },
+        {
+          "name": "types.js",
+          "local": {
+            "sha256": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f"
+          },
+          "remote": {
+            "sha256": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f"
+          }
+        }
+      ],
+      "differentFiles": [],
+      "downloadedDependencies": {
+        "follow-redirects": "1.16.2",
+        "qs": "6.17.1"
+      }
+    },
+    {
+      "function": "newsSync",
+      "files": [
+        {
+          "name": "columns.js",
+          "local": {
+            "sha256": "94533c145a7b61c1298a9283df0c3ab177f5fa9bc17b7b3d5aff86b8746db476"
+          },
+          "remote": {
+            "sha256": "94533c145a7b61c1298a9283df0c3ab177f5fa9bc17b7b3d5aff86b8746db476"
+          }
+        },
+        {
+          "name": "config.json",
+          "local": {
+            "sha256": "0ca3c839838b7b528a060888e96b73b92ae32e0ffb6d8695e1eb1f836ce70cb1"
+          },
+          "remote": {
+            "sha256": "0ca3c839838b7b528a060888e96b73b92ae32e0ffb6d8695e1eb1f836ce70cb1"
+          }
+        },
+        {
+          "name": "index.js",
+          "local": {
+            "sha256": "f6886bec776794b67b57b08f09f32f4a5528e9f1037d8ca9ce6a9b9a68a9fcdc"
+          },
+          "remote": {
+            "sha256": "f6886bec776794b67b57b08f09f32f4a5528e9f1037d8ca9ce6a9b9a68a9fcdc"
+          }
+        },
+        {
+          "name": "package-lock.json",
+          "local": {
+            "sha256": "816923f82b413b6dcd72f3b5066eea686ef8ba38c3d5d55f922e3065f6ffaa3a"
+          },
+          "remote": {
+            "sha256": "816923f82b413b6dcd72f3b5066eea686ef8ba38c3d5d55f922e3065f6ffaa3a"
+          }
+        },
+        {
+          "name": "package.json",
+          "local": {
+            "sha256": "d73ba0db9c5ee79cc056cf157bca661094ee473caa393c7c1075308aa3e37abf"
+          },
+          "remote": {
+            "sha256": "d73ba0db9c5ee79cc056cf157bca661094ee473caa393c7c1075308aa3e37abf"
+          }
+        },
+        {
+          "name": "parse.js",
+          "local": {
+            "sha256": "ed9101abdb99adfa86ab985c7fab26f839a81fb5f7a2a5f4ee9fb3154a86725e"
+          },
+          "remote": {
+            "sha256": "ed9101abdb99adfa86ab985c7fab26f839a81fb5f7a2a5f4ee9fb3154a86725e"
+          }
+        },
+        {
+          "name": "record.js",
+          "local": {
+            "sha256": "bdbc02a83d72f2e23ddfb9dd0519d1f29f293a3f0ef415ae09db09e893b9f18c"
+          },
+          "remote": {
+            "sha256": "bdbc02a83d72f2e23ddfb9dd0519d1f29f293a3f0ef415ae09db09e893b9f18c"
+          }
+        },
+        {
+          "name": "types.js",
+          "local": {
+            "sha256": "7435be6696bb14f1ec77dab5ffac9b348f0e682efd84579854b0ee09bc6df456"
+          },
+          "remote": {
+            "sha256": "7435be6696bb14f1ec77dab5ffac9b348f0e682efd84579854b0ee09bc6df456"
+          }
+        }
+      ],
+      "differentFiles": [],
+      "downloadedDependencies": {
+        "follow-redirects": "1.16.2",
+        "qs": "6.17.1"
+      }
+    }
+  ]
+}

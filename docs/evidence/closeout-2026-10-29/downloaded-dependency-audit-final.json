@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-29T08:50:30.924841+00:00",
+  "reports": [
+    {
+      "function": "ai",
+      "packages": 103,
+      "versions": 105,
+      "source": "npm registry advisories bulk endpoint",
+      "scope": "downloaded package manifests, not live process memory",
+      "advisories": {}
+    },
+    {
+      "function": "timetable",
+      "packages": 104,
+      "versions": 106,
+      "source": "npm registry advisories bulk endpoint",
+      "scope": "downloaded package manifests, not live process memory",
+      "advisories": {}
+    },
+    {
+      "function": "newsSync",
+      "packages": 103,
+      "versions": 105,
+      "source": "npm registry advisories bulk endpoint",
+      "scope": "downloaded package manifests, not live process memory",
+      "advisories": {}
+    }
+  ]
+}

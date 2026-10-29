@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-29T09:07:42.928Z",
+  "mode": "native_simulator_mock",
+  "boundary": "云函数、数据库、上传及本机存储接管为内存示例；不证明真实模型、审核、保存或真机",
+  "passed": false,
+  "checks": [],
+  "paidBusinessAiCallsAfterInterception": 0,
+  "error": "The input did not match the regular expression /标题未列明[\\s\\S]*名单[\\s\\S]*人数[\\s\\S]*入选条件[\\s\\S]*最新进度[\\s\\S]*无法据此核实/u. Input:\n\n'当前资料仅提供以下活动条目（标题级原文）；组织角色和其他细节无法据此核实。\\n' +\n  '\\n' +\n  '广东岭南职业技术学院第十四次学生代表大会顺利召开\\n' +\n  '官网发布时间：2026-03-09\\n' +\n  '来源：https://lnc.edu.cn/tw/djxf/djhd/content_27001'\n",
+  "windowRestored": true
+}

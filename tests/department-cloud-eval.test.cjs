@@ -49,6 +49,15 @@ test('新调用费用未知或估算预算用尽时停止后续题，保留首�
   }
 });
 
+test('估算预算也检查服务器账本增量，避免只按响应模型费用漏掉收费审核', async () => {
+  const report = { cloudAttempts: 0, stoppedReason: '', budget: { maxEstimatedCostYuan: 0.05 }, usageBefore: { result: { usageSummary: { month: '2026-10', costYuan: 1 } } }, rows: [{ id: 'a', event: {} }, { id: 'b', event: {} }] };
+  await evaluator.collect(report, { maxCalls: 2 }, async () => ({ elapsedMs: 10, result: { ok: true, text: '测试回答', safety: { checked: true }, usage: { costYuan: 0.001 }, usageSummary: { month: '2026-10', costYuan: 1.05 } } }), () => {}, { guardTurn: text => ({ text }) }, async () => {});
+  assert.equal(report.cloudAttempts, 1);
+  assert.equal(report.stoppedReason, 'estimated_cost_budget');
+  assert.equal(report.observedLedgerIncreaseYuan, 0.05);
+  assert.equal(report.accountedCostYuan, 0.001);
+});
+
 function withBank(change, run) {
   const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'department-eval-'));
   const bank = { datasetId: 'test-bank', frozenAt: '2026-10-03', source: 'maintainer_design', judgeRules: { supportedAnswer: '有据回答全部子问', missingExplained: '缺失范围明确', unsupportedDisplay: '有无无依据断言分别判定' }, questions: Array.from({ length: 10 }, (_, i) => ({ id: `case-${i + 1}`, kind: 'base', q: '校学生会组织架构是什么？', expectedDepartmentId: 'student-union', expectedAnswer: '主席团+工作部门', sourceRefs: [{ departmentId: 'student-union', field: 'unitNote', value: '组织架构为“主席团+工作部门”模式，设 5 大部门。' }], missingFields: [] })) };

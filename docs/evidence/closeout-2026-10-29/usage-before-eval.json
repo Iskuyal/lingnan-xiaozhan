@@ -1,0 +1,32 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-29T08:43:23.667Z",
+  "elapsedMs": 1514,
+  "result": {
+    "ok": true,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 471,
+      "failures": 32,
+      "promptTokens": 269474,
+      "completionTokens": 129749,
+      "totalTokens": 399223,
+      "costYuan": 0.09983999999999997,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T08:30:29.731Z"
+    },
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 11,
+      "limit": 60,
+      "remaining": 49
+    },
+    "capWarning": ""
+  }
+}

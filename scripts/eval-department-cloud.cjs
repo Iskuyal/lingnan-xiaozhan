@@ -194,7 +194,16 @@ async function collect(report, o, request, save, qa, pace = sleep) {
             if (!Number.isFinite(cost) || cost < 0) report.stoppedReason ||= 'call_cost_unknown';
             else {
                 report.accountedCostYuan = Number(((report.accountedCostYuan || 0) + cost).toFixed(8));
-                if (report.accountedCostYuan >= report.budget.maxEstimatedCostYuan) report.stoppedReason ||= 'estimated_cost_budget';
+                // 响应usage可能只含主模型，服务器月账本还包含收费审核；并发请求只会使该保守观察值更大。
+                const baseline = report.usageBefore?.result?.usageSummary;
+                const current = row.result?.usageSummary;
+                if (Number.isFinite(baseline?.costYuan)) {
+                    if (!Number.isFinite(current?.costYuan) || current.month !== baseline.month || current.costYuan < baseline.costYuan)
+                        report.stoppedReason ||= 'ledger_cost_unknown';
+                    else report.observedLedgerIncreaseYuan = Number((current.costYuan - baseline.costYuan).toFixed(8));
+                }
+                if (Math.max(report.accountedCostYuan, report.observedLedgerIncreaseYuan || 0) >= report.budget.maxEstimatedCostYuan)
+                    report.stoppedReason ||= 'estimated_cost_budget';
             }
         }
         save(row);

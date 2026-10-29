@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "path": "docs/evidence/department-heldout-2026-10-03/questions.json",
+      "gitBlob": "0cbc42fc6e18ff0207d380fd1780a11d8cf97e46",
+      "executionSha256": "758ac27c02e3e8c1c0fef0bf164320de2d7d5270c0b769950a24fb370f7b2ba9",
+      "worktreeSha256": "380511f1889450f194171b08f5ad87266abc561df314ac4fd59288adb595568f",
+      "reason": "Materialize immutable Git blob bytes; CRLF checkout changed raw hash, not question content or expected answers"
+    },
+    {
+      "path": "docs/evidence/department-heldout-2026-10-03/source-snapshot.json",
+      "gitBlob": "b7a3a5fc3582c0d3b9720e13fab42b30f19da43e",
+      "executionSha256": "b57fec95204b5a227a2c8792f54fa817f4387646698a4c5bf57a58ba5811545c",
+      "worktreeSha256": "fea081157375262637c56cc1365821840a156390430b39896fa1624879bb018f",
+      "reason": "Materialize immutable Git blob bytes; CRLF checkout changed raw hash, not question content or expected answers"
+    }
+  ],
+  "questionSetUnchanged": true,
+  "sourceHashMatchesOriginalFreeze": true,
+  "noQuestionOrExpectedAnswerEdits": true
+}

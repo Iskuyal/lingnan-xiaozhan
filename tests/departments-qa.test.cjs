@@ -56,12 +56,25 @@ test('动态问答：标题级来源不能被扩写成举办方、官网缺失�
   const activity = department.activities.find((a) => a.sourceUrl.endsWith('content_27004'));
   const citation = { ...activity, departmentId: department.id, departmentName: department.name, score: 1 };
   const turn = guardTurn('校学生会举办了最新一届校园提案大赛，收录日期2026-03-09；获奖名单官网未公布。', department.id, '校学生会办过校园提案大赛吗？', [citation]);
-  assert.doesNotMatch(turn.text, /举办|最新|收录日期|官网未公布/);
+  assert.doesNotMatch(turn.text, /校学生会举办|最新一届|收录日期|获奖名单官网未公布/);
   assert.ok(turn.text.includes(activity.title));
   assert.ok(turn.text.includes(`官网发布时间：${activity.publishedAt}`));
   assert.ok(turn.text.includes(activity.sourceUrl));
   assert.equal(turn.replaced, true);
   assert.ok(turn.modelText.includes('举办'), '保留原始模型回答便于复核，不能冒充模型自己答对');
+});
+
+test('标题资料的缺失说明点明人数、条件、名单、进度及实际日期，不只泛称其他细节', () => {
+  const department = require('../dist/services/departments.js').departments.find(d => d.id === 'student-union');
+  const activity = department.activities[0];
+  const raw = '共有500人，报名条件已经确定。';
+  const turn = qa().guardTurn(raw, department.id, '这项活动的报名人数、条件和开展日期能确认吗？', [{ ...activity, departmentId: department.id, departmentName: department.name, score: 1 }]);
+  assert.match(turn.text, /标题未列明[\s\S]*名单[\s\S]*人数[\s\S]*入选条件[\s\S]*最新进度[\s\S]*无法据此核实/u);
+  assert.match(turn.text, /官网发布时间不能直接当作活动或会议召开日期/u);
+  assert.doesNotMatch(turn.text, /共有500人|条件已经确定/u);
+  assert.ok(turn.text.includes(activity.title));
+  assert.equal(turn.modelText, raw);
+  assert.equal(turn.replaced, true);
 });
 
 test('动态问答：伪造标题或日期不能进入原文展示，基础问题仍沿用既有守卫', () => {
