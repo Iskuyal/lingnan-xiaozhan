@@ -23,7 +23,7 @@
     "pages/defense/index"
   ],
   "window": {
-    "navigationBarTitleText": "课表小栈",
+    "navigationBarTitleText": "岭南小栈",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#fdf7f5"

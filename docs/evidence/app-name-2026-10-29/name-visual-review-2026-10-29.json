@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-29T14:11:19.716Z",
+  "mode": "native_simulator",
+  "scope": "default nav + home nav + project description",
+  "source": {
+    "appJson": "岭南小栈",
+    "homeJson": "岭南小栈",
+    "projectDescription": "岭南小栈校园信息与课表工具"
+  },
+  "environment": {
+    "model": "iPhone 12/13 (Pro)",
+    "platform": "devtools",
+    "SDKVersion": "3.17.2",
+    "windowWidth": 390,
+    "windowHeight": 753
+  },
+  "screenshot": "home-lingnan.png",
+  "cacheAction": "cli cache clean --clean compile 后 cli auto 重开",
+  "observedTitle": "岭南小栈",
+  "previousFailure": "2026-10-29 早先重开阻断，截图曾显示旧名「校园工具」；失败原件保留在 fresh-department-2026-10-29-round2/name-visual-review.json",
+  "passed": true,
+  "boundary": "源码/配置回归 + 原生模拟器截图人工核对；不是真机，也不代表微信后台注册名称已修改"
+}
