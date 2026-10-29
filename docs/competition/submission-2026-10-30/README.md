@@ -1,12 +1,14 @@
 # 岭南小栈：2026-10-30参赛材料与包
 
+**当前完整包为[r2](r2/README.md)**：增加可直接导入的[评委虚构课表Excel](judge-timetable/岭南小栈-评委测试课表.xlsx)、[操作与预期](judge-timetable/README.md)及[解析验证](judge-timetable/validation.json)。共13条记录，0待核对、0解析问题，覆盖分段周次、跨节去重、周末与晚课。r2源码和原PDF/视频保持不变，下方r1包及报告保留历史。
+
 团队Inlux，广东岭南职业技术学院，C组，3人。源码冻结于 `95997fd41a0280ae90871dc3c9ae0ad5f841509e`；当前可用功能实录版，产品内AI成功片段按负责人要求下一轮补录。
 
 - [作品说明PDF](岭南小栈-作品说明.pdf)：10页，覆盖官方a–g和预指导表单要求，含架构、关键代码和实际截图。
-- [正式命名参赛ZIP](第九届传智杯-AI小程序赛道-岭南小栈.zip)：冻结源码、作品说明、现有实录视频、运行说明和附件。
+- [r2正式命名参赛ZIP](r2/第九届传智杯-AI小程序赛道-岭南小栈.zip)：增加评委测试课表与导入说明；[r1原包](第九届传智杯-AI小程序赛道-岭南小栈.zip)保留。
 - [作品说明可编辑稿](作品说明.md)、[技术附录](技术附录.md)、[体验与运行说明](体验与运行说明.md)。
 - [两个入口的要求与字段对照](要求与表单对照.md)。
-- [包检查结果](package-check.json)、[独立解压构建结果](package-validation.json)、[ZIP摘要](SHA256.txt)。
+- [r2包检查](r2/package-check.json)、[r2摘要](r2/SHA256.txt)；[r1包检查](package-check.json)、[独立解压构建结果](package-validation.json)及[r1摘要](SHA256.txt)保留。
 - [Issues核对与处理](issues-audit.md)。
 
 ## 实际验证与范围
