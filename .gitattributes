@@ -1,0 +1,5 @@
+# Preserve the exact bytes of deliverable media and archives.
+*.pdf binary
+*.zip binary
+*.mp4 binary
+*.png binary
