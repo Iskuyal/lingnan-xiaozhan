@@ -133,6 +133,10 @@ async function cloudRequest(mini, event, timing = { now: Date.now, pause: sleep 
     } while (timing.now() < deadline);
     return { error: '90秒内未收到返回，未重试', elapsedMs: null, collectorWaitTimedOut: true };
 }
+function readableLedger(summary) {
+    return summary !== null && typeof summary === 'object' && /^\d{4}-\d{2}$/u.test(summary.month || '')
+        && Number.isFinite(summary.costYuan) && summary.costYuan >= 0;
+}
 function validateBudget(file, calls) {
     if (!file)
         throw Error('真实调用前须--budget登记用量与核账状态');
@@ -152,7 +156,7 @@ function validateBudget(file, calls) {
         || !Number.isFinite(b.maxEstimatedCostYuan) || b.maxEstimatedCostYuan <= 0)
         throw Error('预算登记不完整');
     const s = JSON.parse(fs.readFileSync(path.resolve(root, b.usageSnapshot), 'utf8')).result;
-    if (s?.ok !== true || s.usageSummary?.exceeded || s.capWarning || !Number.isInteger(s.userDailyLimit?.remaining) || s.userDailyLimit.remaining < calls)
+    if (s?.ok !== true || !readableLedger(s.usageSummary) || s.usageSummary.exceeded || s.capWarning || !Number.isInteger(s.userDailyLimit?.remaining) || s.userDailyLimit.remaining < calls)
         throw Error('用量快照异常或日余量不足');
     if (s.userDailyLimit.day !== today)
         throw Error('日余量快照不是当前东八区日期');
@@ -197,7 +201,8 @@ async function collect(report, o, request, save, qa, pace = sleep) {
                 // 响应usage可能只含主模型，服务器月账本还包含收费审核；并发请求只会使该保守观察值更大。
                 const baseline = report.usageBefore?.result?.usageSummary;
                 const current = row.result?.usageSummary;
-                if (Number.isFinite(baseline?.costYuan)) {
+                if (!readableLedger(baseline)) report.stoppedReason ||= 'ledger_cost_unknown';
+                else {
                     if (!Number.isFinite(current?.costYuan) || current.month !== baseline.month || current.costYuan < baseline.costYuan)
                         report.stoppedReason ||= 'ledger_cost_unknown';
                     else report.observedLedgerIncreaseYuan = Number((current.costYuan - baseline.costYuan).toFixed(8));
@@ -237,7 +242,7 @@ async function run(argv = process.argv.slice(2)) {
             report.env = await mini.systemInfo();
             const current = await cloudRequest(mini, { action: 'usage' });
             report.usageBefore = current;
-            if (current.result?.ok !== true || !Number.isInteger(current.result.userDailyLimit?.remaining) || current.result.userDailyLimit.remaining < o.maxCalls || current.result.usageSummary?.exceeded)
+            if (current.result?.ok !== true || !readableLedger(current.result.usageSummary) || !Number.isInteger(current.result.userDailyLimit?.remaining) || current.result.userDailyLimit.remaining < o.maxCalls || current.result.usageSummary.exceeded)
                 throw Error('即时用量核对失败，未发业务请求');
             await collect(report, o, event => cloudRequest(mini, event), save, require(path.join(root, 'dist/pages/departments/qa.js')));
         }

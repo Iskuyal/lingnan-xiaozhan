@@ -14,7 +14,7 @@ function withBudget(change, run) {
   const evidence = path.join(folder, 'approval.md');
   fs.writeFileSync(evidence, '测试用的有界授权记录，不是实际付费授权');
   const snapshot = path.join(folder, 'usage.json');
-  fs.writeFileSync(snapshot, JSON.stringify({ result: { ok: true, usageSummary: { exceeded: false }, userDailyLimit: { day: today, remaining: 20 } } }));
+  fs.writeFileSync(snapshot, JSON.stringify({ result: { ok: true, usageSummary: { month: today.slice(0, 7), costYuan: 0, exceeded: false }, userDailyLimit: { day: today, remaining: 20 } } }));
   const budget = { accountingReconciled: false, maxCloudCalls: 14, maxEstimatedCostYuan: 0.05, usageSnapshot: snapshot, safetyQuota: 'unknown_stop_on_failure', historicalCostAcceptance: { status: 'unknown_preserved_delegated_resume', date: today, preserveUnknown: true, authorizationEvidence: evidence, authorizationSha256: createHash('sha256').update(fs.readFileSync(evidence)).digest('hex') } };
   change(budget);
   const file = path.join(folder, 'budget.json');
@@ -34,6 +34,18 @@ test('历史费用仍未知时只接受当日有证据哈希的有界委托恢�
   });
 });
 
+test('月账本缺失或费用不可读时预算预检拒绝，不退化成只累计主模型费用', () => {
+  for (const summary of [undefined, { month: '2026-10', costYuan: null }, { month: '2026-10', costYuan: -1 }]) {
+    withBudget(() => {}, file => {
+      const b = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const snapshot = JSON.parse(fs.readFileSync(b.usageSnapshot, 'utf8'));
+      snapshot.result.usageSummary = summary;
+      fs.writeFileSync(b.usageSnapshot, JSON.stringify(snapshot));
+      assert.throws(() => evaluator.validateBudget(file, 14), /用量|账本/u);
+    });
+  }
+});
+
 test('历史未知授权缺失、过期、证据篡改或预算越界时仍在调用前拒绝', () => {
   const changes = [b => delete b.historicalCostAcceptance, b => b.historicalCostAcceptance.date = '2000-01-01', b => b.historicalCostAcceptance.authorizationSha256 = '0'.repeat(64), b => b.maxCloudCalls = 15, b => b.maxEstimatedCostYuan = 0.06, b => b.historicalCostAcceptance.preserveUnknown = false];
   for (const change of changes) withBudget(change, file => assert.throws(() => evaluator.validateBudget(file, 14)));
@@ -41,8 +53,8 @@ test('历史未知授权缺失、过期、证据篡改或预算越界时仍在�
 
 test('新调用费用未知或估算预算用尽时停止后续题，保留首次结果', async () => {
   for (const costYuan of [undefined, 0.05]) {
-    const report = { cloudAttempts: 0, stoppedReason: '', budget: { maxEstimatedCostYuan: 0.05 }, rows: [{ id: 'a', event: {} }, { id: 'b', event: {} }] };
-    await evaluator.collect(report, { maxCalls: 2 }, async () => ({ elapsedMs: 10, result: { ok: true, text: '测试回答', safety: { checked: true }, usage: { costYuan } } }), () => {}, { guardTurn: text => ({ text }) }, async () => {});
+    const report = { cloudAttempts: 0, stoppedReason: '', budget: { maxEstimatedCostYuan: 0.05 }, usageBefore: { result: { usageSummary: { month: '2026-10', costYuan: 0 } } }, rows: [{ id: 'a', event: {} }, { id: 'b', event: {} }] };
+    await evaluator.collect(report, { maxCalls: 2 }, async () => ({ elapsedMs: 10, result: { ok: true, text: '测试回答', safety: { checked: true }, usage: { costYuan }, usageSummary: { month: '2026-10', costYuan: costYuan ?? 0 } } }), () => {}, { guardTurn: text => ({ text }) }, async () => {});
     assert.equal(report.cloudAttempts, 1);
     assert.equal(report.stoppedReason, costYuan === undefined ? 'call_cost_unknown' : 'estimated_cost_budget');
     assert.equal(report.rows[1].notCalledReason, report.stoppedReason);
