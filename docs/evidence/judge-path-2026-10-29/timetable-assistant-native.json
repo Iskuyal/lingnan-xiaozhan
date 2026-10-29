@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-29T12:30:22.887Z",
+  "mode": "native_simulator_live_cloud",
+  "boundary": "原生模拟器 + 真实云函数/模型/第三方审核；不是真机；回答内容正确性只做可用性判定，不做事实评分",
+  "paidBusinessAiCalls": 1,
+  "passed": true,
+  "elapsedMs": 16174,
+  "assistantMessageCount": 3,
+  "answerRole": "assistant",
+  "answerText": "这周（第 1 周）有 1 门课：\n- 测试 | 星期一 | 第 1-2 节 | 每周\n其余课程本周都不上。",
+  "assistantError": "",
+  "assistantSafetyNote": "",
+  "assistantCapWarning": "",
+  "screenshot": "timetable-assistant-native.png",
+  "windowRestored": true
+}
