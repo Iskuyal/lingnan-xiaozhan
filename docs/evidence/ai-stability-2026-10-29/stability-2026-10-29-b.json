@@ -1,0 +1,262 @@
+{
+  "date": "2026-10-29T14:29:16.512Z",
+  "mode": "direct_cloud_call",
+  "set": "b",
+  "boundary": "直发模式，无页面 system 提示词；同一 ai 云函数/审核/模型链路；顺序调用；结果为稳定性判断，不是页面端到端时延或效果评分",
+  "cases": [
+    {
+      "index": 1,
+      "feature": "department-qa",
+      "question": "校学生社团管理部是做什么的？",
+      "clientElapsedMs": 17646,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "“校学生社团管理部”一般是高校团委指导下，负责**统筹管理、服务、监督和协调学生社团**的学生组织或职能部门。简单说就是：**管理社团、服务社团、监督社团、协调资源**。\n\n常见职责包括：\n\n1. **社团成立、注册、年审、注销**  \n ",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 336,
+        "safetyNetworkMs": 4369,
+        "accountingMs": 291,
+        "inputSafetyMs": 2596,
+        "modelNetworkMs": 11604,
+        "modelMs": 11710,
+        "outputSafetyMs": 1960
+      },
+      "usage": {
+        "promptTokens": 39,
+        "completionTokens": 647,
+        "totalTokens": 686,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000172,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园学生组织职责的客观介绍，不涉及违规信息，适合展示。"
+      }
+    },
+    {
+      "index": 2,
+      "feature": "department-qa",
+      "question": "青年志愿者联合会最近有什么活动？",
+      "clientElapsedMs": 11091,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "根据官网已核实的部门动态，青年志愿者联合会近期有以下活动：\n\n1. **2026清远马拉松赛志愿服务复盘总结大会在我校顺利举行**（2026-04-15）\n   来源：https://lnc.edu.cn/tw/djxf/djhd/cont",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 252,
+        "safetyNetworkMs": 5312,
+        "accountingMs": 300,
+        "inputSafetyMs": 3431,
+        "modelNetworkMs": 4108,
+        "modelMs": 4232,
+        "outputSafetyMs": 2058
+      },
+      "usage": {
+        "promptTokens": 230,
+        "completionTokens": 268,
+        "totalTokens": 498,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000124,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园官方志愿活动动态，信息真实且积极健康，无违规内容。"
+      }
+    },
+    {
+      "index": 3,
+      "feature": "timetable-assistant",
+      "question": "周三第 3-4 节有什么课？",
+      "clientElapsedMs": 12612,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "我这边没有你的课表信息，无法确定周三第 3-4 节上什么课。请把课表发给我（截图或文字），我帮你查。",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 250,
+        "safetyNetworkMs": 4423,
+        "accountingMs": 301,
+        "inputSafetyMs": 2344,
+        "modelNetworkMs": 6642,
+        "modelMs": 6738,
+        "outputSafetyMs": 2284
+      },
+      "usage": {
+        "promptTokens": 41,
+        "completionTokens": 131,
+        "totalTokens": 172,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000043,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常教学咨询，无违规信息。"
+      }
+    },
+    {
+      "index": 4,
+      "feature": "timetable-assistant",
+      "question": "我这周一共几节课？",
+      "clientElapsedMs": 12102,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "我看不到你的课程表，无法直接统计。请把这周的课表发给我（或告诉我周一到周日各几节课），我帮你算一共几节。",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 424,
+        "safetyNetworkMs": 5361,
+        "accountingMs": 322,
+        "inputSafetyMs": 2971,
+        "modelNetworkMs": 4892,
+        "modelMs": 4994,
+        "outputSafetyMs": 2610
+      },
+      "usage": {
+        "promptTokens": 36,
+        "completionTokens": 122,
+        "totalTokens": 158,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.00004,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常学习交流，无违规信息。"
+      }
+    },
+    {
+      "index": 5,
+      "feature": "department-qa",
+      "question": "校学生会主席团由哪些人组成？",
+      "clientElapsedMs": 14112,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "不同学校的学生会章程规定不一样，但一般来说，校学生会主席团通常由以下人员组成：\n\n- **主席**（或执行主席）1名；\n- **副主席**若干名；\n- 有的学校设 **秘书长**，但秘书长常由校团委老师兼任或聘任，是否属于主席团成员要看该校",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 260,
+        "safetyNetworkMs": 6136,
+        "accountingMs": 291,
+        "inputSafetyMs": 1972,
+        "modelNetworkMs": 6000,
+        "modelMs": 6099,
+        "outputSafetyMs": 4356
+      },
+      "usage": {
+        "promptTokens": 39,
+        "completionTokens": 294,
+        "totalTokens": 333,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000083,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为客观介绍学生会主席团组成，属于正常校园信息，无违规内容。"
+      }
+    }
+  ],
+  "paidBusinessAiCalls": 5,
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 563 次调用、457785 token、0.11449099999999994 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 563,
+      "failures": 35,
+      "promptTokens": 321501,
+      "completionTokens": 136284,
+      "totalTokens": 457785,
+      "costYuan": 0.11449099999999994,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T14:30:38.595Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 37
+    },
+    "elapsedMs": 37,
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 39,
+      "limit": 60,
+      "remaining": 21
+    }
+  },
+  "summary": {
+    "total": 5,
+    "successes": 5,
+    "failures": 0,
+    "failureClasses": [],
+    "modelNetworkMs": {
+      "min": 4108,
+      "median": 6000,
+      "max": 11604
+    },
+    "timeouts": 0,
+    "ackedAt": "2026-10-29T14:30:42.222Z"
+  }
+}

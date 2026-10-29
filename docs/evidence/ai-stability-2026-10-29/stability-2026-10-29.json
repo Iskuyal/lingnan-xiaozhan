@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-29T14:26:12.351Z",
+  "mode": "direct_cloud_call",
+  "boundary": "直发模式，无页面 system 提示词；同一 ai 云函数/审核/模型链路；顺序调用；结果为稳定性判断，不是页面端到端时延或效果评分",
+  "cases": [
+    {
+      "index": 1,
+      "feature": "department-qa",
+      "question": "校学生会下设哪些部门？",
+      "clientElapsedMs": 15145,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "校学生会下设部门没有全国统一规定，不同学校会根据章程、规模和团委指导设置，常见部门包括：\n\n- **办公室/秘书处**：文件、会议、档案、协调\n- **组织部**：干部管理、考核、培训\n- **宣传部/融媒体中心**：海报、新闻、公众号、视",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 418,
+        "safetyNetworkMs": 5819,
+        "accountingMs": 290,
+        "inputSafetyMs": 2472,
+        "modelNetworkMs": 6538,
+        "modelMs": 6643,
+        "outputSafetyMs": 3533
+      },
+      "usage": {
+        "promptTokens": 36,
+        "completionTokens": 446,
+        "totalTokens": 482,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000121,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为学生会部门设置的客观介绍，无违规信息，适合展示。"
+      }
+    },
+    {
+      "index": 2,
+      "feature": "department-qa",
+      "question": "校学生会的联系方式是什么？",
+      "clientElapsedMs": 15124,
+      "transportError": null,
+      "ok": false,
+      "failureClass": "model_unavailable",
+      "detail": "内容安全检测不可用：模型调用超时：请求超时（6000ms）：https://api.commandcode.ai/provider/v1/chat/completions（AI_SAFETY_FAIL_MODE=closed，拒绝调用；超时属可重试失败，稍后重试即可）",
+      "textHead": "",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 261,
+        "safetyNetworkMs": 2698,
+        "accountingMs": 267,
+        "inputSafetyMs": 2791,
+        "modelNetworkMs": 4632,
+        "modelMs": 4719,
+        "outputSafetyMs": 6092
+      },
+      "usage": {
+        "promptTokens": 36,
+        "completionTokens": 183,
+        "totalTokens": 219,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000055,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为询问校学生会联系方式，属于正常校园信息咨询，无违规内容。"
+      }
+    },
+    {
+      "index": 3,
+      "feature": "department-qa",
+      "question": "最近有什么社团活动？",
+      "clientElapsedMs": 12612,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "根据官网已公布的社团动态，近期校学生社团管理部开展了「学生社团进社区」系列活动，共有三期：\n\n1. **学生社团进社区｜第一期** — 圆满落幕（2026-03-06）\n   来源：https://lnc.edu.cn/tw/djxf/dj",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 247,
+        "safetyNetworkMs": 6843,
+        "accountingMs": 268,
+        "inputSafetyMs": 4406,
+        "modelNetworkMs": 4516,
+        "modelMs": 4618,
+        "outputSafetyMs": 2603
+      },
+      "usage": {
+        "promptTokens": 239,
+        "completionTokens": 279,
+        "totalTokens": 518,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.00013,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园社团活动信息汇总，来源官方，无违规内容。"
+      }
+    },
+    {
+      "index": 4,
+      "feature": "timetable-assistant",
+      "question": "这周有几门课？",
+      "clientElapsedMs": 11103,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "我这边没有你的课程表信息，无法确定这周有几门课。请提供课表或告诉我当前周次/日期，我可以帮你统计。",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 279,
+        "safetyNetworkMs": 6007,
+        "accountingMs": 283,
+        "inputSafetyMs": 3773,
+        "modelNetworkMs": 3448,
+        "modelMs": 3536,
+        "outputSafetyMs": 2430
+      },
+      "usage": {
+        "promptTokens": 36,
+        "completionTokens": 106,
+        "totalTokens": 142,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000036,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常教学辅助交流，无违规信息。"
+      }
+    },
+    {
+      "index": 5,
+      "feature": "timetable-assistant",
+      "question": "周一第 1 节有课吗？",
+      "clientElapsedMs": 14624,
+      "transportError": null,
+      "ok": true,
+      "failureClass": "",
+      "detail": "",
+      "textHead": "我目前看不到你的课表，无法确定周一第 1 节是否有课。请把课表（或截图/班级与周次）发给我，我帮你查。",
+      "provider": "openai",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "timings": {
+        "preflightMs": 290,
+        "safetyNetworkMs": 7783,
+        "accountingMs": 283,
+        "inputSafetyMs": 3387,
+        "modelNetworkMs": 4912,
+        "modelMs": 5019,
+        "outputSafetyMs": 4572
+      },
+      "usage": {
+        "promptTokens": 40,
+        "completionTokens": 186,
+        "totalTokens": 226,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000057,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常的学习协助请求，不涉及违规信息。"
+      }
+    }
+  ],
+  "paidBusinessAiCalls": 5,
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 548 次调用、453855 token、0.11350599999999994 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 548,
+      "failures": 35,
+      "promptTokens": 319292,
+      "completionTokens": 134563,
+      "totalTokens": 453855,
+      "costYuan": 0.11350599999999994,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-29T14:27:36.013Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 45
+    },
+    "elapsedMs": 45,
+    "userDailyLimit": {
+      "day": "2026-10-29",
+      "used": 34,
+      "limit": 60,
+      "remaining": 26
+    }
+  },
+  "summary": {
+    "total": 5,
+    "successes": 4,
+    "failures": 1,
+    "failureClasses": [
+      "model_unavailable"
+    ],
+    "modelNetworkMs": {
+      "min": 3448,
+      "median": 4632,
+      "max": 6538
+    },
+    "timeouts": 1,
+    "ackedAt": "2026-10-29T14:27:39.601Z"
+  }
+}
