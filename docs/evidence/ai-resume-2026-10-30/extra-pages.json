@@ -1,0 +1,69 @@
+{
+  "source": "9cdc533c7f85e84dbfbd433b6d87275347022674",
+  "date": "2026-10-30T01:26:22.971Z",
+  "realDevice": false,
+  "syntheticFitnessInputs": true,
+  "businessAiCalls": 0,
+  "checks": [
+    {
+      "id": "fitness-blank-page",
+      "passed": true,
+      "scope": "native page and input element present"
+    },
+    {
+      "id": "fitness-complete",
+      "passed": true,
+      "input": {
+        "#fit-height": "175",
+        "#fit-weight": "80",
+        "#fit-vital": "4300",
+        "#fit-sprint": "7",
+        "#fit-sit": "17.7",
+        "#fit-jump": "248",
+        "#fit-strength": "15",
+        "#fit-run": "222"
+      },
+      "total": 81,
+      "grade": "良好",
+      "scope": "synthetic existing regression example, not a user or school result"
+    },
+    {
+      "id": "fitness-missing",
+      "passed": true,
+      "total": null,
+      "missing": [
+        "肺活量"
+      ]
+    },
+    {
+      "id": "calendar-native",
+      "passed": true,
+      "scope": "page opens; source dates are not newly reverified"
+    },
+    {
+      "id": "goals-native",
+      "passed": true,
+      "scope": "page opens; no personal goal records created or changed"
+    }
+  ],
+  "news": {
+    "keys": [
+      "status",
+      "items",
+      "source",
+      "syncedAtText",
+      "errorMessage",
+      "hasMore",
+      "moreState",
+      "__webviewId__"
+    ],
+    "initialCount": 10,
+    "hasMore": false,
+    "status": "ready"
+  },
+  "timerLogs": {
+    "status": "not_available",
+    "reason": "DevTools CLI has function info/download/deploy but no authenticated database or invocation-log command; client sync_state remains protected. No forced sync or fake records were created."
+  },
+  "success": true
+}

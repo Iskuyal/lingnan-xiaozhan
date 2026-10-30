@@ -1,0 +1,7 @@
+{
+  "modelCallsBeforeFinalFreeze": 0,
+  "reason": "activities sourceRefs must be individual entries instead of an array; no question, expected answer or scoring-rule change",
+  "originalQuestionSHA256": "c63d8984f5437132ff9539262f4204196cdb713ad1468ed9fa08254c8ccbec50",
+  "finalQuestionSHA256": "4318f950d0fbcf49a47dea479ceda66d53d4f2da3025ab9304d85eed4ac73daa",
+  "questionAndExpectedFieldsUnchanged": true
+}

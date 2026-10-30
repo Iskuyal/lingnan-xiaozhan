@@ -1,0 +1,254 @@
+{
+  "datasetId": "advancement-heldout-20261030-d",
+  "frozenAt": "2026-10-30T01:35:55.792Z",
+  "source": "maintainer_design",
+  "realStudentSamples": 0,
+  "sourceSnapshotSha256": "4e15a883cbbeba1d09b4b5720778205e8826cf44698d18d4dedbed7d9178892d",
+  "judgeRules": {
+    "fact": "10事实题为分母；必须模型上屏、回答全部子问并逐句有出处支持；降级和未调用不算模型成功。",
+    "gate": "全部4守门正确，事实至少80%，上屏事实出处支持100%，未支持断言0。",
+    "latency": "小程序发起至回调响应≤8000ms单独判定，未知耗时不算通过。"
+  },
+  "independenceBoundary": "New wordings frozen before model calls; same limited public snapshot and related task categories. Author has implementation context, not independent human review. No tuning during or after this first evaluation.",
+  "questions": [
+    {
+      "id": "d01",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本报职教师资专业，证书至少什么级别、需在什么节点之前取得？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#vocational-teacher"
+      ],
+      "expectedAnswer": "报考职教师资专业的，需符合上述条件之一，且必须在志愿填报开始前取得与报考专业相对应的中级及以上职业资格技能等级证书等。",
+      "mustContain": [
+        "中级及以上",
+        "志愿填报开始前"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d02",
+      "type": "fact_专升本",
+      "question": "按广东2026年普通专升本规定，体检医院最低等级和上传体检结果的截止节点分别是什么？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#physical-exam"
+      ],
+      "expectedAnswer": "考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。",
+      "mustContain": [
+        "二级甲等",
+        "填报志愿开始前"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d03",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本按院校专业组投档的比例是多少？能否跨院校专业组录取或调剂？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#admission"
+      ],
+      "expectedAnswer": "普通专升本招生由省招生委员会办公室根据年度普通专升本招生计划和考生成绩情况，按考生类别（职教师资、建档立卡考生、普通考生）、专业基础课分别划定三科总分（2门公共课+1门专业基础课，外国语言文学类中非英语类专业为1门公共课+1门专业基础课+1门专业课，下同）和专业综合课两条最低控制分数线。\n即依照“分数优先，遵循志愿”的原则和院校专业组计划，按考生成绩排位情况从高到低检索，排位靠前的考生优先检索，再按考生填报的院校专业组志愿逐个检索，在考试科目组符合的前提下，按院校专业组计划1:1比例从高到低投档，由招生院校在投出的考生中按照招生简章择优录取，不得跨院校专业组录取或调剂。",
+      "mustContain": [
+        "1:1",
+        "不得跨院校专业组"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d04",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本是考前还是考后知分填志愿？提前批、普通批、建档立卡批分别设置几个院校专业组志愿？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#volunteer"
+      ],
+      "expectedAnswer": "2026年普通专升本实行考后知分填报志愿，考试成绩公布后，考生根据自身实际，按院校专业组模式进行志愿填报。\n提前批（职教师资类专业）设置1个院校专业组志愿，普通批设置10个院校专业组志愿，建档立卡批次设置5个院校专业组志愿。",
+      "mustContain": [
+        "考后知分",
+        "1个",
+        "10个",
+        "5个"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d05",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段报名每科报考费是多少？本人缴费成功后因个人原因放弃，能否退回报考费？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#fee"
+      ],
+      "expectedAnswer": "（三）报考费：按照普通高等学校普通专升本报名考试收费标准执行，每科40元，2门省统考科目报考费在报名系统缴交（外国语言文学类中非英语类专业的公共基础课报考费由招生院校收取），基本素质考核、专业能力考核报考费由招生院校收取。已成功报名（交费成功）的考生，若个人原因放弃报名，不予退回报考费。",
+      "mustContain": [
+        "每科40元",
+        "不予退回报考费"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d06",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段中，什么获奖级别可免专业能力考核？免考后的考核等级如何记？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#exemption"
+      ],
+      "expectedAnswer": "学生在高职学段参加教育部或省教育厅主办的世界、全国或全省职业院校技能大赛，获得国家级三等奖及以上或省级一等奖的，可免予专业能力（含专业理论、专业技能，下同）考核，并将专业能力考核等级定为优秀。",
+      "mustContain": [
+        "国家级三等奖及以上",
+        "省级一等奖",
+        "优秀"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d07",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段学生转入本科的年级是什么？毕业证上的专科起点本科学习怎样标注？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#graduation"
+      ],
+      "expectedAnswer": "复查合格并经注册后，即成为学校的正式学生，转入本科专业三年级学习，并按转入年级的管理办法进行管理。\n三二分段专升本学生毕业时，其毕业证书上标注“在本校xx专业专科起点本科学习”，学习时间按进入本科阶段学习和颁发毕业证实际时间填写。\n转段学生毕业后的就业办法，与普通高校本科毕业生相同。",
+      "mustContain": [
+        "本科专业三年级",
+        "专科起点本科学习"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d08",
+      "type": "fact_就业",
+      "question": "广东2026年就业政策中，事业单位全年岗位下限和科研助理岗位开发量分别是多少？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-employment-2026#public-institution",
+        "gd-employment-2026#research-assistant"
+      ],
+      "expectedAnswer": "全年全省提供事业单位岗位不少于5万个\n全省开发1万个以上科研助理岗位",
+      "mustContain": [
+        "不少于5万个",
+        "1万个以上"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d09",
+      "type": "fact_就业",
+      "question": "广东2026年国有企业就业引领行动的高校毕业生招用目标下限是什么？招聘原则上应在何时完成？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-employment-2026#soe"
+      ],
+      "expectedAnswer": "发挥国有企业引领作用。延续实施国有企业一次性增人增资政策。深入实施“国有企业就业引领行动”，引导国有企业带头稳定现有岗位、扩大招聘规模，力争招用高校毕业生不少于1.7万人，原则上8月底前全部完成招聘",
+      "mustContain": [
+        "不少于1.7万人",
+        "原则上8月底前"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d10",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本规定中，高校非应届毕业在校生（包括保留学籍者）能否报考？请依据不得报考条目说明。",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#not-eligible"
+      ],
+      "expectedAnswer": "（二）下列人员不得报考1.具有普通高等学历教育资格的高校非应届毕业在校生（含保留学籍的学生）。2.因违反国家教育考试规定，被给予暂停参加普通专升本招生考试处理且在停考期内的人员。3.因触犯刑律受到刑事处罚、尚在处罚期内的。4.不符合报考条件的其他人员。",
+      "mustContain": [
+        "不得报考",
+        "非应届毕业在校生",
+        "保留学籍"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d11",
+      "type": "guard_范围缺失",
+      "question": "普通专升本志愿能填几个院校专业组？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "应补充年份与地区范围",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d12",
+      "type": "guard_异省",
+      "question": "2026年浙江普通专升本网上缴费最迟是什么时间？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "资料不支持该范围或实时薪酬，拒答并不编造",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d13",
+      "type": "guard_未来年份",
+      "question": "2028年广东三二分段转段考核的报名窗口是哪几天？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "资料不支持该范围或实时薪酬，拒答并不编造",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "d14",
+      "type": "guard_实时薪酬",
+      "question": "2026年广东软件实习生目前每月到手工资能有多少？请给确定数字。",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "资料不支持该范围或实时薪酬，拒答并不编造",
+      "mustContain": [],
+      "source": "maintainer_design"
+    }
+  ]
+}

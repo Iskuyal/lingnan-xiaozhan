@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-10-30T01:35:55.793Z",
+  "sourceCodeCommit": "9cdc533c7f85e84dbfbd433b6d87275347022674",
+  "status": "frozen_not_run",
+  "files": {
+    "department-source.json": "2d6e9f2ba983a3252522b5742110b58282286c78510233f7993bb334e95adc40",
+    "department-questions.json": "4318f950d0fbcf49a47dea479ceda66d53d4f2da3025ab9304d85eed4ac73daa",
+    "advancement-source.json": "4e15a883cbbeba1d09b4b5720778205e8826cf44698d18d4dedbed7d9178892d",
+    "advancement-questions.json": "7ad785db72bed5250425d4f5647002b04958c23579f8db8c6d5ccf8ab71b43eb"
+  },
+  "exactDuplicatePriorQuestionCount": 0
+}

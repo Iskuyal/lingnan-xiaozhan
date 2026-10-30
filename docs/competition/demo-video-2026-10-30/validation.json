@@ -1,0 +1,445 @@
+{
+  "file": "岭南小栈-实际运行完整演示-AI配音.mp4",
+  "source": "9cdc533c7f85e84dbfbd433b6d87275347022674",
+  "durationSeconds": 331.366667,
+  "sizeBytes": 17949030,
+  "sha256": "6e9b6097d0bf03d05fe3d019e80aa27743bad8a237c850ef61cd2457b9eeddd7",
+  "environment": "Windows WeChat DevTools 2.02.2609231 / base library 3.17.2, native simulator",
+  "realDevice": false,
+  "width": 494,
+  "height": 1064,
+  "fps": "30/1",
+  "frameCount": 9941,
+  "continuousCaptureSegments": 2,
+  "hardCuts": 1,
+  "addedVisualEffects": false,
+  "playbackSpeed": 1,
+  "businessResponseMocks": false,
+  "fileAndImagePickerAutomation": true,
+  "videoStreamCopied": true,
+  "decodedFrameSequenceIdenticalToRawConcat": true,
+  "decodedFrameSHA256": "SHA256=6045754a4cf593a2b3bbc5fe0c32dd6ccc46e6d9ae339d69aac1372cfb1d1900",
+  "fullDecodePassed": true,
+  "audioPeakPCM": 0.841552734375,
+  "rawSegments": [
+    {
+      "file": "岭南小栈-一镜到底-原始录屏.mp4",
+      "durationSeconds": 138.866667,
+      "source": "d152ccb310cc28019320c69fdb9d2ce7958f47bc",
+      "sha256": "d8d8adebceae1396227e8d17362537520c229453ec6313452ce71d7d46a7c850"
+    },
+    {
+      "file": "AI补录-原始连续录屏.mp4",
+      "durationSeconds": 192.5,
+      "source": "9cdc533c7f85e84dbfbd433b6d87275347022674",
+      "sha256": "9b76bf2cdd8d8bd833876c93afc154c2a4632fbb0cae614d45124a7f50d89961"
+    }
+  ],
+  "runtimeWeekParser": {
+    "weeks": [
+      4
+    ],
+    "recognized": true
+  },
+  "liveAiRequests": 5,
+  "liveAiSuccesses": 5,
+  "businessDailyRequestDelta": 5,
+  "modelAndSafetySubcallDelta": 31,
+  "recordedCostDeltaYuan": 0.010462,
+  "usageBefore": {
+    "day": "2026-10-30",
+    "used": 13,
+    "limit": 60,
+    "remaining": 47
+  },
+  "usageAfter": {
+    "day": "2026-10-30",
+    "used": 18,
+    "limit": 60,
+    "remaining": 42
+  },
+  "temporaryCourse": {
+    "name": "录屏演示AI项目实践",
+    "weekday": 4,
+    "startSection": 9,
+    "endSection": 10,
+    "weekText": "第 4 周",
+    "weeks": [
+      4
+    ],
+    "weeksRecognized": true,
+    "location": "图书馆研讨室"
+  },
+  "originalCoursesRestored": {
+    "count": 51,
+    "sha256": "eb367cdf6dde10e12f097950d205a9b9496114d13c42bb8a0ec2981b29642567",
+    "matchesBaseline": true
+  },
+  "screenshotDraft": {
+    "courseCount": 3,
+    "warningCount": 0,
+    "blockedCount": 0,
+    "items": [
+      {
+        "index": 0,
+        "name": "高等数学",
+        "weekdayText": "星期一",
+        "sectionText": "第 1-2 节",
+        "weekText": "第 1-16 周",
+        "teacherText": "示例教师甲",
+        "cardLine": "星期一 · 第 1-2 节 · 第 1-16 周 · 示例楼-A101-教室",
+        "cardNote": "教师：示例教师甲 · 演示校区 · 场地编号 场地40",
+        "barSolid": "#1f7fa8",
+        "needsReview": false,
+        "warningText": "",
+        "rawText": "",
+        "blocking": ""
+      },
+      {
+        "index": 1,
+        "name": "程序设计基础",
+        "weekdayText": "星期二",
+        "sectionText": "第 3-4 节",
+        "weekText": "第 1-16 周",
+        "teacherText": "示例教师乙",
+        "cardLine": "星期二 · 第 3-4 节 · 第 1-16 周 · 示例楼-B202-机房",
+        "cardNote": "教师：示例教师乙 · 演示校区 · 场地编号 场地40",
+        "barSolid": "#a8478f",
+        "needsReview": false,
+        "warningText": "",
+        "rawText": "",
+        "blocking": ""
+      },
+      {
+        "index": 2,
+        "name": "网页设计",
+        "weekdayText": "星期五",
+        "sectionText": "第 5-6 节",
+        "weekText": "第 1-16 周",
+        "teacherText": "示例教师丙",
+        "cardLine": "星期五 · 第 5-6 节 · 第 1-16 周 · 示例楼-B305-机房",
+        "cardNote": "教师：示例教师丙 · 演示校区 · 场地编号 场地40",
+        "barSolid": "#2f5f9e",
+        "needsReview": false,
+        "warningText": "",
+        "rawText": "",
+        "blocking": ""
+      }
+    ]
+  },
+  "screenshotUploadDiscarded": true,
+  "events": [
+    {
+      "at": 28.7,
+      "action": "aiResult",
+      "kind": "query",
+      "proposal": null,
+      "text": "{\"kind\":\"query\",\"message\":\"第 4 周星期二（本周）的课有：\\n1. 低代码平台应用开发 — 第 1-4 节\\n2. 习近平经济思想概论 — 第 5-6 节\\n3. 网页设计与制作技术 — 第 9-12 节\\n4. 公共外语（英语）一 — 第 11-12 节\\n\\n提醒：第 3 门课的时段（第 9-12 节）和第 4 门课（第 11-12 节）有重叠，请你留意一下。\"}",
+      "usage": {
+        "promptTokens": 4085,
+        "completionTokens": 438,
+        "totalTokens": 4523,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.001131,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "timings": {
+        "preflightMs": 365,
+        "safetyNetworkMs": 10861,
+        "accountingMs": 780,
+        "inputSafetyMs": 9641,
+        "modelNetworkMs": 4404,
+        "modelMs": 4536,
+        "outputSafetyMs": 1869
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常的课程表查询与提醒，不涉及任何违规信息。"
+      },
+      "postSubmitObservationMs": 16810,
+      "timingBoundary": "after submit helper returns; chat excludes its 800ms UI settling delay; not strict end-to-end latency"
+    },
+    {
+      "at": 54.453,
+      "action": "aiResult",
+      "kind": "proposal-cancel",
+      "proposal": {
+        "action": "add",
+        "courseId": "",
+        "course": {
+          "name": "录屏演示AI项目实践",
+          "teacher": "",
+          "weekday": 4,
+          "startSection": 9,
+          "endSection": 10,
+          "weekText": "4",
+          "location": "图书馆研讨室"
+        },
+        "content": "新增课程：录屏演示AI项目实践\n星期四 第 9-10 节\n周次：第 4 周\n地点：图书馆研讨室"
+      },
+      "text": "{\"kind\":\"change\",\"action\":\"add\",\"courseId\":\"\",\"course\":{\"name\":\"录屏演示AI项目实践\",\"teacher\":\"\",\"weekday\":4,\"startSection\":9,\"endSection\":10,\"weekText\":\"4\",\"location\":\"图书馆研讨室\"},\"message\":\"新增提案：录屏演示AI项目实践，星期四第 9-10 节，仅第 4 周，地点图书馆研讨室，教师留空。已核对：星期四第 9-10 节这学期虽然有公共外语（日语）一（第 7-16 周）和职业发展与就业指导一（第 9-11 周），但第 4 周它们都不上，所以本周不冲突。确认后我才会提交生效。\"}",
+      "usage": {
+        "promptTokens": 4253,
+        "completionTokens": 430,
+        "totalTokens": 4683,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.001171,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "timings": {
+        "preflightMs": 298,
+        "safetyNetworkMs": 8568,
+        "accountingMs": 536,
+        "inputSafetyMs": 7271,
+        "modelNetworkMs": 4749,
+        "modelMs": 4827,
+        "outputSafetyMs": 1757
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常的课程安排提案，不涉及违规信息。"
+      },
+      "postSubmitObservationMs": 14788,
+      "timingBoundary": "after submit helper returns; chat excludes its 800ms UI settling delay; not strict end-to-end latency"
+    },
+    {
+      "at": 60.737,
+      "action": "proposalCancelled",
+      "cloudCoursesUnchanged": true
+    },
+    {
+      "at": 85.38,
+      "action": "aiResult",
+      "kind": "proposal-confirm",
+      "proposal": {
+        "action": "add",
+        "courseId": "",
+        "course": {
+          "name": "录屏演示AI项目实践",
+          "teacher": "",
+          "weekday": 4,
+          "startSection": 9,
+          "endSection": 10,
+          "weekText": "第 4 周",
+          "location": "图书馆研讨室"
+        },
+        "content": "新增课程：录屏演示AI项目实践\n星期四 第 9-10 节\n周次：第 4 周\n地点：图书馆研讨室"
+      },
+      "text": "{\"kind\":\"change\",\"action\":\"add\",\"course\":{\"name\":\"录屏演示AI项目实践\",\"teacher\":\"\",\"weekday\":4,\"startSection\":9,\"endSection\":10,\"weekText\":\"第 4 周\",\"location\":\"图书馆研讨室\"},\"message\":\"新增提案：录屏演示AI项目实践，星期四第 9-10 节，仅第 4 周，地点图书馆研讨室，教师留空。我核对过：星期四第 9-10 节在本周没有其他课程，因为公共外语（日语）一（第 7-16 周）和职业发展与就业指导一（第 9-11 周）本周都不上，所以没有冲突。确认后我再提交，目前课表还没有变化。\"}",
+      "usage": {
+        "promptTokens": 4307,
+        "completionTokens": 388,
+        "totalTokens": 4695,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.001174,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "timings": {
+        "preflightMs": 379,
+        "safetyNetworkMs": 8350,
+        "accountingMs": 603,
+        "inputSafetyMs": 6791,
+        "modelNetworkMs": 5387,
+        "modelMs": 5482,
+        "outputSafetyMs": 2067
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为正常的课程安排提案，不涉及违规信息。"
+      },
+      "postSubmitObservationMs": 15225,
+      "timingBoundary": "after submit helper returns; chat excludes its 800ms UI settling delay; not strict end-to-end latency"
+    },
+    {
+      "at": 92.011,
+      "action": "confirmedCourseSaved",
+      "count": 52,
+      "weeks": [
+        4
+      ]
+    },
+    {
+      "at": 125.213,
+      "action": "photoRecognized",
+      "courseCount": 3,
+      "warningCount": 0,
+      "blockedCount": 0,
+      "usage": {
+        "promptTokens": 6696,
+        "completionTokens": 2289,
+        "totalTokens": 8985,
+        "costYuan": 0.002247,
+        "estimated": false,
+        "usageUnknown": false,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "timings": {
+        "preflightMs": 292,
+        "safetyNetworkMs": 5176,
+        "accountingMs": 873,
+        "inputSafetyMs": 1646,
+        "modelNetworkMs": 36886,
+        "outputSafetyMs": 1663
+      },
+      "postSubmitObservationMs": 18695,
+      "timingBoundary": "after submit helper returns; chat excludes its 800ms UI settling delay; not strict end-to-end latency"
+    },
+    {
+      "at": 147.143,
+      "action": "photoDraftAbandoned",
+      "cloudCoursesUnchanged": true
+    },
+    {
+      "at": 168.17,
+      "action": "aiResult",
+      "kind": "department",
+      "proposal": null,
+      "text": "已收录的「校学生会」动态共 3 条，以下仅为官网已收录条目，不代表当前最新进度：\n\n1. **广东岭南职业技术学院第十四次学生代表大会顺利召开**（官网发布时间：2026-03-09）\n   来源：https://lnc.edu.cn/tw/djxf/djhd/content_27001\n\n2. **青春向党悟思想 挺膺担当启新程——我校学生会主席团参加广东学联2025-2026学年第一次集体学习**（官网发布时间：2026-03-10）\n   来源：https://lnc.edu.cn/tw/djxf/djhd/content_27018\n\n3. **第四届校园提案大赛圆满结束**（官网发布时间：2026-03-09）\n   来源：https://lnc.edu.cn/tw/djxf/djhd/content_27004\n\n活动具体细节，当前资料未提供，无法核实；这 3 条之外的校学生会动态，官网未公布。",
+      "usage": {
+        "promptTokens": 1230,
+        "completionTokens": 334,
+        "totalTokens": 1564,
+        "estimated": false,
+        "usageUnknown": false,
+        "costYuan": 0.000391,
+        "priceInputPerMillion": 0.25,
+        "priceOutputPerMillion": 0.25
+      },
+      "timings": {
+        "preflightMs": 316,
+        "safetyNetworkMs": 5163,
+        "accountingMs": 371,
+        "inputSafetyMs": 3818,
+        "modelNetworkMs": 4254,
+        "modelMs": 4351,
+        "outputSafetyMs": 1619
+      },
+      "safety": {
+        "provider": "openai",
+        "api": "text-moderation",
+        "passed": true,
+        "checked": true,
+        "detail": "allowed=true｜reason=内容为校园学生会官方活动动态，无违规信息。"
+      },
+      "postSubmitObservationMs": 10587,
+      "timingBoundary": "after submit helper returns; chat excludes its 800ms UI settling delay; not strict end-to-end latency"
+    }
+  ],
+  "narrationVoice": "zh-CN-XiaoxiaoNeural",
+  "narrationRate": "-3%",
+  "narrationIntervals": [
+    {
+      "id": "intro",
+      "start": 0.001,
+      "end": 13.729,
+      "text": "这是岭南小栈，由 Inlux 团队制作。我们把校园信息和个人课表放进微信小程序，让读资讯、找组织、安排每一天，都有一个清楚的入口。"
+    },
+    {
+      "id": "timetable",
+      "start": 15.597,
+      "end": 32.061,
+      "text": "进入我的课表，可以按教学周切换，查看课程所在的星期和节次。课程管理、导入和新增入口集中在上方。课表来自本人导入，不需要向小程序提供教务账号密码。"
+    },
+    {
+      "id": "import",
+      "start": 33.845,
+      "end": 60.437,
+      "text": "文件导入时，先把教务系统导出的 Excel 发到微信，再从聊天记录选择。本段使用一份虚构的演示课表，文件由自动化选取，上传和解析实际运行。结果先成为草稿，课程名、教师、周次、节次和地点都能校对。这里修改地点，再放弃导入，已有课表不会被替换。"
+    },
+    {
+      "id": "manual",
+      "start": 63.071,
+      "end": 79.103,
+      "text": "遇到临时安排，也可以直接手工新增。填写课程和地点，选择星期、节次与周次，再由自己核对。手工入口和 AI 助手一起保留，用户始终可以自行维护课表。"
+    },
+    {
+      "id": "manual-saved",
+      "start": 85.133,
+      "end": 94.637,
+      "text": "确认保存以后，临时安排就会出现在周课表。课程地点和上课节次，都可以继续核对和修改。"
+    },
+    {
+      "id": "information",
+      "start": 100.48,
+      "end": 116.92,
+      "text": "回到校园信息，学生部门页整理已核实的组织职责。校园资讯可以从列表进入正文，发布日期和原文来源一起保留。想进一步核实时，用户能沿着来源找到依据。"
+    },
+    {
+      "id": "bridge",
+      "start": 124.031,
+      "end": 130.871,
+      "text": "接下来，看看课表助手和截图识别，怎样帮助维护自己的课程安排。"
+    },
+    {
+      "id": "query",
+      "start": 147.05366700000002,
+      "end": 164.59766700000003,
+      "text": "现在打开课表助手，直接用日常说法查询课程。页面把当前课表作为上下文，经过云端模型和内容审核后返回答案。回答可以和课表对照，帮助用户更快找到自己需要的安排。"
+    },
+    {
+      "id": "proposal",
+      "start": 172.828667,
+      "end": 185.620667,
+      "text": "下面新增一门临时的演示课程。用日常说法告诉助手课程名、星期、节次、周次和地点。AI 先提出方案，由用户核对。"
+    },
+    {
+      "id": "cancel",
+      "start": 195.120667,
+      "end": 202.632667,
+      "text": "第一次选择取消，课表保持不变。AI 不会直接替用户执行这次修改。"
+    },
+    {
+      "id": "retry",
+      "start": 203.33266700000001,
+      "end": 209.40466700000002,
+      "text": "再次提出同一个请求。这一次，核对方案后选择添加。"
+    },
+    {
+      "id": "saved",
+      "start": 230.878667,
+      "end": 240.574667,
+      "text": "确认以后，演示课程才保存到云端，并显示在课表里。AI 提出方案，决定权仍在用户手里。"
+    },
+    {
+      "id": "photo",
+      "start": 243.866667,
+      "end": 260.114667,
+      "text": "除了导入 Excel，还可以选择一张课表截图。这次使用三门虚构课程的图片，由自动化选择，上传和 AI 识别实际运行。识别结果先成为草稿，仍要逐条核对。"
+    },
+    {
+      "id": "photo-review",
+      "start": 264.079667,
+      "end": 278.071667,
+      "text": "识别完成后，可以检查课程名、教师、星期、节次、周次和地点，也可以修正字段。本次只查看结果，再放弃草稿，已有课表不被替换。"
+    },
+    {
+      "id": "department",
+      "start": 292.215667,
+      "end": 305.751667,
+      "text": "学生部门页同样可以提问。回答依据整理的部门资料；涉及活动时，系统检索相关条目，并把参考来源放在回答下方，方便继续核实。"
+    },
+    {
+      "id": "outro",
+      "start": 316.524667,
+      "end": 330.036667,
+      "text": "岭南小栈，把校园日常安排好。从了解校园，到导入和维护自己的课表，让信息有出处，让每次改动都经过本人确认。感谢观看。"
+    }
+  ],
+  "qualityBoundary": "sampled successful live flows; not independent effect score, long-term SLA, phone/device testing or competition submission"
+}
