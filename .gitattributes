@@ -4,3 +4,6 @@
 *.mp4 binary
 *.png binary
 *.xlsx binary
+# 此批输入与授权按原始字节冻结，避免Windows检出换行改变来源/预算哈希。
+docs/evidence/fresh-quality-2026-10-30/*.json -text
+docs/evidence/fresh-quality-2026-10-30/authorization*.md -text

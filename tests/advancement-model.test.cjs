@@ -107,7 +107,7 @@ test('提示词与事件形状：只给段落 id，正文由服务端注入，�
   assert.equal(event.messages[0].text, question);
   assert.deepEqual(JSON.parse(JSON.stringify(event.scope)), { category: 'ordinary_专升本', year: 2026, region: '广东省' });
   assert.deepEqual(JSON.parse(JSON.stringify(event.passageIds)), result.citations.map((citation) => citation.passageId));
-  assert.ok(event.maxTokens <= 800, '回答上限要留出余量但别放开');
+  assert.equal(event.maxTokens, 1200, '按负责人确认的上限为推理与完整原句留出余量');
   // 提示词是纪律，不含资料正文（资料由服务端按 passageIds 注入）。
   for (const citation of result.citations) {
     assert.equal(event.system.includes(citation.quote), false);

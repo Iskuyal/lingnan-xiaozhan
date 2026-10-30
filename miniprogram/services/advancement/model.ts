@@ -24,8 +24,8 @@ import { AskResult, Citation, ResolvedScope } from './index';
 /** 与云函数 `ADVANCEMENT_QA_FEATURE` 同名（跨包有意复制，项目惯例同 FAILURE_CLASSES）。 */
 export const ADVANCEMENT_QA_FEATURE = 'advancement-qa';
 
-/** 回答上限：答案要求不超过 200 字，留一倍余量即可；过长会拖时间且更容易跑偏。 */
-export const ADVANCEMENT_MAX_TOKENS = 600;
+/** 2026-10-30负责人确认：为推理和完整原句留1200 token；等待时延仍单独验收。 */
+export const ADVANCEMENT_MAX_TOKENS = 1200;
 
 /**
  * 系统提示词（纪律部分）。
