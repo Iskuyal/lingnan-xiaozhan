@@ -26,3 +26,25 @@ test('续跑保留失败但不跳过未调用、额度拒绝和传输失败题',
   assert.equal(evaluator.isCompleteRecord({ expectedBehavior: 'answer', modelCall: { invoked: true, ok: true, failureClass: '' } }), true);
   assert.equal(evaluator.isCompleteRecord({ expectedBehavior: 'refuse', guardCorrect: false }), true);
 });
+
+test('升学首评遇到传输失败、未知费用或未检测内容时停止后续付费请求', () => {
+  const known = { invoked: true, ok: true, failureClass: '', usage: { costYuan: 0.001, estimated: false, usageUnknown: false }, safety: { checked: true } };
+  for (const patch of [
+    { invoked: false }, { usage: null }, { usage: { costYuan: 0.001, usageUnknown: true } },
+    { usage: { costYuan: 0.001, estimated: true } }, { usage: { costYuan: NaN } },
+    { safety: { checked: false } },
+  ]) assert.notEqual(evaluator.stopReason({ ...known, ...patch }), '', JSON.stringify(patch));
+  assert.equal(evaluator.stopReason(known), '');
+  assert.equal(evaluator.stopReason({ ...known, ok: false, failureClass: 'citation_unverified' }), '', '已知费用的引用降级继续如实采集，不重试');
+});
+
+test('升学首评按模型费用与含审核的月账本增量中较大值限制子预算', () => {
+  const baseline = { month: '2026-10', costYuan: 1 };
+  const within = { month: '2026-10', costYuan: 1.01 };
+  assert.equal(evaluator.budgetStopReason(baseline, within, 0.01, 0.05), '');
+  assert.notEqual(evaluator.budgetStopReason(baseline, { month: '2026-10', costYuan: 1.06 }, 0.01, 0.05), '');
+  assert.notEqual(evaluator.budgetStopReason(baseline, within, 0.05, 0.05), '');
+  for (const current of [null, { month: '2026-10', costYuan: NaN }, { month: '2026-11', costYuan: 1.01 }, { month: '2026-10', costYuan: 0.99 }]) {
+    assert.notEqual(evaluator.budgetStopReason(baseline, current, 0.01, 0.05), '');
+  }
+});
