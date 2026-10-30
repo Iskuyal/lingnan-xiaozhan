@@ -301,7 +301,7 @@ const ROLE_PATTERNS: RegExp[] = [
  */
 const CAMPUS_TOKEN = /([\u4e00-\u9fa5]{2,6})校区/gu;
 /** 不是校区名的前缀：这些词加「校区」是表述或疑问，不是在断言某个校区。 */
-const CAMPUS_NAME_EXCLUDE = ['所属', '哪个', '哪些', '该校', '本校', '全校', '学校', '这个', '那个', '我的', '你的', '一个', '几个', '什么'];
+const CAMPUS_NAME_EXCLUDE = ['所属', '所在', '覆盖', '哪个', '哪些', '该校', '本校', '全校', '学校', '这个', '那个', '我的', '你的', '一个', '几个', '什么'];
 /** 成立年份断言。 */
 const FOUNDED_PATTERN = /(?:成立于|创办于|创建于|组建于|成立时间)[^。；！？\n]{0,8}?(\d{4})/gu;
 /** 提问里问到成立时间的说法（问题里通常没有年份，因此与上面的断言模式分开）。 */
@@ -395,8 +395,8 @@ export function guardAnswer(answer: string, options: GuardOptions = {}): GuardRe
     const token = assertedMatches(text, pattern).join('、');
     if (token !== '') hits.push({ reason: '负责人表述', token });
   }
-  for (const name of unsupportedCampuses(text, corpus, department)) {
-    hits.push({ reason: '校区表述', token: name + '校区' });
+  for (const token of unsupportedCampuses(text, corpus, department)) {
+    hits.push({ reason: '校区表述', token });
   }
   const year = unfoundedYear(text, corpus);
   if (year !== '') hits.push({ reason: '成立时间', token: year });
@@ -453,7 +453,12 @@ function assertedMatches(text: string, matcher: RegExp, before = 10, after = 16)
   let match = scanner.exec(text);
   while (match !== null) {
     const window = text.slice(Math.max(0, match.index - before), match.index + match[0].length + after);
-    if (!NEGATIONS.some((word) => window.includes(word)) && !hits.includes(match[0])) hits.push(match[0]);
+    const prefix = text.slice(Math.max(0, match.index - 100), match.index).split(/[，,。；！？\n]/u).pop() || '';
+    const suffix = text.slice(match.index + match[0].length).split(/[，,。；！？\n]/u)[0];
+    // 只放行同一分句里“无法提供……字段信息”的明确否定，不让它掩盖别句或后续姓名断言。
+    const unavailableField = /^(?:因此|所以|故)?(?:(?:无法|不能|未能)(?:提供|确认|核实)|未公布|没有公布|未提供|没有提供|未收录|没有收录)[^：:，,。；！？\n]{0,80}$/u.test(prefix)
+      && /^(?:员)?(?:的)?(?:信息|姓名|名单|资料|情况)(?:等)?[”」』]*$/u.test(suffix);
+    if (!NEGATIONS.some((word) => window.includes(word)) && !unavailableField && !hits.includes(match[0])) hits.push(match[0]);
     scanner.lastIndex = match.index + match[0].length;
     match = scanner.exec(text);
   }
@@ -632,7 +637,7 @@ export function guardTurn(answer: string, departmentId: string, question = '', c
     return {
       role: 'assistant',
       text: entries.length > 0
-        ? '当前资料仅提供以下活动条目（标题级原文）及官网发布时间。标题未列明的主办承办、人员姓名或名单、人数、入选条件和当前最新进度，均无法据此核实；官网发布时间不能直接当作活动或会议召开日期。\n\n' + entries.join('\n\n')
+        ? '当前资料仅提供以下活动条目（标题级原文）及官网发布时间。标题未列明的主办承办、人员姓名或名单、人数、入选条件、报名入口及截止时间、联系方式、经费、具体地点和当前最新进度，均无法据此核实；官网发布时间不能直接当作活动或会议召开日期。\n\n' + entries.join('\n\n')
         : '当前返回的活动来源无法与随包资料核对，请查看官方原文。',
       warning: `条目来自核查于 ${departmentsSource.verifiedAt} 的资料快照，不代表当前完整活动进度。`,
       replaced: true,

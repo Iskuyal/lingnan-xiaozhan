@@ -77,6 +77,36 @@ test('标题资料的缺失说明点明人数、条件、名单、进度及实�
   assert.equal(turn.replaced, true);
 });
 
+test('守卫修复仍拦下标签后的虚构校区与否定句之外的负责人断言', () => {
+  const departments = require('../dist/services/departments.js').departments;
+  const department = departments.find(d => d.id === 'young-volunteers');
+  const unknown = qa().guardAnswer('覆盖校区：佛山校区。', { department });
+  assert.equal(unknown.replaced, true);
+  assert.equal(unknown.hits.find(h => h.reason === '校区表述').token, '佛山校区', '提示必须引用原片段，不能重复添加校区后缀');
+  for (const text of ['因此无法提供值班表，负责人是张三。', '因此无法提供值班表。负责人是张三。', '因此无法提供值班表负责人信息是张三。']) {
+    assert.equal(qa().guardAnswer(text, { department }).replaced, true, text);
+  }
+});
+
+test('已知校区的覆盖标签和长否定性负责人信息说明不被当成编造', () => {
+  const department = require('../dist/services/departments.js').departments.find(d => d.id === 'young-volunteers');
+  for (const text of ['**覆盖校区：** 广州校区、清远校区。', '因此无法提供“下周六摄影器材借用值班表”及各时段负责人信息。', '未公布任何值班安排、摄影器材借用流程、借用时段或负责人员名单。']) {
+    const result = qa().guardAnswer(text, { department });
+    assert.equal(result.replaced, false, text);
+    assert.equal(result.text, text);
+  }
+});
+
+test('标题级缺失说明明确涵盖报名入口截止、联系方式、经费和具体地点', () => {
+  const department = require('../dist/services/departments.js').departments.find(d => d.id === 'student-club-management');
+  const activity = department.activities[0];
+  const raw = '这些具体细节当前资料未提供，无法核实。';
+  const turn = qa().guardTurn(raw, department.id, '这期活动报名入口、截止、联系人、经费和具体地点是什么？', [{ ...activity, departmentId: department.id, departmentName: department.name, score: 1 }]);
+  for (const field of ['报名入口', '截止时间', '联系方式', '经费', '具体地点']) assert.ok(turn.text.includes(field), field);
+  assert.match(turn.text, /标题未列明/u);
+  assert.equal(turn.modelText, raw);
+});
+
 test('动态问答：伪造标题或日期不能进入原文展示，基础问题仍沿用既有守卫', () => {
   const { guardTurn } = qa();
   const departments = require('../dist/services/departments.js').departments;
