@@ -1,0 +1,20 @@
+{
+  "D": {
+    "firstLimit": 600,
+    "firstScore": "6/10",
+    "nowUsedForTokenCapRepair": true,
+    "furtherUse": "regression_only"
+  },
+  "S": {
+    "firstScore": "9/14",
+    "nowUsedForClientGuardRepair": true,
+    "furtherUse": "regression_only"
+  },
+  "E": {
+    "firstLimit": 1200,
+    "firstScore": "7/10",
+    "productTunedOnThisBatch": false
+  },
+  "allOriginalFirstResponsesPreserved": true,
+  "independentHumanReview": false
+}

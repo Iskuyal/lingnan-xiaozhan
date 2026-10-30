@@ -1,0 +1,1489 @@
+{
+  "startedAt": "2026-10-30T02:13:20.657Z",
+  "gitSha": "4a671fd3486b0f0433097b56caf2a2a7aa88b370",
+  "set": "fresh",
+  "tag": "",
+  "topN": 2,
+  "questions": 14,
+  "questionSetHashes": {
+    "docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json": "4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd"
+  },
+  "buildHashes": {
+    "access.js": "3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9",
+    "advancement-corpus.js": "2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da",
+    "advancement-query-corpus.js": "abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752",
+    "advancement-query.js": "771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037",
+    "advancement.js": "35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce",
+    "client/index.js": "1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb",
+    "client/model.js": "81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c",
+    "config.js": "5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7",
+    "config.json": "b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320",
+    "defense-materials.js": "e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f",
+    "defense.js": "b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f",
+    "department-corpus.js": "345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e",
+    "errors.js": "a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f",
+    "http.js": "a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741",
+    "index.js": "f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d",
+    "package-lock.json": "9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd",
+    "package.json": "a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4",
+    "probe.js": "90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c",
+    "providers.js": "a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1",
+    "rag.js": "fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08",
+    "safety.js": "ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301",
+    "types.js": "d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230",
+    "usage.js": "de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e",
+    "vision.js": "ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8"
+  },
+  "latencyBudgetMs": 8000,
+  "budget": {
+    "registeredAt": "2026-10-30T02:13:20.321158+00:00",
+    "usageSnapshot": "docs/evidence/fresh-quality-2026-10-30/usage-before-e.json",
+    "personalDailyLimit": {
+      "day": "2026-10-30",
+      "used": 45,
+      "limit": 60,
+      "remaining": 15
+    },
+    "maxCloudCalls": 10,
+    "maxEstimatedCostYuan": 0.05,
+    "safetyQuota": "openai quota unknown; stop on control/cost failure, no retries",
+    "accountingReconciled": false,
+    "scope": "1200-token frozen E first evaluation; 10 facts and 4 local gates; existing D is regression only"
+  },
+  "env": {
+    "model": "iPhone 12/13 (Pro)",
+    "platform": "devtools",
+    "SDKVersion": "3.17.2"
+  },
+  "finishedAt": "2026-10-30T02:16:27.188Z",
+  "jsonl": "artifacts\\ai-video-2026-10-30\\advancement-e-first.jsonl",
+  "cloudAttempts": 8,
+  "stopped": "",
+  "completed": 14,
+  "pending": [],
+  "proofBoundary": "同一校验器复算仅为一致性检查；关键串命中仅为候选正确，事实与引用须逐句独立核对",
+  "humanFactReview": "pending",
+  "goNoGo": "no_go_pending_fact_review",
+  "guards": {
+    "total": 4,
+    "attempted": 4,
+    "correct": 4
+  },
+  "answers": {
+    "total": 10,
+    "attempted": 8,
+    "modelAnswer": 7,
+    "refused": 0,
+    "fallback": 1,
+    "transportFailed": 0,
+    "notCalled": 2,
+    "mustContainHitInModel": 7,
+    "mustContainHitInSources": 0,
+    "expectedPassageInTopN": 7
+  },
+  "cost": {
+    "cloudAttempts": 8,
+    "observedLedgerIncreaseYuan": 0.002495,
+    "basis": "逐题最新结果的已知费用；完整重复尝试费用须核对JSONL与云端账目",
+    "totalTokens": 5860,
+    "costYuan": 0.001466
+  },
+  "failures": [
+    {
+      "key": "advancement-heldout-20261030-e:e02",
+      "failureClass": "content_rejected",
+      "violations": []
+    }
+  ],
+  "latency": {
+    "budgetMs": 8000,
+    "measured": 8,
+    "withinBudget": 0
+  },
+  "records": [
+    {
+      "key": "advancement-heldout-20261030-e:e01",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e01",
+      "type": "fact_专升本",
+      "question": "依据广东2026年普通专升本文件，网上预报名开放和关闭的月日、时刻分别是什么？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "expectedPassages": [
+        "gd-zsb-2026#register-time"
+      ],
+      "mustContain": [
+        "1月12日09:00",
+        "19日18:00"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-zsb-2026#register-time",
+          "gd-zsb-2026#physical-exam"
+        ],
+        "answer": "网上预报名时间为2026年1月12日09:00至19日18:00\n考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 39,
+        "systemChars": 258,
+        "scope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-zsb-2026#register-time",
+          "gd-zsb-2026#physical-exam"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "[S1] 网上预报名时间为2026年1月12日09:00至19日18:00",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 11163,
+        "clientElapsedMs": 13844,
+        "usage": {
+          "promptTokens": 272,
+          "completionTokens": 398,
+          "totalTokens": 670,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000168,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 792,
+          "failures": 52,
+          "promptTokens": 473484,
+          "completionTokens": 164854,
+          "totalTokens": 638338,
+          "costYuan": 0.159655,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:13:32.940Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为正常的报名时间通知，无违规信息。"
+        },
+        "timings": {
+          "preflightMs": 374,
+          "safetyNetworkMs": 5447,
+          "accountingMs": 265,
+          "inputSafetyMs": 3411,
+          "modelNetworkMs": 5020,
+          "modelMs": 5112,
+          "outputSafetyMs": 2210,
+          "citationMs": 2
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-zsb-2026#register-time",
+            "gd-zsb-2026#physical-exam"
+          ],
+          "sources": [
+            {
+              "id": "gd-zsb-2026#register-time",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "网上预报名时间为2026年1月12日09:00至19日18:00"
+            },
+            {
+              "id": "gd-zsb-2026#physical-exam",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "考生须依据《广东省2026年普通高校专升本招生体格检查表》（附件6）的规定，自行前往二级甲等（含）以上医院或相应的医疗单位进行体检，填报志愿开始前将体检结果上传至报名系统中（体检表有效期：2026年1月1日至填报志愿第一天）。"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e02",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e02",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本考生，报名费在网上最晚能缴到哪天几点？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "网上缴费截止时间为1月23日17:00",
+      "expectedPassages": [
+        "gd-zsb-2026#fee-deadline"
+      ],
+      "mustContain": [
+        "1月23日17:00"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#register-time"
+        ],
+        "answer": "2026年3月28日（星期六）至29日（星期日）两天\n网上预报名时间为2026年1月12日09:00至19日18:00",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 31,
+        "systemChars": 258,
+        "scope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-zsb-2026#exam-time",
+          "gd-zsb-2026#register-time"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": false,
+        "failureClass": "content_rejected",
+        "message": "内容未通过安全检测，请修改后重试。",
+        "text": "",
+        "detail": "openai｜text-moderation｜checked=true｜allowed=false｜reason=内容不完整，无法判断是否适宜展示。",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 8280,
+        "clientElapsedMs": 9107,
+        "usage": {
+          "promptTokens": 220,
+          "completionTokens": 144,
+          "totalTokens": 364,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 9.1e-05,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 795,
+          "failures": 52,
+          "promptTokens": 474065,
+          "completionTokens": 165046,
+          "totalTokens": 639111,
+          "costYuan": 0.159849,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:13:56.254Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": false,
+          "checked": true,
+          "detail": "allowed=false｜reason=内容不完整，无法判断是否适宜展示。"
+        },
+        "timings": {
+          "preflightMs": 239,
+          "safetyNetworkMs": 3964,
+          "accountingMs": 288,
+          "inputSafetyMs": 2585,
+          "modelNetworkMs": 3740,
+          "modelMs": 3842,
+          "outputSafetyMs": 1567
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": false,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-zsb-2026#exam-time",
+            "gd-zsb-2026#register-time"
+          ],
+          "sources": [
+            {
+              "id": "gd-zsb-2026#exam-time",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "2026年3月28日（星期六）至29日（星期日）两天"
+            },
+            {
+              "id": "gd-zsb-2026#register-time",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "网上预报名时间为2026年1月12日09:00至19日18:00"
+            }
+          ]
+        }
+      },
+      "independentVerify": null,
+      "judge": {
+        "delivery": "fallback_sources",
+        "mustContainInModel": false,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": false
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e03",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e03",
+      "type": "fact_专升本",
+      "question": "请原句核对广东2026年普通专升本统考安排的两天日期和星期，不要用转段流程代替。",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "2026年3月28日（星期六）至29日（星期日）两天",
+      "expectedPassages": [
+        "gd-zsb-2026#exam-time"
+      ],
+      "mustContain": [
+        "3月28日",
+        "29日"
+      ],
+      "local": {
+        "behavior": "clarify",
+        "passageIds": [],
+        "answer": "先确认一下你问的是哪一类，两类的报名与考试安排不同。",
+        "note": "命中多个类别：普通专升本（专科毕业生统考） / 三二分段专升本转段（试点高职学生转段）",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "modelCall": null,
+      "error": "答案题没有可交给模型的段落（canAskModel=false）"
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e04",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e04",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本竞赛加分的15分、10分、5分三档分别对应哪些获奖条件？请保留每档完整条件。",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "获得中国国际大学生创新大赛国赛金奖或银奖（团队）、世界职业院校技能大赛金奖、全国职业院校大赛或全国职业技能大赛国赛一等奖及以上的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加15分投档，由高校择优录取。\n获得中国国际大学生创新大赛国赛铜奖或省赛金奖（团队）、世界职业院校技能大赛银奖、全国职业院校大赛或全国职业技能大赛国赛二等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加10分投档，由高校择优录取。\n获得中国国际大学生创新大赛省赛银奖或铜奖（团队）、世界职业院校技能大赛铜奖、全国职业院校大赛或全国职业技能大赛国赛三等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加5分投档，由高校择优录取。",
+      "expectedPassages": [
+        "gd-zsb-2026#bonus"
+      ],
+      "mustContain": [
+        "增加15分",
+        "增加10分",
+        "增加5分"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-zsb-2026#bonus",
+          "gd-zsb-2026#exam-time"
+        ],
+        "answer": "获得中国国际大学生创新大赛国赛金奖或银奖（团队）、世界职业院校技能大赛金奖、全国职业院校大赛或全国职业技能大赛国赛一等奖及以上的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加15分投档，由高校择优录取。\n获得中国国际大学生创新大赛国赛铜奖或省赛金奖（团队）、世界职业院校技能大赛银奖、全国职业院校大赛或全国职业技能大赛国赛二等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加10分投档，由高校择优录取。\n获得中国国际大学生创新大赛省赛银奖或铜奖（团队）、世界职业院校技能大赛铜奖、全国职业院校大赛或全国职业技能大赛国赛三等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加5分投档，由高校择优录取。\n2026年3月28日（星期六）至29日（星期日）两天",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 50,
+        "systemChars": 258,
+        "scope": {
+          "category": "ordinary_专升本",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-zsb-2026#bonus",
+          "gd-zsb-2026#exam-time"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "获得中国国际大学生创新大赛国赛金奖或银奖（团队）、世界职业院校技能大赛金奖、全国职业院校大赛或全国职业技能大赛国赛一等奖及以上的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加15分投档，由高校择优录取[S1]。\n获得中国国际大学生创新大赛国赛铜奖或省赛金奖（团队）、世界职业院校技能大赛银奖、全国职业院校大赛或全国职业技能大赛国赛二等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加10分投档，由高校择优录取[S1]。\n获得中国国际大学生创新大赛省赛银奖或铜奖（团队）、世界职业院校技能大赛铜奖、全国职业院校大赛或全国职业技能大赛国赛三等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加5分投档，由高校择优录取[S1]。",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 12840,
+        "clientElapsedMs": 14433,
+        "usage": {
+          "promptTokens": 410,
+          "completionTokens": 772,
+          "totalTokens": 1182,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000296,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 798,
+          "failures": 52,
+          "promptTokens": 475230,
+          "completionTokens": 165872,
+          "totalTokens": 641102,
+          "costYuan": 0.160347,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:14:24.159Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为教育政策信息，涉及专升本加分规定，不包含违规内容。"
+        },
+        "timings": {
+          "preflightMs": 357,
+          "safetyNetworkMs": 5029,
+          "accountingMs": 301,
+          "inputSafetyMs": 3178,
+          "modelNetworkMs": 7101,
+          "modelMs": 7196,
+          "outputSafetyMs": 2057,
+          "citationMs": 2
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-zsb-2026#bonus",
+            "gd-zsb-2026#exam-time"
+          ],
+          "sources": [
+            {
+              "id": "gd-zsb-2026#bonus",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "获得中国国际大学生创新大赛国赛金奖或银奖（团队）、世界职业院校技能大赛金奖、全国职业院校大赛或全国职业技能大赛国赛一等奖及以上的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加15分投档，由高校择优录取。\n获得中国国际大学生创新大赛国赛铜奖或省赛金奖（团队）、世界职业院校技能大赛银奖、全国职业院校大赛或全国职业技能大赛国赛二等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加10分投档，由高校择优录取。\n获得中国国际大学生创新大赛省赛银奖或铜奖（团队）、世界职业院校技能大赛铜奖、全国职业院校大赛或全国职业技能大赛国赛三等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加5分投档，由高校择优录取。"
+            },
+            {
+              "id": "gd-zsb-2026#exam-time",
+              "documentId": "gd-zsb-2026",
+              "title": "广东省2026年普通高等学校专升本招生工作规定",
+              "documentNumber": "粤招办普〔2025〕51号",
+              "issuer": "广东省教育考试院",
+              "publishedAt": "2025-11-19",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/bmbk_sksywj/content/post_4802375.html",
+              "quote": "2026年3月28日（星期六）至29日（星期日）两天"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e05",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e05",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生通知面向哪一年招收、什么培养类型的全日制学生？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+      "expectedPassages": [
+        "gd-segmented-2026#target"
+      ],
+      "mustContain": [
+        "2023年",
+        "全日制学生"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#exam-time"
+        ],
+        "answer": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。\n普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 38,
+        "systemChars": 258,
+        "scope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-segmented-2026#target",
+          "gd-segmented-2026#exam-time"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生[S1]。",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 10793,
+        "clientElapsedMs": 11672,
+        "usage": {
+          "promptTokens": 244,
+          "completionTokens": 467,
+          "totalTokens": 711,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000178,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 801,
+          "failures": 52,
+          "promptTokens": 475884,
+          "completionTokens": 166386,
+          "totalTokens": 642270,
+          "costYuan": 0.160639,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:14:48.394Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为教育招生政策信息，不涉及违规内容。"
+        },
+        "timings": {
+          "preflightMs": 286,
+          "safetyNetworkMs": 4883,
+          "accountingMs": 255,
+          "inputSafetyMs": 1830,
+          "modelNetworkMs": 5320,
+          "modelMs": 5395,
+          "outputSafetyMs": 3233,
+          "citationMs": 0
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-segmented-2026#target",
+            "gd-segmented-2026#exam-time"
+          ],
+          "sources": [
+            {
+              "id": "gd-segmented-2026#target",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。"
+            },
+            {
+              "id": "gd-segmented-2026#exam-time",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "普通高等学校转段招生统一考试科目考核时间为2026年3月28日（星期六）至29日（星期天）"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e06",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e06",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生对基本素质考核的合格要求怎样规定？考核不合格可以报考吗？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。",
+      "expectedPassages": [
+        "gd-segmented-2026#quality-check"
+      ],
+      "mustContain": [
+        "合格",
+        "不合格",
+        "不得报考"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-segmented-2026#quality-check",
+          "gd-segmented-2026#target"
+        ],
+        "answer": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。\n1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 43,
+        "systemChars": 258,
+        "scope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-segmented-2026#quality-check",
+          "gd-segmented-2026#target"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。[S1]\n基本素质考核“不合格”的学生，不得报考。[S1]",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 9271,
+        "clientElapsedMs": 11235,
+        "usage": {
+          "promptTokens": 259,
+          "completionTokens": 353,
+          "totalTokens": 612,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000153,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 804,
+          "failures": 52,
+          "promptTokens": 476584,
+          "completionTokens": 166788,
+          "totalTokens": 643372,
+          "costYuan": 0.160915,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:15:11.999Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为教育政策规定，不涉及违规信息。"
+        },
+        "timings": {
+          "preflightMs": 377,
+          "safetyNetworkMs": 3694,
+          "accountingMs": 289,
+          "inputSafetyMs": 1898,
+          "modelNetworkMs": 4857,
+          "modelMs": 4959,
+          "outputSafetyMs": 1984,
+          "citationMs": 0
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-segmented-2026#quality-check",
+            "gd-segmented-2026#target"
+          ],
+          "sources": [
+            {
+              "id": "gd-segmented-2026#quality-check",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。"
+            },
+            {
+              "id": "gd-segmented-2026#target",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e07",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e07",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段报名提交预报名资料后，高校应多久完成审核？通过后如何处理，缴费最后期限呢？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "2026年转段招生考试实行网上预报名、网上审核和网上缴费。网上预报名时间为2026年1月12日09:00至19日18:00；考生提交预报名资料的48小时内，对口试点本科高校完成资料审核，考生可登录系统查看报名资格审核结果，审核结果为“通过”的考生可以缴费；网上缴费截止时间为1月23日17:00。",
+      "expectedPassages": [
+        "gd-segmented-2026#register"
+      ],
+      "mustContain": [
+        "48小时内",
+        "1月23日17:00"
+      ],
+      "local": {
+        "behavior": "clarify",
+        "passageIds": [],
+        "answer": "先确认一下你问的是哪一类，两类的报名与考试安排不同。",
+        "note": "命中多个类别：中高职贯通三二分段（中职升高职） / 三二分段专升本转段（高职升本科）",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "modelCall": null,
+      "error": "答案题没有可交给模型的段落（canAskModel=false）"
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e08",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e08",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生考核具体包括哪三个部分，采用什么考核评价方式？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "试点高校要按照已报省教育厅备案的转段考核方案组织开展转段考核，转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。",
+      "expectedPassages": [
+        "gd-segmented-2026#parts"
+      ],
+      "mustContain": [
+        "公共课程统一考试科目考核",
+        "基本素质考核",
+        "专业能力考核",
+        "分项考核、综合评价"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-segmented-2026#parts",
+          "gd-segmented-2026#target"
+        ],
+        "answer": "试点高校要按照已报省教育厅备案的转段考核方案组织开展转段考核，转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。\n1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 38,
+        "systemChars": 258,
+        "scope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-segmented-2026#parts",
+          "gd-segmented-2026#target"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "试点高校要按照已报省教育厅备案的转段考核方案组织开展转段考核，转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”[S1]。",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 11373,
+        "clientElapsedMs": 12410,
+        "usage": {
+          "promptTokens": 267,
+          "completionTokens": 484,
+          "totalTokens": 751,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000188,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 807,
+          "failures": 52,
+          "promptTokens": 477308,
+          "completionTokens": 167320,
+          "totalTokens": 644628,
+          "costYuan": 0.161229,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:15:37.157Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为教育政策信息，无违规内容。"
+        },
+        "timings": {
+          "preflightMs": 248,
+          "safetyNetworkMs": 3756,
+          "accountingMs": 271,
+          "inputSafetyMs": 2470,
+          "modelNetworkMs": 7057,
+          "modelMs": 7145,
+          "outputSafetyMs": 1470,
+          "citationMs": 0
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-segmented-2026#parts",
+            "gd-segmented-2026#target"
+          ],
+          "sources": [
+            {
+              "id": "gd-segmented-2026#parts",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "试点高校要按照已报省教育厅备案的转段考核方案组织开展转段考核，转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。"
+            },
+            {
+              "id": "gd-segmented-2026#target",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e09",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e09",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生对广东应征入伍的退役士兵考生免考哪些内容？有三等功及以上时又怎样记等级？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "从广东省应征入伍的退役大学生士兵考生，免于文化课考试（统一考试科目，下同）；在服义务兵役期间荣立三等功及以上奖励的退役大学生士兵，免于参加文化课考试、专业能力考核，并将专业能力考核等级定为合格。",
+      "expectedPassages": [
+        "gd-segmented-2026#vet-soldier"
+      ],
+      "mustContain": [
+        "免于文化课考试",
+        "三等功及以上",
+        "等级定为合格"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-segmented-2026#vet-soldier",
+          "gd-segmented-2026#target"
+        ],
+        "answer": "从广东省应征入伍的退役大学生士兵考生，免于文化课考试（统一考试科目，下同）；在服义务兵役期间荣立三等功及以上奖励的退役大学生士兵，免于参加文化课考试、专业能力考核，并将专业能力考核等级定为合格。\n1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 51,
+        "systemChars": 258,
+        "scope": {
+          "category": "segmented_三二分段专升本转段",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-segmented-2026#vet-soldier",
+          "gd-segmented-2026#target"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "从广东省应征入伍的退役大学生士兵考生，免于文化课考试（统一考试科目，下同）；在服义务兵役期间荣立三等功及以上奖励的退役大学生士兵，免于参加文化课考试、专业能力考核，并将专业能力考核等级定为合格[S1]。",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 10427,
+        "clientElapsedMs": 11231,
+        "usage": {
+          "promptTokens": 289,
+          "completionTokens": 668,
+          "totalTokens": 957,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000239,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 810,
+          "failures": 52,
+          "promptTokens": 478086,
+          "completionTokens": 168044,
+          "totalTokens": 646130,
+          "costYuan": 0.161605,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:16:01.611Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为退役大学生士兵升学政策说明，属于正常教育信息，无违规内容。"
+        },
+        "timings": {
+          "preflightMs": 272,
+          "safetyNetworkMs": 3632,
+          "accountingMs": 268,
+          "inputSafetyMs": 1975,
+          "modelNetworkMs": 6198,
+          "modelMs": 6285,
+          "outputSafetyMs": 1839,
+          "citationMs": 0
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-segmented-2026#vet-soldier",
+            "gd-segmented-2026#target"
+          ],
+          "sources": [
+            {
+              "id": "gd-segmented-2026#vet-soldier",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "从广东省应征入伍的退役大学生士兵考生，免于文化课考试（统一考试科目，下同）；在服义务兵役期间荣立三等功及以上奖励的退役大学生士兵，免于参加文化课考试、专业能力考核，并将专业能力考核等级定为合格。"
+            },
+            {
+              "id": "gd-segmented-2026#target",
+              "documentId": "gd-segmented-2026",
+              "title": "关于做好广东省2026年普通高等学校三二分段专升本转段招生工作的通知",
+              "documentNumber": "粤招办普〔2025〕53号",
+              "issuer": "广东省招生委员会办公室",
+              "publishedAt": "2025-11-29",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://eea.gd.gov.cn/ptgk/content/post_4806517.html",
+              "quote": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e10",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e10",
+      "type": "fact_就业",
+      "question": "广东2026年就业文件中的公务员岗位目标是精确等于1.5万个，还是不少于1.5万个？请按原句核对。",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "answer",
+      "expectedAnswer": "全省提供公务员岗位不少于1.5万个",
+      "expectedPassages": [
+        "gd-employment-2026#civil-servant"
+      ],
+      "mustContain": [
+        "不少于1.5万个"
+      ],
+      "local": {
+        "behavior": "answer",
+        "passageIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-2026#public-institution"
+        ],
+        "answer": "全省提供公务员岗位不少于1.5万个\n全年全省提供事业单位岗位不少于5万个",
+        "note": "原文摘录 · 未改写 · 语料核查于 2026-10-03",
+        "resolvedScope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        }
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "event": {
+        "feature": "advancement-qa",
+        "messageChars": 49,
+        "systemChars": 258,
+        "scope": {
+          "category": "internship_实习招聘",
+          "year": 2026,
+          "region": "广东省"
+        },
+        "passageIds": [
+          "gd-employment-2026#civil-servant",
+          "gd-employment-2026#public-institution"
+        ],
+        "maxTokens": 1200
+      },
+      "modelCall": {
+        "invoked": true,
+        "ok": true,
+        "failureClass": "",
+        "message": "",
+        "text": "[S1] 全省提供公务员岗位不少于1.5万个",
+        "detail": "",
+        "model": "deepseek/deepseek-v4.1-flash",
+        "elapsedMs": 8577,
+        "clientElapsedMs": 9396,
+        "usage": {
+          "promptTokens": 213,
+          "completionTokens": 400,
+          "totalTokens": 613,
+          "estimated": false,
+          "usageUnknown": false,
+          "costYuan": 0.000153,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25
+        },
+        "usageSummary": {
+          "month": "2026-10",
+          "calls": 813,
+          "failures": 52,
+          "promptTokens": 478664,
+          "completionTokens": 168490,
+          "totalTokens": 647154,
+          "costYuan": 0.161861,
+          "capYuan": 50,
+          "warnRatio": 0.8,
+          "warnThresholdYuan": 40,
+          "warn": false,
+          "exceeded": false,
+          "priceInputPerMillion": 0.25,
+          "priceOutputPerMillion": 0.25,
+          "updatedAt": "2026-10-30T02:16:23.942Z"
+        },
+        "capWarning": "",
+        "warnings": [
+          "升学资料注入 2 段（语料版本 adv-corpus-71b5cec1700d）"
+        ],
+        "safety": {
+          "provider": "openai",
+          "api": "text-moderation",
+          "passed": true,
+          "checked": true,
+          "detail": "allowed=true｜reason=内容为正常就业信息，不涉及违规。"
+        },
+        "timings": {
+          "preflightMs": 308,
+          "safetyNetworkMs": 3282,
+          "accountingMs": 282,
+          "inputSafetyMs": 1743,
+          "modelNetworkMs": 4660,
+          "modelMs": 4748,
+          "outputSafetyMs": 1734,
+          "citationMs": 0
+        },
+        "advancement": {
+          "corpusVersion": "adv-corpus-71b5cec1700d",
+          "verified": true,
+          "refused": false,
+          "violations": [],
+          "sourceIds": [
+            "gd-employment-2026#civil-servant",
+            "gd-employment-2026#public-institution"
+          ],
+          "sources": [
+            {
+              "id": "gd-employment-2026#civil-servant",
+              "documentId": "gd-employment-2026",
+              "title": "2026年广东省高校毕业生就业创业十大行动方案",
+              "documentNumber": "粤就劳发〔2026〕1号",
+              "issuer": "广东省就业促进和劳动保护工作领导小组",
+              "publishedAt": "2026-03-28",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
+              "quote": "全省提供公务员岗位不少于1.5万个"
+            },
+            {
+              "id": "gd-employment-2026#public-institution",
+              "documentId": "gd-employment-2026",
+              "title": "2026年广东省高校毕业生就业创业十大行动方案",
+              "documentNumber": "粤就劳发〔2026〕1号",
+              "issuer": "广东省就业促进和劳动保护工作领导小组",
+              "publishedAt": "2026-03-28",
+              "applicableYear": 2026,
+              "applicableRegion": "广东省",
+              "collectedAt": "2026-10-03",
+              "sourceUrl": "https://hrss.gd.gov.cn/zwgk/xxgkml/bmwj/qtwj/jycy/content/mpost_4880166.html",
+              "quote": "全年全省提供事业单位岗位不少于5万个"
+            }
+          ]
+        }
+      },
+      "independentVerify": {
+        "refused": false,
+        "violations": []
+      },
+      "judge": {
+        "delivery": "model_answer",
+        "mustContainInModel": true,
+        "mustContainInSources": false,
+        "expectedPassageInTopN": true
+      }
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e11",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e11",
+      "type": "guard_缺年份",
+      "question": "广东三二分段转段这次统考时间能查到吗？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "clarify",
+      "expectedAnswer": "应追问适用范围",
+      "expectedPassages": [],
+      "mustContain": [],
+      "local": {
+        "behavior": "clarify",
+        "passageIds": [],
+        "answer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "note": "请明确适用范围后再检索，不自动套用语料年份或地区",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "guardCorrect": true
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e12",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e12",
+      "type": "guard_缺地区",
+      "question": "2026年普通专升本网上缴费能到哪一天？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "clarify",
+      "expectedAnswer": "应追问适用范围",
+      "expectedPassages": [],
+      "mustContain": [],
+      "local": {
+        "behavior": "clarify",
+        "passageIds": [],
+        "answer": "请先确认你要查的年份和地区。当前语料只有广东省的已收录年份，未确认前不给日期或条件答案。",
+        "note": "请明确适用范围后再检索，不自动套用语料年份或地区",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "guardCorrect": true
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e13",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e13",
+      "type": "guard_未来年份",
+      "question": "广东2029年高校毕业生事业单位招聘计划有多少个岗位？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "refuse",
+      "expectedAnswer": "不在已收录范围或实时薪酬，拒答不编造",
+      "expectedPassages": [],
+      "mustContain": [],
+      "local": {
+        "behavior": "refuse",
+        "passageIds": [],
+        "answer": "无法核实：语料只收录 2026 年的官方文件，2029 年还没有收录。我不会把 2026 年的日期当成 2029 年的答案。",
+        "note": "年份未收录（已收录 2026）",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "guardCorrect": true
+    },
+    {
+      "key": "advancement-heldout-20261030-e:e14",
+      "set": "advancement-heldout-20261030-e",
+      "id": "e14",
+      "type": "guard_实时薪酬",
+      "question": "广东2026年广州的软件测试实习岗位现在月薪具体多少？",
+      "questionSource": "maintainer_design",
+      "expectedBehavior": "refuse",
+      "expectedAnswer": "不在已收录范围或实时薪酬，拒答不编造",
+      "expectedPassages": [],
+      "mustContain": [],
+      "local": {
+        "behavior": "refuse",
+        "passageIds": [],
+        "answer": "无法核实：我的语料里没有薪资这类数据，也不提供实时信息。请从官方入口查看。",
+        "note": "问的是语料明确不含的数据（薪资）",
+        "resolvedScope": null
+      },
+      "done": true,
+      "fingerprint": "[{\"docs/evidence/fresh-quality-2026-10-30/advancement-questions-e.json\":\"4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd\"},{\"access.js\":\"3c15fd52c65b1f8f18c610afc17cd8655297368f5429362e79297b95206d1aa9\",\"advancement-corpus.js\":\"2d3620447b6ae5f5e142251203310e1cca8ff91eee988c1847668a45ad64e1da\",\"advancement-query-corpus.js\":\"abf6f52503d89fc304b5ce2d2c7715b6b18fd8bb7d3870fc16d2b5fe901af752\",\"advancement-query.js\":\"771b696ef16c60465c2a8204a02cc730036e8de59aa73f3c25b237196aaa8037\",\"advancement.js\":\"35b14db111b14b7498b82104c4cf17e0eb1d9330f5f3aba3335a674f6b6b68ce\",\"client/index.js\":\"1fe5b31203fbc3e162bd72bd747ba9ceeddeb5f48150ecd1248e98fdafa368eb\",\"client/model.js\":\"81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c\",\"config.js\":\"5f1b86c9dcc90694e6f0fd92ec95d6173038755c4bfe4a6d768664d6362892b7\",\"config.json\":\"b380eda253b1b6911dad2f164c872dfbc5e6ba612e80c31018be6b4eda0d7320\",\"defense-materials.js\":\"e2e7c316e5f26b2365066c4e86ef7d1cc76012bb5b7909b89948ffa1ab52d54f\",\"defense.js\":\"b0db018ccdb4dc2c6628bbc863549575bad9273eacb2d8a3afb62a9883e5f46f\",\"department-corpus.js\":\"345d09e7aca196bbcee2d2a7d0dabcb6dd709a8092ed28e6a7ad0fe0790e9e4e\",\"errors.js\":\"a0df416db1e10ad40e30c0ea4433dad22035eac5e5e649432b0368cd1cfaf89f\",\"http.js\":\"a98fa322cf86c494d8a4508762fb985a59be28f62c3e2235a45307952390f741\",\"index.js\":\"f240cc8a4b9d710a64c9e23f141a8e8ce3d53d162dd0d84a6f1a5dbd9c30fd5d\",\"package-lock.json\":\"9c048841133c7e3cfd0b8a710e4a315b67a745bd9be650dd5abbf56dcc4867cd\",\"package.json\":\"a459fc646e4dba316c408dac48f9feb88381cc6433787a25e28cddb26a9843d4\",\"probe.js\":\"90599bea94d1ce2e2a64178e46d241fe6d558e5b14af2d43faa73c954a16b63c\",\"providers.js\":\"a0806dcdf59015e0722094cb622489c28e2c5567c35bd39bcc3df049557329e1\",\"rag.js\":\"fc9cf27949a9ac692dd6c816cff572b5a1ff2e574ce40bd2d6cb9f0a31e46e08\",\"safety.js\":\"ddc81f3d98445fe5745715d4265c47c4d404a9f0a83e802304b41e94e437b301\",\"types.js\":\"d43aa81f5bc89faa359e0f97c814ba25155591ff078fbb9bfd40f8c7c9683230\",\"usage.js\":\"de3cdb76c9a541c94f68de8891121b6b799c6744949ff62eb011668ba2df272e\",\"vision.js\":\"ff4b005ae01207bcc1d48d160f56a1d75295fa7052972f11da928d69503da5f8\"}]",
+      "guardCorrect": true
+    }
+  ],
+  "originalPrivateRecordSha256": "8930b5b107721461b5203416ac6f78c975cd26cad4a779b5d7f35b956da69e29"
+}

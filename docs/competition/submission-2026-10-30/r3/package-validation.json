@@ -1,0 +1,48 @@
+{
+  "sourceCommit": "285811e42ef85c58f48f5059283b470ac9c25295",
+  "sourcePayloadSha256": "b83f810177d2922d878cfbbb42fdefa1f5dc58294d1d75ea24936676af3dfd5b",
+  "verifiedAt": "2026-10-30T02:35:10.799586+00:00",
+  "validatedDraftSha256": "c77a84a05e64941d7a3ef9dbb6b38097f1c49860555f4fdb1137bc52ae1e1d0a",
+  "cleanExtraction": true,
+  "realCloudCalls": 0,
+  "realBusinessModelCalls": 0,
+  "realDevice": false,
+  "steps": [
+    {
+      "name": "install",
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "exitCode": 0,
+      "seconds": 11.13,
+      "passed": true
+    },
+    {
+      "name": "typecheck",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "seconds": 4.68,
+      "passed": true
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "seconds": 4.69,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "criticalArtifactsPresent": true,
+  "nonGeneratedSourceBytesUnchanged": true,
+  "generatedSourceNormalization": [
+    {
+      "path": "源代码/miniprogram/services/defense/reader-data.ts",
+      "reason": "generator CRLF to LF only",
+      "beforeSha256": "9c96bfa89627fbb6226bc4bc131aaf33bc8fb5a49a72fb6027aa6841bafa5ab9",
+      "afterSha256": "1d69ecd04dfc8e33e3695ebc78df8b0570a7c29246cea7de980970a58ce5b405"
+    }
+  ],
+  "sourceFileCount": 260,
+  "packagedWeek4Token1200AndCampusGuardVerified": true,
+  "builtTitle": "岭南小栈",
+  "validationScope": "clean extracted source install/typecheck/build and packaged pure-runtime behavior; not full source-subset tests, cloud deployment, live model or device acceptance"
+}

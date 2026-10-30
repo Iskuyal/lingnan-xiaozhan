@@ -61,6 +61,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
+- [部门问答守卫与缺失说明修正（现有布局下的文案对照评审件）](department-qa-guard-2026-10-30/README.md)
 - [正式作品名同步（明确命名下的导航文字更新）](app-name-2026-10-29/README.md)
 
 - [部门动态缺失范围文案修补（本轮委托执行、自查；不改布局）](department-qa-clarity-2026-10-29/README.md)
@@ -70,9 +71,9 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 - [全模块界面改版](campus-refresh/README.md)
 - [课表改版](timetable/README.md)
 - [课表主页可读性返工](timetable-readability/README.md)
-- [目标日（整体待评审）](goal-days/README.md)
-- [校历与考试（整体待评审）](exam-calendar/README.md)
-- [体测估算（BMI 来源纠错，整体待评审）](fitness-calc/README.md)
+- [目标日（当前规则已于2026-10-30定稿）](goal-days/README.md)
+- [校历与考试（当前范围与规则已于2026-10-30定稿）](exam-calendar/README.md)
+- [体测估算（0分下限口径于2026-10-30确认，保留国家参考限制）](fitness-calc/README.md)
 - [升学问答（澄清纠错，整体待评审）](advancement-qa/README.md)
 - [项目讲解与答辩练习（G2 设计图与业务契约，整体待评审）](project-defense/README.md)
 - [校长审核材料：功能、使用过程与最终结果](principal-showcase-v5/README.md)（仅展示材料，不修改小程序）

@@ -1,0 +1,53 @@
+{
+  "mode": "direct",
+  "requestedAt": "2026-10-30T01:56:39.657Z",
+  "request": {
+    "action": "usage"
+  },
+  "elapsedMs": 3014,
+  "result": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 780 次调用、632574 token、0.15821100000000024 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 780,
+      "failures": 52,
+      "promptTokens": 470411,
+      "completionTokens": 162163,
+      "totalTokens": 632574,
+      "costYuan": 0.15821100000000024,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-30T01:50:06.155Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 109
+    },
+    "elapsedMs": 109,
+    "userDailyLimit": {
+      "day": "2026-10-30",
+      "used": 42,
+      "limit": 60,
+      "remaining": 18
+    }
+  }
+}

@@ -199,6 +199,38 @@ test('变更转提交数据(新增):周次复用 parseWeekNotation,不认识保�
   assert.equal(weekly.note, '');
 });
 
+test('明确单周的无效范围或附加条件不按某一周保存', () => {
+  const { buildChangeInput } = assistant();
+  const base = { name: '单周项目实践', teacher: '', weekday: 4, startSection: 9, endSection: 10, location: '图书馆研讨室' };
+  for (const weekText of ['第0周', '第31周', '第4周以后', '第4周或第5周', '第4周（待定）']) {
+    const input = buildChangeInput({ ...base, weekText });
+    assert.equal(input.weeksRecognized, false, weekText);
+    assert.equal(input.weekText, weekText, '保留不能确认的原文');
+    assert.ok(input.warnings.some((warning) => /周次/u.test(warning)));
+  }
+});
+
+test('明确单周的AI提案确认后只在指定教学周显示', () => {
+  const { parseAssistantReply, buildChangeInput, summarizeChange } = assistant();
+  const { occursInWeek } = loadCompiled('dist/services/timetable/view.js');
+  const reply = parseAssistantReply(JSON.stringify({ kind: 'change', action: 'add', course: {
+    name: '单周项目实践', teacher: '', weekday: 4, startSection: 9, endSection: 10, weekText: '第4周', location: '图书馆研讨室',
+  }, message: '仅第4周，确认后添加。' }));
+  assert.equal(reply.kind, 'change');
+  const input = buildChangeInput(reply.course);
+  assert.equal(input.weeksRecognized, true);
+  assert.deepEqual(plain(input.weeks), [4]);
+  assert.equal(input.weekText, '第4周', '识别后仍保留模型返回的原文');
+  assert.equal(input.warnings.length, 0);
+  const summary = summarizeChange(reply.course, 'add').text;
+  assert.match(summary, /周次：第 4 周/u);
+  assert.doesNotMatch(summary, /待核对/u);
+  const saved = { ...COURSES[0], ...input };
+  assert.equal(occursInWeek(saved, 3), false);
+  assert.equal(occursInWeek(saved, 4), true);
+  assert.equal(occursInWeek(saved, 5), false);
+});
+
 test('变更转提交数据(修改):只应用这次指定的字段,教师/地点/学分/周次/来源原样保留', () => {
   const { buildChangeInput } = assistant();
   const current = COURSES[0];

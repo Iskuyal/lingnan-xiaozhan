@@ -1,0 +1,110 @@
+{
+  "updatedAt": "2026-10-30T06:14:17.912780+00:00",
+  "evidenceCommit": "c6e489e93540330127866741155848612fd4f1e0",
+  "pullRequest": 144,
+  "results": [
+    {
+      "number": 90,
+      "title": "目标日当前规则已定稿并完成",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/90",
+      "readbackVerified": true
+    },
+    {
+      "number": 91,
+      "title": "校历与考试日期卡按当前范围定稿",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/91",
+      "readbackVerified": true
+    },
+    {
+      "number": 92,
+      "title": "体测参考估算已定稿：表外0分并注明限制",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/92",
+      "readbackVerified": true
+    },
+    {
+      "number": 24,
+      "title": "本版采用用户填写学期起算日，官方日期查证不再作为前置",
+      "state": "closed",
+      "stateReason": "not_planned",
+      "url": "https://github.com/Iskuyal/wx-match/issues/24",
+      "readbackVerified": true
+    },
+    {
+      "number": 4,
+      "title": "核心业务当前版联通与真实AI演示复核完成",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/4",
+      "readbackVerified": true
+    },
+    {
+      "number": 6,
+      "title": "七项材料与r3完整包已归档，上报按负责人关闭",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/6",
+      "readbackVerified": true
+    },
+    {
+      "number": 116,
+      "title": "展示材料与5分31秒真实AI实录已交付",
+      "state": "closed",
+      "stateReason": "completed",
+      "url": "https://github.com/Iskuyal/wx-match/issues/116",
+      "readbackVerified": true
+    },
+    {
+      "number": 5,
+      "title": "788项回归与实录已交付，AI质量/时延和资讯原件仍保留",
+      "state": "open",
+      "stateReason": null,
+      "url": "https://github.com/Iskuyal/wx-match/issues/5",
+      "readbackVerified": true
+    },
+    {
+      "number": 93,
+      "title": "来源与检索PoC保留条件性go，独立质量仍未闭环",
+      "state": "open",
+      "stateReason": null,
+      "url": "https://github.com/Iskuyal/wx-match/issues/93",
+      "readbackVerified": true
+    },
+    {
+      "number": 94,
+      "title": "升学1200-token已接入，E首评7/10且8秒门槛未达",
+      "state": "open",
+      "stateReason": null,
+      "url": "https://github.com/Iskuyal/wx-match/issues/94",
+      "readbackVerified": true
+    }
+  ],
+  "remainingOpen": [
+    {
+      "number": 94,
+      "title": "升学1200-token已接入，E首评7/10且8秒门槛未达",
+      "url": "https://github.com/Iskuyal/wx-match/issues/94"
+    },
+    {
+      "number": 93,
+      "title": "来源与检索PoC保留条件性go，独立质量仍未闭环",
+      "url": "https://github.com/Iskuyal/wx-match/issues/93"
+    },
+    {
+      "number": 5,
+      "title": "788项回归与实录已交付，AI质量/时延和资讯原件仍保留",
+      "url": "https://github.com/Iskuyal/wx-match/issues/5"
+    }
+  ],
+  "schoolSubmission": {
+    "closedByOwner": true,
+    "performed": false,
+    "receipt": null
+  },
+  "independentQualityPassed": false
+}

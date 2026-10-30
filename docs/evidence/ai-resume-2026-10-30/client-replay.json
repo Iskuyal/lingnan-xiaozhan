@@ -1,0 +1,106 @@
+{
+  "mode": "native_client_replay_of_existing_model_responses",
+  "businessAiCalls": 0,
+  "realDevice": false,
+  "runtime": {
+    "maxTokens": 1200,
+    "checks": [
+      {
+        "id": "s02",
+        "turn": {
+          "role": "assistant",
+          "text": "**覆盖校区：** 广州校区、清远校区。\n来源：学校官网学生组织页面\n\n**职能部门（4 个）：**\n- 青枢部\n- 青创部\n- 青拓部\n- 青宣部\n\n**志愿服务队（1 支）：**\n- “红小荔”志愿服务队\n\n补充说明：根据学校官网资料，青年志愿者联合会设主席团和上述 4 个职能部门，并建有“红小荔”志愿服务队。主席团是组织架构中的一部分，不属于职能部门，也不属于志愿服务队。\n来源：学校官网学生组织页面\n\n联系方式：官网未公布。"
+        }
+      },
+      {
+        "id": "s12",
+        "turn": {
+          "role": "assistant",
+          "text": "官网未公布。\n\n已核实的资料中，校学生会只公布了组织性质、宗旨和下设部门（权益部、文娱部、器材部、体育部、学创部），未公布任何值班安排、摄影器材借用流程、借用时段或负责人员名单。因此无法提供“下周六摄影器材借用值班表”及各时段负责人信息。\n\n- 值班表、时段安排：官网未公布\n- 负责人员及联系方式：官网未公布\n- 摄影器材借用的具体办理方式：官网未公布\n\n本次提问也没有附带【部门动态检索结果】，故与器材借用相关的动态同样为“官网未公布”。\n\n来源：学校官网学生组织页面"
+        }
+      },
+      {
+        "id": "s13",
+        "turn": {
+          "role": "assistant",
+          "text": "当前资料仅提供以下活动条目（标题级原文）及官网发布时间。标题未列明的主办承办、人员姓名或名单、人数、入选条件、报名入口及截止时间、联系方式、经费、具体地点和当前最新进度，均无法据此核实；官网发布时间不能直接当作活动或会议召开日期。\n\n学生社团进社区｜第二期圆满落幕，下期敬请期待！\n官网发布时间：2026-03-09\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_26999\n\n学生社团进社区｜第一期圆满落幕，下期精彩待续！\n官网发布时间：2026-03-06\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_26965\n\n学生社团进社区 第三期圆满落幕，下期未完待续！\n官网发布时间：2026-03-09\n来源：https://lnc.edu.cn/tw/djxf/djhd/content_27005",
+          "warning": "条目来自核查于 2026-09-18 的资料快照，不代表当前完整活动进度。",
+          "replaced": true,
+          "modelText": "关于《学生社团进社区｜第二期圆满落幕，下期敬请期待！》这一条动态，当前检索结果只提供了标题和官网发布时间（2026-03-09），没有提供参与人数、经费或具体举办地点等信息。\n\n这些细节当前资料未提供，无法核实。",
+          "citations": [
+            {
+              "title": "学生社团进社区｜第二期圆满落幕，下期敬请期待！",
+              "publishedAt": "2026-03-09",
+              "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_26999",
+              "departmentId": "student-club-management",
+              "departmentName": "校学生社团管理部",
+              "score": 45.21
+            },
+            {
+              "title": "学生社团进社区｜第一期圆满落幕，下期精彩待续！",
+              "publishedAt": "2026-03-06",
+              "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_26965",
+              "departmentId": "student-club-management",
+              "departmentName": "校学生社团管理部",
+              "score": 29.76
+            },
+            {
+              "title": "学生社团进社区 第三期圆满落幕，下期未完待续！",
+              "publishedAt": "2026-03-09",
+              "sourceUrl": "https://lnc.edu.cn/tw/djxf/djhd/content_27005",
+              "departmentId": "student-club-management",
+              "departmentName": "校学生社团管理部",
+              "score": 21.78
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "usageAfter": {
+    "ok": true,
+    "action": "usage",
+    "failureClass": "",
+    "message": "",
+    "detail": "当月累计 813 次调用、647154 token、0.16186100000000025 元（上限 50 元，告警线 40 元）",
+    "feature": "usage",
+    "provider": "",
+    "model": "",
+    "text": "",
+    "safety": null,
+    "usage": null,
+    "usageSummary": {
+      "month": "2026-10",
+      "calls": 813,
+      "failures": 52,
+      "promptTokens": 478664,
+      "completionTokens": 168490,
+      "totalTokens": 647154,
+      "costYuan": 0.16186100000000025,
+      "capYuan": 50,
+      "warnRatio": 0.8,
+      "warnThresholdYuan": 40,
+      "warn": false,
+      "exceeded": false,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25,
+      "updatedAt": "2026-10-30T02:16:23.844Z"
+    },
+    "capWarning": "",
+    "warnings": [],
+    "citations": [],
+    "advancement": null,
+    "probe": null,
+    "timings": {
+      "preflightMs": 70
+    },
+    "elapsedMs": 70,
+    "userDailyLimit": {
+      "day": "2026-10-30",
+      "used": 53,
+      "limit": 60,
+      "remaining": 7
+    }
+  },
+  "passed": true
+}

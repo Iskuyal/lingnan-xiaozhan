@@ -190,6 +190,7 @@ function summarizeCall(state) {
     elapsedMs: result.elapsedMs ?? state.elapsedMs ?? null,
     clientElapsedMs: state.elapsedMs ?? null,
     usage: result.usage ?? null,
+    usageSummary: result.usageSummary ?? null,
     capWarning: typeof result.capWarning === 'string' ? result.capWarning : '',
     warnings: Array.isArray(result.warnings) ? result.warnings : [],
     safety: result.safety ?? null,
@@ -251,16 +252,29 @@ function isCompleteRecord(record) {
 /** 不自动重试额度、审核配额或记账故障；原始失败照常落盘。 */
 function stopReason(call) {
   if (call.failureClass === 'quota_exhausted') return 'quota_exhausted';
+  if (call.invoked !== true) return 'transport_failed';
   const diagnostic = [call.detail ?? '', ...(call.warnings ?? [])].join(' ');
   if (/记账|核账|accounting|审核.*配额|检测.*配额/iu.test(diagnostic)) return 'accounting_or_safety_quota';
+  if (!Number.isFinite(call.usage?.costYuan) || call.usage.costYuan < 0 || call.usage.usageUnknown === true
+    || call.usage.estimated === true || /用量未知|费用未知/u.test(diagnostic)) return 'call_cost_unknown';
+  if (call.ok === true && call.safety?.checked !== true) return 'safety_unchecked';
   return '';
+}
+
+/** 子预算同时计入月账本里的审核费用，无法读出增量时停止。 */
+function budgetStopReason(baseline, current, accountedCostYuan, limitYuan) {
+  if (!Number.isFinite(limitYuan) || limitYuan <= 0) return 'invalid_cost_budget';
+  if (!Number.isFinite(baseline?.costYuan) || !Number.isFinite(current?.costYuan)
+    || current.month !== baseline.month || current.costYuan < baseline.costYuan) return 'ledger_cost_unknown';
+  return Math.max(accountedCostYuan, current.costYuan - baseline.costYuan) >= limitYuan ? 'estimated_cost_budget' : '';
 }
 
 function validateBudget(file, maxCalls) {
   if (!file) throw new Error('真实调用前须 --budget=<预算JSON>，登记用量快照、个人日余量与本批预算');
   const budget = JSON.parse(fs.readFileSync(file, 'utf8'));
   if (!budget.usageSnapshot || !budget.registeredAt || !Number.isInteger(budget.maxCloudCalls)
-    || budget.maxCloudCalls < maxCalls || !budget.personalDailyLimit || budget.safetyQuota === undefined) {
+    || budget.maxCloudCalls < maxCalls || !budget.personalDailyLimit || budget.safetyQuota === undefined
+    || !Number.isFinite(budget.maxEstimatedCostYuan) || budget.maxEstimatedCostYuan <= 0) {
     throw new Error('预算登记不完整或 --max-calls 超过预算');
   }
   const daily = budget.personalDailyLimit;
@@ -352,6 +366,9 @@ async function run() {
   let cloudAttempts = 0;
   let exitCode = 0;
   let stopped = '';
+  let accountedCostYuan = 0;
+  let observedLedgerIncreaseYuan = null;
+  const budgetBaseline = JSON.parse(fs.readFileSync(budget.usageSnapshot, 'utf8')).result.usageSummary;
   try {
     mini = await connectMini();
     await mini.callWxMethod('reLaunch', { url: '/pages/home/index' });
@@ -432,6 +449,11 @@ async function run() {
         ].join(' '));
         console.log('');
         stopped = stopReason(call);
+        if (Number.isFinite(call.usage?.costYuan)) accountedCostYuan += call.usage.costYuan;
+        stopped ||= budgetStopReason(budgetBaseline, call.usageSummary, accountedCostYuan, budget.maxEstimatedCostYuan);
+        if (Number.isFinite(call.usageSummary?.costYuan) && call.usageSummary.month === budgetBaseline.month) {
+          observedLedgerIncreaseYuan = Number((call.usageSummary.costYuan - budgetBaseline.costYuan).toFixed(6));
+        }
         if (stopped) {
           console.log(`停止后续真实调用：${stopped}；继续登记未调用题与本地守门结果`);
           exitCode = Math.max(exitCode, 1);
@@ -484,6 +506,7 @@ async function run() {
       },
       cost: {
         cloudAttempts,
+        observedLedgerIncreaseYuan,
         basis: '逐题最新结果的已知费用；完整重复尝试费用须核对JSONL与云端账目',
         totalTokens: answers.reduce((sum, record) => sum + Number(record.modelCall?.usage?.totalTokens ?? 0), 0),
         costYuan: answers.some((record) => record.modelCall?.usage?.costYuan == null && !['quota_exhausted', 'invalid_request'].includes(record.modelCall?.failureClass)) ? null : Number(answers.reduce((sum, record) => sum + Number(record.modelCall?.usage?.costYuan ?? 0), 0).toFixed(6)),
@@ -518,7 +541,7 @@ async function run() {
   process.exitCode = exitCode;
 }
 
-module.exports = { parseArgs, loadQuestions, localAsk, summarizeCall, judgeAnswer, independentVerify, delivery, isCompleteRecord, stopReason, validateBudget };
+module.exports = { parseArgs, loadQuestions, localAsk, summarizeCall, judgeAnswer, independentVerify, delivery, isCompleteRecord, stopReason, budgetStopReason, validateBudget };
 if (require.main === module) {
   run().catch((error) => {
     console.error(error);

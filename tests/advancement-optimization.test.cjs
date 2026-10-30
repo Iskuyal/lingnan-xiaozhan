@@ -72,8 +72,10 @@ test('只读日额度区分月度金额，不增加日计数', async () => {
 });
 
 test('额度、审核配额与记账故障立即停止，预算缺失不能发真实请求', () => {
-  for (const call of [{ failureClass: 'quota_exhausted' }, { warnings: ['用量记账失败'] }, { detail: '记账闸门被占用' }, { detail: '审核配额已耗尽' }]) assert.ok(evaluator.stopReason(call));
-  assert.equal(evaluator.stopReason({ ok: true, warnings: [] }), '');
+  const known = { invoked: true, ok: true, warnings: [], usage: { costYuan: 0.001, estimated: false, usageUnknown: false }, safety: { checked: true } };
+  for (const call of [{ failureClass: 'quota_exhausted' }, { warnings: ['用量记账失败'] }, { detail: '记账闸门被占用' }, { detail: '审核配额已耗尽' }]) assert.ok(evaluator.stopReason({ ...known, ...call }));
+  assert.ok(evaluator.stopReason({ ok: true, warnings: [] }), '缺少真实触发/用量/审核信息不能当成可继续调用');
+  assert.equal(evaluator.stopReason(known), '');
   assert.throws(() => evaluator.validateBudget('', 1));
 });
 

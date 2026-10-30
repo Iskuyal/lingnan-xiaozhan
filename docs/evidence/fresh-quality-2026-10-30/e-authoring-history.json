@@ -1,0 +1,9 @@
+{
+  "modelCallsBeforeFinalFreeze": 0,
+  "oldDraftSHA256": "e0be7970c2c46c059e198706f1cc842c1fdfab739129526830a65ececd2d6a9f",
+  "finalSHA256": "4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd",
+  "changedQuestionIds": [
+    "e06"
+  ],
+  "reason": "e06 draft wrongly asked execution time / incomplete assessment; source only states pass/fail eligibility. Corrected source premise before any 1200-token result; other retrieval precheck failures left unchanged."
+}

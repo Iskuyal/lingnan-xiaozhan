@@ -1,0 +1,8 @@
+{
+  "frozenAt": "2026-10-30T02:04:19.680Z",
+  "questionSetSha256": "4fba77b61b43cadc7a40fa5fe6c072902fdf04c95175b241409e58277edf67bd",
+  "compiledModelSha256": "81537b05435b9a8a5c1981e191af99942cb61889bcf34b43b70dff5faa540a7c",
+  "modelLimit": 1200,
+  "statusAtFreeze": "not_run",
+  "modelResultsUsedToDesignE": 0
+}

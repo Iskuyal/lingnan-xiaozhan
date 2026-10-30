@@ -1,0 +1,130 @@
+{
+  "summary": {
+    "facts": 10,
+    "factsWithModelCalls": 8,
+    "supportedModelAnswers": 7,
+    "fallbacks": 1,
+    "notCalledFacts": 2,
+    "localGuardsCorrect": 4,
+    "localGuardDenominator": 4,
+    "latencyWithin8000ms": 0,
+    "latencyMeasuredCalls": 8,
+    "maxTokens": 1200,
+    "truncatedEmptyAnswers": 0,
+    "ledgerIncreaseYuan": 0.002495,
+    "knownModelCostYuan": 0.001466,
+    "verdict": "NO-GO",
+    "newUnknownCostCalls": 0,
+    "reviewer": "agent_source_review_with_implementation_context",
+    "independentHumanReview": false,
+    "productTunedOnE": false,
+    "sourceGeneralization": "same finite source corpus, new maintainer-designed wordings",
+    "notDirectABComparison": "D and E have different questions; do not interpret 6/10 versus 7/10 as a controlled improvement rate."
+  },
+  "rows": [
+    {
+      "id": "e01",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 13844,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e02",
+      "supportedModelAnswer": false,
+      "modelCalled": true,
+      "delivery": "fallback_sources",
+      "clientElapsedMs": 9107,
+      "reason": "检索未命中缴费截止段落，随后第三方输出审核以“内容不完整，无法判断是否适宜展示”拒绝，按原文降级；不算模型成功。"
+    },
+    {
+      "id": "e03",
+      "supportedModelAnswer": false,
+      "modelCalled": false,
+      "delivery": "not_called",
+      "clientElapsedMs": null,
+      "reason": "明确题面被本地类别守门转为澄清，未构成可调用模型请求；分母保留，不计正确。"
+    },
+    {
+      "id": "e04",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 14433,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e05",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 11672,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e06",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 11235,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e07",
+      "supportedModelAnswer": false,
+      "modelCalled": false,
+      "delivery": "not_called",
+      "clientElapsedMs": null,
+      "reason": "明确题面被本地类别守门转为澄清，未构成可调用模型请求；分母保留，不计正确。"
+    },
+    {
+      "id": "e08",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 12410,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e09",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 11231,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e10",
+      "supportedModelAnswer": true,
+      "modelCalled": true,
+      "delivery": "model_answer",
+      "clientElapsedMs": 9396,
+      "reason": "逐句完整对应已返回的S1原文，题目子问、条件与比较词保留。"
+    },
+    {
+      "id": "e11",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "e12",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "e13",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "e14",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    }
+  ]
+}

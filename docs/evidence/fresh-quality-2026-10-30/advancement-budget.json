@@ -1,0 +1,16 @@
+{
+  "registeredAt": "2026-10-30T01:46:13.333400+00:00",
+  "usageSnapshot": "docs/evidence/fresh-quality-2026-10-30/usage-before-advancement.json",
+  "personalDailyLimit": {
+    "day": "2026-10-30",
+    "used": 32,
+    "limit": 60,
+    "remaining": 28
+  },
+  "maxCloudCalls": 10,
+  "maxEstimatedCostYuan": 0.05,
+  "safetyQuota": "openai remaining quota not exposed; stop on safety/quota/accounting/unknown cost, no retries",
+  "accountingReconciled": false,
+  "scope": "Frozen D first evaluation, 10 facts and 4 local gates; no product/prompt/model/config changes",
+  "collectorSha256": "ffc1114a577f5bdd3de95abb485b51e364e013df318dd52f47001c9c63e519d6"
+}

@@ -1,0 +1,253 @@
+{
+  "datasetId": "advancement-heldout-20261030-e",
+  "frozenAt": "2026-10-30T02:04:19.677Z",
+  "source": "maintainer_design",
+  "realStudentSamples": 0,
+  "maxTokens": 1200,
+  "sourceSnapshotFile": "advancement-source.json",
+  "sourceSnapshotSha256": "4e15a883cbbeba1d09b4b5720778205e8826cf44698d18d4dedbed7d9178892d",
+  "judgeRules": {
+    "fact": "10事实题为分母，模型上屏、全部子问有原文支持，不能删条件、否定或比较词。原文降级不算模型成功。",
+    "gate": "事实≥80%、4守门全对、上屏事实出处支持100%、无未支持断言；时延独立≤8000ms。"
+  },
+  "independenceBoundary": "Frozen before any 1200-token model result. New wordings, same limited corpus, maintainer-designed and implementation-aware, no independent human/student generalization. Do not tune on this batch.",
+  "questions": [
+    {
+      "id": "e01",
+      "type": "fact_专升本",
+      "question": "依据广东2026年普通专升本文件，网上预报名开放和关闭的月日、时刻分别是什么？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#register-time"
+      ],
+      "expectedAnswer": "网上预报名时间为2026年1月12日09:00至19日18:00",
+      "mustContain": [
+        "1月12日09:00",
+        "19日18:00"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e02",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本考生，报名费在网上最晚能缴到哪天几点？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#fee-deadline"
+      ],
+      "expectedAnswer": "网上缴费截止时间为1月23日17:00",
+      "mustContain": [
+        "1月23日17:00"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e03",
+      "type": "fact_专升本",
+      "question": "请原句核对广东2026年普通专升本统考安排的两天日期和星期，不要用转段流程代替。",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#exam-time"
+      ],
+      "expectedAnswer": "2026年3月28日（星期六）至29日（星期日）两天",
+      "mustContain": [
+        "3月28日",
+        "29日"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e04",
+      "type": "fact_专升本",
+      "question": "广东2026年普通专升本竞赛加分的15分、10分、5分三档分别对应哪些获奖条件？请保留每档完整条件。",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-zsb-2026#bonus"
+      ],
+      "expectedAnswer": "获得中国国际大学生创新大赛国赛金奖或银奖（团队）、世界职业院校技能大赛金奖、全国职业院校大赛或全国职业技能大赛国赛一等奖及以上的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加15分投档，由高校择优录取。\n获得中国国际大学生创新大赛国赛铜奖或省赛金奖（团队）、世界职业院校技能大赛银奖、全国职业院校大赛或全国职业技能大赛国赛二等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加10分投档，由高校择优录取。\n获得中国国际大学生创新大赛省赛银奖或铜奖（团队）、世界职业院校技能大赛铜奖、全国职业院校大赛或全国职业技能大赛国赛三等奖的高职（专科）学生，可在其普通专升本招生文化课省统考成绩总分的基础上增加5分投档，由高校择优录取。",
+      "mustContain": [
+        "增加15分",
+        "增加10分",
+        "增加5分"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e05",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生通知面向哪一年招收、什么培养类型的全日制学生？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#target"
+      ],
+      "expectedAnswer": "1.2023年试点高职院校招收、符合有关文件要求的三二分段专升本应用型人才培养的全日制学生。",
+      "mustContain": [
+        "2023年",
+        "全日制学生"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e06",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生对基本素质考核的合格要求怎样规定？考核不合格可以报考吗？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#quality-check"
+      ],
+      "expectedAnswer": "2.在试点高职院校学习期间，遵守国家法律法规和校纪校规，基本素质考核为“合格”者。基本素质考核“不合格”的学生，不得报考。",
+      "mustContain": [
+        "合格",
+        "不合格",
+        "不得报考"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e07",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段报名提交预报名资料后，高校应多久完成审核？通过后如何处理，缴费最后期限呢？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#register"
+      ],
+      "expectedAnswer": "2026年转段招生考试实行网上预报名、网上审核和网上缴费。网上预报名时间为2026年1月12日09:00至19日18:00；考生提交预报名资料的48小时内，对口试点本科高校完成资料审核，考生可登录系统查看报名资格审核结果，审核结果为“通过”的考生可以缴费；网上缴费截止时间为1月23日17:00。",
+      "mustContain": [
+        "48小时内",
+        "1月23日17:00"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e08",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生考核具体包括哪三个部分，采用什么考核评价方式？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#parts"
+      ],
+      "expectedAnswer": "试点高校要按照已报省教育厅备案的转段考核方案组织开展转段考核，转段招生考核包括公共课程统一考试科目考核、基本素质考核、专业能力考核共三个部分，实行“分项考核、综合评价”。",
+      "mustContain": [
+        "公共课程统一考试科目考核",
+        "基本素质考核",
+        "专业能力考核",
+        "分项考核、综合评价"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e09",
+      "type": "fact_三二分段",
+      "question": "广东2026年三二分段转段招生对广东应征入伍的退役士兵考生免考哪些内容？有三等功及以上时又怎样记等级？",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-segmented-2026#vet-soldier"
+      ],
+      "expectedAnswer": "从广东省应征入伍的退役大学生士兵考生，免于文化课考试（统一考试科目，下同）；在服义务兵役期间荣立三等功及以上奖励的退役大学生士兵，免于参加文化课考试、专业能力考核，并将专业能力考核等级定为合格。",
+      "mustContain": [
+        "免于文化课考试",
+        "三等功及以上",
+        "等级定为合格"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e10",
+      "type": "fact_就业",
+      "question": "广东2026年就业文件中的公务员岗位目标是精确等于1.5万个，还是不少于1.5万个？请按原句核对。",
+      "behavior": "answer",
+      "scope": {
+        "year": 2026,
+        "region": "广东省"
+      },
+      "expectedPassages": [
+        "gd-employment-2026#civil-servant"
+      ],
+      "expectedAnswer": "全省提供公务员岗位不少于1.5万个",
+      "mustContain": [
+        "不少于1.5万个"
+      ],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e11",
+      "type": "guard_缺年份",
+      "question": "广东三二分段转段这次统考时间能查到吗？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "应追问适用范围",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e12",
+      "type": "guard_缺地区",
+      "question": "2026年普通专升本网上缴费能到哪一天？",
+      "behavior": "clarify",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "应追问适用范围",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e13",
+      "type": "guard_未来年份",
+      "question": "广东2029年高校毕业生事业单位招聘计划有多少个岗位？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "不在已收录范围或实时薪酬，拒答不编造",
+      "mustContain": [],
+      "source": "maintainer_design"
+    },
+    {
+      "id": "e14",
+      "type": "guard_实时薪酬",
+      "question": "广东2026年广州的软件测试实习岗位现在月薪具体多少？",
+      "behavior": "refuse",
+      "scope": {},
+      "expectedPassages": [],
+      "expectedAnswer": "不在已收录范围或实时薪酬，拒答不编造",
+      "mustContain": [],
+      "source": "maintainer_design"
+    }
+  ]
+}
