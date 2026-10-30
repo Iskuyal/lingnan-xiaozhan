@@ -5,7 +5,7 @@
  * 小程序包不能引用云函数模块（会把 Excel 库带进包），所以两份实现各自存在。
  * 两者的语法与结果由 `tests/timetable-view.test.cjs` 用真实样本里的全部周次写法对比锁定。
  *
- * 手工输入接受 `1-16`、`1-16周`、`[2-6,8-17]周` 这类写法（单元格原文必须有「周」结尾，
+ * 手工/助手输入接受 `1-16`、`1-16周`、`[2-6,8-17]周`、`第4周` 这类写法（单元格原文必须有「周」结尾，
  * 手工表单的字段本身就叫周次，因此不强制）；不认识的写法一律返回 recognized=false，
  * 由页面保留原文并标记，不替学生猜。
  */
@@ -23,7 +23,10 @@ export interface WeekParseResult {
 
 /** 把 `2-6,8-17` 这类写法展开成周次数组；不认识的写法返回 recognized=false。 */
 export function parseWeekNotation(text: string): WeekParseResult {
-  const match = WEEK_TEXT.exec(String(text).replace(/\u3000/g, ' ').trim());
+  const normalized = String(text).replace(/\u3000/g, ' ').trim();
+  // 模型会沿用学生的「第4周」原话；只有完整、明确的单周写法才转换，附加条件仍待核对。
+  const ordinal = /^第\s*(\d+)\s*周$/u.exec(normalized);
+  const match = WEEK_TEXT.exec(ordinal === null ? normalized : ordinal[1]);
   if (match === null) return { weeks: [], recognized: false };
   const weeks: number[] = [];
   for (const part of match[1].split(WEEK_SEPARATOR)) {
