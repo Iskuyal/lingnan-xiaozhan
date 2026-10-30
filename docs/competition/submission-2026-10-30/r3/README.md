@@ -4,6 +4,8 @@
 
 本版纳入[5分31秒完整真实演示与AI配音](../../demo-video-2026-10-30/README.md)、10张实际视频截图、[13条评委虚构课表](../judge-timetable/README.md)、三门虚构图片样例及本轮真实AI评测/修补证据。原[r1](../README.md)与[r2](../r2/README.md)原位保留，不覆盖历史视频或失败记录。
 
+本轮7张票已按有限范围关闭，#5/#93/#94保留，见[GitHub回读](../../../evidence/ai-resume-2026-10-30/issues-closeout.json)。该票据记录在包定稿后追加，不改动已校验的ZIP原件。
+
 源码冻结`285811e42ef85c58f48f5059283b470ac9c25295`，260个源文件；类型检查与788项仓库测试通过。[独立解压安装、类型检查、构建](package-validation.json)已实际重新执行，并从子包产物核对单周、1200-token和校区守卫修补。该子包排除真实课表夹具和完整tests，不能承诺复现仓库全部测试。[ZIP检查](package-check.json)与[SHA-256](SHA256.txt)绑定最终文件；[PDF检查](pdf-check.json)记录12页逐页渲染核对。
 
 视频中的AI片段按`9cdc533`实际录制；随后源码加入升学1200-token、部门客户端误拦/缺失说明及评测器停止规则，见[版本说明](source-version.json)。回放和新模型首评分开保存，不因修补通过而改写原NO-GO。
