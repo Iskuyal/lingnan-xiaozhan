@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "planned": 14,
+    "attempted": 14,
+    "returned": 14,
+    "supportedAnswers": 9,
+    "supportedAnswerDenominator": 14,
+    "missingExplained": 5,
+    "missingDenominator": 8,
+    "unsupportedDisplay": 2,
+    "unsupportedDisplayDefinition": "Includes system guard warnings that falsely accuse the actual raw answer; not only invented campus-world facts.",
+    "falsePositiveGuards": 2,
+    "latencyMs": {
+      "min": 9571,
+      "max": 16257
+    },
+    "ledgerIncreaseYuan": 0.010212,
+    "modelKnownCostYuan": 0.005012,
+    "verdict": "NO-GO",
+    "firstResultsPreserved": true,
+    "independentHumanReview": false,
+    "realStudentSamples": 0,
+    "productTunedOnThisBatchAtFirstEvaluation": false,
+    "usedForRepairAfterFirstEvaluation": true,
+    "futureUse": "regression_only"
+  },
+  "rows": [
+    {
+      "id": "s01",
+      "supportedAnswer": true,
+      "missingExplained": null,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "2个职能部门及名称与introduction/units逐项一致。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s02",
+      "supportedAnswer": false,
+      "missingExplained": null,
+      "unsupportedDisplay": true,
+      "falsePositiveGuard": true,
+      "reason": "原模型校区、4部门和志愿队区分正确；客户端误把标题“覆盖校区”当成未知校区，并引用不存在的“覆盖校区校区”，替换后未回答子问。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s03",
+      "supportedAnswer": true,
+      "missingExplained": null,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "组织归属及注册/年审外三项职责与introduction一致。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s04",
+      "supportedAnswer": true,
+      "missingExplained": null,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "团建、思想教育与指导组织三方面均对应原简介，没有扩展行政权限。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s05",
+      "supportedAnswer": false,
+      "missingExplained": null,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "快照有3条学生会动态，原模型只列2条；上屏替换又混入团委培训条目并漏掉提案大赛。所列标题日期本身有源，但不完整且范围不符。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s06",
+      "supportedAnswer": true,
+      "missingExplained": null,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "替换展示中包含指定条目的标题、发布日期2026-03-09与原文链接，额外条目亦来自同组织快照。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s07",
+      "supportedAnswer": true,
+      "missingExplained": true,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "上屏明确官网发布时间不能当实际活动/会议日期，并说明当前标题资料不能核实该日期。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s08",
+      "supportedAnswer": true,
+      "missingExplained": true,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "上屏明确主办承办不能由标题或归属确定；展示条目未冒充主办证明。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s09",
+      "supportedAnswer": true,
+      "missingExplained": true,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "结合首尾限定为现有学校学生组织页面资料，姓名与手机两项均说明不能核实，没有生成联系人。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s10",
+      "supportedAnswer": false,
+      "missingExplained": false,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "替换后的通用说明没有逐项回应报名入口、截止时间与联系人，原模型还把服务队混入部门列表。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s11",
+      "supportedAnswer": true,
+      "missingExplained": true,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "上屏与警示明确当前最新进度/完整范围无法由快照核实，没有给出全部结束结论。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s12",
+      "supportedAnswer": false,
+      "missingExplained": false,
+      "unsupportedDisplay": true,
+      "falsePositiveGuard": true,
+      "reason": "原模型是否定性缺失说明；客户端仍以“负责人表述”为理由误拦，警示错误指控推测，替换后也未回应各值班时段。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s13",
+      "supportedAnswer": false,
+      "missingExplained": false,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "通用说明提到人数，但未明确回应经费与具体地点两项缺失；仅列更多标题不算完整答题。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    },
+    {
+      "id": "s14",
+      "supportedAnswer": true,
+      "missingExplained": true,
+      "unsupportedDisplay": false,
+      "falsePositiveGuard": false,
+      "reason": "通用说明明确官网发布时间不是实际举办日，且标题级信息不能核实该日期。",
+      "reviewer": "agent_source_review_with_implementation_context_not_independent_human"
+    }
+  ]
+}

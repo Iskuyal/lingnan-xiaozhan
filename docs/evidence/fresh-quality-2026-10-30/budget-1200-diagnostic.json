@@ -1,0 +1,16 @@
+{
+  "registeredAt": "2026-10-30T02:04:24.169619+00:00",
+  "usageSnapshot": "docs/evidence/fresh-quality-2026-10-30/usage-before-1200-diagnostic.json",
+  "personalDailyLimit": {
+    "day": "2026-10-30",
+    "used": 42,
+    "limit": 60,
+    "remaining": 18
+  },
+  "maxCloudCalls": 3,
+  "maxEstimatedCostYuan": 0.02,
+  "safetyQuota": "openai quota unknown; stop on control or cost failure",
+  "accountingReconciled": false,
+  "scope": "D d07/d09/d10 known truncation diagnostic only, not independent score",
+  "ownerDecision": "raise to1200 and retest 2026-10-30"
+}

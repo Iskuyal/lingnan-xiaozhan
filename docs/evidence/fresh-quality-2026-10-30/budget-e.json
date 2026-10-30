@@ -1,0 +1,15 @@
+{
+  "registeredAt": "2026-10-30T02:13:20.321158+00:00",
+  "usageSnapshot": "docs/evidence/fresh-quality-2026-10-30/usage-before-e.json",
+  "personalDailyLimit": {
+    "day": "2026-10-30",
+    "used": 45,
+    "limit": 60,
+    "remaining": 15
+  },
+  "maxCloudCalls": 10,
+  "maxEstimatedCostYuan": 0.05,
+  "safetyQuota": "openai quota unknown; stop on control/cost failure, no retries",
+  "accountingReconciled": false,
+  "scope": "1200-token frozen E first evaluation; 10 facts and 4 local gates; existing D is regression only"
+}

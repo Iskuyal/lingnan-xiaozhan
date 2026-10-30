@@ -1,0 +1,175 @@
+{
+  "summary": {
+    "plannedFacts": 10,
+    "attemptedFacts": 10,
+    "supportedModelAnswers": 6,
+    "factDenominator": 10,
+    "localGuardsCorrect": 4,
+    "localGuardDenominator": 4,
+    "fallbacks": 4,
+    "truncatedEmptyAnswers": 3,
+    "citationRejected": 1,
+    "latencyWithin8000ms": 0,
+    "latencyDenominator": 10,
+    "clientLatencyMs": {
+      "min": 10591,
+      "max": 13676
+    },
+    "knownModelCostYuan": 0.002077,
+    "ledgerIncreaseYuan": 0.003364,
+    "newUnknownCosts": 0,
+    "verdict": "NO-GO",
+    "independentHumanReview": false,
+    "realStudentSamples": 0,
+    "maxTokensAtFirstEvaluation": 600,
+    "productTunedOnThisBatchAtFirstEvaluation": false,
+    "usedForRepairAfterFirstEvaluation": true,
+    "futureUse": "regression_only"
+  },
+  "rows": [
+    {
+      "id": "d01",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 10636,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "证书等级和取得节点均在S1，完整保留相应专业等条件。"
+    },
+    {
+      "id": "d02",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 11246,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "医院/相应单位与上传节点均完整取自S1，未扩展成医学建议。"
+    },
+    {
+      "id": "d03",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 12925,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "1:1与不得跨组录取或调剂均对应S1整句；否定及前置条件保留。"
+    },
+    {
+      "id": "d04",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 10861,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "考后知分及三个批次1/10/5均完整对应S1。"
+    },
+    {
+      "id": "d05",
+      "supportedModelAnswer": false,
+      "allSubquestionsAnswered": false,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 13676,
+      "within8000ms": false,
+      "delivery": "fallback_sources",
+      "failureClass": "citation_unverified",
+      "detail": "升学问答的模型回答未通过出处校验（s1:uncited_claim），已丢弃该回答，请调用方展示原文摘录",
+      "reason": "出处校验未通过，展示原文降级，不计模型答对。"
+    },
+    {
+      "id": "d06",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 11494,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "主办层级、高职学段、国家三等及省一等条件与优秀等级均保留。"
+    },
+    {
+      "id": "d07",
+      "supportedModelAnswer": false,
+      "allSubquestionsAnswered": false,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 11002,
+      "within8000ms": false,
+      "delivery": "fallback_sources",
+      "failureClass": "model_unavailable",
+      "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+      "reason": "finish_reason=length、reasoning_content存在而答案正文为空；用量已返回，未算模型成功。"
+    },
+    {
+      "id": "d08",
+      "supportedModelAnswer": true,
+      "allSubquestionsAnswered": true,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 10931,
+      "within8000ms": false,
+      "delivery": "model_answer",
+      "failureClass": "",
+      "detail": "",
+      "reason": "S2对应事业单位不少于5万个，S1对应科研助理1万个以上，未混淆引用。"
+    },
+    {
+      "id": "d09",
+      "supportedModelAnswer": false,
+      "allSubquestionsAnswered": false,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 10591,
+      "within8000ms": false,
+      "delivery": "fallback_sources",
+      "failureClass": "model_unavailable",
+      "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+      "reason": "finish_reason=length、reasoning_content存在而答案正文为空；用量已返回，未算模型成功。"
+    },
+    {
+      "id": "d10",
+      "supportedModelAnswer": false,
+      "allSubquestionsAnswered": false,
+      "unsupportedDisplayedModelClaim": false,
+      "clientElapsedMs": 11922,
+      "within8000ms": false,
+      "delivery": "fallback_sources",
+      "failureClass": "model_unavailable",
+      "detail": "模型返回内容为空（OpenAI 兼容格式）；choices=1；finish_reason=length；content=string；reasoning_content=present；error=missing；usage=present",
+      "reason": "finish_reason=length、reasoning_content存在而答案正文为空；用量已返回，未算模型成功。"
+    },
+    {
+      "id": "d11",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "d12",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "d13",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    },
+    {
+      "id": "d14",
+      "status": "local_guard",
+      "correct": true,
+      "modelCalled": false
+    }
+  ]
+}

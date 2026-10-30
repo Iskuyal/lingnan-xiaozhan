@@ -1,0 +1,20 @@
+{
+  "mode": "known-D-regression-only",
+  "maxTokens": 1200,
+  "cases": 3,
+  "visibleSupportedAnswers": 3,
+  "modelCalls": 3,
+  "notIndependentFirstEvaluation": true,
+  "reviewer": "agent_with_implementation_context",
+  "reasons": {
+    "d07": "三年级与毕业证标注完整对应S1，未删除条件",
+    "d09": "S1的招用下限和原则上完成节点保留",
+    "d10": "S1非应届在校生含保留学籍的禁止条件保留"
+  },
+  "clientElapsedMs": {
+    "d07": 16233,
+    "d09": 11369,
+    "d10": 13679
+  },
+  "ledgerIncreaseYuan": 0.001155
+}

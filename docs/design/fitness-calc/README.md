@@ -1,7 +1,8 @@
 # 体测估算
 
-状态：**待评审**（2026-09-29）。三张静态稿已渲染（`png/`），实现已落到
-`miniprogram/pages/fitness/`；待拍板项在最后一节。
+状态：**当前估算口径已由负责人确认（2026-10-30）**。低于表格最低档按0分估算并明确说明，不作为学校正式成绩；继续沿用已接受的原生UI与现有规则提示。三张2026-09-29静态稿及末尾原待拍板项保留历史，不再阻塞。
+
+本轮原生页可打开，完整合成样例81分、缺项不给学年总分均通过；现有BMI先保留一位小数再查表，不把小数档间空隙推成学校规则。[本轮证据与负责人决定](../../evidence/ai-resume-2026-10-30/README.md)。
 
 对应 [Issue #92](https://github.com/Iskuyal/wx-match/issues/92)，标准版本与评分表来源见
 [`docs/product/sources/fitness-standard.md`](../../product/sources/fitness-standard.md)。

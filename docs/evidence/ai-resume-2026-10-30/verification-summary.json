@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "285811e42ef85c58f48f5059283b470ac9c25295",
+  "typecheck": {
+    "passed": true,
+    "command": "npm run typecheck"
+  },
+  "tests": {
+    "passed": true,
+    "command": "npm test",
+    "total": 788,
+    "pass": 788,
+    "fail": 0,
+    "logSha256": "6152f2815dd1718ec47596f7d8ed211d0cc238533db03767d92c7438d0014c0a"
+  },
+  "liveAiRecordingRequests": 5,
+  "newAiCallsForClientReplay": 0,
+  "realDevice": false
+}
