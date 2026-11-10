@@ -59,6 +59,32 @@ async function run() {
     return file;
   }
 
+  /**
+   * 把某个元素滚进视野再截图。
+   *
+   * automator 的 screenshot 拍的是当前视口，不是整页；课表/计划这类长页面
+   * 直接拍会全是顶部导航，评审看到的「证据」就变成空白表格（2026-11-10 踩过）。
+   * 用 mini.evaluate 在页面里滚动，滚完再拍。
+   */
+  async function shotAt(name, selector) {
+    await mini.evaluate((sel) => {
+      const query = wx.createSelectorQuery();
+      query.select(sel).boundingClientRect();
+      query.selectViewport().scrollOffset();
+      query.exec((res) => {
+        const rect = res && res[0];
+        const scroll = res && res[1];
+        if (!rect || !scroll) return;
+        // 往上留 80px，让标题和上一条内容露一点，比贴着屏幕顶端好读。
+        const top = rect.top + (scroll.scrollTop || 0) - 80;
+        wx.pageScrollTo({ scrollTop: Math.max(0, top), duration: 0 });
+      });
+    }, selector);
+    // 滚动是异步渲染，等一帧再拍。
+    await mini.evaluate(() => new Promise((resolve) => setTimeout(resolve, 400)));
+    return shot(name);
+  }
+
   /** 读云端课表的完整快照（含 id），用于写入前后核对与失败兜底。 */
   async function liveCourses() {
     const feed = await mini.evaluate(() => new Promise((resolve) => {
@@ -286,7 +312,7 @@ async function run() {
     }
     assert.equal(readSettled, true, '识别超时：90 秒内既没有提案也没有错误提示');
     assert.notEqual(report.modelReply, null, '识别没有结论：既没有提案也没有错误提示');
-    await shot('03-notice-proposal');
+    await shotAt('03-notice-proposal', '#notice-proposal');
 
     let applied = false;
     if (report.modelReply.kind === 'changes') {
@@ -362,7 +388,7 @@ async function run() {
         const after = await liveCourses();
         assert.equal(after.courses.length, before.courses.length, `撤销后课表应回到 ${before.courses.length} 门，实际 ${after.courses.length}`);
         checks.push(`通知撤销：云端课表回到 ${after.courses.length} 门 ——「${afterUndo.text}」`);
-        await shot('04-notice-after-undo');
+        await shotAt('04-notice-after-undo', '#notice-toast');
       } else {
         notes.push('真实模型这次没有给出可安全写入的 add（补课）提案，写入/撤销链路改用确定性载荷验证');
       }
@@ -410,7 +436,7 @@ async function run() {
       await notice.waitFor(400);
       const injectedButton = await (await notice.$('#notice-apply')).text();
       assert.match(injectedButton, /应用 1 处变更/u, `注入提案后按钮文案不对：${injectedButton}`);
-      await shot('03b-notice-injected');
+      await shotAt('03b-notice-injected', '#notice-proposal');
 
       await tap(notice, '#notice-apply', '应用变更（注入提案）');
       const applyDeadline = Date.now() + 45000;
@@ -443,7 +469,7 @@ async function run() {
       const after = await liveCourses();
       assert.equal(after.courses.length, before.courses.length, `撤销后课表应回到 ${before.courses.length} 门，实际 ${after.courses.length}`);
       checks.push(`通知撤销（确定性载荷）：云端课表回到 ${after.courses.length} 门`);
-      await shot('04-notice-after-undo');
+      await shotAt('04-notice-after-undo', '#notice-toast');
     }
 
     // ────────────────────────── C：目标倒排计划 ──────────────────────────
