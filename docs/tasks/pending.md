@@ -6,7 +6,7 @@
 
 | 当前项 | 状态与下一动作 |
 | --- | --- |
-| AI 创新点 A–D 与界面升级 | **代码完成、866 项测试通过、未端上实测**：A 通知一键调课、B 首页「今天」、C 目标倒排计划、D 语音入口（识别未接入）。下一步需负责人提供 `WECHAT_DEVTOOLS_CLI_TOKEN` 后在开发者工具走一遍：`$env:WECHAT_DEVTOOLS_CLI_TOKEN='<令牌>'; cli cache --clean compile --project dist; cli auto --project dist --auto-port 9420 --trust-project; npm run verify:wechat`（注意 `npm run build` 会让已建立的自动化桥失效，须先 build 再 auto） |
+| AI 创新点 A–D 与界面升级 | **代码完成、868 项测试通过、未端上实测**：A 通知一键调课、B 首页「今天」、C 目标倒排计划、D 语音入口（识别未接入）。下一步需负责人提供 `WECHAT_DEVTOOLS_CLI_TOKEN` 后在开发者工具走一遍：`$env:WECHAT_DEVTOOLS_CLI_TOKEN='<令牌>'; cli cache --clean compile --project dist; cli auto --project dist --auto-port 9420 --trust-project; npm run verify:wechat`（注意 `npm run build` 会让已建立的自动化桥失效，须先 build 再 auto） |
 | D 语音输入的真实接入 | 未做。项目未声明同声传译插件、云函数无 ASR 通道，当前按钮只做诚实降级。若要真做，需先决定插件方案与额度影响，再补设计图与测试 |
 | 首页「全部」二级页 | 未做。设计图 01 里入口收成一排四个，体测/升学/答辩仍在首页「学习与成长」，没有二级页；若评委反馈首页过长再考虑 |
 | 通知提案的批量撤销 | 未做。当前只保留最近一次应用的 10 秒撤销，多批历史不落库 |
