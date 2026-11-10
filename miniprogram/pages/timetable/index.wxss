@@ -99,3 +99,40 @@
 .sheet-foot { display:flex; gap:10px; padding:16px 20px calc(16px + env(safe-area-inset-bottom)); }
 .sheet-btn { flex:1; width:0; min-height:48px; padding:12px; background:#c41c23; color:#fff; font-size:14px; }
 .sheet-btn-warn { background:#fff; color:#8c1614; border:1px solid #b9847c; }
+
+/* ------------------------------------------------------------------
+ * 贴班群通知（设计图 02）：粘贴框、金色提案卡、逐条勾选、深色撤销提示条。
+ * 金 = AI 产出须确认，红 = 学生动作；圆角与色值与 04 视觉语言一致。
+ * ------------------------------------------------------------------ */
+.notice-open { margin-top:12px; }
+.notice-wrap { margin-top:12px; }
+.paste { padding:10px 12px; border:1px dashed var(--control-line,#aa9990); border-radius:10px; background:#fff; }
+.paste-from { margin-bottom:4px; color:var(--text-3,#746760); font-size:11px; }
+.paste-input { width:100%; min-height:64px; padding:0; color:var(--text-2,#6b5d57); font-size:12.5px; line-height:1.7; background:transparent; }
+.notice-read-row { display:flex; margin-top:10px; }
+.notice-read { min-height:44px; }
+.notice-error { margin-top:10px; padding:10px 12px; border-left:3px solid var(--warn,#9a5b1e); border-radius:6px; background:#fff4e4; color:#78420e; font-size:12.5px; line-height:1.8; }
+.proposal { margin-top:12px; border:1px solid var(--ai-line,#e7d3a0); border-radius:12px; background:#fff; overflow:hidden; }
+.proposal-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border-bottom:1px solid var(--ai-line,#e7d3a0); background:var(--ai-soft,#fbf4e2); }
+.proposal-title { color:var(--text,#2b2422); font-size:14.5px; font-weight:700; }
+.change { display:grid; grid-template-columns:22px 1fr; gap:8px; padding:11px 12px; border-bottom:1px solid #f0e6e2; }
+.check { width:20px; height:20px; margin-top:2px; border-radius:5px; background:var(--brand,#c41c23); color:#fff; font-size:13px; line-height:20px; text-align:center; }
+.check.off { background:#fff; border:1.5px solid var(--control-line,#aa9990); }
+.change-body { min-width:0; }
+.change-title { color:var(--text,#2b2422); font-size:14px; font-weight:600; line-height:1.6; }
+.diff { margin-top:5px; font-size:12.5px; line-height:1.7; }
+.diff-old { color:var(--text-3,#746760); text-decoration:line-through; }
+.diff-new { color:var(--brand-ink,#7a1a12); font-weight:700; }
+.diff-arrow { color:var(--text-3,#746760); }
+.diff-lead { color:var(--text-2,#6b5d57); }
+.warnline { margin-top:6px; padding:4px 8px; border-radius:6px; background:#fbf1e6; color:var(--warn,#9a5b1e); font-size:11.5px; line-height:1.75; }
+.warnline.blocked { background:#f6ece8; color:#8c1614; }
+.change-detail { margin-top:6px; color:var(--text-2,#6b5d57); font-size:11.5px; line-height:1.75; }
+.quote { margin-top:6px; padding-left:7px; border-left:2px solid var(--ai-line,#e7d3a0); color:var(--text-3,#746760); font-size:11px; line-height:1.7; }
+.proposal-actions { display:flex; gap:10px; padding:12px; }
+.btn-secondary { min-height:44px; border:1px solid var(--control-line,#aa9990); border-radius:10px; background:#fff; color:var(--brand-ink,#7a1a12); font-size:15px; font-weight:600; }
+.btn-primary { min-height:44px; border-radius:10px; background:var(--brand,#c41c23); color:#fff; font-size:15px; font-weight:600; }
+.toast { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px; border-radius:10px; background:#2b2422; color:#fff; font-size:13px; }
+.toast-text { flex:1; min-width:0; line-height:1.7; }
+.toast-undo { flex:none; padding:2px 6px; color:#f2c96b; font-size:13px; font-weight:700; }
+.diff-note { color:var(--text-3,#746760); }

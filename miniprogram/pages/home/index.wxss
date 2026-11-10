@@ -1,10 +1,54 @@
 .home { min-height:100vh; padding-top:14px; }
 .home-brand { padding:12px 18px; background:var(--brand-deep, #8c1614); }
 .school-logo { display:block; width:100%; max-width:320px; margin:0 auto; }
-.home-intro { margin:16px 0; }
-.home-title { font-family:"Songti SC","STSong","SimSun",serif; font-size:23px; line-height:1.6; font-weight:700; }
-.home-copy { margin-top:4px; font-size:12px; color:var(--text-2, #6b5d57); }
-.home-primary { padding:20px; min-height:112px; color:#fff; border-radius:12px; background:var(--brand, #c41c23); text-align:left; }
+
+/* 抬头：「11月11日 星期二 · 第 11 周」+ 宋体大字问候 + 红色印章（设计图 01 .masthead） */
+.masthead { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin:16px 0 4px; padding-bottom:10px; border-bottom:2px solid var(--brand, #c41c23); }
+.masthead-date { font-size:12px; line-height:1.7; color:var(--text-2, #6b5d57); }
+.masthead-greet { margin-top:2px; font-family:"Songti SC","STSong","SimSun",serif; font-size:26px; line-height:1.3; font-weight:700; color:var(--text, #2b2422); }
+.masthead-seal { flex:none; display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:10px; background:var(--brand, #c41c23); color:#fff; font-family:"Songti SC","STSong","SimSun",serif; font-size:18px; font-weight:700; }
+
+/* 今日简报：金色 = AI 的产出、可追溯；依据条说明这三句话不是凭空来的 */
+.home-brief { margin-top:14px; }
+.brief-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.brief-note { flex:1; text-align:right; font-size:11px; line-height:1.6; color:var(--text-3, #746760); }
+.brief-body { margin-top:8px; }
+.brief-line { display:block; font-size:14.5px; line-height:1.75; color:var(--text, #2b2422); }
+
+/* 今日时间线：左列时刻、右列内容，正在上/下一节只用左侧色条与徽标区分 */
+.timeline { margin-top:4px; background:var(--surface, #ffffff); border:1px solid var(--line, #ded4cf); border-radius:var(--r-card, 24rpx); padding:6px 12px 10px; }
+.timeline .section-head { margin:8px 0 6px; }
+.tl { display:grid; grid-template-columns:58px 1fr; gap:10px; align-items:center; padding:9px 0; border-bottom:1px dashed #eadfda; }
+.tl:last-child { border-bottom:0; }
+.tl-time { font-size:12px; line-height:1.3; color:var(--text-3, #746760); }
+.tl-clock { display:block; font-size:13px; font-weight:700; color:var(--text, #2b2422); }
+.tl-section { display:block; }
+.tl-body { border-left:3px solid #6a8fbf; padding:2px 0 2px 9px; }
+.tl-title { font-size:14.5px; line-height:1.5; font-weight:600; color:var(--text, #2b2422); }
+.tl-detail { font-size:12px; line-height:1.6; color:var(--text-3, #746760); }
+.tl-now .tl-body { border-left-color:var(--brand, #c41c23); }
+.tl-now .tl-clock { color:var(--brand, #c41c23); }
+.tl-free .tl-body { border-left:3px dashed var(--success, #147a70); }
+.tl-free .tl-title { color:var(--success, #147a70); }
+.badge { display:inline-block; margin-left:6px; vertical-align:2px; padding:0 5px; border-radius:var(--r-chip, 12rpx); font-size:10.5px; font-weight:700; line-height:1.6; }
+.badge-now { background:var(--brand, #c41c23); color:#fff; }
+.badge-free { background:var(--success-soft, #e8f3f0); color:var(--success, #147a70); }
+.home-timeline-empty { margin-top:14px; padding:16px; background:var(--surface, #ffffff); border:1px dashed var(--line, #ded4cf); border-radius:var(--r-card, 24rpx); }
+.empty-title { font-size:15px; font-weight:700; line-height:1.6; color:var(--text, #2b2422); }
+.empty-copy { margin-top:4px; font-size:12px; line-height:1.75; color:var(--text-3, #746760); }
+
+/* 问 AI 输入条：红色边框 = 这是你要做的动作；金色提示 = AI 能力边界的话要说清楚 */
+.askbar-wrap { margin-top:16px; }
+.askbar { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--surface, #ffffff); border:1.5px solid var(--brand, #c41c23); border-radius:14px; box-shadow:0 6px 18px rgba(140,22,20,.10); }
+.askbar-input { flex:1; min-width:0; height:24px; font-size:13.5px; line-height:24px; color:var(--text, #2b2422); }
+.askbar-tool { flex:none; display:flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid var(--line, #ded4cf); border-radius:9px; }
+.askbar-icon { width:18px; height:18px; }
+.askbar-go { flex:none; display:flex; align-items:center; justify-content:center; width:34px; height:34px; background:var(--brand, #c41c23); border-radius:9px; color:#fff; font-size:16px; font-weight:700; }
+.askbar-suggest { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.suggest-chip { padding:4px 10px; background:var(--surface, #ffffff); border:1px solid var(--line, #ded4cf); border-radius:var(--r-pill, 999rpx); font-size:12px; line-height:1.6; color:var(--text-2, #6b5d57); }
+
+/* 入口区沿用定稿结构：主卡 + 两列入口 + 三行宽入口 */
+.home-primary { margin-top:14px; padding:20px; min-height:112px; color:#fff; border-radius:12px; background:var(--brand, #c41c23); text-align:left; }
 .primary-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .entry-label { font-size:11px; }
 .entry-title { margin-top:6px; font-size:16px; font-weight:700; line-height:1.5; color:var(--text, #2b2422); }
@@ -33,4 +77,4 @@
 .introduction { padding:14px 15px; background:var(--surface, #ffffff); border-left:3px solid var(--line, #ded4cf); font-size:13px; line-height:1.9; }
 .source-area { margin-top:14px; color:var(--text-3, #746760); font-size:11px; line-height:1.8; }
 .home-footer { margin-top:34px; text-align:center; font-size:11px; color:var(--text-3, #746760); }
-@media (max-width:350px) { .home-title { font-size:21px; } .home-brand { padding:10px 14px; } .entry-main .entry-title { font-size:14px; } }
+@media (max-width:350px) { .masthead-greet { font-size:22px; } .home-brand { padding:10px 14px; } .entry-main .entry-title { font-size:14px; } .tl { grid-template-columns:52px 1fr; gap:8px; } }

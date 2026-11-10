@@ -158,6 +158,56 @@
         <button style="margin-left:0;margin-right:0;width:64px;max-width:none" id="assistant-send" class="qa-send" hover-class="pressed" disabled="{{assistantSending}}" bindtap="sendAssistant">发送</button>
       </view>
       <view class="qa-note">{{assistantNote}}</view>
+
+      <!-- 贴班群通知（设计图 02）：粘贴 → 提案 → 逐条勾选 → 应用 → 10 秒撤销。
+           提案只存在页面内存里，学生点「应用 N 处变更」才写课表。 -->
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="notice-open" class="home-button secondary notice-open" hover-class="pressed" bindtap="toggleNotice">{{noticeOpen ? '收起通知粘贴框' : '贴班群通知，识别课表变更'}}</button>
+      <view wx:if="{{noticeOpen}}" class="notice-wrap">
+        <view class="paste">
+          <view class="paste-from">你粘贴的班群通知（这里只认文字；只是截图的话，可以用「导入课表」里的截图识别）</view>
+          <textarea id="notice-input" class="paste-input" value="{{noticeInput}}" bindinput="onNoticeInput" maxlength="4000" auto-height placeholder="例如：第 12 周周三全天停课，网页设计与制作从第 11 周起改到博雅楼 B604，高数第 13 周周五 5-6 节补课" />
+        </view>
+        <view class="notice-read-row">
+          <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="notice-read" class="home-button notice-read" hover-class="pressed" disabled="{{noticeReading}}" bindtap="readNotice">{{noticeReading ? '正在读…' : '识别变更'}}</button>
+        </view>
+        <view id="notice-hint" class="ai-note">{{noticeHint}}</view>
+        <view id="notice-error" class="notice-error" wx:if="{{noticeError !== ''}}">{{noticeError}}</view>
+
+        <view wx:if="{{noticeProposal !== null}}" id="notice-proposal" class="proposal">
+          <view class="proposal-head">
+            <view class="proposal-title">识别到 {{noticeProposal.rows.length}} 处变更</view>
+            <text class="ai-tag">AI 提案 · 待确认</text>
+          </view>
+          <view wx:for="{{noticeProposal.rows}}" wx:key="index" class="change" data-index="{{item.index}}" bindtap="toggleNoticeRow">
+            <view class="check {{item.checked ? '' : 'off'}}" wx:if="{{item.checked}}">✓</view>
+            <view class="check off" wx:else></view>
+            <view class="change-body">
+              <view class="change-title">{{item.title}}</view>
+              <view class="diff" wx:for="{{item.diffs}}" wx:for-item="diff" wx:key="index">
+                <text wx:if="{{diff.lead !== ''}}" class="diff-lead">{{diff.lead}} </text>
+                <text wx:if="{{diff.old !== ''}}" class="diff-old">{{diff.old}}</text>
+                <text wx:if="{{diff.old !== '' && diff.next !== ''}}" class="diff-arrow"> → </text>
+                <text wx:if="{{diff.next !== ''}}" class="diff-new">{{diff.next}}</text>
+                <text wx:if="{{diff.note !== ''}}" class="diff-note">　{{diff.note}}</text>
+              </view>
+              <view class="warnline" wx:if="{{item.conflict !== ''}}">⚠ {{item.conflict}}</view>
+              <view class="warnline blocked" wx:if="{{item.blocked !== ''}}">{{item.blocked}}</view>
+              <view class="change-detail" wx:if="{{noticeDetailOpen || item.blocked !== ''}}">将写入：{{item.detail}}</view>
+              <view class="quote">原文：{{item.quote}}</view>
+            </view>
+          </view>
+          <view class="proposal-actions">
+            <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="notice-expand" class="btn-secondary" hover-class="pressed" bindtap="toggleNoticeDetail">{{noticeDetailOpen ? '收起逐条说明' : '逐条修改'}}</button>
+            <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="notice-apply" class="btn-primary" hover-class="pressed" disabled="{{noticeProposal.checkedCount === 0 || noticeReading}}" bindtap="applyNotice">应用 {{noticeProposal.checkedCount}} 处变更</button>
+          </view>
+          <view class="ai-note">{{noticeDetailOpen ? '展开后可逐条核对将写入的内容；不想改的那条取消勾选即可，取消的不会写入。' : noticeFooter}}</view>
+        </view>
+
+        <view wx:if="{{noticeToast !== null}}" id="notice-toast" class="toast">
+          <view class="toast-text">{{noticeToast.text}}</view>
+          <view wx:if="{{noticeToast.canUndo}}" id="notice-undo" class="toast-undo" hover-class="pressed" bindtap="undoNotice">撤销</view>
+        </view>
+      </view>
     </view>
   </block>
 

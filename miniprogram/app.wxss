@@ -41,6 +41,12 @@ page {
   --warn-soft: rgba(255,244,228,0.86);
   --warn-line: rgba(214,160,90,0.55);
 
+  /* AI 语义色（设计图 04）：金 = AI 的产出，一律「待确认或可追溯」；红仍是学生要做的动作。
+     值与 --gold-deep 相同但语义不同：改品牌金不该连带改 AI 产出色，反之亦然。 */
+  --ai: #a67f1c;
+  --ai-soft: #fbf4e2;
+  --ai-line: #e7d3a0;
+
   /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
   --blk-tint: rgba(255,255,255,0.72);
   --blk-line: rgba(255,255,255,0.62);

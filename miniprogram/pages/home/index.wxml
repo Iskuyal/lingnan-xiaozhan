@@ -1,8 +1,42 @@
 <view class="home page">
   <view class="home-brand"><image class="school-logo" src="/assets/lingnan-logo-official.png" mode="widthFix" aria-label="{{school.name}}" /><view class="school-name ui-sr-only">{{school.name}}</view></view>
-  <view class="home-intro"><view class="home-title">把校园日常，安排好。</view><view class="home-copy">读资讯、找组织、查课表。</view></view>
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="timetable-entry" class="home-primary" hover-class="pressed" bindtap="openTimetable" aria-label="打开我的课表，可导入课程并按周查看"><view class="primary-inner"><view><view class="entry-label">每周安排</view><view class="entry-title">我的课表</view><view class="entry-description">导入课程，安排每一周</view></view><view class="primary-symbol"><image class="ui-icon" src="/assets/ui/calendar-white.svg" /></view></view></button>
+
+  <view class="masthead"><view><view class="masthead-date">{{brief.dateLine}}</view><view class="masthead-greet">{{brief.greeting}}，{{brief.headline}}</view></view><view class="masthead-seal">校</view></view>
+
+  <view class="ai-card home-brief">
+    <view class="brief-head"><text class="ai-tag">今日简报</text><text class="brief-note">{{brief.hasTimes ? '来自课表与目标日' : '没填作息，先说个大概'}}</text></view>
+    <view class="brief-body"><text wx:for="{{brief.sentences}}" wx:key="*this" class="brief-line">{{item}}</text></view>
+    <view wx:if="{{brief.sources.length > 0}}" class="ai-src"><text wx:for="{{brief.sources}}" wx:key="*this" class="ai-src-item">依据 · {{item}}</text></view>
+  </view>
+
+  <view wx:if="{{brief.rows.length > 0}}" class="timeline">
+    <view class="section-head"><view class="section-title">今天</view><view class="section-note">{{brief.blockCount === 0 ? '没有安排' : brief.blockCount + ' 段安排'}}</view></view>
+    <view wx:for="{{brief.rows}}" wx:key="key" class="tl tl-{{item.kind}}{{item.isNow ? ' tl-now' : ''}}{{item.isNext ? ' tl-next' : ''}}">
+      <view class="tl-time"><text wx:if="{{item.timeText !== ''}}" class="tl-clock">{{item.timeText}}</text><text class="tl-section">{{item.sectionText}}</text></view>
+      <view class="tl-body">
+        <view class="tl-title">{{item.title}}<text wx:if="{{item.isNow}}" class="badge badge-now">正在上</text><text wx:elif="{{item.isNext}}" class="badge badge-now">下一节</text><text wx:elif="{{item.kind === 'free'}}" class="badge badge-free">空着</text></view>
+        <view wx:if="{{item.detail !== ''}}" class="tl-detail">{{item.detail}}</view>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="home-timeline-empty">
+    <view class="empty-title">今天没有课</view>
+    <view class="empty-copy">导入课表后，这里会按时间列出今天每一段安排；填好作息时间还会显示几点上课。</view>
+  </view>
+
+  <view class="askbar-wrap">
+    <view class="askbar">
+      <view class="askbar-tool" id="ask-photo" hover-class="pressed" bindtap="openPhotoAsk" aria-label="拍照提问，打开课表导入的截图识别"><image class="askbar-icon" src="/assets/ui/camera.svg" /></view>
+      <input id="ask-input" class="askbar-input" value="{{askText}}" placeholder="问课表、贴通知、改安排…" confirm-type="send" bindinput="onAskInput" bindconfirm="sendAsk" adjust-position />
+      <view class="askbar-tool" id="ask-voice" hover-class="pressed" bindtap="openVoiceAsk" aria-label="语音输入"><image class="askbar-icon" src="/assets/ui/mic.svg" /></view>
+      <view class="askbar-go" id="ask-send" hover-class="pressed" bindtap="sendAsk" aria-label="发送问题">↑</view>
+    </view>
+    <view class="ai-note">语音输入还没接入，先打字或拍照；发送后会打开课表助手，不会自动发送。</view>
+    <view class="askbar-suggest"><text wx:for="{{brief.suggestions}}" wx:key="*this" class="suggest-chip" data-text="{{item}}" bindtap="useSuggestion" hover-class="pressed">{{item}}</text></view>
+  </view>
+
   <view class="section-head"><view class="section-title">校园与日常</view><view class="section-note">常用入口</view></view>
+  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="timetable-entry" class="home-primary" hover-class="pressed" bindtap="openTimetable" aria-label="打开我的课表，可导入课程并按周查看"><view class="primary-inner"><view><view class="entry-label">每周安排</view><view class="entry-title">我的课表</view><view class="entry-description">导入课程，安排每一周</view></view><view class="primary-symbol"><image class="ui-icon" src="/assets/ui/calendar-white.svg" /></view></view></button>
   <view class="entry-pair">
     <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="departments-entry" class="home-entry" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看已核实的组织名录"><image class="ui-icon" src="/assets/ui/people.svg"/><view class="entry-title">学生部门</view><view class="entry-description">了解组织与职责</view></button>
     <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="news-entry" class="home-entry" hover-class="pressed" bindtap="openNews" aria-label="校园资讯，阅读官网动态与通知"><image class="ui-icon" src="/assets/ui/news.svg"/><view class="entry-title">校园资讯</view><view class="entry-description">官网信息与来源</view></button>

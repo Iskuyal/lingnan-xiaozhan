@@ -11,7 +11,10 @@
 .goal-meta { margin-top:12px; font-size:12px; line-height:1.8; }
 .goal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:12px; }
 .goal-action { min-width:64px; min-height:44px; padding:10px 12px; border:1px solid rgba(255,255,255,.55); border-radius:6px; font-size:13px; text-align:center; }
+/* 「AI 排计划」用金色：金 = AI 的产出（设计图 04），与红色的「修改/删除」区分开。 */
+.goal-action-plan { border-color:var(--ai-line, #e7d3a0); background:var(--ai-soft, #fbf4e2); color:var(--ai, #a67f1c); font-weight:600; }
 .goal-item-expired .goal-action { border-color:#b9847c; color:#8c1614; }
+.goal-item-expired .goal-action-plan { border-color:var(--ai-line, #e7d3a0); color:var(--ai, #a67f1c); }
 .goal-empty { padding:38px 6px; text-align:center; }
 .goal-empty-mark { width:76px; height:76px; margin:0 auto 18px; border-radius:18px; background:#faeee9; color:#8c1614; font-size:36px; line-height:76px; }
 .goal-empty-title { font-size:22px; font-weight:700; }

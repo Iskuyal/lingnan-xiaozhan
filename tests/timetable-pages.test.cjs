@@ -607,3 +607,243 @@ test('周课表主页：设置读不到时不显示日期与速查条，但课�
   assert.equal(page.data.grid.columns[0].blocks[0].name, '高等数学', '课表本体照常渲染');
   delete globalThis.wx;
 });
+
+test('周课表主页：首页把问题带进来（?ask=）时打开助手并填进输入框，但不自动发送', async () => {
+  const courses = [
+    { id: 'tc_1', name: '高等数学', teacher: '林加燕', weekday: 1, sectionRanges: [{ start: 1, end: 2 }], startSection: 1, endSection: 2, weeks: [1, 2, 3, 4], weeksRecognized: true, weekText: '[1-4]周', location: '崇礼楼-306', campus: '', siteNumber: '', note: '', warnings: [], source: 'excel', semester: '', rawText: '', credits: '', createdAt: '', updatedAt: '' },
+  ];
+  // 桩里只有 list：只要真的发出了任何 callFunction，就会因为「未预设的 action」被记录到 calls 里。
+  const cloud = cloudStub({ list: () => ({ ok: true, count: courses.length, semester: '', updatedAt: '', courses }) });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  const question = '周三第几节有课？';
+  page.onLoad({ today: '2026-09-21', clock: '13:10', ask: question });
+
+  assert.equal(page.data.assistantOpen, true, '带 ask 进来要直接把助手面板打开');
+  assert.equal(page.data.assistantInput, question, '问题要原样填进输入框');
+  assert.ok(page.data.assistantMessages.length >= 1, '打开助手时该有欢迎语');
+  assert.equal(cloud.calls.length, 0, '只填不发：进入页面时不能发出任何请求');
+  assert.equal(wx.actions.length, 0, '也不该弹 toast/跳转');
+
+  // 空 ask 不打开助手（与 today?/clock? 一样，参数只是可选项）
+  const idle = loadPage('timetable', baseWx(cloudStub({ list: () => ({ ok: true, count: 0, semester: '', updatedAt: '', courses: [] }) })));
+  idle.onLoad({ ask: '   ' });
+  assert.equal(idle.data.assistantOpen, false, '空白 ask 不打扰');
+  delete globalThis.wx;
+});
+
+/** 贴通知闭环用的课表：与设计图 02 同一套例子（停课 / 改地点 / 与已有课撞车的补课）。 */
+const NOTICE_COURSES = [
+  { id: 'tc_math', name: '高等数学', teacher: '林加燕', weekday: 1, sectionRanges: [{ start: 1, end: 2 }], startSection: 1, endSection: 2, weeks: [11, 12, 13], weeksRecognized: true, weekText: '[11-13]周', location: '崇礼楼-306', campus: '清远校区', siteNumber: '44', note: '', warnings: [], source: 'excel', semester: '2026-2027学年第一学期', rawText: '', credits: '1.5', createdAt: '', updatedAt: '' },
+  { id: 'tc_culture', name: '中华传统文化精粹', teacher: '周敏', weekday: 5, sectionRanges: [{ start: 5, end: 6 }], startSection: 5, endSection: 6, weeks: [13], weeksRecognized: true, weekText: '[13]周', location: '博雅楼-B201', campus: '清远校区', siteNumber: '20', note: '', warnings: [], source: 'manual', semester: '2026-2027学年第一学期', rawText: '', credits: '1', createdAt: '', updatedAt: '' },
+];
+
+function noticeReply() {
+  return JSON.stringify({
+    kind: 'changes',
+    message: '识别到 2 处变更。',
+    changes: [
+      { action: 'cancel', courseName: '高等数学', weekText: '第12周', quote: '第 12 周周一全天停课', title: '', courseId: '', weekday: 1, startSection: 0, endSection: 0, location: '', teacher: '', conflict: '' },
+      { action: 'add', courseName: '高等数学', weekText: '第13周', quote: '第 13 周周五 5-6 节补课', title: '', courseId: '', weekday: 5, startSection: 5, endSection: 6, location: '', teacher: '', conflict: '' },
+    ],
+  });
+}
+
+const CHECKED_SAFETY = { provider: 'wechat', api: 'security.msgSecCheck', passed: true, checked: true, detail: '' };
+
+/** ai 云函数的成功返回（`callAi` 读的是 `response.result`）。 */
+function aiReply(text) {
+  return { ok: true, failureClass: '', message: '', text, capWarning: '', safety: CHECKED_SAFETY, warnings: [] };
+}
+
+test('贴通知闭环：识别只出提案不写库，勾选后按条写入，撤销把课表还原', async () => {
+  let courses = NOTICE_COURSES.map((course) => ({ ...course }));
+  const writes = [];
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: courses.length, semester: '2026-2027学年第一学期', updatedAt: '', courses }),
+    // ai 云函数桩：真正的 AI 调用也走 wx.cloud.callFunction({ name:'ai', data:{action:'chat'} })，这里按 action 接住。
+    chat: (data) => {
+      writes.push({ action: 'chat', feature: data.feature });
+      return aiReply(noticeReply());
+    },
+    createCourse: (data) => {
+      writes.push({ action: 'createCourse', name: data.course.name, weeks: data.course.weeks });
+      const created = { ...data.course, id: 'tc_new', semester: data.semester };
+      courses = courses.concat([created]);
+      return { ok: true, course: created };
+    },
+    updateCourse: (data) => {
+      writes.push({ action: 'updateCourse', id: data.id, weeks: data.course.weeks });
+      courses = courses.map((course) => (course.id === data.id ? { ...data.course, id: course.id } : course));
+      return { ok: true, id: data.id };
+    },
+    deleteCourse: (data) => {
+      writes.push({ action: 'deleteCourse', id: data.id });
+      courses = courses.filter((course) => course.id !== data.id);
+      return { ok: true, count: courses.length };
+    },
+  });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  await page.onShow();
+  assert.equal(writes.length, 0, '读取页面不会写库');
+
+  page.openAssistant();
+  page.toggleNotice();
+  page.onNoticeInput({ detail: { value: '第 12 周周一全天停课；第 13 周周五 5-6 节补高数。' } });
+  await page.readNotice();
+  // 识别完：只出提案，一条都没写
+  assert.deepEqual(writes.map((write) => write.action), ['chat'], '点「识别变更」只问 AI，不写库');
+  assert.equal(writes[0].feature, 'timetable-notice', '走独立的 feature 名');
+  assert.equal(page.data.noticeProposal.rows.length, 2);
+  assert.equal(page.data.noticeProposal.rows[0].checked, true, '停课无冲突，默认勾选');
+  assert.equal(page.data.noticeProposal.rows[1].checked, false, '补课撞了中华传统文化精粹，默认不勾');
+  assert.match(page.data.noticeProposal.rows[1].conflict, /中华传统文化精粹/u);
+  assert.equal(page.data.noticeProposal.checkedCount, 1, '应用按钮上的条数跟着勾选走');
+
+  await page.applyNotice();
+  assert.deepEqual(writes.map((write) => write.action), ['chat', 'updateCourse'], '只写勾选的那一条');
+  assert.deepEqual(writes[1].weeks, [11, 13], '停课只去掉第 12 周');
+  assert.equal(page.data.noticeToast.text, '已更新 1 处，课表已同步');
+  assert.equal(page.data.noticeToast.canUndo, true, '10 秒内可撤销');
+
+  // 撤销：把停掉的那一周还回去
+  await page.undoNotice();
+  assert.deepEqual(writes.map((write) => write.action), ['chat', 'updateCourse', 'updateCourse']);
+  assert.deepEqual(writes[2].weeks, [11, 12, 13], '写回应用前的周次');
+  assert.equal(page.data.noticeToast.text, '已撤销，课表回到应用前');
+  assert.equal(page.data.noticeToast.canUndo, false);
+  delete globalThis.wx;
+});
+
+test('贴通知：失败时如实报「已应用 K 处，第 J 处失败」，不谎报全部成功', async () => {
+  let courses = NOTICE_COURSES.map((course) => ({ ...course }));
+  const writes = [];
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: courses.length, semester: '2026-2027学年第一学期', updatedAt: '', courses }),
+    chat: () => aiReply(noticeReply()),
+    updateCourse: (data) => {
+      writes.push({ action: 'updateCourse', id: data.id });
+      courses = courses.map((course) => (course.id === data.id ? { ...data.course, id: course.id } : course));
+      return { ok: true, id: data.id };
+    },
+    // 第 2 处新增故意失败
+    createCourse: () => new Error('超出可保存的课程条数'),
+  });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  await page.onShow();
+  page.openAssistant();
+  page.toggleNotice();
+  page.onNoticeInput({ detail: { value: '第 12 周周一全天停课；第 13 周周五 5-6 节补高数。' } });
+  await page.readNotice();
+  // 把冲突那条也勾上（学生坚持要加），于是 2 条都要写
+  page.toggleNoticeRow({ currentTarget: { dataset: { index: 1 } } });
+  assert.equal(page.data.noticeProposal.checkedCount, 2);
+  await page.applyNotice();
+
+  assert.equal(writes.length, 1, '第 1 处写成功、第 2 处失败就停在这里');
+  assert.match(page.data.noticeError, /^已应用 1 处，第 2 处失败/u);
+  assert.match(page.data.noticeError, /超出可保存的课程条数/u);
+  assert.equal(page.data.noticeToast.text, '已更新 1 处，还有 1 处没写进去');
+  assert.equal(page.data.noticeToast.canUndo, true, '已应用的那处仍然可以撤销');
+  page.onUnload();
+  delete globalThis.wx;
+});
+
+test('贴通知：解析不出来就说清楚，且不写库、不弹提案', async () => {
+  const writes = [];
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: NOTICE_COURSES.length, semester: '', updatedAt: '', courses: NOTICE_COURSES }),
+    // 模型返回一段没法解析的话（不是 JSON）
+    chat: () => aiReply('这段通知提到了调课，但没说清是哪一周。'),
+    createCourse: () => { writes.push('createCourse'); return { ok: true }; },
+    updateCourse: () => { writes.push('updateCourse'); return { ok: true }; },
+  });
+  const wx = baseWx(cloud);
+  const page = loadPage('timetable', wx);
+  await page.onShow();
+  page.openAssistant();
+  page.toggleNotice();
+  page.onNoticeInput({ detail: { value: '调课，详情见群公告。' } });
+  await page.readNotice();
+
+  assert.equal(page.data.noticeProposal, null, '解析不出来就不摆提案卡');
+  assert.match(page.data.noticeError, /没有生成任何变更|没有写入/u);
+  assert.deepEqual(writes, [], '更不能写库');
+  delete globalThis.wx;
+});
+
+test('贴通知：冲突项未勾选时可点开勾上（学生坚持要加），阻塞项点了也不勾', async () => {
+  const cloud = cloudStub({
+    list: () => ({ ok: true, count: NOTICE_COURSES.length, semester: '', updatedAt: '', courses: NOTICE_COURSES }),
+    chat: () => aiReply(noticeReply()),
+  });
+  const page = loadPage('timetable', baseWx(cloud));
+  await page.onShow();
+  page.openAssistant();
+  page.toggleNotice();
+  page.onNoticeInput({ detail: { value: '第 12 周周一全天停课；第 13 周周五 5-6 节补高数。' } });
+  await page.readNotice();
+
+  // 冲突条：点一下就能勾上，再点取消
+  page.toggleNoticeRow({ currentTarget: { dataset: { index: 1 } } });
+  assert.equal(page.data.noticeProposal.rows[1].checked, true);
+  assert.equal(page.data.noticeProposal.checkedCount, 2);
+  page.toggleNoticeRow({ currentTarget: { dataset: { index: 1 } } });
+  assert.equal(page.data.noticeProposal.rows[1].checked, false);
+  assert.equal(page.data.noticeProposal.checkedCount, 1);
+
+  // 人为把第 0 条标成阻塞：它根本写不进去，点了也不该被勾上
+  page.setData({ noticeProposal: { rows: page.data.noticeProposal.rows.map((row) => (row.index === 0 ? { ...row, blocked: '原文里没写清哪一周' } : row)), checkedCount: 1 } });
+  page.toggleNoticeRow({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(page.data.noticeProposal.rows[0].checked, true, '原本勾着的保持原样');
+  assert.match(page.data.noticeError, /没写清哪一周/u, '要把为什么点不动说清楚');
+  page.onUnload();
+  delete globalThis.wx;
+});
+
+test('贴通知：模板按设计图 02 摆出粘贴框、金色提案卡、勾选框、冲突提示与撤销提示条', () => {
+  const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
+  // 粘贴区带「来自班群通知」的小字说明（文案全部在 WXML 里，WXSS 不出现中文）
+  assert.match(wxml, /class="paste"/u);
+  assert.match(wxml, /你粘贴的班群通知/u);
+  assert.match(wxml, /id="notice-input"/u, '要有真正的粘贴输入框');
+  // 金色提案卡：卡片头 + 全局 ai-tag 金标签（不重复定义）
+  assert.match(wxml, /class="proposal"/u);
+  assert.match(wxml, /识别到 \{\{noticeProposal\.rows\.length\}\} 处变更/u);
+  assert.match(wxml, /class="ai-tag">AI 提案 · 待确认/u);
+  // 勾选：已勾是红底打勾，未勾是白底描边
+  assert.match(wxml, /class="check \{\{item\.checked \? '' : 'off'\}\}"/u);
+  assert.match(wxml, /class="check off"/u);
+  // 差异行 + 冲突提示 + 原文引用（原文：前缀写在 WXML 里）
+  assert.match(wxml, /class="diff-old"/u);
+  assert.match(wxml, /class="diff-new"/u);
+  assert.match(wxml, /class="warnline"/u);
+  assert.match(wxml, /class="quote">原文：/u);
+  // 两个按钮：逐条修改（白底红字）+ 应用 N 处变更（红底，0 条禁用）
+  assert.match(wxml, /id="notice-expand"[^>]*class="btn-secondary"/u);
+  assert.match(wxml, /id="notice-apply"[^>]*class="btn-primary"/u);
+  assert.match(wxml, /disabled="\{\{noticeProposal\.checkedCount === 0 \|\| noticeReading\}\}"/u);
+  // 深色撤销提示条 + 金色「撤销」
+  assert.match(wxml, /id="notice-toast" class="toast"/u);
+  assert.match(wxml, /id="notice-undo" class="toast-undo"[^>]*bindtap="undoNotice">撤销/u);
+  // 脚注：确认前不写入 / 10 秒内可撤销
+  const ts = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.ts'), 'utf8');
+  assert.match(ts, /确认前不写入课表，应用后 10 秒内可撤销/u);
+  // 10 秒窗口本身定义在 notice.ts 里，页面只引用，不重复写魔数。
+  assert.match(ts, /NOTICE_UNDO_MS/u);
+  assert.match(fs.readFileSync(path.resolve('miniprogram/services/timetable/notice.ts'), 'utf8'), /NOTICE_UNDO_MS = 10000/u);
+
+  // 这些样式确实在页面 wxss 里，且引用的令牌都带回退值（wxss.test 另有全量校验）
+  const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
+  for (const rule of ['.paste {', '.proposal {', '.proposal-head {', '.check {', '.check.off {', '.diff-old {', '.diff-new {', '.warnline {', '.quote {', '.btn-primary {', '.btn-secondary {', '.toast {', '.toast-undo {']) {
+    assert.ok(wxss.includes(rule), '缺少样式 ' + rule);
+  }
+  assert.match(wxss, /\.paste \{[^}]*border:1px dashed var\(--control-line,#aa9990\)/u);
+  assert.match(wxss, /\.proposal \{[^}]*border:1px solid var\(--ai-line,#e7d3a0\)[^}]*border-radius:12px/u);
+  assert.match(wxss, /\.proposal-head \{[^}]*background:var\(--ai-soft,#fbf4e2\)/u);
+  assert.match(wxss, /\.quote \{[^}]*border-left:2px solid var\(--ai-line,#e7d3a0\)/u);
+  assert.match(wxss, /\.toast \{[^}]*background:#2b2422/u);
+  assert.match(wxss, /\.toast-undo \{[^}]*color:#f2c96b/u);
+});

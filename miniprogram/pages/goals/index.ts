@@ -84,6 +84,16 @@ Page({
     if (id === undefined || id === '') return;
     wx.navigateTo({ url: `/pages/goals/edit/index?id=${encodeURIComponent(id)}` });
   },
+  /**
+   * 从目标日进「备考计划」：这是设计图 03 的第 ① 步「选目标」。
+   * 入口放在目标日本身而不是首页，是因为目标日已经有日期与名称，
+   * 计划页拿到 id 就能直接倒排，不用再让人挑一次。
+   */
+  onPlan(event: TapEvent) {
+    const id = event.currentTarget.dataset.id;
+    if (id === undefined || id === '') return;
+    wx.navigateTo({ url: `/pages/goals/plan/index?id=${encodeURIComponent(id)}` });
+  },
   /** 删除要确认：本机数据删掉就没有第二份，误删无法恢复。 */
   onDelete(event: TapEvent) {
     const id = event.currentTarget.dataset.id;

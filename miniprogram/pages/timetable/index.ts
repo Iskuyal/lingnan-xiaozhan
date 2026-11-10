@@ -7,7 +7,7 @@
  * 助手：查阅只依据当前课表数据；任何增改都是「方案」，必须弹确认框、
  * 学生确认后才走 03 的写入入口；三类失败文案独立，课表展示不受助手失败影响。
  */
-import { Course } from '../../services/timetable/types';
+import { Course, CourseInput } from '../../services/timetable/types';
 import {
   FILE_GUIDE,
   OFFLINE_NOTE,
@@ -50,6 +50,17 @@ import {
   parseAssistantReply,
   summarizeChange,
 } from '../../services/timetable/assistant';
+import {
+  AppliedChange,
+  ApplyStep,
+  NOTICE_FEATURE,
+  NOTICE_UNDO_MS,
+  NoticeChange,
+  applyPlan,
+  buildNoticePrompt,
+  invertPlan,
+  parseNoticeReply,
+} from '../../services/timetable/notice';
 
 type Status = 'loading' | 'empty' | 'ready' | 'error';
 
@@ -57,7 +68,7 @@ type Status = 'loading' | 'empty' | 'ready' | 'error';
 type ViewMode = 'grid' | 'list';
 
 interface DatasetEvent {
-  currentTarget: { dataset: { id?: string; name?: string; mode?: string } };
+  currentTarget: { dataset: { id?: string; name?: string; mode?: string; index?: number } };
 }
 
 interface PickerEvent {
@@ -233,6 +244,45 @@ function setupHintFor(settings: TimetableSettings, hasTimes: boolean, loadError:
   return '';
 }
 
+/**
+ * 提案卡里的一行（设计图 02 的 `.change`）：`checked` 只存在页面内存里，
+ * 与提案一起在「应用」前不出这个页面——**确认前绝不写入**。
+ */
+interface NoticeRow extends NoticeChange {
+  /** 提案内的序号（从 0 起），勾选回写时按它对回提案。 */
+  index: number;
+  checked: boolean;
+}
+
+/** 一份待确认的提案：只用内存，`checkedCount` 跟着勾选实时算给按钮用。 */
+interface NoticeProposal {
+  rows: NoticeRow[];
+  checkedCount: number;
+}
+
+/** 应用后的提示条（设计图 02 的 `.toast`）：10 秒内可撤销。 */
+interface NoticeToast {
+  text: string;
+  canUndo: boolean;
+}
+
+/** 学生贴进来的通知最长多少字；超过就让他分批贴，而不是悄悄截断。 */
+const NOTICE_INPUT_MAX = 4000;
+
+const NOTICE_HINT = '贴一段班群通知，我按当前课表找出要改的地方，逐条列给你确认；点「应用」之前不会动课表。';
+const NOTICE_FOOTER = '每条都附原文依据；冲突项默认不勾选。确认前不写入课表，应用后 10 秒内可撤销。';
+
+/** 按当前勾选重算按钮上的条数：阻塞的条目不计入（它们不会被写入）。 */
+function noticeProposalOf(rows: NoticeRow[]): NoticeProposal {
+  return { rows, checkedCount: rows.filter((row) => row.checked && row.blocked === '').length };
+}
+
+/** 提案行 → 纯提案（去掉勾选状态），交给 notice.ts 的写入计划。 */
+function changeOf(row: NoticeRow): NoticeChange {
+  const { index, checked, ...change } = row;
+  return change;
+}
+
 Page({
   data: {
     status: 'loading' as Status,
@@ -270,21 +320,43 @@ Page({
     assistantSafetyNote: '',
     assistantNote: ASSISTANT_NOTE,
     pendingChange: null as PendingChange | null,
+    /** 贴通知：粘贴框开合、正在读取、原文、提案、应用提示条（都只在内存，确认前不写入）。 */
+    noticeOpen: false,
+    noticeInput: '',
+    noticeReading: false,
+    noticeError: '',
+    noticeHint: NOTICE_HINT,
+    noticeFooter: NOTICE_FOOTER,
+    noticeProposal: null as NoticeProposal | null,
+    noticeToast: null as NoticeToast | null,
+    /** 「逐条修改」展开：把每条将写入的内容摊开，方便学生逐条核对。 */
+    noticeDetailOpen: false,
   },
   /** 「今天」与「现在几点」在进入页面时定下：测试可用 `onLoad({ today, clock })` 注入。 */
   today: '',
   clockMinutes: 0,
   /** 学生自己翻过周次之后就不再自动跳到本周（否则每次 onShow 都把他拽回来）。 */
   weekPinned: false,
+  /** 已写入成功、还能撤销的那些（10 秒窗口内有效）；窗口过了就清空。 */
+  undoStack: [] as AppliedChange[],
+  /** 撤销提示条的定时器；页面卸载或重新应用时先清掉旧的。 */
+  undoTimer: null as number | null,
   toggleGridExpansion() {
     const expanded = !this.data.gridExpanded;
     this.setData({ gridExpanded: expanded, gridUi: presentGrid(this.data.grid, expanded) });
   },
-  onLoad(query: { today?: string; clock?: string }) {
+  onLoad(query: { today?: string; clock?: string; ask?: string }) {
     const injectedToday = typeof query.today === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(query.today) ? query.today : '';
     this.today = injectedToday === '' ? localToday() : injectedToday;
     const injectedClock = typeof query.clock === 'string' ? minutesOfClock(query.clock) : null;
     this.clockMinutes = injectedClock === null ? localMinutes() : injectedClock;
+    // 首页输入条把问题带到这一页（`?ask=`）：只把问题填进输入框、帮他打开助手，**不自动发送**——
+    // 发不发、发之前要不要改措辞，都留给学生自己决定。
+    const ask = typeof query.ask === 'string' ? query.ask.trim().slice(0, NOTICE_INPUT_MAX) : '';
+    if (ask !== '') {
+      this.openAssistant();
+      this.setData({ assistantInput: ask });
+    }
   },
   /** 从导入页或编辑页返回时也走这里，保证展示的是云端最新数据。 */
   onShow() {
@@ -587,6 +659,203 @@ Page({
           assistantMessages: this.data.assistantMessages.concat([{ role: 'assistant', text: '保存没有成功：' + messageOf(error) }]),
         });
       });
+  },
+  // —— 贴通知（设计图 02）：粘贴 → 提案 → 逐条勾选 → 应用 → 10 秒撤销 ——
+
+  /** 开合粘贴区；收起时保留已读到的提案，方便学生再核对一遍。 */
+  toggleNotice() {
+    this.setData({ noticeOpen: !this.data.noticeOpen, noticeError: '' });
+  },
+  onNoticeInput(event: InputEvent) {
+    this.setData({ noticeInput: String(event.detail.value ?? ''), noticeError: '' });
+  },
+  /** 「逐条修改」：展开/收起每条的「将写入」说明；真正改字段仍走手工编辑页，不在这里偷偷改。 */
+  toggleNoticeDetail() {
+    this.setData({ noticeDetailOpen: !this.data.noticeDetailOpen });
+  },
+  /** 读通知：只出提案，不写库。原文与提案都留在内存里，学生点「应用」才动课表。 */
+  readNotice() {
+    const text = this.data.noticeInput.trim();
+    if (text === '' || this.data.noticeReading) return;
+    if (text.length > NOTICE_INPUT_MAX) {
+      this.setData({ noticeError: `这段字太多了（${text.length} 字），一次最多贴 ${NOTICE_INPUT_MAX} 字，可以分几次贴。` });
+      return;
+    }
+    this.setData({ noticeReading: true, noticeError: '', noticeToast: null });
+    const system = buildNoticePrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length);
+    return callAi(chatEvent(NOTICE_FEATURE, system, chatMessages([{ role: 'user', text }], system)))
+      .then((result) => {
+        if (!result.ok) {
+          this.setData({ noticeReading: false, noticeError: userMessage(result) });
+          return;
+        }
+        const reply = parseNoticeReply(result.text, this.data.courses, this.data.weekOptions.length);
+        // 服务端内容安全没真正执行时也照实说一句，不把「跳过」读成「干净」。
+        const safetyNote = safetyNoteFor(result.safety);
+        if (reply.kind !== 'changes') {
+          // 空通知 / 超范围 / 要澄清 / 解析不出来：都说清楚，绝不生成一条假提案。
+          this.setData({
+            noticeReading: false,
+            noticeProposal: null,
+            noticeError: safetyNote === '' ? reply.message : `${reply.message}（${safetyNote}）`,
+          });
+          return;
+        }
+        this.setData({
+          noticeReading: false,
+          noticeError: safetyNote,
+          noticeProposal: noticeProposalOf(reply.changes.map((change, index) => ({ ...change, index, checked: change.defaultChecked }))),
+        });
+      })
+      .catch((error) => {
+        this.setData({ noticeReading: false, noticeError: transportMessage(error) });
+      });
+  },
+  /** 勾/取消某一条：阻塞条目点了也不勾（它根本写不进去，勾了只会误导）。 */
+  toggleNoticeRow(event: DatasetEvent) {
+    const proposal = this.data.noticeProposal;
+    if (proposal === null) return;
+    const index = Number(event.currentTarget.dataset.index);
+    const target = proposal.rows[index];
+    if (target === undefined) return;
+    if (target.blocked !== '') {
+      this.setData({ noticeError: '这条没法直接应用：' + target.blocked });
+      return;
+    }
+    const rows = proposal.rows.map((row) => (row.index === index ? { ...row, checked: !row.checked } : row));
+    this.setData({ noticeProposal: noticeProposalOf(rows), noticeError: '' });
+  },
+  /** 部分勾选后一次性应用：逐条写，任一条失败都如实报「已应用 K 处」，不谎报全成功。 */
+  applyNotice() {
+    const proposal = this.data.noticeProposal;
+    if (proposal === null) return;
+    const picked = proposal.rows.filter((row) => row.checked && row.blocked === '');
+    if (picked.length === 0) return;
+    // 先用最新课表重算一次写入计划：学生可能在别处删/改过课程，提案里的快照可能已经过期。
+    // 没勾的条目按「阻塞」传进去，applyPlan 会跳过它们，而 `changeIndex` 仍能对回原提案。
+    const changes = proposal.rows.map((row) => {
+      const change = changeOf(row);
+      return row.checked && row.blocked === '' ? change : { ...change, blocked: '未勾选' };
+    });
+    const steps = applyPlan(changes, this.data.courses, this.data.weekOptions.length);
+    if (steps.length === 0) {
+      this.setData({ noticeError: '这些变更对不上当前课表了，已取消应用。请重新读一次通知。' });
+      return;
+    }
+    this.setData({ noticeReading: true, noticeError: '', noticeToast: null });
+    const applied: AppliedChange[] = [];
+    const write = (step: ApplyStep): Promise<Course | null> => {
+      if (step.kind === 'create') return createCourse(step.input, this.data.semester);
+      // update 必须先确认这条课程还在：找不到就当作这一步失败，绝不新建一条去「顶替」。
+      if (!this.data.courses.some((course) => course.id === step.courseId)) {
+        return Promise.reject(new Error('这条课程已经不在课表里了'));
+      }
+      return updateCourse(step.courseId, step.input).then(() => null);
+    };
+    const runStep = (position: number): Promise<void> => {
+      if (position >= steps.length) return Promise.resolve();
+      const step = steps[position];
+      return write(step)
+        .then((created) => {
+          const courseId = step.kind === 'create' ? String(created === null ? '' : created.id) : step.courseId;
+          if (courseId === '') {
+            // 服务端没返回新课程的编号：这条当作没写成功，撤销时也不会去删错东西。
+            return Promise.reject(new Error('服务端没有返回新课程的编号'));
+          }
+          applied.push({
+            changeIndex: step.changeIndex,
+            kind: step.kind,
+            courseId,
+            before: step.before,
+            after: step.input,
+            summary: step.summary,
+          });
+          return runStep(position + 1);
+        });
+    };
+    return runStep(0)
+      .then(() => {
+        this.undoStack = applied;
+        this.armUndoTimer();
+        const count = applied.length;
+        this.setData({
+          noticeReading: false,
+          noticeProposal: noticeProposalOf(proposal.rows.map((row) => ({ ...row, checked: false }))),
+          noticeToast: { text: `已更新 ${count} 处，课表已同步`, canUndo: true },
+        });
+        return this.load();
+      })
+      .catch((error) => {
+        // 中途失败：已经写进去的那几条保留，并如实报「已应用 K 处，第 J 处失败：原因」。
+        const done = applied.length;
+        const failedAt = done + 1;
+        const reason = messageOf(error);
+        this.undoStack = applied;
+        this.armUndoTimer();
+        this.setData({
+          noticeReading: false,
+          noticeError: done === 0
+            ? `第 ${failedAt} 处失败：${reason}。课表没有变化。`
+            : `已应用 ${done} 处，第 ${failedAt} 处失败：${reason}。前 ${done} 处已在课表里，可以先撤销，或逐条核对后再应用。`,
+          noticeToast: done === 0 ? null : { text: `已更新 ${done} 处，还有 ${steps.length - done} 处没写进去`, canUndo: true },
+        });
+        return this.load();
+      });
+  },
+  /** 撤销提示条只活 10 秒（与设计图一致）；窗口过了自己消失，之后就当普通的历史改动看。 */
+  armUndoTimer() {
+    this.clearUndoTimer();
+    // 定时器在小程序里一定有；测试环境不一定注入，所以先判存在，避免在纯逻辑测试里 ReferenceError。
+    if (typeof setTimeout !== 'function') return;
+    this.undoTimer = setTimeout(() => {
+      this.undoTimer = null;
+      this.undoStack = [];
+      this.setData({ noticeToast: null });
+    }, NOTICE_UNDO_MS);
+  },
+  clearUndoTimer() {
+    if (this.undoTimer === null) return;
+    if (typeof clearTimeout === 'function') clearTimeout(this.undoTimer);
+    this.undoTimer = null;
+  },
+  /** 10 秒内点「撤销」：按 invertPlan 反向逐条写回（新增的删掉、改动的还原成旧值）。 */
+  undoNotice() {
+    const dirty = this.undoStack;
+    if (dirty.length === 0) {
+      this.setData({ noticeToast: null });
+      return;
+    }
+    this.undoStack = [];
+    this.clearUndoTimer();
+    this.setData({ noticeToast: { text: '正在撤销…', canUndo: false } });
+    const inverse = invertPlan(dirty);
+    const runStep = (position: number, failed: number): Promise<number> => {
+      if (position >= inverse.length) return Promise.resolve(failed);
+      const step = inverse[position];
+      const task = step.kind === 'delete'
+        ? deleteCourse(step.courseId)
+        : updateCourse(step.courseId, step.input as CourseInput);
+      return task.then(() => runStep(position + 1, failed), () => runStep(position + 1, failed + 1));
+    };
+    return runStep(0, 0)
+      .then((failed) => {
+        // 全部还原成功才算撤销完成；有失败就照实说，并把剩下的逆操作留着再点一次。
+        if (failed > 0) {
+          this.undoStack = dirty;
+          this.setData({ noticeToast: { text: `撤销没做完：${failed} 处没还原成功`, canUndo: true } });
+        } else {
+          this.setData({ noticeToast: { text: '已撤销，课表回到应用前', canUndo: false } });
+        }
+        return this.load();
+      })
+      .catch((error) => {
+        this.setData({ noticeToast: { text: '撤销失败：' + messageOf(error), canUndo: false } });
+      });
+  },
+  /** 页面卸载：清掉撤销定时器，避免离开页面后还去 setData。 */
+  onUnload() {
+    this.clearUndoTimer();
+    this.undoStack = [];
   },
   goHome() {
     if (getCurrentPages().length > 1) wx.navigateBack();

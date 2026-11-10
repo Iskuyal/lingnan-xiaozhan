@@ -1,0 +1,130 @@
+<view class="page">
+
+  <view class="gp-head">
+    <view class="eyebrow">{{eyebrow}}</view>
+    <view class="gp-title">{{headline}}</view>
+  </view>
+
+  <view class="steps">
+    <view wx:for="{{steps}}" wx:key="text" class="steps-item {{item.state}}">{{item.text}}</view>
+  </view>
+
+  <block wx:if="{{status === 'missing'}}">
+    <view class="gp-empty">
+      <view class="gp-empty-title">这个目标日已经不在了</view>
+      <view class="gp-empty-copy">它可能已经在列表里被删掉。回目标日列表看看现在还有哪些，再回来排。</view>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-open-goals" class="home-button gp-btn" hover-class="pressed" bindtap="onOpenGoals">去看目标日</button>
+    </view>
+  </block>
+
+  <block wx:elif="{{status === 'pick'}}">
+    <view class="gp-empty">
+      <view class="gp-empty-title">还没有目标日</view>
+      <view class="gp-empty-copy">先建一个目标日（比如「英语四级 · 12 月 13 日」），再回来让它把每周的学习时段排进空闲格。</view>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-create-goal" class="home-button gp-btn" hover-class="pressed" bindtap="onCreateGoal">新建目标日</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="gp-section">
+      <view class="gp-section-head">
+        <view class="gp-section-title">选一个目标日</view>
+        <view class="gp-tiny">只读，不改目标日本身</view>
+      </view>
+      <view class="gp-goals">
+        <view
+          wx:for="{{goals}}"
+          wx:key="id"
+          class="gp-goal {{item.id === goalId ? 'gp-goal-on' : ''}}"
+          hover-class="pressed"
+          data-id="{{item.id}}"
+          bindtap="onPickGoal"
+          aria-role="button"
+        >
+          <view class="gp-goal-name">{{item.name}}</view>
+          <view class="gp-goal-meta">{{item.date}} · {{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="gp-section">
+      <view class="gp-section-title">说一句自己的情况</view>
+      <view class="gp-saved" wx:if="{{savedNote}}">{{savedNote}}</view>
+      <view class="bubble-me" wx:if="{{constraintText}}">{{constraintText}}</view>
+      <textarea
+        id="plan-constraint"
+        class="gp-input"
+        value="{{constraintText}}"
+        maxlength="120"
+        auto-height
+        bindinput="onConstraintInput"
+        placeholder="例如：听力最弱，每次别超过 1 小时，周末上午不排。"
+      />
+      <view class="gp-hint">只听得懂时长、每周几段、「周末上午不排」「晚上不排」和「×× 最弱」这几类说法。别的原话会原样告诉你没听懂，按默认排，不猜。</view>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate" class="home-button gp-btn" hover-class="pressed" disabled="{{busy}}" bindtap="generate">{{busy ? '正在读课表…' : '生成计划'}}</button>
+    </view>
+
+    <view class="gp-error" wx:if="{{error}}">{{error}}</view>
+
+    <block wx:if="{{plan}}">
+      <view class="gp-card">
+        <view class="sec">
+          <view class="gp-card-title">{{weekTitle}}</view>
+          <view class="gp-tiny">{{hoursText}}</view>
+        </view>
+
+        <view class="week">
+          <view class="week-corner"></view>
+          <view wx:for="{{gridWeekdays}}" wx:key="*this" class="week-head">{{item}}</view>
+          <block wx:for="{{gridRows}}" wx:for-item="row" wx:key="label">
+            <view class="week-side" style="{{row.labelStyle}}">{{row.label}}</view>
+            <view
+              wx:for="{{row.cells}}"
+              wx:for-item="cell"
+              wx:key="style"
+              class="cell {{cell.kind}}"
+              style="{{cell.style}}"
+            >{{cell.label}}</view>
+          </block>
+        </view>
+
+        <view class="legend">
+          <view class="legend-item l1">已有课程</view>
+          <view class="legend-item l2">AI 计划（未保存）</view>
+          <view class="legend-item l3">空闲</view>
+        </view>
+
+        <view class="gp-weekend" wx:if="{{weekendLines.length}}">
+          <view class="gp-tiny">这些排在了周末，不在上面这张周一到周五的网格里：</view>
+          <view class="gp-weekend-line" wx:for="{{weekendLines}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="ai-card brief">
+        <view class="ai-tag">为什么这样排</view>
+        <view class="ai-src" wx:if="{{constraintLines.length}}">
+          <view class="ai-src-item" wx:for="{{constraintLines}}" wx:key="*this">依据 · {{item}}</view>
+        </view>
+        <view class="brief-line" wx:for="{{rationale}}" wx:key="*this">{{item}}</view>
+        <block wx:if="{{dropped.length}}">
+          <view class="ai-note">这几句没听懂，按默认排：</view>
+          <view class="brief-drop" wx:for="{{dropped}}" wx:key="*this">{{item}}</view>
+        </block>
+        <view class="ai-note" wx:if="{{defaultNote}}">{{defaultNote}}</view>
+      </view>
+
+      <view class="actions">
+        <view id="plan-variant" class="btn secondary" hover-class="pressed" bindtap="onVariant" aria-role="button">换一种排法</view>
+        <button style="margin-left:0;margin-right:0" id="plan-save" class="btn primary" hover-class="pressed" bindtap="onSave">加入课表（作为计划）</button>
+      </view>
+
+      <view class="gp-pending" wx:if="{{plan.blocks.length === 0}}">这份计划没有能排的时段，加了也是空的，所以先不给你加。</view>
+
+      <view class="gp-foot">金色虚线显示在周课表里，与正式课程分开；每周日晚根据完成情况重排下一周。</view>
+      <view id="plan-remove" class="gp-remove" wx:if="{{hasSaved}}" hover-class="pressed" bindtap="onRemove" aria-role="button">撤回本机保存的计划</view>
+    </block>
+
+    <view class="gp-foot" wx:else>还没有排计划。上面写好一句约束，点「生成计划」就会把学习时段填进本周空闲格；排完先看着，确认了再加入课表。</view>
+  </block>
+
+</view>

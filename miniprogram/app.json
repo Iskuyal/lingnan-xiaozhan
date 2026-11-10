@@ -17,6 +17,7 @@
     "pages/lost-found/mine/index",
     "pages/goals/index",
     "pages/goals/edit/index",
+    "pages/goals/plan/index",
     "pages/calendar/index",
     "pages/fitness/index",
     "pages/advancement/index",

@@ -17,4 +17,15 @@ input,textarea { box-sizing:border-box; color:var(--text, #2b2422); font-size:14
 .status-note { margin-top:22px; padding:14px 15px; border-left:3px solid var(--line, #ded4cf); background:var(--surface, #ffffff); font-size:13px; }
 .pressed { opacity:.72; }
 button[disabled] { opacity:.5; }
+/* AI 共享组件（设计图 04「AI VISUAL LANGUAGE」）：
+   金色只表示「这是 AI 的产出、还没生效」，红色仍只表示学生要做的动作。
+   这三个类被首页简报、课表提案卡与备考计划共用，改一处即三处一致。 */
+.ai-tag { display:inline-flex; align-items:center; gap:4px; padding:1px 8px; border:1px solid var(--ai-line, #e7d3a0); border-radius:var(--r-pill, 999rpx); background:var(--ai-soft, #fbf4e2); color:var(--ai, #a67f1c); font-size:11px; font-weight:700; line-height:1.6; }
+.ai-tag::before { content:""; flex:none; width:6px; height:6px; border-radius:50%; background:var(--ai, #a67f1c); }
+.ai-src { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+/* 依据条的「依据 · 已保存课表」由 WXML 写全：WXSS 的 content 里不能出现中文
+   （注释外不得有中文，见 tests/wxss.test.cjs），文案也不该散落在样式里。 */
+.ai-src-item { padding:1px 7px; border:1px solid var(--line, #ded4cf); border-radius:var(--r-chip, 12rpx); background:var(--surface, #ffffff); color:var(--text-2, #6b5d57); font-size:11px; line-height:1.6; }
+.ai-note { margin-top:8px; color:var(--text-3, #746760); font-size:11px; line-height:1.75; }
+.ai-card { padding:14px; border:1px solid var(--ai-line, #e7d3a0); border-left:4px solid var(--ai, #a67f1c); border-radius:var(--r-card, 24rpx); background:var(--surface, #ffffff); }
 @media (max-width:350px) { .page { padding-left:16px; padding-right:16px; } }

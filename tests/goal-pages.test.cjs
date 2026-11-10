@@ -143,6 +143,32 @@ test('目标日列表：修改带着 id 进入编辑页，没有 id 的点击被
   assert.deepEqual(stub.calls.navigate, ['/pages/goals/edit/index?id=abc']);
 });
 
+test('目标日列表：AI 排计划带着 id 进入计划页，没有 id 的点击被忽略，且不改数据', () => {
+  const stub = wxStub();
+  seed(stub, [
+    { id: 'exam', name: '英语四级', date: '2026-12-13', countToday: false, createdAt: 1, updatedAt: 1 },
+    { id: 'passed', name: '英语四级报名截止', date: '2026-09-25', countToday: false, createdAt: 2, updatedAt: 2 },
+  ]);
+  const page = loadPage('goals', stub);
+  page.onLoad({ today: TODAY });
+  page.onPlan({ currentTarget: { dataset: { id: 'exam' } } });
+  page.onPlan({ currentTarget: { dataset: {} } });
+  assert.deepEqual(stub.calls.navigate, ['/pages/goals/plan/index?id=exam']);
+  // 进计划页只是导航：不动本机目标日，也不写计划。
+  assert.deepEqual(stored(stub).map((item) => item.id), ['exam', 'passed']);
+  assert.equal(stub.wx.getStorageSync('study-plan/v1'), '');
+});
+
+test('目标日列表：入口上「AI 排计划」只出现在未到期与今天两组，已过期不给排', () => {
+  const wxml = fs.readFileSync('miniprogram/pages/goals/index.wxml', 'utf8');
+  const planEntries = wxml.match(/id="goal-plan-\{\{item\.id\}\}"/g) ?? [];
+  assert.equal(planEntries.length, 2);
+  const expiredStart = wxml.indexOf('goal-item-expired');
+  assert.ok(expiredStart > 0);
+  assert.equal(wxml.slice(expiredStart).includes('goal-plan-'), false);
+  assert.match(wxml, /bindtap="onPlan"/);
+});
+
 test('编辑页：新建默认今天，保存后列表能读回同一条', () => {
   const stub = wxStub();
   const page = loadPage('goals/edit', stub);

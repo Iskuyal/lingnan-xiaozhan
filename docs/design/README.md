@@ -61,6 +61,8 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
+- [AI 创新点与界面升级（回应评语：通知一键调课、今日简报、目标倒排；讨论稿待拍板）](ai-innovation-2026-11/README.md)
+
 - [部门问答守卫与缺失说明修正（现有布局下的文案对照评审件）](department-qa-guard-2026-10-30/README.md)
 - [正式作品名同步（明确命名下的导航文字更新）](app-name-2026-10-29/README.md)
 
