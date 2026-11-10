@@ -142,6 +142,25 @@ function weekOf(input: BriefInput): number | null {
   return weekIndexOf({ startDate: input.settings.startDate, totalWeeks: input.settings.totalWeeks }, input.today);
 }
 
+/**
+ * 同一天、同一时段、同一门课的多条记录合成一行。
+ *
+ * 导入时一门课被断周拆成多条很常见（实测云端就有「低代码平台应用开发 1-4 节」
+ * 一条是第 4-16 周、另一条是第 17 周）。周次未知时两条都命中，
+ * 首页就会把同一节课印两遍。它们对学生看到的内容完全一样，所以只留一条。
+ */
+function mergeSameSlot(slots: Slot[]): Slot[] {
+  const seen = new Set<string>();
+  const merged: Slot[] = [];
+  for (const slot of slots) {
+    const signature = [slot.course.name, slot.start, slot.end, slot.course.location, slot.course.teacher].join('\u0000');
+    if (seen.has(signature)) continue;
+    seen.add(signature);
+    merged.push(slot);
+  }
+  return merged;
+}
+
 function slotsOf(input: BriefInput, week: number | null): Slot[] {
   const weekday = weekdayOf(input.today);
   const slots: Slot[] = [];
@@ -164,7 +183,7 @@ function slotsOf(input: BriefInput, week: number | null): Slot[] {
       });
     }
   }
-  return slots.sort((a, b) => a.start - b.start || a.end - b.end || a.course.name.localeCompare(b.course.name, 'zh-Hans-CN'));
+  return mergeSameSlot(slots.sort((a, b) => a.start - b.start || a.end - b.end || a.course.name.localeCompare(b.course.name, 'zh-Hans-CN')));
 }
 
 function itemOf(slot: Slot): TodayItem {
@@ -300,7 +319,7 @@ export function buildTodayBrief(input: BriefInput): TodayBrief {
     sentences.push('今天没有安排课程。');
   } else if (summary.kind === 'current' && summarySlot !== null) {
     const place = shortLocation(summarySlot.course.location);
-    sentences.push(`现在在上「${summarySlot.course.name}」${summary.sectionLabel}${place === '' ? '' : `，在 ${place}`}。`);
+    sentences.push(`现在在上「${summarySlot.course.name}」${summary.sectionLabel}${place === '' ? '' : `，在 ${place}。`}`);
   } else if (summary.kind === 'next' && summarySlot !== null) {
     const first = summarySlot.key === slots[0].key;
     const startText = summarySlot.from === null ? '' : ` ${summarySlot.from.start}`;
@@ -310,6 +329,13 @@ export function buildTodayBrief(input: BriefInput): TodayBrief {
     sentences.push(
       `${first ? '第一节课' : '下一节'}${startText}${place === '' ? '' : ` 在 ${place}`}${timing}。`,
     );
+  } else if (!hasTimes) {
+    // 没填作息时不知道现在是第几节，说「上完了」就是编答案：
+    // 早上 7:50 打开首页却看到「今天的课已经上完」，比不给结论更糟。
+    // 如实说「今天有课、节次如下」，把判断交给学生自己看。
+    const firstSlot = slots[0];
+    const place = shortLocation(firstSlot.course.location);
+    sentences.push(`今天的课从${sectionTextOf(firstSlot.start, firstSlot.end)}开始${place === '' ? '' : `，在 ${place}`}。`);
   } else {
     sentences.push('今天的课已经上完，剩下的时间自己安排。');
   }

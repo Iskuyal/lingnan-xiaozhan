@@ -188,6 +188,47 @@ test('没填作息：整套不出现任何具体时刻，并说明填了才看�
   assert.equal(result.sources.includes('作息设置'), false);
 });
 
+test('没填作息时不许说「今天的课已经上完」——早上七点半打开首页也不能这么写', () => {
+  // 真机路径实测踩到：作息全空 → 不知道该上第几节 → 旧逻辑落进 done，
+  // 早上 07:50 的首页写着「今天的课已经上完，剩下的时间自己安排」。
+  const result = brief.buildTodayBrief(input({
+    courses: [course({})],
+    settings: settingsModule.emptySettings(),
+    clockMinutes: 7 * 60 + 50,
+  }));
+  assert.equal(result.hasTimes, false);
+  assert.equal(
+    result.sentences.includes('今天的课已经上完，剩下的时间自己安排。'),
+    false,
+    '没填作息就不知道现在几点该上什么，不能断言「上完了」',
+  );
+  assert.equal(result.sentences[0], '今天的课从第 1-2 节开始，在 崇礼楼-306。');
+});
+
+test('同一门课同一时段被断周拆成两条记录时，只显示一次', () => {
+  // 实测云端数据：低代码平台应用开发第 1-4 节有两条，周次分别是 4-16 与 17 周。
+  // 没设开学日时周次未知，两条都命中，首页会把同一节课印两遍。
+  const courses = [
+    course({ id: 'tc_a', name: '低代码平台应用开发', sectionRanges: [{ start: 1, end: 4 }], weeks: [4, 5, 6, 7, 8], weeksRecognized: true }),
+    course({ id: 'tc_b', name: '低代码平台应用开发', sectionRanges: [{ start: 1, end: 4 }], weeks: [17], weeksRecognized: true }),
+  ];
+  const noSemester = settingsModule.emptySettings();
+  const result = brief.buildTodayBrief(input({ courses, settings: noSemester }));
+  assert.equal(result.rows.length, 1, '同一节同一门课只该占一行');
+  assert.equal(result.blockCount, 1);
+});
+
+test('同名但不同节次或不同地点仍是两节，不能合并', () => {
+  const courses = [
+    course({ id: 'tc_a', name: '大学美育', sectionRanges: [{ start: 1, end: 2 }], location: '博雅楼-A507' }),
+    course({ id: 'tc_b', name: '大学美育', sectionRanges: [{ start: 9, end: 10 }], location: '博雅楼-A507' }),
+    course({ id: 'tc_c', name: '大学美育', sectionRanges: [{ start: 1, end: 2 }], location: '博雅楼-B604' }),
+  ];
+  const noSemester = settingsModule.emptySettings();
+  const result = brief.buildTodayBrief(input({ courses, settings: noSemester }));
+  assert.equal(result.rows.length, 3, '节次或地点不同的同名课是不同的一节');
+});
+
 test('只填一半作息：缺时刻的那一节不显示时刻，也不拿它凑空闲段', () => {
   const partial = filled();
   partial.sectionTimes[2] = { start: '', end: '' }; // 第 3 节只有结束时刻

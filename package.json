@@ -10,6 +10,7 @@
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.cjs",
     "verify:wechat": "node scripts/verify-wechat.cjs",
     "verify:goals": "node scripts/verify-goals.cjs",
+    "verify:ai-features": "node scripts/verify-ai-features.cjs",
     "probe:wechat": "node scripts/probe-wechat.cjs",
     "probe:safety-key": "node scripts/probe-safety-key.cjs",
     "probe:ai-window": "node scripts/probe-ai-window.cjs",

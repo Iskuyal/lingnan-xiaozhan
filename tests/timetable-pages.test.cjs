@@ -617,13 +617,25 @@ test('周课表主页：首页把问题带进来（?ask=）时打开助手并填
   const wx = baseWx(cloud);
   const page = loadPage('timetable', wx);
   const question = '周三第几节有课？';
-  page.onLoad({ today: '2026-09-21', clock: '13:10', ask: question });
+  // 首页 `sendAsk` 用 encodeURIComponent 拼 URL（中文与「？」都得转义），
+  // 而 wx.navigateTo 的 query 是原样转义串、不会自动解码 —— 所以这里按首页的真实产物注入。
+  page.onLoad({ today: '2026-09-21', clock: '13:10', ask: encodeURIComponent(question) });
 
   assert.equal(page.data.assistantOpen, true, '带 ask 进来要直接把助手面板打开');
-  assert.equal(page.data.assistantInput, question, '问题要原样填进输入框');
+  assert.equal(page.data.assistantInput, question, '问题要解码后原样填进输入框');
   assert.ok(page.data.assistantMessages.length >= 1, '打开助手时该有欢迎语');
   assert.equal(cloud.calls.length, 0, '只填不发：进入页面时不能发出任何请求');
   assert.equal(wx.actions.length, 0, '也不该弹 toast/跳转');
+
+  // 直接传原文（没有 % 转义）也要能用：拿 url 手拼参数时会这样。
+  const plain = loadPage('timetable', baseWx(cloudStub({ list: () => ({ ok: true, count: 0, semester: '', updatedAt: '', courses: [] }) })));
+  plain.onLoad({ ask: question });
+  assert.equal(plain.data.assistantInput, question, '没转义的原文也要能用');
+
+  // 解不开的转义（文本里本来就有裸 %）不能把问题弄丢：按原文填进去。
+  const broken = loadPage('timetable', baseWx(cloudStub({ list: () => ({ ok: true, count: 0, semester: '', updatedAt: '', courses: [] }) })));
+  broken.onLoad({ ask: '正确率 90% 的题怎么做？' });
+  assert.equal(broken.data.assistantInput, '正确率 90% 的题怎么做？', '解码失败要按原文保留，不能丢问题或显示乱码');
 
   // 空 ask 不打开助手（与 today?/clock? 一样，参数只是可选项）
   const idle = loadPage('timetable', baseWx(cloudStub({ list: () => ({ ok: true, count: 0, semester: '', updatedAt: '', courses: [] }) })));

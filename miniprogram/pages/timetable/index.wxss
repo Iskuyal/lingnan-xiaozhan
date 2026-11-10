@@ -136,3 +136,5 @@
 .toast-text { flex:1; min-width:0; line-height:1.7; }
 .toast-undo { flex:none; padding:2px 6px; color:#f2c96b; font-size:13px; font-weight:700; }
 .diff-note { color:var(--text-3,#746760); }
+/* 课表页的「贴班群通知」直接入口：与「问问课表助手」并排，金色底表示这是 AI 产出要人确认。 */
+.tt-notice-entry { margin-top:10px; border-color:var(--ai-line,#e7d3a0); background:var(--ai-soft,#fbf4e2); color:var(--ai,#a67f1c); font-weight:600; }

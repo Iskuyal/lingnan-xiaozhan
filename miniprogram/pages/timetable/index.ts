@@ -232,6 +232,19 @@ function localMinutes(): number {
 }
 
 /**
+ * 页面 query 里的文本解码：`wx.navigateTo` 的 query 是原样的转义串，不会自动解码。
+ * 解不开（文本里本来就有裸 `%`）就按原文返回——宁可显示原样，也不把学生的问题弄丢。
+ */
+function decodedText(raw: string): string {
+  if (raw.indexOf('%') < 0) return raw;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/**
  * 退化态的说明（设计图 19）：没设置就说清「缺什么、点哪里补」，
  * 而不是让人对着一个没有日期、没有速查的课表页猜为什么。设置齐了返回空字符串。
  */
@@ -352,7 +365,14 @@ Page({
     this.clockMinutes = injectedClock === null ? localMinutes() : injectedClock;
     // 首页输入条把问题带到这一页（`?ask=`）：只把问题填进输入框、帮他打开助手，**不自动发送**——
     // 发不发、发之前要不要改措辞，都留给学生自己决定。
-    const ask = typeof query.ask === 'string' ? query.ask.trim().slice(0, NOTICE_INPUT_MAX) : '';
+    //
+    // `?ask=` 必须解码：首页用 `encodeURIComponent` 拼 URL（中文与「？」「&」都得转义，
+    // 否则会被当成参数分隔符切断），而 `onLoad` 拿到的 query 是**原样的转义串**——
+    // 2026-11-10 开发者工具实测：不解码时输入框里显示的是
+    // `%E8%BF%99%E5%91%A8%E4%B8%89%E7%AC%AC%E5%87%A0%E8%8A%82%E6%9C%89%E8%AF%BE%EF%BC%9F`。
+    // 解不开（例如文本里本来就有裸 `%`）就按原文用，绝不因为解码失败把问题丢掉。
+    const rawAsk = typeof query.ask === 'string' ? query.ask : '';
+    const ask = decodedText(rawAsk).trim().slice(0, NOTICE_INPUT_MAX);
     if (ask !== '') {
       this.openAssistant();
       this.setData({ assistantInput: ask });
@@ -530,6 +550,14 @@ Page({
       assistantCapWarning: '',
       assistantSafetyNote: '',
     });
+  },
+  /**
+   * 课表页上的「贴班群通知」直接入口：一次点开就同时打开助手与粘贴框。
+   * 贴通知是本轮主打功能，藏在助手面板里要点两下才看得见，等于没做入口。
+   */
+  openNoticeEntry() {
+    this.openAssistant();
+    this.setData({ noticeOpen: true, noticeError: '' });
   },
   closeAssistant() {
     this.setData({ assistantOpen: false });

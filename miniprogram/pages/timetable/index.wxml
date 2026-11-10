@@ -140,7 +140,12 @@
 
 
   <block wx:if="{{status !== 'loading' && status !== 'error'}}">
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" wx:if="{{!assistantOpen}}" id="assistant-open" class="home-button tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+    <block wx:if="{{!assistantOpen}}">
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="assistant-open" class="home-button tt-assistant" hover-class="pressed" bindtap="openAssistant">问问课表助手</button>
+      <!-- 贴通知是本轮的主打功能，不该藏在助手面板里点两下才找到：
+           课表页直接给一个入口，点了就同时打开助手与粘贴框。 -->
+      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="notice-entry" class="home-button secondary tt-notice-entry" hover-class="pressed" bindtap="openNoticeEntry">贴班群通知，识别课表变更</button>
+    </block>
     <view wx:else class="qa-panel tt-qa" id="assistant-panel">
       <view class="qa-head">
         <view class="qa-title">课表助手</view>
