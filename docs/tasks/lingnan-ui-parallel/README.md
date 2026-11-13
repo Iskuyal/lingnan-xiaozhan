@@ -39,8 +39,22 @@
 3. 公共文件（`app.json`、`app.wxss`、`styles/ui.wxss`、`ui/navigation.ts`、公共测试）仍只由 A 修改；需要改时写进交接报告。
 4. A 后续页面提交在 `codex/lingnan-ui-a`，B/C 不追随，只合入同一个 NAV_SHA。
 
+### 2026-11-13 A 段页面完成（`codex/lingnan-ui-a`）
+
+- 实际被测代码：`8b1b6ee88bf9ed0d1df950be4bf2f525abf99e7e`（从 `958565d` 建，含 NAV_SHA 全部内容）。
+- 覆盖：首页（图 01/53/36/37）、学习（11）、校园（19）、部门（20/21/22/65）、资讯（23/24），
+  以及 `.u2-` 共享件与 10 个 v2 线性图标。
+- 验证：typecheck、build、`npm test` **934/934**、`npm run docs:check`、
+  `node scripts/verify-ui-v2-a.cjs` **14 项检查 + 21 张原生截图**（9461 端口、独立项目目录、夹具接管，
+  真实模型调用 0 次）。
+- 证据与未解决项：[A 段交付](../../evidence/lingnan-ui-implementation/a/README.md)（含 320px 原生未取、
+  意图消费端在 B、真机未验等如实标注）。
+- 边界：未合 main、未部署、未调用真实业务 AI；公共文件仍由 A 维护，B/C 不追随本分支的页面提交。
+
 ### 待办
 
-- A：`codex/lingnan-ui-a` 完成首页/学习/校园/部门/资讯新视觉与原生截图。
+- B：课表按设计图 02 等重做，并在课程/设置读完后 `consumeTimetableIntent()` 应用意图。
+- C：学习工具页（目标/计划/日历/体测/升学/答辩）按图重做。
+- Codex：从共同基础建立集成候选，依次合入 A、B、C 后独立审查与回归。
 - B/C：各自模块交付；跨模块缺陷写入报告，不代改对方页面。
 - Codex：从共同基础建立集成候选，依次合入 A、B、C 后独立审查与回归。
