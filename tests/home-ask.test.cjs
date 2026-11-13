@@ -13,6 +13,8 @@ const { createRequire } = require('node:module');
  * 学生看到的是 `%E8%BF%99...`。所以这里把四支行为逐一钉死。
  */
 function loadPage(name, wx, stack = [{}]) {
+  // 课表 tab 的跳转经 ui/navigation 完成，它读平台全局 wx；与页面用同一份 mock。
+  globalThis.wx = wx;
   const filename = path.resolve(`dist/pages/${name}/index.js`);
   let page;
   vm.runInNewContext(fs.readFileSync(filename, 'utf8'), {
@@ -27,18 +29,36 @@ function loadPage(name, wx, stack = [{}]) {
   return page;
 }
 
-/** 记录每一次跳转与每一句 toast：输入条的行为全部体现在这两个通道里。 */
-function recorder() {
+/**
+ * 记录每一次跳转、写入的意图与每一句 toast：输入条的行为全部体现在这三个通道里。
+ * 课表是 tab（switchTab 不接受 query），问题由 ui/navigation 的一次性意图带过去。
+ */
+function recorder(options = {}) {
   const visited = [];
   const toasts = [];
+  const storage = new Map();
   return {
     visited,
     toasts,
+    storage,
     wx: {
       navigateTo: ({ url }) => visited.push(url),
+      switchTab: ({ url, success, fail }) => {
+        visited.push(url);
+        (options.failSwitchTab ? fail : success)?.();
+      },
+      getStorageSync: (key) => (storage.has(key) ? storage.get(key) : ''),
+      setStorageSync: (key, value) => storage.set(key, value),
+      removeStorageSync: (key) => storage.delete(key),
       showToast: ({ title }) => toasts.push(title),
     },
   };
+}
+
+/** 课表页真正会用的读法：同一个 key 上那张一次性纸条。 */
+function intentOf(storage) {
+  const row = storage.get('lingnan/ui-timetable-intent/v1');
+  return row === undefined ? null : row.intent;
 }
 
 test('首页问 AI：发送把问题转义后带进课表页，居中空白与超长都先清掉', () => {
@@ -48,20 +68,18 @@ test('首页问 AI：发送把问题转义后带进课表页，居中空白与�
   home.onAskInput({ detail: { value: `  ${question}  ` } });
   home.sendAsk();
 
-  assert.equal(rec.visited.length, 1, '只跳一次');
-  const url = rec.visited[0];
-  // 中文与「？」必须转义，否则会被 URL 当成参数分隔符切断。
-  assert.equal(url, `/pages/timetable/index?ask=${encodeURIComponent(question)}`);
-  assert.ok(url.includes('?ask='));
-  assert.equal(decodeURIComponent(url.split('?ask=')[1]), question, '课表页解码后要拿回原问题');
+  assert.deepEqual(rec.visited, ['/pages/timetable/index'], '只切一次课表 tab');
+  // 问题原样交给课表页：不清掉「？」也不做二次转义。
+  assert.deepEqual(intentOf(rec.storage), { kind: 'assistant', text: question });
   assert.deepEqual(rec.toasts, [], '成功发送不弹提示');
 
-  // 超长粘贴不能把整段塞进 URL：按 500 字截断（与 ASK_MAX_CHARS 一致）。
+  // 超长粘贴不能整段塞进意图：按 500 字截断（与 ASK_MAX_CHARS 一致）。
   const long = '课'.repeat(600);
+  rec.storage.clear();
   rec.visited.length = 0;
   home.onAskInput({ detail: { value: long } });
   home.sendAsk();
-  assert.equal(decodeURIComponent(rec.visited[0].split('?ask=')[1]).length, 500);
+  assert.equal(intentOf(rec.storage).text.length, 500);
 });
 
 test('首页问 AI：空输入只提示一句，不跳页', () => {
@@ -108,10 +126,22 @@ test('首页问 AI：语音如实说明未接入，拍照走导入页既有的�
 test('首页问 AI：发送后课表页不要自己发请求（只填不发）', () => {
   // 首页只负责把文字带过去；真正调用模型在课表页，且要等学生自己点发送。
   const source = fs.readFileSync('dist/pages/home/index.js', 'utf8');
-  assert.ok(source.includes('?ask='), '首页拼出 ?ask=');
+  assert.ok(source.includes('ui/navigation'), '首页经共享导航桥写意图');
+  assert.ok(source.includes('kind: \'assistant\'') || source.includes("kind: 'assistant'"), '带的是助手意图');
   assert.equal(
     source.includes('callFunction') || source.includes('callAi'),
     false,
     '首页输入条不自己调云函数',
   );
+});
+
+test('首页问 AI：课表 tab 打不开时提示一句，不改已写好的问题', async () => {
+  const rec = recorder({ failSwitchTab: true });
+  const home = loadPage('home', rec.wx);
+  home.onAskInput({ detail: { value: '这周三第几节有课？' } });
+  await home.sendAsk();
+  await home.sendAsk(); // 失败后重试仍然从输入框原文出发
+  assert.deepEqual(rec.toasts, ['课表页暂时打不开，稍后再试', '课表页暂时打不开，稍后再试']);
+  assert.equal(home.data.askText, '这周三第几节有课？', '路由失败不吞掉学生写的话');
+  assert.equal(rec.storage.size, 0, '失败的跳转把纸条也收回去了');
 });
