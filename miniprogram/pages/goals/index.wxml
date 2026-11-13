@@ -1,74 +1,114 @@
-<view class="page">
-  <view class="eyebrow">只保存在这台设备 · 不联网、不上传</view>
-  <view class="goal-title">目标日</view>
-  <view class="goal-copy">考试、报名截止、项目节点都可以记在这里。日期按北京时间的当天计算，今天就是今天。</view>
+<view class="u2-page">
+  <view class="goals-head">
+    <view class="goals-head-main">
+      <view class="u2-h1"><text class="goals-h1-line">每个目标，</text><text class="goals-h1-line">都有准备的时间。</text></view>
+    </view>
+    <view id="goal-new" class="goals-new" hover-class="pressed" aria-role="button" aria-label="新建目标日" bindtap="onCreate">＋</view>
+  </view>
+  <view class="u2-lead">只保存在这台设备，无需填写个人账号。</view>
 
   <block wx:if="{{hasGoals}}">
-    <view class="goal-group" wx:if="{{upcomingCount > 0}}">
-      <view class="goal-group-head">
-        <view class="section-title">未到期</view>
-        <view class="goal-group-note">{{upcomingCount}} 个</view>
-      </view>
-      <view class="goal-item goal-item-upcoming" wx:for="{{groups.upcoming}}" wx:key="id">
-        <view class="goal-item-top">
-          <view class="goal-name">{{item.name}}</view>
-          <view class="goal-state goal-state-upcoming">{{item.label}}</view>
-        </view>
-        <view class="goal-meta">{{item.meta}}</view>
-        <view class="goal-actions">
-          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
-          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
-          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
-        </view>
+    <view wx:if="{{feature}}" class="u2-hero goals-hero">
+      <view class="u2-hero-label">{{feature.kind === 'today' ? '今天的目标' : '下一个目标'}}</view>
+      <view class="st-hero-name">{{feature.name}}</view>
+      <view wx:if="{{feature.kind === 'today'}}" class="goals-hero-today">就是今天<text class="st-hero-count-unit">{{feature.dateText}}</text></view>
+      <view wx:else class="st-hero-count">{{feature.days}}<text class="st-hero-count-unit">天后 · {{feature.dateText}}</text></view>
+      <view id="goal-hero-plan" class="goals-hero-foot" hover-class="pressed" data-id="{{feature.id}}" bindtap="onPlan">
+        <text>为这个目标安排学习</text><text>→</text>
       </view>
     </view>
 
-    <view class="goal-group" wx:if="{{todayCount > 0}}">
-      <view class="goal-group-head">
-        <view class="section-title">今天</view>
-        <view class="goal-group-note">{{todayCount}} 个</view>
-      </view>
-      <view class="goal-item goal-item-today" wx:for="{{groups.today}}" wx:key="id">
-        <view class="goal-item-top">
-          <view class="goal-name">{{item.name}}</view>
-          <view class="goal-state goal-state-today">{{item.label}}</view>
+    <view wx:if="{{hasSavedPlan}}" class="u2-card goals-saved">
+      <view class="goals-saved-top">
+        <view class="goals-saved-main">
+          <view class="u2-card-title">{{savedTitle}}</view>
+          <view class="u2-row-sub">{{savedMeta}}</view>
         </view>
-        <view class="goal-meta">{{item.meta}}</view>
-        <view class="goal-actions">
-          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
-          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
-          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
-        </view>
+        <view class="u2-tag goals-tag-ok">{{savedStale ? '待核对' : '已保存'}}</view>
       </view>
+      <view wx:if="{{savedStale}}" class="u2-notice u2-notice-info">{{savedStaleNote}}</view>
+      <view id="goal-saved-open" class="u2-text-link goals-saved-link" hover-class="pressed" bindtap="onViewSaved">重新打开计划</view>
     </view>
 
-    <view class="goal-group" wx:if="{{expiredCount > 0}}">
-      <view class="goal-group-head">
-        <view class="section-title">已过期</view>
-        <view class="goal-group-note">{{expiredCount}} 个</view>
+    <block wx:if="{{upcomingCount > 0}}">
+      <view class="u2-section">
+        <view class="u2-section-title">未到期</view>
+        <view class="u2-section-note">{{upcomingCount}} 个</view>
       </view>
-      <view class="goal-item goal-item-expired" wx:for="{{groups.expired}}" wx:key="id">
-        <view class="goal-item-top">
-          <view class="goal-name">{{item.name}}</view>
-          <view class="goal-state goal-state-expired">{{item.label}}</view>
-        </view>
-        <view class="goal-meta">{{item.meta}}</view>
-        <view class="goal-actions">
-          <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
-          <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+      <view class="u2-list">
+        <view class="goal-item goal-item-upcoming" wx:for="{{groups.upcoming}}" wx:key="id">
+          <view class="goal-item-head">
+            <view class="goal-name">{{item.name}}</view>
+            <view class="u2-tag u2-tag-red goal-state">{{item.label}}</view>
+          </view>
+          <view class="goal-meta">{{item.meta}}</view>
+          <view class="goal-actions">
+            <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
+            <view id="goal-edit-{{item.id}}" class="goal-action goal-action-edit" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+            <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+          </view>
         </view>
       </view>
-    </view>
+    </block>
 
-    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="goal-new" class="home-button goal-new" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+    <block wx:if="{{todayCount > 0}}">
+      <view class="u2-section">
+        <view class="u2-section-title">今天</view>
+        <view class="u2-section-note">{{todayCount}} 个</view>
+      </view>
+      <view class="u2-list">
+        <view class="goal-item goal-item-today" wx:for="{{groups.today}}" wx:key="id">
+          <view class="goal-item-head">
+            <view class="goal-name">{{item.name}}</view>
+            <view class="u2-tag u2-tag-red goal-state">{{item.label}}</view>
+          </view>
+          <view class="goal-meta">{{item.meta}}</view>
+          <view class="goal-actions">
+            <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
+            <view id="goal-edit-{{item.id}}" class="goal-action goal-action-edit" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+            <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:if="{{expiredCount > 0}}">
+      <view class="u2-section">
+        <view class="u2-section-title">已过期</view>
+        <view class="u2-section-note">{{expiredCount}} 个</view>
+      </view>
+      <view class="u2-list">
+        <view class="goal-item goal-item-expired" wx:for="{{groups.expired}}" wx:key="id">
+          <view class="goal-item-head">
+            <view class="goal-name">{{item.name}}</view>
+            <view class="u2-tag goal-state">{{item.label}}</view>
+          </view>
+          <view class="goal-meta">{{item.meta}}</view>
+          <view class="goal-actions">
+            <view id="goal-edit-{{item.id}}" class="goal-action goal-action-edit" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
+            <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="u2-actions">
+      <button class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onCreate">新建目标日</button>
+    </view>
   </block>
 
-  <view wx:else class="goal-empty">
-    <view class="goal-empty-mark">◎</view>
-    <view class="goal-empty-title">还没有目标日</view>
-    <view class="goal-empty-copy">自己写一个日期，剩下多少天由小程序替你数。第一件事可以是一场考试的日期、一个报名或交材料的截止日，或者一个项目节点。</view>
-    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="goal-new" class="home-button goal-new" hover-class="pressed" bindtap="onCreate">＋ 新建目标日</button>
+  <view wx:else class="u2-empty goal-empty">
+    <view class="u2-empty-icon">◎</view>
+    <view class="u2-empty-title goal-empty-title">下一个目标，是什么？</view>
+    <view class="u2-empty-copy">记一个考试、展示或比赛日期，再为它留出学习时间。日期按北京时间的当天计算。</view>
+    <view class="u2-actions">
+      <button id="goal-new-empty" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onCreate">新建目标日</button>
+      <button id="goal-history" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onViewSaved">查看保留的历史计划</button>
+    </view>
   </view>
 
-  <view class="quiet goal-note">目标日只存在本机，换设备或删除小程序后不再恢复；这里的日期由你填写，不代表学校已公布的安排。今天（北京时间）{{todayText}}</view>
+  <view class="goals-foot">
+    <view class="u2-xs u2-muted goals-foot-note">目标日只存在本机，换设备或删除小程序后不再恢复；日期由你填写，不代表学校已公布的安排。今天（北京时间）{{todayText}}</view>
+    <view id="goal-home" class="u2-text-link goals-foot-back" hover-class="pressed" bindtap="goHome">回到今天</view>
+  </view>
 </view>

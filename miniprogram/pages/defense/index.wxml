@@ -1,179 +1,359 @@
-<!-- 项目讲解与答辩练习：八个状态同页切换，见 docs/design/project-defense/ -->
-<view class="defense">
+<!-- 项目讲解与答辩练习：九段状态同页切换（设计 31–35、42、56–62、77/78）。
+     材料查阅与练习记录都在本页内切换，返回时回到触发它的状态并保留草稿。 -->
+<view class="st-screen df-screen {{(phase === 'materials' && !materialOpen) || (recordOpen && !copiedOpen) ? 'df-screen-dock' : ''}}">
+  <view class="st-screen-body">
 
-  <!-- 材料确认 -->
-  <block wx:if="{{phase === 'materials'}}">
-    <view class="eyebrow">两份冻结材料 · 只依据材料里的条目 · 不联网找资料</view>
-    <view class="defense-title">先选一份材料</view>
-    <view class="note">这项练习让你把课程项目讲清楚，并逐句看到依据从哪来。它不输出职业能力等级、官方成绩、录用或面试保证，也不评价你的表达能力。</view>
-
-    <view class="section-head"><text class="section-title">可用材料</text><text class="section-note">2 份</text></view>
-    <view
-      wx:for="{{materials}}"
-      wx:key="id"
-      class="card material {{item.id === selectedMaterialId ? 'material-selected' : ''}}"
-      hover-class="pressed"
-      data-id="{{item.id}}"
-      bindtap="onSelectMaterial"
-    >
-      <view class="material-head">
-        <text class="material-name">{{item.name}}</text>
-        <text class="pick">{{item.id === selectedMaterialId ? '已选' : '选择'}}</text>
+    <!-- ═══ 78 练习记录已复制 ═══ -->
+    <block wx:if="{{copiedOpen}}">
+      <view class="df-result-mark">✓</view>
+      <view class="u2-h1">已复制当前记录。</view>
+      <view class="u2-lead">可以粘贴到自己的笔记中，再决定是否结束练习。</view>
+      <view class="u2-section"><text class="u2-section-title">这次复制了什么</text></view>
+      <view class="u2-card u2-card-line">
+        <view class="u2-card-copy">当前会话已有的问题、回答、已返回的反馈及重答；原答与反馈分开标注。</view>
+        <view class="u2-source">未完成的轮次和未返回的反馈不会补写。</view>
       </view>
-      <view class="chip {{item.kind === 'owned' ? 'chip-gold' : 'chip-warn'}}">{{item.kindLabel}}</view>
-      <view wx:for="{{item.facts}}" wx:for-item="fact" wx:key="*this" class="fact">{{fact}}</view>
-      <view class="quiet">{{item.note}}</view>
-    </view>
-
-    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="defense-begin" class="primary" bindtap="onBegin">开始练习</button>
-    <view class="section-head"><text class="section-title">这次会话的边界</text></view>
-    <view class="bound">最多三轮提问，之后一次复盘与一次重答；不做无限对话。</view>
-    <view class="bound">每轮回答 20–500 字。说得短但有依据，不会被扣分。</view>
-    <view class="bound">反馈里的每个条目编号都要能在材料里回核；回核不到就不上屏。</view>
-    <view class="bound">会话只留在本页内存里，退出后不保存；失败会保留你已写的内容。</view>
-    <view class="quiet">练习对象是维护者编写的材料，不是真实学生项目，也不能证明学习效果。</view>
-  </block>
-
-  <!-- 作答（第 1–3 轮 与 重答） -->
-  <block wx:elif="{{phase === 'practice' || phase === 'reanswer'}}">
-    <view class="eyebrow">材料：{{materialName}} · {{materialKindLabel}}</view>
-    <view class="section-head">
-      <text class="section-title">{{phase === 'reanswer' ? '重答一处薄弱项' : '第 ' + round + ' 轮 / 共 3 轮'}}</text>
-      <text class="section-note">{{phase === 'reanswer' ? '全流程仅一次' : dimension}}</text>
-    </view>
-
-    <view class="question">
-      <text class="question-tag">{{phase === 'reanswer' ? '重答' : '第 ' + round + ' 轮 · ' + dimension}}</text>
-      <text class="question-text">{{question}}</text>
-    </view>
-
-    <textarea
-      class="answer-input"
-      value="{{answer}}"
-      maxlength="{{maxChars}}"
-      placeholder="按材料里的条目说，不确定的就写「还没验证」"
-      bindinput="onAnswerInput"
-    />
-    <view class="input-foot">
-      <text>已写 {{answerCount}} 字 / 最多 {{maxChars}} 字</text>
-      <text>草稿留在本页</text>
-    </view>
-
-    <view class="cheat">
-      <text class="cheat-title">材料速查（可引用的条目编号）</text>
-      <view class="cheat-list">
-        <text wx:for="{{materialEntries}}" wx:key="*this" class="cheat-chip">{{item}}</text>
+      <view class="u2-notice u2-notice-info df-gap">退出仍会清空本页会话；复制不等于本程序自动保存。</view>
+      <view class="u2-actions">
+        <button id="defense-exit-confirm" class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onExit">确认结束，清空会话</button>
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onCloseCopied">继续留在练习中</button>
       </view>
-    </view>
-
-    <view class="hint" wx:if="{{hint !== ''}}">{{hint}}</view>
-
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，拿反馈与追问</button>
-    <view class="quiet">提交后会调用一次模型（实测 20–45 秒），期间可以取消并保留上面的草稿。</view>
-  </block>
-
-  <!-- 等待与取消 -->
-  <block wx:elif="{{phase === 'pending'}}">
-    <view class="eyebrow">已提交到云端 · 这一步只做「按材料逐句核对」</view>
-    <view class="defense-title">正在核对你的回答</view>
-    <view class="pending">
-      <text class="pending-title">在等什么</text>
-      <text class="pending-body">模型要读完这份材料的所有条目，再逐句对照你写的 {{answerCount}} 字。实测需要 20–45 秒，比普通问答慢：它要输出四节内容。</text>
-      <view class="progress"><view class="progress-bar"></view></view>
-      <view class="pending-foot"><text>通常 20–45 秒</text><text>已等 {{pendingSeconds}} 秒</text></view>
-    </view>
-    <view class="note">现在取消不会丢东西：你写的内容仍在输入框里，回到上一页可以继续改或复制出来。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCancelPending">停止等待，保留草稿</button>
-    <view class="note">直接退出则本次会话不保存：材料选择、三轮回答、反馈与复盘都会清空。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
-  </block>
-
-  <!-- 四节反馈 -->
-  <block wx:elif="{{phase === 'feedback'}}">
-    <view class="eyebrow">依据材料：{{materialName}} · {{safetyNote}}</view>
-    <view class="defense-title">这一轮的依据核对</view>
-
-    <block wx:for="{{sections}}" wx:key="title">
-    <view wx:if="{{item.title !== '【追问】' || ask === ''}}" class="card frame">
-      <text class="frame-title">{{item.title}}</text>
-      <text class="frame-body">{{item.body}}</text>
-    </view>
     </block>
 
-    <view class="ask" wx:if="{{ask !== ''}}">
-      <text class="ask-label">追问 · 请在第 {{round + 1}} 轮回答</text>
-      <text class="ask-text">{{ask}}</text>
-    </view>
+    <!-- ═══ 77 本次练习记录 ═══ -->
+    <block wx:elif="{{recordOpen}}">
+      <view class="u2-kicker">{{materialName === '' ? '本次练习记录' : materialName + ' · 本次练习记录'}}</view>
+      <view class="u2-h1">把这次练习带走。</view>
+      <view class="u2-lead">包含原答、逐轮反馈与重答，分别标明。以下都是这次会话里已经产生的真实内容。</view>
 
-    <view class="note">这条反馈只把材料和你写的句子对着看。它不给你打分、不评价表达，也不会因为练过一次就把材料里的「待验证」变成「已完成」。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onNextRound">用这个追问开始第 {{round + 1}} 轮</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
-  </block>
-
-  <!-- 复盘 -->
-  <block wx:elif="{{phase === 'review'}}">
-    <view class="eyebrow">材料：{{materialName}} · 三轮已提交 · 本次会话不长期保存</view>
-    <view class="defense-title">你讲到哪一步了</view>
-    <view wx:for="{{reviewRows}}" wx:key="dimension" class="card dim">
-      <view class="dim-head">
-        <text class="dim-name">{{item.dimension}}</text>
-        <text class="chip {{item.status === '已反馈' ? 'chip-gold' : 'chip-warn'}}">{{item.status}}</text>
+      <view wx:if="{{recordView.empty}}" class="u2-empty">
+        <view class="u2-empty-icon">◻</view>
+        <view class="u2-empty-title">还没有可复制的内容</view>
+        <view class="u2-empty-copy">至少完成一轮作答并拿到反馈后，再回来复制；未返回的反馈不会被补写。</view>
       </view>
-      <text class="dim-body" wx:if="{{item.summary !== ''}}">对应回答：{{item.summary}}</text>
-      <text class="dim-body" wx:if="{{item.basis !== ''}}">引用核对：{{item.basis}}</text>
-      <text class="dim-body" wx:if="{{item.followup !== ''}}">本轮追问：{{item.followup}}</text>
-      <text class="dim-body" wx:if="{{item.excerpt !== ''}}">待验证保留：{{item.excerpt}}</text>
-    </view>
-    <view class="note">复盘只列「哪个维度拿到了反馈」和「该轮保留了哪些待验证」，不判断你的项目好不好，也不把「下一步计划」算成「已经验证」。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
-    <view class="note">重答时选择你想补充的一处说明，按上面的反馈补上可回核的材料条目；待验证事项继续保留。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="onStartReanswer">重答一处薄弱项</button>
-    <view class="quiet">重答只有一次；重答必须由你自己新写，不能用同一段文字再提交一遍。</view>
-  </block>
 
-  <!-- 重答后的收尾 -->
-  <block wx:elif="{{phase === 'done'}}">
-    <view class="eyebrow">重答已完成 · 本次会话结束</view>
-    <view class="defense-title">这次练习到这里</view>
-    <view wx:for="{{sections}}" wx:key="title" class="card frame">
-      <text class="frame-title">{{item.title}}</text>
-      <text class="frame-body">{{item.body}}</text>
-    </view>
-    <view class="note">重答的判定只看有没有新增可回核的条目编号；把句子写长、写得更流畅不算改善。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onCopyReview">复制复盘文字</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" hover-class="pressed" bindtap="goHome">回到首页</button>
-  </block>
+      <block wx:else>
+        <view wx:for="{{recordView.rounds}}" wx:key="round" class="u2-card u2-card-line df-record">
+          <view class="df-record-head">
+            <text class="u2-card-title">第 {{item.round}} 轮 · {{item.dimension}}</text>
+            <text class="u2-tag">原答</text>
+          </view>
+          <view class="df-record-label">问题</view>
+          <view class="df-record-text u2-muted">{{item.question}}</view>
+          <view class="df-record-label">你的回答</view>
+          <view class="df-record-text">{{item.answer}}</view>
+          <view class="df-record-label">材料反馈</view>
+          <view class="df-record-text">{{item.feedback}}</view>
+        </view>
 
-  <!-- 失败 / 额度 -->
-  <block wx:elif="{{phase === 'failure'}}">
-    <view class="eyebrow">你的回答已保留 · 失败不计作「没讲清楚」</view>
-    <view class="defense-title">这一轮没能完成</view>
-    <view class="fail">
-      <text class="fail-title">{{failureTitle}}</text>
-      <text class="fail-body">{{failureBody}}</text>
-    </view>
-    <view class="card kept">
-      <text class="quiet">保留的回答</text>
-      <text class="kept-text">{{answer}}</text>
-    </view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="primary" wx:if="{{failureRetryable}}" hover-class="pressed" bindtap="onRetry">重试这一次核对</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="secondary" hover-class="pressed" bindtap="onExit">退出练习</button>
-  </block>
+        <view class="u2-card u2-card-line df-record" wx:if="{{recordView.review.length > 0}}">
+          <text class="u2-card-title">三轮复盘</text>
+          <view wx:for="{{recordView.review}}" wx:for-item="line" wx:key="index" class="df-record-line">
+            <text class="df-record-line-head">{{line.index}}　{{line.dimension}}：{{line.status}}</text>
+            <text class="df-record-text u2-muted" wx:if="{{line.summary !== ''}}">对应回答：{{line.summary}}</text>
+            <text class="df-record-text u2-muted" wx:if="{{line.basis !== ''}}">引用核对：{{line.basis}}</text>
+            <text class="df-record-text u2-muted" wx:if="{{line.followup !== ''}}">本轮追问：{{line.followup}}</text>
+            <text class="df-record-text u2-muted" wx:if="{{line.excerpt !== ''}}">待验证保留：{{line.excerpt}}</text>
+          </view>
+        </view>
 
+        <view class="u2-card u2-card-line df-record" wx:if="{{recordView.reanswer}}">
+          <view class="df-record-head">
+            <text class="u2-card-title">{{recordView.reanswer.dimension}}</text>
+            <text class="u2-tag u2-tag-red">重答</text>
+          </view>
+          <view class="df-record-label">你的重答 · 沿用第 3 轮问题</view>
+          <view class="df-record-text">{{recordView.reanswer.answer}}</view>
+          <view class="df-record-label">重答反馈</view>
+          <view class="df-record-text">{{recordView.reanswer.feedback}}</view>
+        </view>
+      </block>
 
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="defense-material-open" wx:if="{{phase !== 'pending'}}" class="secondary" data-anchor="{{phase === 'review' || phase === 'reanswer' ? 'F4' : ''}}" bindtap="onOpenMaterial">查看完整练习材料与依据</button>
-  <view wx:if="{{materialOpen}}" class="reader-mask" catchtap="onCloseMaterial">
-    <view class="reader-panel" catchtap="stopMaterialTap">
-      <view class="reader-head"><view><view class="reader-title">{{materialReaderName}}</view><view class="quiet">{{materialReaderKind}} · 冻结 {{materialFrozenAt}}</view></view><button style="margin-left:0;margin-right:0;width:52px;max-width:none" id="material-close-top" class="reader-close" bindtap="onCloseMaterial">关闭</button></view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="material-index-toggle" class="reader-index-toggle" aria-expanded="{{materialIndexOpen}}" bindtap="toggleMaterialIndex">条目目录 · {{materialIndexOpen ? '收起' : '展开 ' + materialRows.length + ' 项'}}</button>
-      <view wx:if="{{materialIndexOpen}}" class="reader-index"><button style="margin-left:0;margin-right:0;width:calc((100% - 18px) / 4);max-width:none" wx:for="{{materialRows}}" wx:key="id" class="reader-index-item" data-id="{{item.id}}" bindtap="onLocateMaterial">{{item.id}}</button></view>
-      <scroll-view id="material-reader" class="reader-scroll" scroll-y="{{true}}" scroll-into-view="{{materialAnchor}}" enhanced="{{true}}">
-        <view class="reader-note">以下是冻结练习素材，不是当前上线声明，也不证明学习效果。设计情景不代表已有功能。</view>
-        <view class="reader-entry reader-entry-body">{{materialPreface}}</view>
-        <view wx:for="{{materialRows}}" wx:key="id" id="material-{{item.id}}" class="reader-entry"><view class="reader-entry-head">{{item.id}} · {{item.status}}</view><view class="reader-entry-body">{{item.body}}</view></view>
-        <view class="reader-note reader-entry-body">{{materialBoundary}}</view>
-      </scroll-view>
-      <view class="reader-footer"><button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="material-close-bottom" class="primary" bindtap="onCloseMaterial">返回{{phase === 'materials' ? '材料选择' : phase === 'reanswer' ? '重答草稿' : phase === 'review' ? '三轮复盘' : '当前练习'}}，保留内容</button></view>
+      <view class="u2-notice u2-notice-error df-gap" wx:if="{{copyHint !== ''}}">{{copyHint}}</view>
+      <view class="u2-text-link df-gap" hover-class="pressed" bindtap="onCloseRecord" id="defense-record-back">返回练习，内容照旧</view>
+    </block>
+
+    <!-- ═══ 31 选材 ═══ -->
+    <block wx:elif="{{phase === 'materials'}}">
+      <view class="u2-kicker">项目讲解练习 · 先选材料</view>
+      <view class="u2-h1">这次，练哪一个？</view>
+      <view class="u2-lead">两份维护者编写的练习材料，选择一份开始。</view>
+
+      <view class="df-options">
+        <view
+          wx:for="{{materials}}"
+          wx:key="id"
+          class="u2-card u2-card-line material df-option {{item.id === selectedMaterialId ? 'df-option-on' : ''}}"
+          hover-class="pressed"
+          data-id="{{item.id}}"
+          bindtap="onSelectMaterial"
+        >
+          <view class="df-option-head">
+            <text class="df-option-pick">{{item.id === selectedMaterialId ? '●' : '○'}}</text>
+            <view class="df-option-main">
+              <text class="df-option-name">{{item.name}}</text>
+              <text class="u2-xs u2-muted df-option-kind">{{item.kindLabel}}</text>
+            </view>
+          </view>
+          <view wx:for="{{item.facts}}" wx:for-item="fact" wx:key="*this" class="df-option-fact">{{fact}}</view>
+          <view class="u2-xs u2-muted df-option-note">{{item.note}}</view>
+          <view class="u2-text-link df-option-link" data-id="{{item.id}}" catchtap="onOpenMaterial">查看完整材料</view>
+        </view>
+      </view>
+
+      <view class="df-bounds">
+        <view class="df-bounds-head" hover-class="pressed" bindtap="toggleBounds">
+          <text class="u2-card-title">练习方式与会话边界</text>
+          <text class="u2-chev">{{boundsOpen ? '▾' : '▸'}}</text>
+        </view>
+        <view class="df-bounds-body" wx:if="{{boundsOpen}}">
+          <view class="u2-sm u2-muted">三轮提问、一次复盘和一次重答。反馈只对照材料，<text class="df-em">不输出职业能力等级</text>或学校成绩；这些材料不代表真实学生项目。</view>
+          <view class="u2-sm u2-muted df-gap-sm">会话只留在本页内存里，退出即清空；提交失败会保留你已写的内容。</view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ═══ 32 / 56 / 58 作答（第 1–3 轮） ═══ -->
+    <block wx:elif="{{phase === 'practice'}}">
+      <view class="df-row-between">
+        <text class="u2-kicker">{{materialName}} · 练习材料</text>
+        <text class="u2-xs u2-muted u2-num">{{round}} / 3 轮</text>
+      </view>
+      <view class="df-track">
+        <view class="df-track-cell {{progressNow >= 1 ? 'df-track-done' : ''}}"></view>
+        <view class="df-track-cell {{progressNow >= 2 ? 'df-track-done' : ''}}"></view>
+        <view class="df-track-cell {{progressNow >= 3 ? 'df-track-done' : ''}}"></view>
+      </view>
+
+      <view class="df-question-card">
+        <text class="u2-xs">{{roundLabel}}</text>
+        <view class="df-question-text">{{question}}</view>
+      </view>
+
+      <view class="st-field">
+        <text class="st-label">你的回答</text>
+        <textarea
+          class="st-input st-textarea"
+          value="{{answer}}"
+          maxlength="{{maxChars}}"
+          placeholder="按材料里的条目说，不确定的就写「还没验证」"
+          placeholder-class="st-input-placeholder"
+          bindinput="onAnswerInput"
+        />
+        <view class="df-row-between df-gap-sm">
+          <text class="u2-xs u2-muted u2-num">已写 {{answerCount}} 字 · {{minChars}}–{{maxChars}} 字</text>
+          <view id="defense-material-open" class="u2-text-link" catchtap="onOpenMaterial">查阅材料</view>
+        </view>
+      </view>
+
+      <view class="u2-notice u2-notice-error" wx:if="{{hint !== ''}}">{{hint}}</view>
+      <view class="u2-actions">
+        <button id="defense-submit" class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onSubmit">提交这一轮，获取反馈</button>
+      </view>
+      <view class="u2-notice u2-notice-info">退出将清空本次会话；提交失败会保留当前回答。</view>
+    </block>
+
+    <!-- ═══ 33 等待与取消 ═══ -->
+    <block wx:elif="{{phase === 'pending'}}">
+      <view class="u2-kicker">第 {{round}} 轮 / 共 3 轮</view>
+      <view class="u2-h1">正在对照材料，核对你的回答。</view>
+      <view class="u2-lead">你的回答已留在本页，等待结束后，这里会显示反馈与下一轮问题。</view>
+      <view class="u2-card u2-card-line df-pending">
+        <view class="df-pending-head">
+          <view class="df-orb">✦</view>
+          <view class="df-pending-main">
+            <text class="u2-card-title">正在生成反馈</text>
+            <text class="u2-xs u2-muted df-gap-xs">已等 {{pendingSeconds}} 秒</text>
+          </view>
+        </view>
+        <view class="st-loading-bars"><view></view><view></view><view></view></view>
+        <view class="u2-sm u2-muted">会先核对材料条目，再整理可改进的表述。</view>
+      </view>
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onCancelPending">停止等待，保留回答</button>
+        <view class="u2-text-link" hover-class="pressed" bindtap="onExit">退出练习</view>
+      </view>
+      <view class="u2-notice u2-notice-info">停止等待后回到作答；不表示云端请求一定已取消。</view>
+    </block>
+
+    <!-- ═══ 34 / 57 / 59 本轮反馈 ═══ -->
+    <block wx:elif="{{phase === 'feedback'}}">
+      <view class="df-row-between">
+        <text class="u2-kicker">第 {{round}} 轮反馈</text>
+        <text class="u2-tag">依据材料</text>
+      </view>
+      <view class="u2-h1">这一轮，反馈已返回。</view>
+      <view class="u2-lead">反馈围绕你的表述与材料，不评价职业能力，不输出成绩。</view>
+      <view class="u2-card u2-card-line">
+        <block wx:for="{{sections}}" wx:key="title">
+          <view wx:if="{{item.title !== '【追问】'}}" class="df-feedback-block">
+            <text class="u2-card-title {{item.title === '【引用核对】' ? 'df-green' : ''}}">{{item.title}}</text>
+            <view class="df-feedback-text">{{item.body}}</view>
+          </view>
+        </block>
+        <view class="df-feedback-block" wx:if="{{ask !== ''}}">
+          <text class="u2-card-title">【追问】</text>
+          <view class="df-feedback-text">{{ask}}</view>
+        </view>
+      </view>
+
+      <view class="u2-section" wx:if="{{nextQuestion !== ''}}">
+        <text class="u2-section-title">下一轮 · {{nextDimension}}</text>
+      </view>
+      <view class="u2-card u2-card-line df-gap-sm" wx:if="{{nextQuestion !== ''}}">
+        <view class="u2-body">{{nextQuestion}}</view>
+      </view>
+
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onNextRound">继续第 {{round + 1}} 轮</button>
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onOpenMaterial">查看本轮材料依据</button>
+      </view>
+      <view class="u2-notice u2-notice-info">这条反馈只把材料和你写的句子对着看。它不给你打分、不评价表达。</view>
+    </block>
+
+    <!-- ═══ 35 三轮复盘 ═══ -->
+    <block wx:elif="{{phase === 'review'}}">
+      <view class="u2-kicker">三轮练习结束 · 本次复盘</view>
+      <view class="u2-h1">这次，说得更有依据了。</view>
+      <view class="u2-lead">回看三问，再补充第 3 轮的验证方案。</view>
+      <view class="u2-card u2-card-line">
+        <view wx:for="{{reviewRows}}" wx:key="dimension" class="df-feedback-block">
+          <view class="df-row-between">
+            <text class="u2-card-title">0{{index + 1}}　{{item.dimension}}</text>
+            <text class="u2-tag {{index === 2 ? 'u2-tag-red' : ''}}">{{index === 2 ? '可重答一次' : item.status}}</text>
+          </view>
+          <view class="df-feedback-text" wx:if="{{item.summary !== ''}}">对应回答：{{item.summary}}</view>
+          <view class="df-feedback-text" wx:if="{{item.basis !== ''}}">引用核对：{{item.basis}}</view>
+          <view class="df-feedback-text" wx:if="{{item.excerpt !== ''}}">待验证保留：{{item.excerpt}}</view>
+          <view class="df-feedback-text u2-muted" wx:if="{{item.status === '未完成'}}">这一轮还没有拿到反馈，不补写。</view>
+        </view>
+      </view>
+      <view class="u2-notice u2-notice-info">可再回答一次第 3 轮的问题，当前会话只提供一次重答。</view>
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onStartReanswer">重新回答第 3 轮问题</button>
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onOpenRecord">查看并复制练习记录</button>
+        <view class="u2-text-link" hover-class="pressed" bindtap="onExit">结束练习</view>
+      </view>
+    </block>
+
+    <!-- ═══ 60 重答 ═══ -->
+    <block wx:elif="{{phase === 'reanswer'}}">
+      <view class="u2-kicker">第 3 轮重答 · 本次仅一次</view>
+      <view class="u2-h1">这次，把验证方法也讲出来。</view>
+      <view class="u2-lead">沿用同一份材料与原问题。</view>
+      <view class="df-question-card">
+        <text class="u2-xs">{{roundLabel}}</text>
+        <view class="df-question-text">{{question}}</view>
+      </view>
+      <view class="st-field">
+        <text class="st-label">重答内容</text>
+        <textarea
+          class="st-input st-textarea"
+          value="{{answer}}"
+          maxlength="{{maxChars}}"
+          placeholder="补上能回核的条目编号，把句子写长不算改善"
+          placeholder-class="st-input-placeholder"
+          bindinput="onAnswerInput"
+        />
+        <view class="df-row-between df-gap-sm">
+          <text class="u2-xs u2-muted u2-num">已写 {{answerCount}} 字 · {{minChars}}–{{maxChars}} 字</text>
+          <view class="u2-text-link" catchtap="onOpenMaterial">再核对材料条目</view>
+        </view>
+      </view>
+      <view class="u2-sm u2-muted">{{reanswerNote}}</view>
+      <view class="u2-notice u2-notice-error" wx:if="{{hint !== ''}}">{{hint}}</view>
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onSubmit">提交这一次重答</button>
+        <view class="u2-text-link" hover-class="pressed" bindtap="onOpenRecord">先看看当前记录</view>
+      </view>
+    </block>
+
+    <!-- ═══ 61 重答结果 ═══ -->
+    <block wx:elif="{{phase === 'done'}}">
+      <view class="df-result-mark">✓</view>
+      <view class="u2-h1">到这里，这次练习完成了。</view>
+      <view class="u2-lead">三轮问答、一次复盘与一次重答。</view>
+      <view class="u2-section"><text class="u2-section-title">重答后的反馈</text></view>
+      <view class="u2-card u2-card-line">
+        <block wx:for="{{sections}}" wx:key="title">
+          <view class="df-feedback-block">
+            <text class="u2-card-title">{{item.title}}</text>
+            <view class="df-feedback-text">{{item.body}}</view>
+          </view>
+        </block>
+        <view class="u2-source">这份反馈围绕材料和当前表述，不代表专业能力等级或独立项目验收。</view>
+      </view>
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onOpenRecord">查看并复制练习记录</button>
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onExit">结束练习</button>
+      </view>
+    </block>
+
+    <!-- ═══ 失败 ═══ -->
+    <block wx:elif="{{phase === 'failure'}}">
+      <view class="u2-kicker">你的回答已保留 · 失败不计作「没讲清楚」</view>
+      <view class="u2-h1">这一轮没能完成。</view>
+      <view class="u2-notice u2-notice-error df-gap">
+        <view class="u2-notice-title">{{failureTitle}}</view>
+        <view class="df-gap-xs">{{failureBody}}</view>
+      </view>
+      <view class="u2-card u2-card-line df-gap">
+        <text class="u2-xs u2-muted">保留的回答</text>
+        <view class="u2-body df-kept">{{answer}}</view>
+      </view>
+      <view class="u2-actions">
+        <button class="u2-btn u2-btn-primary primary" wx:if="{{failureRetryable}}" hover-class="pressed" bindtap="onRetry">重试这一次核对</button>
+        <button class="u2-btn u2-btn-secondary secondary" hover-class="pressed" bindtap="onOpenRecord">查看并复制已有记录</button>
+        <view class="u2-text-link" hover-class="pressed" bindtap="onExit">退出练习</view>
+      </view>
+    </block>
+
+  </view>
+
+  <!-- ═══ 31 底部固定区 ═══ -->
+  <view class="st-dock" wx:if="{{phase === 'materials' && !materialOpen && !recordOpen && !copiedOpen}}">
+    <button id="defense-begin" class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onBegin">用已选材料开始练习</button>
+    <view class="st-dock-note">3 轮练习 · 可复制记录 · 退出不保存</view>
+  </view>
+
+  <!-- ═══ 77 底部固定区 ═══ -->
+  <view class="st-dock" wx:if="{{recordOpen && !copiedOpen}}">
+    <button id="defense-record-copy" class="u2-btn u2-btn-primary primary" hover-class="pressed" bindtap="onCopyReview">复制这份练习记录</button>
+    <view class="st-dock-note">复制到剪贴板；本程序不自动保存会话。</view>
+  </view>
+</view>
+
+<!-- ═══ 42 材料查阅（覆盖层，返回触发它的状态并保留草稿） ═══ -->
+<view wx:if="{{materialOpen}}" class="df-reader-mask" catchtap="onCloseMaterial">
+  <view class="df-reader" catchtap="stopMaterialTap">
+    <view class="df-reader-head">
+      <view class="df-reader-head-main">
+        <text class="u2-kicker">维护者编写 · 静态练习材料</text>
+        <view class="u2-h2 df-gap-xs">{{materialReaderName}}</view>
+        <view class="u2-xs u2-muted">{{materialReaderKind}} · 冻结 {{materialFrozenAt}}</view>
+      </view>
+      <button id="material-close-top" class="df-reader-close" bindtap="onCloseMaterial">关闭</button>
+    </view>
+    <view class="df-reader-lead">以下编号是练习中的引用依据，不是经独立验证的学生项目。</view>
+    <button id="material-index-toggle" class="df-reader-index-toggle" aria-expanded="{{materialIndexOpen}}" bindtap="toggleMaterialIndex">
+      条目目录 · {{materialIndexOpen ? '收起' : '展开 ' + materialRows.length + ' 项'}}
+    </button>
+    <view wx:if="{{materialIndexOpen}}" class="df-reader-index">
+      <button wx:for="{{materialRows}}" wx:key="id" class="df-reader-index-item" data-id="{{item.id}}" bindtap="onLocateMaterial">{{item.id}}</button>
+    </view>
+    <scroll-view id="material-reader" class="df-reader-scroll" scroll-y="{{true}}" scroll-into-view="{{materialAnchor}}" enhanced="{{true}}">
+      <view class="df-reader-entry">
+        <text class="u2-xs u2-muted">材料说明</text>
+        <view class="u2-sm df-reader-body">{{materialPreface}}</view>
+      </view>
+      <view wx:for="{{materialRows}}" wx:key="id" id="material-{{item.id}}" class="df-reader-entry">
+        <text class="df-reader-ref">{{item.id}} · {{item.status}}</text>
+        <view class="u2-sm df-reader-body">{{item.body}}</view>
+      </view>
+      <view class="u2-notice df-reader-note">{{materialBoundary}}</view>
+    </scroll-view>
+    <view class="df-reader-foot">
+      <button id="material-close-bottom" class="u2-btn u2-btn-secondary secondary" bindtap="onCloseMaterial">返回当前练习，保留原回答</button>
     </view>
   </view>
 </view>

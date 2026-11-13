@@ -104,14 +104,26 @@ test('校历与考试页：复制来源链接成功与失败都有反馈', () =>
   assert.deepEqual(failing.calls.toast, ['复制失败，请重试']);
 });
 
-test('校历与考试页：返回首页的两种路径', () => {
+test('校历与考试页：返回首页的两种路径', async () => {
+  // 栈里还有上一页 → navigateBack；只剩本页 → 走公共导航切「今天」tab（设计定稿后底栏才算
+  // 真的在 tab 之间切换），没有 switchTab 的宿主退回 reLaunch。两条路都不留在空栈上。
   for (const stack of [[{}, {}], [{}]]) {
     const stub = wxStub();
     const page = loadPage('calendar', stub, stack);
     page.onLoad({ today: TODAY });
     page.goHome();
+    await new Promise((resolve) => setImmediate(resolve));
     assert.deepEqual(stub.calls.navigate, [stack.length > 1 ? 'back' : '/pages/home/index']);
   }
+
+  // 有 tab 能力时走 switchTab，不 reLaunch：底栏高亮才会跟着变。
+  const tabStub = wxStub();
+  tabStub.wx.switchTab = (options) => tabStub.calls.navigate.push(options.url);
+  const tabPage = loadPage('calendar', tabStub, [{}]);
+  tabPage.onLoad({ today: TODAY });
+  tabPage.goHome();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(tabStub.calls.navigate, ['/pages/home/index']);
 });
 
 test('体测估算页：长跑输入三种写法都换算成秒，非法写法给提示', () => {

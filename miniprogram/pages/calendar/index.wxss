@@ -1,22 +1,88 @@
-.cal-title { display:none; }
-.cal-copy { margin:12px 0 20px; padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; color:#6b5d57; font-size:13px; line-height:1.8; }
-.cal-problems { margin:16px 0; padding:14px; background:#fff4e4; color:#78420e; border-left:3px solid #9a5b1e; }
-.cal-problems-title { font-weight:600; }
-.cal-problems-item { margin-top:8px; font-size:12px; line-height:1.8; }
-.cal-group { margin-top:24px; }
-.cal-group-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.cal-group-note { color:#746760; font-size:11px; }
-.cal-card { margin-top:12px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
-.cal-top { display:flex; align-items:flex-start; gap:8px; justify-content:space-between; }
-.cal-title-item { flex:1; font-size:16px; font-weight:600; line-height:1.7; }
-.cal-state { flex:none; max-width:100px; padding:4px 8px; background:#faeee9; color:#8c1614; border-radius:6px; font-size:11px; line-height:1.6; }
-.cal-state-plain { color:#746760; background:#fdf7f5; }
-.cal-line { display:flex; gap:10px; margin-top:12px; font-size:13px; line-height:1.8; }
-.cal-key { flex:none; width:30px; color:#746760; }
-.cal-val { flex:1; min-width:0; }
-.cal-val-strong { font-weight:600; }
-.cal-source { margin-top:14px; padding-top:14px; border-top:1px solid #ded4cf; }
-.cal-source-text { color:#746760; font-size:11px; line-height:1.8; }
-.cal-copy-link { display:block; min-height:44px; margin-top:10px; padding:10px; color:#8c1614; border:1px solid #b9847c; border-radius:7px; text-align:center; font-size:12px; line-height:1.8; }
-.cal-foot { margin-top:22px; }
-.cal-back { min-height:44px; margin-top:18px; padding:12px; color:#8c1614; text-align:center; font-size:13px; }
+@import "../../ui/study/study.wxss";
+
+/* 校历与考试：只补 u2-/st- 没有的排版（状态色调与大字日期），组件本身一律复用共享类。
+ * 设计稿 25：日期用 22px/650 的大字，状态同时用文字与颜色表达，不只靠颜色。 */
+
+.cal-problems {
+  margin-top: 18px;
+}
+.cal-problem {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.cal-group {
+  margin-top: 26px;
+}
+.cal-card {
+  margin-top: 12px;
+}
+.cal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.cal-title {
+  flex: 1;
+  min-width: 0;
+}
+/* 状态标签：有确定日期用红（可行动），不确定用中性灰或警示黄，已结束用灰。 */
+.cal-tag-live {
+  flex: none;
+  background: var(--brand-soft, #fff0ef);
+  color: var(--brand, #c41c23);
+  font-weight: 650;
+}
+.cal-tag-warn {
+  flex: none;
+  background: var(--ai-soft, #fbf4e2);
+  color: #865e17;
+}
+.cal-tag-plain {
+  flex: none;
+  background: var(--chip, #f0f1f4);
+  color: var(--text-2, #6b5d57);
+}
+/* 没有官方日期时的大字：说清是「待公布」还是「以本校为准」，不是含糊的日期位。 */
+.cal-date {
+  margin: 20px 0 6px;
+  font-size: 22px;
+  line-height: 1.65;
+  font-weight: 650;
+}
+.cal-date-live {
+  color: var(--text, #2b2422);
+}
+.cal-date-warn {
+  color: #865e17;
+}
+.cal-date-plain {
+  color: var(--text-2, #6b5d57);
+}
+.cal-kv {
+  margin-top: 10px;
+}
+.cal-note {
+  margin-top: 10px;
+}
+.cal-guard {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--control-line, #aa9990);
+  border-radius: 0 10px 10px 0;
+  background: var(--canvas, #f5f6f8);
+  color: var(--text-2, #6b5d57);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.cal-copy {
+  margin-top: 8px;
+  color: var(--brand, #c41c23);
+}
+.cal-foot {
+  margin-top: 26px;
+}
+.cal-back {
+  margin: 18px 0 0;
+}

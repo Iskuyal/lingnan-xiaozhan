@@ -1,0 +1,456 @@
+/* 学习工具组专用样式（岭南红 UI 第二轮，C 分支，conversation 前缀 st-）。
+ *
+ * 定位：只放「A 的公共基础里没有、而 C 的五个页面确实要用」的零件。
+ * 通用的标题、卡片、列表、标签、按钮、提示块、出处、空态一律用 styles/ui.wxss 里的 u2-，
+ * 不在这里重写一份——两份长得一样的东西迟早会走偏。
+ *
+ * 五个页面通过 `@import "../../ui/study/study.wxss";` 引入；只有该模块自己的组件进这里。
+ * 颜色只用 app.wxss 里已定义的令牌并带回退值（tests/wxss.test.cjs 强制逐字一致），
+ * 设计稿独有、尚未升级为令牌的中性色按字面值写。
+ */
+
+/* ── 页面骨架：底部固定区需要纵向 flex，不能只靠 u2-page 的 padding ── */
+.st-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 22px 20px 0;
+}
+.st-screen-body {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 12px;
+}
+
+/* ── 目标日主卡的数字（u2-hero 只有 36px 的时间位，设计 12 要 52px） ── */
+.st-hero-name {
+  margin-top: 8px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.st-hero-count {
+  margin: 14px 0 3px;
+  font-size: 52px;
+  line-height: 1.2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.6px;
+}
+.st-hero-count-unit {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ── 步骤条：计划页四步 ── */
+.st-steps {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 3px 0 24px;
+  color: var(--text-2, #6b5d57);
+  font-size: 11px;
+}
+.st-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.st-step-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e5e6eb;
+  font-size: 10px;
+}
+.st-step-on {
+  color: var(--brand, #c41c23);
+  font-weight: 650;
+}
+.st-step-on .st-step-dot {
+  background: var(--brand, #c41c23);
+  color: #ffffff;
+}
+.st-step-line {
+  flex: 1;
+  min-width: 4px;
+  height: 1px;
+  background: #dfe0e5;
+}
+
+/* ── 约束条目：AI 草稿逐条核对，每条带原话证据 ── */
+.st-constraint {
+  padding: 16px 0;
+}
+.st-constraint + .st-constraint {
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+.st-constraint-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.st-constraint-body {
+  flex: 1;
+  min-width: 0;
+}
+.st-constraint-text {
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 650;
+}
+.st-constraint-evidence {
+  margin: 8px 0 0 32px;
+  padding-left: 11px;
+  border-left: 2px solid #e6e6ea;
+  color: var(--text-2, #6b5d57);
+  font-size: 12px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+/* 草稿标记用中性圆环：确认前不打绿勾，避免看起来已经生效。 */
+.st-draft-mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--control-line, #aa9990);
+  border-radius: 50%;
+  background: var(--canvas, #f5f6f8);
+  color: var(--text-2, #6b5d57);
+  font-size: 10px;
+}
+.st-check-mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--success-soft, #e8f3f0);
+  color: var(--success, #147a70);
+  font-size: 11px;
+}
+
+/* ── 计划统计与段落 ── */
+.st-stat {
+  display: flex;
+  gap: 12px;
+  padding: 18px 0;
+}
+.st-stat-cell {
+  flex: 1;
+  min-width: 0;
+}
+.st-stat-cell + .st-stat-cell {
+  padding-left: 18px;
+  border-left: 1px solid var(--line-soft, #ececef);
+}
+.st-stat-value {
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.st-stat-unit {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.st-stat-caption {
+  margin-top: 4px;
+  color: var(--text-2, #6b5d57);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.st-plan-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 0;
+}
+.st-plan-item + .st-plan-item {
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+.st-plan-date {
+  flex: 0 0 auto;
+  width: 40px;
+  padding: 6px 0;
+  border-radius: 10px;
+  background: var(--canvas, #f5f6f8);
+  color: var(--text-2, #6b5d57);
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+.st-plan-day {
+  display: block;
+  color: var(--text, #2b2422);
+  font-size: 17px;
+  font-weight: 650;
+}
+.st-plan-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 分段与筹码：体测性别/年级、规则页星期与时段 ── */
+.st-seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: #ebedf1;
+}
+.st-seg-item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  color: var(--text-2, #6b5d57);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+.st-seg-on {
+  background: var(--surface, #ffffff);
+  color: var(--text, #2b2422);
+  font-weight: 650;
+}
+.st-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.st-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 13px;
+  border: 1px solid #e2e3e7;
+  border-radius: 10px;
+  background: var(--surface, #ffffff);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.st-chip-on {
+  border-color: var(--brand-line, #e8a5a8);
+  background: var(--brand-soft, #fff0ef);
+  color: var(--brand, #c41c23);
+  font-weight: 650;
+}
+
+/* ── 表单：u2- 里没有输入控件 ── */
+.st-field {
+  margin: 20px 0;
+}
+.st-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.st-input {
+  min-height: 50px;
+  padding: 13px 14px;
+  border: 1px solid var(--control-line, #aa9990);
+  border-radius: 12px;
+  background: var(--surface, #ffffff);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.st-textarea {
+  min-height: 142px;
+}
+.st-input-placeholder {
+  color: var(--text-3, #746760);
+}
+.st-input-invalid {
+  border: 1.5px solid var(--brand, #c41c23);
+  background: #fffafa;
+}
+.st-field-hint {
+  margin-top: 7px;
+  color: var(--text-2, #6b5d57);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.st-field-error {
+  margin-top: 7px;
+  color: var(--brand, #c41c23);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.st-field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.st-field-pair .st-field {
+  margin: 0;
+}
+.st-placeholder {
+  color: var(--text-3, #746760);
+}
+
+/* ── 双列按钮：u2-actions 只支持单列 ── */
+.st-actions-dual {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── 键值行：计划依据、校历状态 ── */
+.st-kv {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.st-kv + .st-kv {
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+.st-kv-key {
+  flex: none;
+  color: var(--text-2, #6b5d57);
+}
+.st-kv-val {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* ── 表格：体测单项与校历条目 ── */
+.st-table-head,
+.st-table-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.st-table-head {
+  padding: 10px 0;
+  border-bottom: 1px solid #e9e9ec;
+  color: var(--text-2, #6b5d57);
+  font-size: 11px;
+}
+.st-table-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft, #ececef);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.st-table-name {
+  flex: 1;
+  min-width: 0;
+}
+.st-table-value {
+  flex: 0 0 88px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.st-table-score {
+  flex: 0 0 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 体测结果大分数 ── */
+.st-score {
+  font-size: 68px;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+}
+.st-score-unit {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* ── 底部固定区：答辩练习的作答/等待页 ── */
+.st-dock {
+  flex-shrink: 0;
+  margin: 0 -20px;
+  padding: 12px 20px calc(6px + env(safe-area-inset-bottom));
+  border-top: 1px solid #e4e5e9;
+  background: var(--surface, #ffffff);
+  text-align: center;
+}
+.st-dock-note {
+  margin: 0 0 7px;
+  color: var(--text-2, #6b5d57);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.st-dock-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.st-dock-actions .u2-btn {
+  padding: 12px 8px;
+  font-size: 14px;
+}
+
+/* ── 加载骨架 ── */
+.st-loading-bars {
+  display: grid;
+  gap: 12px;
+  margin: 25px 0;
+}
+.st-loading-bars view {
+  height: 12px;
+  border-radius: 4px;
+  background: #e9eaee;
+}
+.st-loading-bars view:nth-child(2) { width: 85%; }
+.st-loading-bars view:nth-child(3) { width: 60%; }
+
+/* ── 窄屏：320px 一级 ── */
+@media (max-width: 350px) {
+  .st-screen {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .st-dock {
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .st-hero-count {
+    font-size: 44px;
+  }
+  .st-steps {
+    gap: 5px;
+    font-size: 10px;
+  }
+  .st-field-pair {
+    gap: 10px;
+  }
+  .st-table-value {
+    flex-basis: 74px;
+  }
+  .st-table-score {
+    flex-basis: 42px;
+  }
+  .st-score {
+    font-size: 56px;
+  }
+}
