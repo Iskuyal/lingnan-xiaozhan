@@ -1,6 +1,11 @@
 <view class="u2-page">
-  <view class="u2-kicker">在岭南，发现日常</view>
-  <view class="u2-h1">校园里的事</view>
+  <view class="campus-head">
+    <view class="campus-head-main">
+      <view class="u2-kicker">在岭南，发现日常</view>
+      <view class="u2-h1">校园里的事。</view>
+    </view>
+    <view class="campus-gate" aria-hidden="true"><image class="campus-gate-img" src="/assets/ui-v2/v2-gate.svg" /></view>
+  </view>
 
   <view class="u2-card campus-school">
     <view class="campus-mark">岭</view>
@@ -12,22 +17,57 @@
   </view>
 
   <view class="u2-section"><view class="u2-section-title">先找到你需要的</view></view>
-  <view class="u2-list">
-    <view class="u2-row" hover-class="pressed" data-route="/pages/departments/index" bindtap="openRoute">
-      <view class="u2-icon">部</view>
-      <view class="u2-row-main"><view class="u2-row-title">学生部门</view><view class="u2-row-sub">认识组织，依据资料提问</view></view>
+  <view class="campus-tools">
+    <view id="departments-entry" class="u2-card campus-tile" hover-class="pressed" data-route="/pages/departments/index" bindtap="openRoute" aria-label="学生部门">
+      <view class="u2-icon"><image class="u2-icon-img" src="/assets/ui-v2/v2-dept.svg" /></view>
+      <view class="u2-row-title">学生部门</view>
+      <view class="u2-row-sub">认识组织，依据资料提问</view>
+    </view>
+    <view id="calendar-entry" class="u2-card campus-tile" hover-class="pressed" data-route="/pages/calendar/index" bindtap="openRoute" aria-label="校历与考试">
+      <view class="u2-icon"><image class="u2-icon-img" src="/assets/ui-v2/v2-calendar.svg" /></view>
+      <view class="u2-row-title">校历与考试</view>
+      <view class="u2-row-sub">日期、适用范围与出处</view>
+    </view>
+  </view>
+
+  <view class="u2-section">
+    <view class="u2-section-title">校园资讯</view>
+    <view id="all-news" class="u2-text-link" bindtap="openNews">全部资讯 →</view>
+  </view>
+
+  <view wx:if="{{newsStatus === 'loading'}}" id="news-loading" class="u2-card u2-card-line">
+    <view class="u2-card-title">正在读取最近资讯</view>
+    <view class="u2-card-copy">读取完成后在这里显示官网已同步的条目。</view>
+  </view>
+  <view wx:elif="{{newsStatus === 'error'}}" id="news-error" class="u2-notice u2-notice-error">
+    <view class="u2-notice-title">最近资讯暂时没读到</view>
+    <view class="campus-notice-copy">{{newsError}}</view>
+    <button id="news-retry" class="u2-btn u2-btn-secondary campus-notice-button" hover-class="pressed" bindtap="retryNews">重新读取</button>
+  </view>
+  <view wx:elif="{{newsStatus === 'empty'}}" id="news-empty" class="u2-card u2-card-line">
+    <view class="u2-card-title">暂无资讯</view>
+    <view class="u2-card-copy">云端还没有已同步的条目，同步成功后文章会出现在这里。</view>
+  </view>
+  <view wx:else id="news-list" class="u2-list">
+    <view
+      wx:for="{{news}}"
+      wx:key="id"
+      class="u2-row campus-news-row"
+      hover-class="pressed"
+      data-id="{{item.id}}"
+      bindtap="openArticle"
+    >
+      <view class="u2-row-main">
+        <view class="u2-row-title">{{item.title}}</view>
+        <view class="u2-row-sub">{{item.date === '' ? '日期待核实' : item.date}}</view>
+      </view>
       <text class="u2-chev">›</text>
     </view>
-    <view class="u2-row" hover-class="pressed" data-route="/pages/calendar/index" bindtap="openRoute">
-      <view class="u2-icon">历</view>
-      <view class="u2-row-main"><view class="u2-row-title">校历与考试</view><view class="u2-row-sub">日期、适用范围与出处</view></view>
-      <text class="u2-chev">›</text>
-    </view>
-    <view class="u2-row" hover-class="pressed" data-route="/pages/news/index" bindtap="openRoute">
-      <view class="u2-icon">讯</view>
-      <view class="u2-row-main"><view class="u2-row-title">校园资讯</view><view class="u2-row-sub">官网来源，原文可核对</view></view>
-      <text class="u2-chev">›</text>
-    </view>
+  </view>
+
+  <view class="u2-source">
+    <view class="u2-source-line">来源：{{sourceLabel}}<text wx:if="{{syncedAtText !== ''}}"> · 最近写入 {{syncedAtText}}</text></view>
+    <view class="u2-source-line">内容由云函数从官网同步，不是实时更新；详情页可复制原文链接核对。</view>
   </view>
 
   <view class="u2-section"><view class="u2-section-title">学校资料</view></view>
@@ -37,6 +77,6 @@
       <view class="u2-source-line">资料来源：{{school.sourceLabel}}</view>
       <view class="u2-source-line">核查于 {{school.verifiedAt}} · {{school.campuses}}</view>
     </view>
-    <button class="u2-btn u2-btn-secondary campus-copy" id="copy-school-source" hover-class="pressed" bindtap="copySource">复制学校官网链接</button>
+    <button id="copy-school-source" class="u2-btn u2-btn-secondary campus-copy" hover-class="pressed" bindtap="copySource">复制学校官网链接</button>
   </view>
 </view>

@@ -291,31 +291,34 @@ test('编辑页：删除要确认，确认后本机不再有这条', () => {
   assert.deepEqual(stub.calls.navigate, ['back']);
 });
 
-test('首页入口带：显示最近一条目标日与剩余天数，没有时提示去添加', () => {
+test('学习页目标卡：显示最近一条目标日与剩余天数，没有时提示去添加', () => {
+  // 定稿把「目标日入口带」从首页移到学习聚合页的红色卡片（设计图 11）。
   const stub = wxStub();
-  const home = loadPage('home', stub);
-  home.onShow();
+  const page = loadPage('study', stub);
+  page.onShow();
   // vm 里造出来的对象与主 realm 的原型不同，比较前先拷成主 realm 的普通对象。
-  assert.deepEqual({ ...home.data.goalStrip }, {
+  assert.deepEqual({ ...page.data.hero }, {
     hasGoal: false,
-    name: '还没有目标日',
-    meta: '自己写一个日期，剩下多少天替你数',
-    value: '去添加',
+    name: '先写一个目标日',
+    dateText: '',
+    days: '',
     unit: '',
+    footNote: '去添加目标日',
   });
 
   seed(stub, [
     { id: 'a', name: '英语四级报名截止', date: '2026-09-25', countToday: false, createdAt: 1, updatedAt: 1 },
     { id: 'b', name: '计算机二级考试', date: '2099-12-05', countToday: false, createdAt: 2, updatedAt: 2 },
   ]);
-  home.onShow();
-  assert.equal(home.data.goalStrip.hasGoal, true);
-  assert.equal(home.data.goalStrip.name, '计算机二级考试');
+  page.onShow();
+  assert.equal(page.data.hero.hasGoal, true);
+  assert.equal(page.data.hero.name, '计算机二级考试');
+  assert.equal(page.data.hero.dateText, '12月5日');
   // 期望值按当前上海日历日现算：`onShow()` 不接参数，页面走的是真实的 `Date.now()`，
   // 写死某个日期会让这条断言只在写入当天通过。日历日算法本身由 tests/goals.test.cjs 钉住。
-  assert.equal(home.data.goalStrip.value, String(dates.diffDays(dates.shanghaiToday(), '2099-12-05')));
-  assert.equal(home.data.goalStrip.unit, '天后');
-  home.openGoals();
+  assert.equal(page.data.hero.days, String(dates.diffDays(dates.shanghaiToday(), '2099-12-05')));
+  assert.equal(page.data.hero.unit, '天后');
+  page.openHero();
   assert.deepEqual(stub.calls.navigate, ['/pages/goals/index']);
 });
 

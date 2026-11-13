@@ -762,32 +762,33 @@ test('资讯详情页来自列表时返回上一页，直接打开时回到首�
   }
 });
 
-test('首页展示最近资讯，提供进入列表与详情的入口', async () => {
+test('校园聚合页展示最近资讯，提供进入列表与详情的入口', async () => {
+  // 定稿把「最近资讯」从首页移到校园聚合页（设计图 19）；断言随之搬家，行为不变。
   const visited = [];
   const items = makeItems(1, 2);
   const stubs = newsStub(
     async (limit) => {
-      assert.equal(limit, 3, '首页只取最近几条');
+      assert.equal(limit, 3, '聚合页只取最近几条');
       return { items, meta: { label: '学校官网 · 校园动态', syncedAt: '2026-09-17T09:12:00.000Z', fromServer: true } };
     },
     async () => null,
   );
-  const page = loadPage('home', { navigateTo: ({ url }) => visited.push(url) }, { stack: [{}], stubs });
+  const page = loadPage('campus', { navigateTo: ({ url }) => visited.push(url) }, { stack: [{}], stubs });
   await page.onLoad();
   assert.equal(page.data.newsStatus, 'ready');
-  assert.deepEqual(page.data.recentNews, items);
-  assert.equal(page.data.newsSyncedAtText, 'FORMATTED');
+  assert.deepEqual(page.data.news, items);
+  assert.equal(page.data.syncedAtText, 'FORMATTED');
   page.openNews();
-  page.openNewsDetail({ currentTarget: { dataset: { id: 'content_1' } } });
-  page.openNewsDetail({ currentTarget: { dataset: { id: undefined } } });
+  page.openArticle({ currentTarget: { dataset: { id: 'content_1' } } });
+  page.openArticle({ currentTarget: { dataset: { id: undefined } } });
   assert.deepEqual(visited, ['/pages/news/index', '/pages/news/detail/index?id=content_1']);
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
   for (const url of visited) {
-    assert.ok(app.pages.includes(url.slice(1).split('?')[0]), `${url} 应是已注册页面`);
+    assert.ok(app.pages.includes(url.slice(1).split('?')[0]), url + ' 应是已注册页面');
   }
 });
 
-test('首页资讯读取失败时显示错误并可重试，不影响既有入口', async () => {
+test('校园聚合页资讯读取失败时显示错误并可重试，不影响既有入口', async () => {
   let calls = 0;
   const stubs = newsStub(
     async () => {
@@ -797,13 +798,13 @@ test('首页资讯读取失败时显示错误并可重试，不影响既有入�
     },
     async () => null,
   );
-  const page = loadPage('home', {}, { stack: [{}], stubs });
+  const page = loadPage('campus', {}, { stack: [{}], stubs });
   await page.onLoad();
   assert.equal(page.data.newsStatus, 'error');
   assert.equal(page.data.newsError, '云开发不可用');
   await page.retryNews();
   assert.equal(page.data.newsStatus, 'ready');
-  assert.equal(page.data.recentNews.length, 1);
+  assert.equal(page.data.news.length, 1);
   assert.equal(page.data.newsError, '');
 });
 

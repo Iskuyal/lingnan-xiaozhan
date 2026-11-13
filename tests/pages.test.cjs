@@ -22,10 +22,10 @@ function loadPage(name, wx, stack = [{}]) {
   return page;
 }
 
-test('首页两个入口分别进入部门和课表，目标均是已注册页面', () => {
+test('首页入口：课表走 tab、其余走普通页面，目标均是已注册页面', () => {
   // 课表在 2026-11-13 的定稿里升为四个 tab 之一：tab 页只能用 switchTab 打开，
   // navigateTo 会被基础库拒绝（errMsg: can not navigateTo a tabbar page）。
-  // 部门仍是普通页面，继续用 navigateTo。两条通道一起断言，防止哪天又被改回去。
+  // 其余入口仍是普通页面，继续用 navigateTo。两条通道一起断言，防止哪天又被改回去。
   const visited = [];
   const switched = [];
   const home = loadPage('home', {
@@ -35,48 +35,58 @@ test('首页两个入口分别进入部门和课表，目标均是已注册页�
     getStorageSync: () => '',
     removeStorageSync: () => {},
   });
-  home.openDepartments();
+  home.openImport();
+  home.openGoals();
+  home.openNews();
   home.openTimetable();
-  assert.deepEqual(visited, ['/pages/departments/index']);
+  assert.deepEqual(visited, [
+    '/pages/timetable/import/index',
+    '/pages/goals/index',
+    '/pages/news/index',
+  ]);
   assert.deepEqual(switched, ['/pages/timetable/index']);
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
   for (const url of [...visited, ...switched]) {
-    assert.ok(app.pages.includes(url.slice(1)));
+    assert.ok(app.pages.includes(url.slice(1)), `${url} 未注册`);
     for (const ext of ['js', 'json', 'wxml', 'wxss']) {
-      assert.ok(fs.existsSync(`dist${url}.${ext}`));
+      assert.ok(fs.existsSync(`dist${url}.${ext}`), `${url}.${ext} 缺失`);
     }
   }
 });
 
-test('首页保持已确认的校园服务入口与资讯，不显示失物招领入口', () => {
+test('首页首屏＝日期角标、下一课卡片、四个快捷入口与今日时间线', () => {
+  // 设计图 01 / 53 / 36：全模块入口墙与常驻输入条被移除，改为下一节课 + 四个快捷入口。
+  // 这里锁住新结构，同时守住「不出现失物招领入口」这条历史决定。
   const wxml = fs.readFileSync('dist/pages/home/index.wxml', 'utf8');
   const wxss = fs.readFileSync('dist/pages/home/index.wxss', 'utf8');
 
   assert.equal(wxml.includes('id="lost-found-entry"'), false, '定稿首页没有失物招领快捷入口');
-  assert.match(wxml, /src="\/assets\/lingnan-logo-official.png"/);
-  assert.match(wxml, /id="timetable-entry"[\s\S]*?class="home-primary"/);
-  assert.match(wxml, /class="entry-pair"/);
-  assert.match(wxml, /id="departments-entry"/);
-  assert.match(wxml, /id="news-entry"/);
-  for (const id of ['calendar-entry', 'goal-days-entry', 'fitness-entry', 'advancement-entry', 'defense-entry', 'news-retry']) {
-    assert.ok(wxml.includes(`id="${id}"`), `${id} 保留可到达入口`);
+  for (const id of ['hero-card', 'hero-unknown-times', 'hero-error', 'hero-empty', 'today-retry', 'today-timeline', 'week-link']) {
+    assert.ok(wxml.includes(`id="${id}"`), `首页缺少 ${id}`);
   }
-  assert.match(wxml, /wx:for="\{\{recentNews\}\}"/);
-  assert.match(wxss, /\.home-primary\s*\{/);
-  assert.match(wxss, /\.recent-news-item\s*\{/);
+  for (const id of ['ask-entry', 'import-entry', 'goal-entry', 'news-entry']) {
+    assert.ok(wxml.includes(`id="${id}"`), `快捷入口 ${id} 保留`);
+  }
+  assert.match(wxml, /wx:for="\{\{brief\.rows\}\}"/);
+  assert.match(wxml, /\{\{brief\.dateLine\}\}/);
+  assert.match(wxml, /\{\{hero\.timeRange\}\}/);
+  assert.equal(/tabbar/i.test(wxml), false, '底栏由原生 tabBar 渲染，页面不画假底栏');
+  assert.match(wxss, /\.home-hero\s*\{/);
+  assert.match(wxss, /\.home-notice\s*\{/);
 });
 
-test('首页来源复制成功和失败都有正确反馈', () => {
+test('校园页来源复制成功和失败都有正确反馈', () => {
+  // 学校简介与出处按设计图 19 从首页移到校园聚合页，复制官网链接的行为随之一并搬过来。
   for (const success of [true, false]) {
     const notices = [];
-    const home = loadPage('home', {
+    const page = loadPage('campus', {
       setClipboardData: (options) => {
         assert.equal(options.data, 'https://lnc.edu.cn/xyjj/xyjj1');
         (success ? options.success : options.fail)();
       },
       showToast: (options) => notices.push(options.title),
     });
-    home.copySource();
+    page.copySource();
     assert.deepEqual(notices, [success ? '官网链接已复制' : '复制失败，请重试']);
   }
 });

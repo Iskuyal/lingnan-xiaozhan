@@ -1,4 +1,15 @@
+/* 校园聚合页（设计图 19）：抬头 + 学校卡 + 两个资料入口 + 最近资讯 + 出处。 */
+.campus-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:18px; }
+.campus-head-main { flex:1; min-width:0; }
+.campus-gate { flex:none; width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:18px; background:var(--surface, #ffffff); }
+.campus-gate-img { width:30px; height:30px; display:block; }
 .campus-school { display:flex; align-items:center; gap:15px; }
 .campus-mark { flex:none; width:55px; height:64px; display:flex; align-items:center; justify-content:center; border-radius:15px 15px 23px 23px; background:var(--brand, #c41c23); color:#fff; font-size:24px; }
 .campus-school-main { flex:1; min-width:0; }
+.campus-tools { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.campus-tile { display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-height:132px; padding:18px; }
+.campus-tile .u2-icon { width:36px; height:36px; margin-bottom:8px; border-radius:10px; }
+.campus-news-row { min-height:70px; }
+.campus-notice-copy { margin-top:6px; }
+.campus-notice-button { margin-top:12px; }
 .campus-copy { margin-top:12px; }

@@ -1,10 +1,10 @@
-.detail-heading { margin-bottom:22px; }
-.detail-title { color:#2b2422; font-family:"Songti SC","STSong","SimSun",serif; font-size:28px; line-height:1.5; font-weight:700; }
-.detail-meta { margin-top:16px; padding-bottom:18px; border-bottom:1px solid #ded4cf; color:#746760; font-size:11px; line-height:1.8; }
-.detail-body { margin-top:22px; }
-.detail-paragraph { margin-bottom:18px; font-size:16px; line-height:2; color:#2b2422; }
-.detail-source { margin-top:26px; padding-top:16px; border-top:1px solid #bca99d; }
-.detail-source-label { font-size:13px; font-weight:600; color:#8c1614; }
-.detail-url { margin-top:8px; color:#746760; font-size:11px; line-height:1.8; word-break:break-all; }
-.detail-note { margin-top:16px; color:#746760; font-size:11px; line-height:1.8; }
-#back-from-detail { background:transparent; color:#8c1614; font-size:13px; font-weight:400; }
+/* 资讯详情（设计图 24）：标题 + 来源与日期 + 正文段落 + 原文链接。 */
+.article-title { margin-top:6px; font-size:26px; line-height:1.55; }
+.article-meta { display:flex; flex-direction:column; gap:3px; margin:14px 0 16px; color:var(--text-2, #6b5d57); font-size:12px; line-height:1.7; }
+.article-notice { margin-bottom:8px; }
+.article-body { margin-top:8px; }
+.article-paragraph { margin:16px 0; color:var(--text, #2b2422); font-size:15px; line-height:1.95; }
+.article-url { word-break:break-all; }
+.article-state-copy { margin-top:6px; }
+.article-state-button { margin-top:10px; }
+.article-back { background:transparent; border-color:transparent; color:var(--brand, #c41c23); }

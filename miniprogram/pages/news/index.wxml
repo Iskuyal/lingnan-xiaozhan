@@ -1,59 +1,65 @@
-<view class="page">
-  <view class="news-heading">
-    <view class="eyebrow">官网内容 · 原文可核对</view>
-    <view class="news-title">校园资讯</view>
-    <view class="news-meta">来源：{{source.label}}</view>
-    <view class="news-meta" wx:if="{{syncedAtText !== ''}}">本页条目最近一次写入：{{syncedAtText}}</view>
+<view class="u2-page">
+  <view class="u2-kicker">读动态，也看出处</view>
+  <view class="u2-h1 news-title">校园正发生。</view>
+  <view class="u2-lead">来自学校公开来源，由云函数同步；列表保留真实来源、发布日期与同步时间。</view>
+
+  <view class="news-source-line">
+    <text class="news-source-label">来源：{{source.label}}</text>
+    <text wx:if="{{syncedAtText !== ''}}" class="news-source-time">最近写入 {{syncedAtText}}</text>
   </view>
 
-  <view class="news-notice">
-    内容由云函数从官网同步，不是实时更新，也不代表整批同步都成功。详情页为小程序自身页面，可复制原文链接到浏览器核对。
+  <view wx:if="{{status === 'loading'}}" id="news-loading" class="u2-card u2-card-line news-state">
+    <view class="u2-card-title">正在读取</view>
+    <view class="u2-card-copy">正在从云端读取校园资讯…</view>
   </view>
 
-  <view wx:if="{{status === 'loading'}}" class="news-empty">
-    <view class="section-title">加载中</view>
-    <view class="news-empty-copy">正在从云端读取校园资讯…</view>
+  <view wx:elif="{{status === 'error'}}" id="news-error" class="u2-notice u2-notice-error news-state">
+    <view class="u2-notice-title">暂时读不到内容</view>
+    <view class="news-state-copy">{{errorMessage}}</view>
+    <button id="retry-load" class="u2-btn u2-btn-secondary news-state-button" hover-class="pressed" bindtap="retry">重试</button>
+    <button id="back-home" class="u2-btn u2-btn-secondary news-state-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
-  <view wx:elif="{{status === 'error'}}" class="news-empty">
-    <view class="section-title">暂时读不到内容</view>
-    <view class="news-empty-copy">{{errorMessage}}</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
-  </view>
-
-  <view wx:elif="{{status === 'empty'}}" class="news-empty">
-    <view class="section-title">暂无资讯</view>
-    <view class="news-empty-copy">云端还没有已同步的条目，同步成功后文章会出现在这里。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  <view wx:elif="{{status === 'empty'}}" id="news-empty" class="u2-card u2-card-line news-state">
+    <view class="u2-card-title">暂无资讯</view>
+    <view class="u2-card-copy">云端还没有已同步的条目，同步成功后文章会出现在这里。</view>
+    <button id="back-home" class="u2-btn u2-btn-secondary news-state-button" hover-class="pressed" bindtap="goHome">返回首页</button>
   </view>
 
   <view wx:else class="news-list">
     <view
-      class="news-item {{index === 0 ? 'news-item-feature' : ''}}"
-      wx:for="{{items}}"
+      wx:for="{{rows}}"
       wx:key="id"
-      wx:for-index="index"
+      class="news-row"
       hover-class="pressed"
       data-id="{{item.id}}"
       bindtap="openDetail"
     >
-      <view wx:if="{{index === 0}}" class="news-item-stamp">动态</view>
-      <view class="news-item-title">{{item.title}}</view>
-      <view class="news-item-foot">
-        <text class="news-item-date">{{item.date === '' ? '日期待核实' : item.date}}</text>
-        <text class="news-item-arrow">›</text>
+      <view class="news-date">
+        <text class="news-date-day">{{item.day}}</text>
+        <text class="news-date-month">{{item.month}}</text>
+      </view>
+      <view class="news-row-main">
+        <view class="news-row-title">{{item.title}}</view>
+        <view class="news-row-meta">{{item.date === '' ? '日期待核实' : item.date}} · 来自学校官网</view>
       </view>
     </view>
 
     <view wx:if="{{moreState === 'loading'}}" class="news-more">正在加载更早的资讯…</view>
-    <view wx:elif="{{moreState === 'error'}}" class="news-more news-more-error">
+    <view wx:elif="{{moreState === 'error'}}" id="news-more-error" class="news-more news-more-error">
       <view class="news-more-copy">{{errorMessage}}</view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-more" class="news-more-button" hover-class="pressed" bindtap="retryMore">重试</button>
+      <button id="retry-more" class="u2-btn u2-btn-secondary news-more-button" hover-class="pressed" bindtap="retryMore">重试</button>
     </view>
-    <view wx:elif="{{hasMore}}" class="news-more news-more-tap" hover-class="pressed" bindtap="loadMore">上滑或点此加载更多</view>
+    <view wx:elif="{{hasMore}}" id="news-more-tap" class="news-more news-more-tap" hover-class="pressed" bindtap="loadMore">上滑或点此加载更多</view>
     <view wx:else class="news-more">已经到底了</view>
 
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+    <view class="u2-actions">
+      <button id="back-home" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="goHome">返回首页</button>
+    </view>
+  </view>
+
+  <view class="u2-source">
+    <view class="u2-source-line">内容由云函数从官网同步，不是实时更新，也不代表整批同步都成功。</view>
+    <view class="u2-source-line">详情页为小程序自身页面，可复制原文链接到浏览器核对。</view>
   </view>
 </view>
