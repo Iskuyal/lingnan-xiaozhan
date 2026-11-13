@@ -489,9 +489,9 @@ async function run() {
     await goalsList.waitFor(800);
 
     const planEntry = await goalsList.$('.goal-item-upcoming .goal-action-plan');
-    assert.ok(planEntry !== null, '目标日条目上没有「AI 排计划」入口');
-    assert.equal(await planEntry.text(), 'AI 排计划');
-    checks.push('目标日列表：未到期条目上有「AI 排计划」入口，点击进入计划页');
+    assert.ok(planEntry !== null, '目标日条目上没有「排学习计划」入口');
+    assert.equal(await planEntry.text(), '排学习计划');
+    checks.push('目标日列表：未到期条目上有「排学习计划」入口，点击进入计划页');
     await shot('05-goals-plan-entry');
 
     await planEntry.tap();
@@ -503,7 +503,7 @@ async function run() {
     const constraint = '听力最弱，每次别超过 1 小时，周末上午不排';
     await typeInto(plan, '#plan-constraint', constraint, 'onConstraintInput', '约束输入框');
     await plan.waitFor(300);
-    await tap(plan, '#plan-generate', '生成计划');
+    await tap(plan, '#plan-generate-rules', '基础规则生成计划');
     // 点击只是把事件丢给页面，generate 里先 setData({busy:true}) 再读云端课表；
     // 立刻读 data 会拿到还没开始跑的状态（busy=false、plan=null），误判成「生成失败」。
     await plan.waitFor(1000);
@@ -529,7 +529,7 @@ async function run() {
     const constraintLines = await Promise.all((await plan.$$('.ai-card.brief .ai-src-item')).map((node) => node.text()));
     assert.ok(constraintLines.length > 0, '没有约束依据条');
     const legend = await Promise.all((await plan.$$('.legend-item')).map((node) => node.text()));
-    assert.deepEqual(legend, ['已有课程', 'AI 计划（未保存）', '空闲'], `图例文案不对：${legend.join('|')}`);
+    assert.deepEqual(legend, ['已有课程', '规则排程（未保存）', '空闲'], `图例文案不对：${legend.join('|')}`);
     checks.push(`备考计划：${planCells.length} 个计划格叠进 ${busyCells.length} 个已占格，解释 ${rationale.length} 句，依据 ${constraintLines.length} 条`);
     // 约束「每次别超过 1 小时」必须真的生效：任一块都不能超过 60 分钟。
     const blocks = await plan.data('plan.blocks');

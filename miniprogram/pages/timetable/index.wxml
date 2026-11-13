@@ -136,6 +136,16 @@
     </block>
   </block>
 
+  <view id="week-saved-plan" class="saved-plan-panel" wx:if="{{savedPlanPanel.hasPlan}}">
+    <view class="saved-plan-head"><view class="section-title">{{savedPlanPanel.rows.length ? '本周学习计划' : '已保存的学习计划'}}</view><text class="ai-tag">本机保存</text></view>
+    <view class="saved-plan-copy">{{savedPlanPanel.goalName}} · 计划独立于正式课程</view>
+    <view class="saved-plan-row" wx:for="{{savedPlanPanel.rows}}" wx:key="id">
+      <view class="saved-plan-label">{{item.label}}</view><view class="saved-plan-date">{{item.date}}</view>
+      <view wx:if="{{item.note}}" class="saved-plan-note saved-plan-{{item.status}}">{{item.note}}</view>
+    </view>
+    <view wx:if="{{savedPlanPanel.notice}}" class="saved-plan-copy">{{savedPlanPanel.notice}}</view>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="week-plan-open" class="home-button secondary" bindtap="openSavedPlan">查看已保存计划</button>
+  </view>
   <view class="tt-footer">周课表按节次展示；学校作息未核实，不显示具体时刻。<block wx:if="{{updatedAtText !== ''}}">课表保存于 {{updatedAtText}}。</block></view>
 
 
@@ -170,7 +180,7 @@
       <view wx:if="{{noticeOpen}}" class="notice-wrap">
         <view class="paste">
           <view class="paste-from">你粘贴的班群通知（这里只认文字；只是截图的话，可以用「导入课表」里的截图识别）</view>
-          <textarea id="notice-input" class="paste-input" value="{{noticeInput}}" bindinput="onNoticeInput" maxlength="4000" auto-height placeholder="例如：第 12 周周三全天停课，网页设计与制作从第 11 周起改到博雅楼 B604，高数第 13 周周五 5-6 节补课" />
+          <textarea id="notice-input" class="paste-input" value="{{noticeInput}}" bindinput="onNoticeInput" maxlength="4000" auto-height placeholder="例如：第 12 周周三全天停课，网页设计与制作所有周次改到博雅楼 B604，高数第 13 周周五 5-6 节补课" />
         </view>
         <view class="notice-read-row">
           <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="notice-read" class="home-button notice-read" hover-class="pressed" disabled="{{noticeReading}}" bindtap="readNotice">{{noticeReading ? '正在读…' : '识别变更'}}</button>
@@ -188,6 +198,7 @@
             <view class="check off" wx:else></view>
             <view class="change-body">
               <view class="change-title">{{item.title}}</view>
+              <view class="notice-scope" wx:if="{{item.scopeLabel}}">{{item.scopeLabel}} · 其他周次保持原样</view>
               <view class="diff" wx:for="{{item.diffs}}" wx:for-item="diff" wx:key="index">
                 <text wx:if="{{diff.lead !== ''}}" class="diff-lead">{{diff.lead}} </text>
                 <text wx:if="{{diff.old !== ''}}" class="diff-old">{{diff.old}}</text>
@@ -199,6 +210,7 @@
               <view class="warnline blocked" wx:if="{{item.blocked !== ''}}">{{item.blocked}}</view>
               <view class="change-detail" wx:if="{{noticeDetailOpen || item.blocked !== ''}}">将写入：{{item.detail}}</view>
               <view class="quote">原文：{{item.quote}}</view>
+              <view class="notice-unaffected" wx:if="{{item.unaffectedLabel}}">{{item.unaffectedLabel}}</view>
             </view>
           </view>
           <view class="proposal-actions">

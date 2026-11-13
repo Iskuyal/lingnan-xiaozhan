@@ -8,3 +8,5 @@
 docs/evidence/fresh-quality-2026-10-30/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/evidence/fresh-quality-2026-10-30/*.jsonl -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/evidence/fresh-quality-2026-10-30/authorization*.md -text
+# 设计评审指纹绑定此生成器的原始字节，保留其已审阅版本的行尾。
+docs/design/lingnan-red-2026-11-11/package-review.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

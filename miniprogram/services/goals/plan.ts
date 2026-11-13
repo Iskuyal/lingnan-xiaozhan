@@ -18,8 +18,8 @@ import { Course, SectionRange } from '../timetable/types';
 import { SECTION_COUNT, TimetableSettings, minutesOfClock, sectionTimeAt } from '../timetable/settings';
 import { WEEKDAY_SHORT, occursInWeek } from '../timetable/view';
 import { colorIndexFor } from '../timetable/palette';
-import { diffDays } from '../dates/index';
-import { weekIndexOf } from '../timetable/semester';
+import { diffDays, isValidDate } from '../dates/index';
+import { weekIndexOf, weekdayOf } from '../timetable/semester';
 
 /** 本机存储 key：与 `goal-days/v1` 同一套约定，结构变化时换 key，不原地迁移未知格式。 */
 const STORAGE_KEY = 'study-plan/v1';
@@ -49,6 +49,8 @@ export const GRID_WEEKDAYS = ['一', '二', '三', '四', '五'];
 export const MIN_GRID_ROWS = 5;
 
 export interface PlanConstraints {
+  excludedWeekdays?: number[];
+  blockedSections?: { weekday: number; start: number; end: number }[];
   /** 每段最多多少分钟。 */
   maxMinutesPerBlock: number;
   /** 周末上午（第 1-4 节）不排。 */
@@ -63,6 +65,7 @@ export interface PlanConstraints {
 
 /** 一次约束解析的完整结果：能照做的写进 `constraints`，听不懂的原话进 `dropped`。 */
 export interface ConstraintReadout {
+  problems?: string[];
   constraints: PlanConstraints;
   /** 直接展示给学生的约束回显，一行一句。 */
   lines: string[];
@@ -96,6 +99,10 @@ export interface PlanBlock {
 }
 
 export interface StudyPlan {
+  origin?: 'rules' | 'ai-constraints';
+  aiEvidence?: PlanEvidence[];
+  goalId?: string;
+  constraintText?: string;
   goalName: string;
   goalDate: string;
   /** 生成时的「今天」，重新打开旧计划时用来判断它是否已经过期。 */
@@ -119,6 +126,9 @@ export interface StudyPlan {
 }
 
 export interface BuildPlanInput {
+  /** 外部理解器已校验的约束；优先于有限正则，原文只用于留存。 */
+  readout?: ConstraintReadout;
+  goalId?: string;
   goalName: string;
   /** 'YYYY-MM-DD'。 */
   goalDate: string;
@@ -136,6 +146,8 @@ export interface BuildPlanInput {
   variant?: number;
   /** 生成时间戳，缺省取当前时间；只影响 `createdAt`，测试里注入固定值。 */
   now?: number;
+  /** 今天已过的时间不能再安排；没填作息时，今日时段无法核实，留到明天。 */
+  clockMinutes?: number;
 }
 
 /** 默认约束。每次返回新对象，不共享引用。 */
@@ -147,6 +159,22 @@ export function emptyConstraints(): PlanConstraints {
     blocksPerWeek: DEFAULT_BLOCKS_PER_WEEK,
     focus: '',
   };
+}
+
+export interface PlanEvidence { label: string; value: string; quote: string }
+export const PLAN_LIMITS = { minMinutes: MIN_MAX_MINUTES, maxMinutes: MAX_MAX_MINUTES, maxWeeklyBlocks: MAX_BLOCKS_PER_WEEK } as const;
+
+function constraintProblem(value: PlanConstraints): string {
+  if (value === null || typeof value !== 'object') return '约束数据不完整，请重新核对';
+  if (!Number.isInteger(value.maxMinutesPerBlock) || value.maxMinutesPerBlock < MIN_MAX_MINUTES || value.maxMinutesPerBlock > MAX_MAX_MINUTES) return '每段时长需在15–180分钟之间';
+  if (!Number.isInteger(value.blocksPerWeek) || value.blocksPerWeek < 1 || value.blocksPerWeek > MAX_BLOCKS_PER_WEEK) return '每周需安排1–14段';
+  if (typeof value.focus !== 'string' || value.focus.length > 12 || typeof value.noEvening !== 'boolean' || typeof value.noWeekendMorning !== 'boolean') return '约束内容不完整，请重新核对';
+  if (value.excludedWeekdays !== undefined && (!Array.isArray(value.excludedWeekdays) || value.excludedWeekdays.length > 7
+    || value.excludedWeekdays.some((day) => !Number.isInteger(day) || day < 1 || day > 7))) return '不可用星期需在周一至周日范围内';
+  if (value.blockedSections !== undefined && (!Array.isArray(value.blockedSections) || value.blockedSections.length > 21
+    || value.blockedSections.some((slot) => !slot || !Number.isInteger(slot.weekday) || slot.weekday < 1 || slot.weekday > 7
+      || !Number.isInteger(slot.start) || !Number.isInteger(slot.end) || slot.start < 1 || slot.end > SECTION_COUNT || slot.end < slot.start))) return '不可用时段的节次不完整，请重新核对';
+  return '';
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -280,6 +308,7 @@ export function readConstraints(text: string): ConstraintReadout {
     focus: false,
   };
   const dropped: string[] = [];
+  const problems: string[] = [];
   if (normalized === '') {
     return { constraints, lines: linesOf(constraints, recognized), dropped, recognized };
   }
@@ -287,19 +316,21 @@ export function readConstraints(text: string): ConstraintReadout {
   // 字段在整句上取，避免「时长」被标点或空格切断；听不懂的句子再回原句里认一遍。
   const minutes = minutesFromText(normalized);
   if (minutes > 0) {
+    if (minutes < MIN_MAX_MINUTES || minutes > MAX_MAX_MINUTES) problems.push(`每段时长需在15–180分钟之间，不能将${minutes}分钟的要求静默放宽`);
     constraints.maxMinutesPerBlock = clamp(minutes, MIN_MAX_MINUTES, MAX_MAX_MINUTES);
     recognized.maxMinutesPerBlock = true;
   }
   const perWeek = perWeekFromText(normalized);
   if (perWeek > 0) {
+    if (perWeek > MAX_BLOCKS_PER_WEEK) problems.push('每周最多安排14段，请调整段数');
     constraints.blocksPerWeek = clamp(perWeek, MIN_BLOCKS_PER_WEEK, MAX_BLOCKS_PER_WEEK);
     recognized.blocksPerWeek = true;
   }
-  if (isWeekendMorningBan(normalized)) {
+  if (normalized.split(CLAUSE_SPLIT).some(isWeekendMorningBan)) {
     constraints.noWeekendMorning = true;
     recognized.noWeekendMorning = true;
   }
-  if (isEveningBan(normalized)) {
+  if (normalized.split(CLAUSE_SPLIT).some(isEveningBan)) {
     constraints.noEvening = true;
     recognized.noEvening = true;
   }
@@ -313,10 +344,10 @@ export function readConstraints(text: string): ConstraintReadout {
     const clause = raw.trim();
     if (clause.length < 2) continue;
     if (clauseRecognized(clause)) continue;
-    dropped.push(`「${clause}」没听懂，按默认排`);
+    dropped.push(`「${clause}」没听懂，先核对后再排`);
   }
 
-  return { constraints, lines: linesOf(constraints, recognized), dropped, recognized };
+  return { constraints, lines: linesOf(constraints, recognized), dropped, recognized, problems };
 }
 
 /** 只要约束本体时的简版；需要知道「哪句没听懂」时用 `readConstraints`。 */
@@ -408,9 +439,23 @@ function freeSlots(
   weekKnown: boolean,
 ): Map<number, Slot[]> {
   const byDay = new Map<number, Slot[]>();
+  const todayWeekday = weekdayOf(input.today);
+  const daysToGoal = diffDays(input.today, input.goalDate);
   for (let weekday = 1; weekday <= 7; weekday += 1) {
     const slots: Slot[] = [];
+    const daysFromToday = todayWeekday === null ? -1 : weekday - todayWeekday;
+    if (daysToGoal === null || daysFromToday < 0 || daysFromToday > daysToGoal || constraints.excludedWeekdays?.includes(weekday)) {
+      byDay.set(weekday, slots);
+      continue;
+    }
     for (const pair of pairSlots(constraints, input.settings)) {
+      if (constraints.blockedSections?.some((slot) => slot.weekday === weekday && slot.start <= pair.end && pair.start <= slot.end)) continue;
+      if (daysFromToday === 0 && typeof input.clockMinutes === 'number') {
+        const start = sectionTimeAt(input.settings, pair.start);
+        const end = sectionTimeAt(input.settings, pair.end);
+        const minutes = start === null ? null : minutesOfClock(start.start);
+        if (minutes === null || end === null || minutes < input.clockMinutes) continue;
+      }
       // 周末上午 = 第 1-4 节；下午与晚上仍可以排（设计图 03 的例子就只排除上午）。
       if (constraints.noWeekendMorning && weekday >= 6 && pair.start <= MORNING_LAST_SECTION) continue;
       if (blockedByCourse(input.courses, weekday, pair.start, pair.end, week, weekKnown)) continue;
@@ -447,7 +492,7 @@ function tooClose(placed: Slot[], candidate: Slot): boolean {
  */
 function fillSlots(byDay: Map<number, Slot[]>, weeklyCount: number, variant: number): Slot[] {
   const placed: Slot[] = [];
-  const dayOrder = rotateDays([1, 2, 3, 4, 5, 6, 7], variant);
+  const dayOrder = rotateDays([1, 2, 3, 4, 5, 6, 7].filter((day) => (byDay.get(day)?.length ?? 0) > 0), variant);
   const perDay = new Map<number, number>();
   const used = new Set<string>();
   const keyOf = (slot: Slot) => `${slot.weekday}-${slot.startSection}`;
@@ -459,7 +504,9 @@ function fillSlots(byDay: Map<number, Slot[]>, weeklyCount: number, variant: num
       for (const weekday of dayOrder) {
         if (placed.length >= weeklyCount) break;
         if ((perDay.get(weekday) ?? 0) >= cap) continue;
-        const candidates = byDay.get(weekday) ?? [];
+        const available = byDay.get(weekday) ?? [];
+        const offset = available.length === 0 ? 0 : ((Math.round(variant) % available.length) + available.length) % available.length;
+        const candidates = available.slice(offset).concat(available.slice(0, offset));
         let chosen: Slot | null = null;
         for (const slot of candidates) {
           if (used.has(keyOf(slot))) continue;
@@ -535,6 +582,8 @@ function emptyPlan(
 ): StudyPlan {
   return {
     goalName: input.goalName.trim(),
+    goalId: input.goalId ?? '',
+    constraintText: input.constraintText ?? '',
     goalDate: input.goalDate,
     today: input.today,
     remainingDays,
@@ -557,10 +606,12 @@ function emptyPlan(
  * 不会为了凑够 `blocksPerWeek` 把学习块硬塞进有课或已被约束排除的时段。
  */
 export function buildPlan(input: BuildPlanInput): StudyPlan {
-  const readout = typeof input.constraintText === 'string'
+  const readout = input.readout !== undefined ? { ...input.readout, lines: input.readout.lines.slice(), dropped: input.readout.dropped.slice() } : typeof input.constraintText === 'string'
     ? readConstraints(input.constraintText)
-    : { constraints: input.constraints, lines: [] as string[], dropped: [] as string[], recognized: null };
-  const constraints = readout.constraints;
+    : { constraints: input.constraints, lines: [] as string[], dropped: [] as string[], recognized: null, problems: [] as string[] };
+  const problem = (readout.problems ?? []).join('；') || constraintProblem(readout.constraints)
+    || (readout.dropped.length > 0 ? `基础规则未理解全部情况：${readout.dropped.join('；')}。请调整表达，或选择AI理解后再核对。` : '');
+  const constraints = problem === '' ? readout.constraints : emptyConstraints();
   if (readout.lines.length === 0) {
     readout.lines = linesOf(constraints, {
       maxMinutesPerBlock: true,
@@ -575,6 +626,9 @@ export function buildPlan(input: BuildPlanInput): StudyPlan {
   const week = weekIndexOf(input.settings, input.today);
   const weekKnown = week !== null;
   const targetWeek = week === null ? 1 : week;
+
+  if (problem !== '') return emptyPlan(input, constraints, readout, remainingDays ?? 0, targetWeek, weekKnown,
+    '约束需要调整，先不生成计划', [problem]);
 
   if (remainingDays === null) {
     return emptyPlan(input, constraints, readout, 0, targetWeek, weekKnown,
@@ -592,7 +646,7 @@ export function buildPlan(input: BuildPlanInput): StudyPlan {
 
   if (placed.length === 0) {
     return emptyPlan(input, constraints, readout, remainingDays, targetWeek, weekKnown,
-      '这周没有能排的空档，先不排——不硬塞进有课的时段',
+      '本周目标日前没有能排的空档，不硬塞',
       [
         `距 ${input.goalDate} 还有 ${remainingDays} 天，但${weekKnown ? `第 ${targetWeek} 周` : '本周'}的课表里找不到同时避开已有课程与你的约束的空档。`,
         '把课表补全后重新生成，或者放宽一条约束（例如允许晚上排），再试一次。',
@@ -624,6 +678,8 @@ export function buildPlan(input: BuildPlanInput): StudyPlan {
 
   return {
     goalName: input.goalName.trim(),
+    goalId: input.goalId ?? '',
+    constraintText: input.constraintText ?? '',
     goalDate: input.goalDate,
     today: input.today,
     remainingDays,
@@ -663,7 +719,7 @@ function buildRationale(
   const filled = blocks.some((block) => sectionTimeAt(input.settings, block.startSection) !== null);
   const source = filled ? '按你填的作息算' : `课表没填作息时间，按每节 ${DEFAULT_SECTION_MINUTES} 分钟估`;
   lines.push(
-    `每段 ${minutesText} 分钟，都在你说的「每段不超过 ${constraints.maxMinutesPerBlock} 分钟」以内（${source}）。`,
+    `每段 ${minutesText} 分钟，未超过本次 ${constraints.maxMinutesPerBlock} 分钟的上限（${source}）。`,
   );
 
   const policies: string[] = [];
@@ -683,6 +739,8 @@ function buildRationale(
   if (constraints.noEvening) {
     policies.push(`晚上按你说的不排（第 ${EVENING_FIRST_SECTION} 节起都没用）`);
   }
+  if (constraints.excludedWeekdays?.length) policies.push(`周${constraints.excludedWeekdays.map((day) => WEEKDAY_SHORT[day - 1]).join('、周')}按限制不排`);
+  if (constraints.blockedSections?.length) policies.push('已避开核对过的不可用时段');
   if (policies.length === 0) {
     policies.push('没有别的限制，就按「越早越优先」填进这周最早的空档');
   }
@@ -799,7 +857,7 @@ function normalizeBlock(raw: unknown): PlanBlock | null {
   const week = intIn(source.week, 1, 30);
   if (weekday === null || startSection === null || endSection === null || week === null) return null;
   if (endSection < startSection) return null;
-  if (typeof source.minutes !== 'number' || !Number.isFinite(source.minutes) || source.minutes <= 0) return null;
+  if (typeof source.minutes !== 'number' || !Number.isInteger(source.minutes) || source.minutes <= 0 || source.minutes > 180) return null;
   const topic = typeof source.topic === 'string' ? source.topic.trim() : '';
   if (topic === '') return null;
   const id = typeof source.id === 'string' && source.id !== ''
@@ -820,7 +878,7 @@ function stringList(value: unknown): string[] {
 export function normalizePlan(raw: unknown): StudyPlan | null {
   if (raw === null || typeof raw !== 'object') return null;
   const source = raw as Record<string, unknown>;
-  if (!Array.isArray(source.blocks)) return null;
+  if (!Array.isArray(source.blocks) || source.blocks.length > 42) return null;
   const blocks: PlanBlock[] = [];
   for (const item of source.blocks) {
     const block = normalizeBlock(item);
@@ -830,7 +888,7 @@ export function normalizePlan(raw: unknown): StudyPlan | null {
   const goalName = typeof source.goalName === 'string' ? source.goalName.trim() : '';
   const goalDate = typeof source.goalDate === 'string' ? source.goalDate.trim() : '';
   const today = typeof source.today === 'string' ? source.today.trim() : '';
-  if (goalDate === '' || today === '') return null;
+  if (!isValidDate(goalDate) || !isValidDate(today)) return null;
   const week = intIn(source.week, 1, 30) ?? 1;
   const weekKnown = source.weekKnown !== false;
   const totalMinutes = blocks.reduce((sum, block) => sum + block.minutes, 0);
@@ -841,8 +899,17 @@ export function normalizePlan(raw: unknown): StudyPlan | null {
   const createdAt = typeof source.createdAt === 'number' && Number.isFinite(source.createdAt)
     ? source.createdAt
     : 0;
+  const aiEvidence = Array.isArray(source.aiEvidence) ? source.aiEvidence.slice(0, 32).filter((item): item is PlanEvidence =>
+    item !== null && typeof item === 'object' && typeof item.label === 'string' && item.label.trim() !== '' && item.label.length <= 40
+    && typeof item.value === 'string' && item.value.trim() !== '' && item.value.length <= 100 && typeof item.quote === 'string'
+    && item.quote.trim() !== '' && item.quote.length <= 120 && typeof source.constraintText === 'string' && source.constraintText.includes(item.quote)) : [];
+  if (source.origin === 'ai-constraints' && (!Array.isArray(source.aiEvidence) || aiEvidence.length === 0 || aiEvidence.length !== source.aiEvidence.length)) return null;
   return {
     goalName,
+    origin: source.origin === 'ai-constraints' ? 'ai-constraints' : 'rules',
+    aiEvidence,
+    goalId: typeof source.goalId === 'string' ? source.goalId : '',
+    constraintText: typeof source.constraintText === 'string' ? source.constraintText.slice(0, 120) : '',
     goalDate,
     today,
     remainingDays,

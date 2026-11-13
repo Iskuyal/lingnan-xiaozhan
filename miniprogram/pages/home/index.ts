@@ -42,7 +42,12 @@ const EMPTY_GOAL_STRIP: GoalStrip = {
 
 /** 课表读不到时的简报：不给假的「今天没课」，说清是没读到。 */
 function emptyBrief(settings: TimetableSettings, today: string, clockMinutes: number): TodayBrief {
-  return buildTodayBrief({ courses: [], settings, today, clockMinutes, goals: [] });
+  return {
+    ...buildTodayBrief({ courses: [], settings, today, clockMinutes, goals: [] }),
+    headline: '正在读取今日课表',
+    sentences: ['读取完成后显示今天的课程与空闲时段。'],
+    emptyMessage: '正在读取，请稍候。',
+  };
 }
 
 /** 现在几点几分（设备本地时间，与课表页 localMinutes 同口径）。 */
@@ -105,7 +110,13 @@ Page({
         });
       })
       .catch(() => {
-        this.setData({ brief: buildTodayBrief({ courses: [], settings: emptySettings(), today, clockMinutes: clock, goals: loadGoals() }) });
+        const fallback = buildTodayBrief({ courses: [], settings: emptySettings(), today, clockMinutes: clock, goals: loadGoals() });
+        this.setData({ brief: {
+          ...fallback,
+          headline: '今日课表暂时没读到',
+          sentences: ['暂时无法确认今天有哪些课，稍后返回首页会重新读取。', ...fallback.sentences.filter((line) => line.includes('距「') || line.includes('今天就是「'))],
+          emptyMessage: '请检查网络，或进入我的课表重新读取。',
+        } });
       });
   },
   loadGoalStrip() {

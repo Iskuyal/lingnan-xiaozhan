@@ -1,0 +1,792 @@
+[
+  {
+    "id": "01",
+    "file": "01-today.html",
+    "title": "今天",
+    "route": "pages/home/index",
+    "state": "常规",
+    "kind": "入口页",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "02",
+    "file": "02-week.html",
+    "title": "我的课表",
+    "route": "pages/timetable/index",
+    "state": "常规",
+    "kind": "周课表",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "03",
+    "file": "03-import.html",
+    "title": "导入课表",
+    "route": "pages/timetable/import/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "04",
+    "file": "04-review.html",
+    "title": "核对导入结果",
+    "route": "pages/timetable/import/index",
+    "state": "解析草稿与替换确认",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "05",
+    "file": "05-course.html",
+    "title": "课程详情与编辑",
+    "route": "pages/timetable/edit/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "06",
+    "file": "06-settings.html",
+    "title": "学期与作息",
+    "route": "pages/timetable/settings/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "07",
+    "file": "07-manage.html",
+    "title": "管理课程",
+    "route": "pages/timetable/manage/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "08",
+    "file": "08-assistant.html",
+    "title": "课表助手",
+    "route": "pages/timetable/index#assistant",
+    "state": "常规",
+    "kind": "对话与查询结果",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "09",
+    "file": "09-notice.html",
+    "title": "核对调课",
+    "route": "pages/timetable/index#proposal",
+    "state": "限定周次提案",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "10",
+    "file": "10-changed.html",
+    "title": "调课已保存",
+    "route": "pages/timetable/index#applied",
+    "state": "保存成功与撤销",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "11",
+    "file": "11-study.html",
+    "title": "学习",
+    "route": "提案：pages/study/index",
+    "state": "常规",
+    "kind": "学习入口",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "12",
+    "file": "12-goals.html",
+    "title": "目标日",
+    "route": "pages/goals/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "13",
+    "file": "13-goal-edit.html",
+    "title": "编辑目标日",
+    "route": "pages/goals/edit/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "14",
+    "file": "14-plan-input.html",
+    "title": "安排学习计划",
+    "route": "pages/goals/plan/index",
+    "state": "自然语言输入",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "15",
+    "file": "15-constraints.html",
+    "title": "核对学习约束",
+    "route": "pages/goals/plan/index#constraints",
+    "state": "带原话依据的约束草稿",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "16",
+    "file": "16-preview.html",
+    "title": "预览学习计划",
+    "route": "pages/goals/plan/index#preview",
+    "state": "规则排程预览",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "17",
+    "file": "17-saved.html",
+    "title": "本周学习计划",
+    "route": "pages/goals/plan/index#saved",
+    "state": "已保存与离线重开",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "18",
+    "file": "18-conflict.html",
+    "title": "计划需要核对",
+    "route": "pages/goals/plan/index#conflict",
+    "state": "课表变化后的冲突",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "19",
+    "file": "19-campus.html",
+    "title": "校园",
+    "route": "提案：pages/campus/index",
+    "state": "常规",
+    "kind": "校园入口",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "20",
+    "file": "20-departments.html",
+    "title": "学生部门",
+    "route": "pages/departments/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "21",
+    "file": "21-department.html",
+    "title": "组织资料",
+    "route": "pages/departments/detail/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "22",
+    "file": "22-department-qa.html",
+    "title": "部门问答",
+    "route": "pages/departments/index#qa",
+    "state": "资料不足与继续查阅",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "23",
+    "file": "23-news.html",
+    "title": "校园资讯",
+    "route": "pages/news/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "24",
+    "file": "24-article.html",
+    "title": "资讯详情",
+    "route": "pages/news/detail/index",
+    "state": "常规",
+    "kind": "长文阅读",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "25",
+    "file": "25-calendar.html",
+    "title": "校历与考试",
+    "route": "pages/calendar/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "26",
+    "file": "26-fitness.html",
+    "title": "体测估算",
+    "route": "pages/fitness/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "27",
+    "file": "27-fitness-result.html",
+    "title": "体测估算结果",
+    "route": "pages/fitness/index#result",
+    "state": "完整结果与缺项口径",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "28",
+    "file": "28-advancement.html",
+    "title": "升学与实习问答",
+    "route": "pages/advancement/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "29",
+    "file": "29-clarify.html",
+    "title": "确认问题范围",
+    "route": "pages/advancement/index#clarify",
+    "state": "歧义澄清",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "30",
+    "file": "30-answer.html",
+    "title": "原文与解释",
+    "route": "pages/advancement/index#answer",
+    "state": "解释与逐条来源",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "31",
+    "file": "31-defense.html",
+    "title": "项目讲解与答辩练习",
+    "route": "pages/defense/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "32",
+    "file": "32-practice.html",
+    "title": "第 1 轮练习",
+    "route": "pages/defense/index#practice",
+    "state": "作答与材料查阅",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "33",
+    "file": "33-pending.html",
+    "title": "正在核对回答",
+    "route": "pages/defense/index#pending",
+    "state": "长等待与保留草稿",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "34",
+    "file": "34-feedback.html",
+    "title": "本轮反馈",
+    "route": "pages/defense/index#feedback",
+    "state": "依据反馈与后续提问",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "35",
+    "file": "35-recap.html",
+    "title": "练习复盘",
+    "route": "pages/defense/index#recap",
+    "state": "复盘与一次重答",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "36",
+    "file": "36-empty.html",
+    "title": "先导入你的课表",
+    "route": "pages/home/index#empty",
+    "state": "首次为空与未知作息",
+    "kind": "任务页",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "37",
+    "file": "37-read-error.html",
+    "title": "课表暂时没读到",
+    "route": "pages/timetable/index#error",
+    "state": "读取失败",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "38",
+    "file": "38-import-error.html",
+    "title": "截图识别没有完成",
+    "route": "pages/timetable/import/index#error",
+    "state": "识别失败与替代路径",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "39",
+    "file": "39-partial-change.html",
+    "title": "部分修改已保存",
+    "route": "pages/timetable/index#partial",
+    "state": "部分成功与定向重试",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "40",
+    "file": "40-expired-plan.html",
+    "title": "历史学习计划",
+    "route": "pages/goals/plan/index#expired",
+    "state": "过期与目标删除",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "41",
+    "file": "41-delete.html",
+    "title": "确认删除课程",
+    "route": "pages/timetable/manage/index#delete",
+    "state": "破坏性操作确认",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "42",
+    "file": "42-material.html",
+    "title": "练习材料",
+    "route": "pages/defense/index#material",
+    "state": "长材料与返回草稿",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "43",
+    "file": "43-ai-unavailable.html",
+    "title": "约束暂时没整理好",
+    "route": "pages/goals/plan/index#error",
+    "state": "额度不足与保留输入",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "44",
+    "file": "44-lost-found.html",
+    "title": "失物招领",
+    "route": "pages/lost-found/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "45",
+    "file": "45-publish.html",
+    "title": "发布物品",
+    "route": "pages/lost-found/publish/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "46",
+    "file": "46-item.html",
+    "title": "物品详情",
+    "route": "pages/lost-found/detail/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "47",
+    "file": "47-claim.html",
+    "title": "认领与核验",
+    "route": "pages/lost-found/claim/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "48",
+    "file": "48-mine.html",
+    "title": "我的发布与认领",
+    "route": "pages/lost-found/mine/index",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "49",
+    "file": "49-basic-rules.html",
+    "title": "基础规则设置",
+    "route": "pages/goals/plan/index#basic",
+    "state": "基础规则替代入口",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "50",
+    "file": "50-claim-review.html",
+    "title": "核验认领申请",
+    "route": "pages/lost-found/claim/index#owner",
+    "state": "发布者权限与交接",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": true
+  },
+  {
+    "id": "51",
+    "file": "51-full-week.html",
+    "title": "完整周课表",
+    "route": "pages/timetable/index#full",
+    "state": "完整十二节与长课程名",
+    "kind": "二维滚动课表",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "52",
+    "file": "52-field-error.html",
+    "title": "课程字段需要修正",
+    "route": "pages/timetable/edit/index#invalid",
+    "state": "无效输入与保留内容",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "53",
+    "file": "53-unknown-times.html",
+    "title": "今天的节次安排",
+    "route": "pages/home/index#unknown-times",
+    "state": "未知作息且有课程",
+    "kind": "任务页",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "54",
+    "file": "54-goal-delete.html",
+    "title": "确认删除目标日",
+    "route": "pages/goals/edit/index#delete",
+    "state": "目标删除影响",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "55",
+    "file": "55-goals-empty.html",
+    "title": "我的目标日",
+    "route": "pages/goals/index#empty",
+    "state": "无有效目标与历史计划入口",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "56",
+    "file": "56-practice-2.html",
+    "title": "第 2 轮练习",
+    "route": "pages/defense/index#practice",
+    "state": "第2轮作答",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "57",
+    "file": "57-feedback-2.html",
+    "title": "第 2 轮反馈",
+    "route": "pages/defense/index#feedback",
+    "state": "第二轮反馈与下一轮",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "58",
+    "file": "58-practice-3.html",
+    "title": "第 3 轮练习",
+    "route": "pages/defense/index#practice",
+    "state": "第3轮作答",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "59",
+    "file": "59-feedback-3.html",
+    "title": "第 3 轮反馈",
+    "route": "pages/defense/index#feedback",
+    "state": "第三轮反馈与收尾",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "60",
+    "file": "60-reanswer.html",
+    "title": "重新回答一处",
+    "route": "pages/defense/index#reanswer",
+    "state": "一次重答与草稿",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "61",
+    "file": "61-reanswer-result.html",
+    "title": "重答反馈",
+    "route": "pages/defense/index#finished",
+    "state": "重答结束与可回看",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "62",
+    "file": "62-exit.html",
+    "title": "结束这次练习？",
+    "route": "pages/defense/index#exit",
+    "state": "退出与会话丢失确认",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "63",
+    "file": "63-fitness-missing.html",
+    "title": "已填项目的估算",
+    "route": "pages/fitness/index#missing",
+    "state": "缺项且不误报总分",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "64",
+    "file": "64-constraint-clarify.html",
+    "title": "有一句还需确认",
+    "route": "pages/goals/plan/index#clarify",
+    "state": "无法理解的约束与禁止直接排程",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "65",
+    "file": "65-department-answer.html",
+    "title": "部门资料里的答案",
+    "route": "pages/departments/index#answer",
+    "state": "带来源的回答",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "66",
+    "file": "66-course-detail.html",
+    "title": "课程详情",
+    "route": "pages/timetable/index#detail",
+    "state": "只读详情与编辑入口",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "67",
+    "file": "67-day-agenda.html",
+    "title": "每日安排",
+    "route": "pages/timetable/index#day",
+    "state": "可切换的单日列表",
+    "kind": "任务页",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "68",
+    "file": "68-draft-edit.html",
+    "title": "核对草稿地点",
+    "route": "pages/timetable/edit/index#draft",
+    "state": "导入待核对字段纠正",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "69",
+    "file": "69-import-ready.html",
+    "title": "导入核对已完成",
+    "route": "pages/timetable/import/index#ready",
+    "state": "全部确认后的替换保存",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "70",
+    "file": "70-notice-edit.html",
+    "title": "修改调课通知",
+    "route": "pages/timetable/index#notice-edit",
+    "state": "通知纠错与保留原文",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "71",
+    "file": "71-week-eleven.html",
+    "title": "我的课表",
+    "route": "pages/timetable/index#week-eleven",
+    "state": "限定周次保存后的对应周课表",
+    "kind": "任务页",
+    "proposed": true,
+    "dormant": false
+  },
+  {
+    "id": "72",
+    "file": "72-undo-result.html",
+    "title": "这次调课已撤销",
+    "route": "pages/timetable/index#undone",
+    "state": "原子撤销的可见结果",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "73",
+    "file": "73-batch-result.html",
+    "title": "本批修改已完成",
+    "route": "pages/timetable/index#batch-result",
+    "state": "部分失败重试后的成功结果",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "74",
+    "file": "74-long-course.html",
+    "title": "课程详情",
+    "route": "pages/timetable/index#long-detail",
+    "state": "长课程名详情承接",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "75",
+    "file": "75-photo-source.html",
+    "title": "对照截图核对",
+    "route": "pages/timetable/edit/index#photo",
+    "state": "截图原材料与识别结果对照",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "76",
+    "file": "76-excel-review.html",
+    "title": "核对 Excel 课程",
+    "route": "pages/timetable/import/index#excel",
+    "state": "Excel 原文件与已解析课程",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "77",
+    "file": "77-practice-record.html",
+    "title": "本次练习记录",
+    "route": "pages/defense/index#record",
+    "state": "常规",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "78",
+    "file": "78-copied-record.html",
+    "title": "练习记录已复制",
+    "route": "pages/defense/index#copied",
+    "state": "复制成功后退出或继续",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  },
+  {
+    "id": "79",
+    "file": "79-review-other-course.html",
+    "title": "重新核对课程",
+    "route": "pages/timetable/edit/index#other-draft",
+    "state": "非疑点课程的重新核对",
+    "kind": "任务页",
+    "proposed": false,
+    "dormant": false
+  }
+]

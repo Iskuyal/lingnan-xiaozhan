@@ -1,0 +1,38 @@
+{
+  "version": "LN-6c774710ba24831b",
+  "boundFiles": 310,
+  "mismatches": [],
+  "historicalBindings": [
+    {
+      "archive": "round-1.zip",
+      "version": "LN-b7ed8a744e7316e2",
+      "files": 238,
+      "matched": true
+    },
+    {
+      "archive": "round-2.zip",
+      "version": "LN-10de0de1496000f4",
+      "files": 262,
+      "matched": true
+    },
+    {
+      "archive": "round-3.zip",
+      "version": "LN-885dfced644f0ecb",
+      "files": 279,
+      "matched": true
+    },
+    {
+      "archive": "round-4.zip",
+      "version": "LN-243f3fde76f4039e",
+      "files": 281,
+      "matched": true
+    },
+    {
+      "archive": "round-5.zip",
+      "version": "LN-194315d53ea8b822",
+      "files": 298,
+      "matched": true
+    }
+  ],
+  "seedInDesignFiles": 0
+}

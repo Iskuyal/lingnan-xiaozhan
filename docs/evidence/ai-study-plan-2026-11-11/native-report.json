@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-11-11T04:12:40.288Z",
+  "result": "passed",
+  "checks": [
+    "自然情况 -> 带逐字原话的5项约束 -> 用户确认后才排程；未发送课程/教师/地点给模型",
+    "排程避开指定星期/周末上午/正式课程，遵守30分钟上限；换排法实际变化，保存和重开不重复调用模型",
+    "额度不足和需要澄清分别说明，保留原输入和旧计划，不生成替代约束或覆盖存储",
+    "AI来源计划仍可离线重开；本轮全部模型回复为夹具，没有真实模型请求"
+  ],
+  "screenshots": [
+    "01-ai-constraints.png",
+    "02-rule-checked-plan.png",
+    "03-saved-ai-plan.png",
+    "04-ai-quota-fallback.png",
+    "05-clarification.png"
+  ],
+  "system": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "fixtureAiRequests": 3,
+  "realModelCalls": 0,
+  "liveCloudWrites": 0,
+  "realDevice": false,
+  "screenshotSource": "miniprogram-automator",
+  "sources": {
+    "miniprogram/services/goals/intent.ts": "7784838a27e41b32f890fb359b733e13edf010af81324749fd773ea1767bf35e",
+    "miniprogram/services/goals/plan.ts": "47de29b82ac914aae36d0e20fb08081f0d37a70c6827d81a04a92944f8f80d00",
+    "miniprogram/pages/goals/plan/index.ts": "3aa48cf39437309c494cb07a79eeabe98ed3d193a562b12c044e58325849af14",
+    "miniprogram/pages/goals/plan/index.wxml": "b77746de81145f84f00431bb42e9772d711a60b8cd95fd78506e95aa5eaf8bc7",
+    "miniprogram/pages/goals/plan/index.wxss": "5685855538fac3248d603fa83e0a1522edfc3a6b995d92a84bfdbc95ce7a94f1"
+  },
+  "boundaries": [
+    "模型结果及审核通过标记均为夹具，不是实际AI效果或实际审核证明",
+    "读取课表经本机实际云函数入口，数据库/身份由内存夹具接管",
+    "输入采用与bindinput同形事件，按钮为原生tap",
+    "测试结束恢复本机原目标与计划"
+  ],
+  "visualReview": {
+    "accepted": true,
+    "screenshots": 5,
+    "source": "miniprogram-automator",
+    "wrongWindowCapturesRejected": true
+  }
+}

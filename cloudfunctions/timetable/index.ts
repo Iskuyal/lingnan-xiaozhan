@@ -25,6 +25,7 @@ import { parseWorkbook } from './parse';
 import { makeCourseId, normalizeCourseFields, sanitizeSemester } from './record';
 import { SETTINGS_COLLECTION, emptySettings, normalizeSettingsFields, readStoredSettings } from './settings';
 import { CourseFields, StoredCourse, StoredSettings, UPLOAD_ROOT } from './types';
+import { ScopedDatabase, applyScopedChange, undoScopedChange } from './scoped';
 
 // wx-server-sdk 4.0.2 的 d.ts 把 DYNAMIC_CURRENT_ENV 声明为 symbol，而 init 的 env 参数
 // 类型未包含 symbol —— 属于类型声明滞后，运行时是官方推荐用法。
@@ -36,6 +37,17 @@ const COLLECTION = 'timetable_courses';
 const PAGE_SIZE = 100;
 /** 单份课表最多保存的课程数：真实班级课表 50 条上下，留足余量同时挡住异常输入。 */
 const MAX_COURSES = 300;
+const scopedContext = {
+  db: db as unknown as ScopedDatabase,
+  collection: COLLECTION,
+  headId,
+  async load(owner: string) {
+    const head = await readHead(owner);
+    const courses = await readOwnCourses(owner, head);
+    const rows = await queryData<StoredSettings>(db.collection(SETTINGS_COLLECTION).where({ owner }).limit(1));
+    return { courses, batch: head?.activeBatch ?? null, totalWeeks: rows.length > 0 ? readStoredSettings(rows[0]).totalWeeks : 0 };
+  },
+};
 /** 与课程放在同一集合，单文档切换可见批次；旧数据没有此文档时按原记录读取。 */
 interface CourseHead {
   activeBatch: string;
@@ -321,6 +333,8 @@ async function handleDiscardUpload(event: CloudEvent, openid: string) {
 }
 
 async function handleList(openid: string) {
+  // 凭据仅用于撤销/丢响应后的重试，不出现在课程查询中；保留24小时后清理。
+  await removeWhere({ receiptOwner: openid, receiptCreatedAt: command.lt(new Date(Date.now() - 86400000).toISOString()) }).catch(() => undefined);
   const head = await readHead(openid);
   if (head?.cleanupPending) await finishOldBatchCleanup(openid, head);
   await cleanupAbandonedStages(openid, head).catch(() => undefined);
@@ -558,6 +572,10 @@ export async function main(event: CloudEvent = {}) {
         return await handleCreateCourse(event, openid);
       case 'updateCourse':
         return await handleUpdateCourse(event, openid);
+      case 'applyScopedChange':
+        return await applyScopedChange(scopedContext, openid, event);
+      case 'undoScopedChange':
+        return await undoScopedChange(scopedContext, openid, event);
       case 'deleteCourse':
         return await handleDeleteCourse(event, openid);
       case 'getSettings':

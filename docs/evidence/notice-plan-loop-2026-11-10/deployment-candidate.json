@@ -1,0 +1,44 @@
+{
+  "preparedAt": "2026-11-10T12:17:11.473Z",
+  "environment": "cloudbase-d2gjtbbwu3575cd7b",
+  "function": "timetable",
+  "currentRuntime": "Nodejs16.13",
+  "status": "awaiting-deploy-confirmation",
+  "candidate": "F:\\VibeCoding\\wx-match\\artifacts\\notice-plan-loop\\release-project\\cloudfunctions\\timetable",
+  "backup": "F:\\VibeCoding\\wx-match\\artifacts\\notice-plan-loop\\cloud-backup-before",
+  "rootHashes": {
+    "index.js": "7f9b8e774179c5443c6b8f80889b1789114fade945ec0934e1dd23e3c5484176",
+    "package-lock.json": "da1c8012d7839e82e1f338946abfc0ae94db3f58238c7d08adb2d0aafd9e7b8c",
+    "package.json": "5556a2c15ef61043facadc98b213fd218cf3dd506bbff6ecbb75f197a84f2e21",
+    "parse.js": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe",
+    "record.js": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281",
+    "scoped.js": "eb554ab13b4e339f9c6f0c8fb070fdf3a945fdbdf8cc003b2dde3780ccf872da",
+    "settings.js": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637",
+    "types.js": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f"
+  },
+  "previousRootHashes": {
+    "index.js": "3138bb51e0e3dba41abea36fad9aa4220e3df366f3776aea516877f3e72d1bab",
+    "package-lock.json": "82ffae4709f5a7b159311d282feb86560fa3f7a95e75769f8cbe35bac58ff5eb",
+    "package.json": "5556a2c15ef61043facadc98b213fd218cf3dd506bbff6ecbb75f197a84f2e21",
+    "parse.js": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe",
+    "record.js": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281",
+    "settings.js": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637",
+    "types.js": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f"
+  },
+  "changedRootFiles": [
+    "index.js",
+    "package-lock.json",
+    "scoped.js"
+  ],
+  "followRedirectsInstalled": "1.16.3",
+  "audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "nativeModuleCount": 0,
+  "tests": 904
+}

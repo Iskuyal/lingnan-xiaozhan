@@ -10,7 +10,8 @@ const { createRequire } = require('node:module');
 // 说按默认排就必须在 dropped 里把没听懂的原话交出来。
 const plan = require('../dist/services/goals/plan.js');
 
-const TODAY = '2026-09-29';
+// 通用排程用完整一周的周一；周中/截止日裁剪另有专门回归案例。
+const TODAY = '2026-09-28';
 const GOAL_DATE = '2026-12-13';
 /** 开学日取 2026-09-28（星期一）：这样 TODAY 落在第 1 周，周次断言不依赖别的模块。 */
 const SEMESTER_START = '2026-09-28';
@@ -141,6 +142,30 @@ test('parseConstraints：越界的数字被收敛到合理区间，不原样当�
   assert.equal(plan.parseConstraints('每次别超过 5 分钟').maxMinutesPerBlock, 15);
   assert.equal(plan.parseConstraints('每次最多 8 小时').maxMinutesPerBlock, 180);
   assert.equal(plan.parseConstraints('每周 20 段').blocksPerWeek, 14);
+});
+
+test('排程不能把学生明确说的5分钟偷偷放宽到15分钟', () => {
+  const result = build({ constraintText: '每次别超过5分钟，每周3段' });
+  assert.equal(result.blocks.length, 0);
+  assert.match(result.rationale.join(''), /15.*180|时长/u);
+});
+
+test('外部已校验的约束不被有限正则覆盖，并避开指定星期与时段', () => {
+  const constraints = { ...plan.emptyConstraints(), blocksPerWeek: 3, maxMinutesPerBlock: 30,
+    excludedWeekdays: [2], blockedSections: [{ weekday: 6, start: 1, end: 4 }, { weekday: 7, start: 1, end: 4 }] };
+  const readout = { constraints, lines: ['每段不超过30分钟', '每周3段', '周二不排'], dropped: [],
+    recognized: { maxMinutesPerBlock: true, blocksPerWeek: true, focus: false, noWeekendMorning: false, noEvening: false } };
+  const result = plan.buildPlan({ goalName: '英语四级', goalDate: GOAL_DATE, today: TODAY, courses: [], settings: settings(),
+    constraints, constraintText: '周二没空，每次半小时，一周安排三回', readout });
+  assert.equal(result.blocks.length, 3);
+  assert.ok(result.blocks.every((block) => block.minutes <= 30 && block.weekday !== 2));
+  assert.ok(result.blocks.every((block) => block.weekday < 6 || block.startSection > 4));
+});
+
+test('基础规则不能忽略未理解的不可用星期后继续按默认排', () => {
+  const result = build({ constraintText: '周二没空，每次30分钟，每周3段' });
+  assert.equal(result.blocks.length, 0);
+  assert.match(result.rationale.join(''), /未理解|未识别|没听懂/u);
 });
 
 /* ------------------------------------------------------------------ *
@@ -491,7 +516,7 @@ function instantiate(options) {
 
 function wxStub() {
   const store = new Map();
-  const calls = { toast: [], modal: [], navigate: [], reLaunch: [] };
+  const calls = { toast: [], modal: [], navigate: [], reLaunch: [], scroll: [] };
   const timers = [];
   const wx = {
     getStorageSync: (key) => (store.has(key) ? store.get(key) : ''),
@@ -502,6 +527,8 @@ function wxStub() {
     navigateTo: (options) => calls.navigate.push(options.url),
     navigateBack: () => calls.navigate.push('back'),
     reLaunch: (options) => calls.reLaunch.push(options.url),
+    nextTick: (callback) => callback(),
+    pageScrollTo: (options) => calls.scroll.push(options),
   };
   return { store, calls, timers, wx };
 }
@@ -543,6 +570,140 @@ function feed(page, courses = [], timetable = settings()) {
   page.courses = courses;
   page.settings = timetable;
 }
+
+const INTENT_TEXT = '周二没空，周末上午有兼职，每次半小时，听力最弱，一周安排三回';
+function intentFixture() {
+  return { kind: 'constraints', minutes: { value: 30, quote: '每次半小时' }, sessions: { value: 3, quote: '一周安排三回' },
+    focus: { value: '听力', quote: '听力最弱' }, excludedDays: [{ days: [2], quote: '周二没空' }],
+    excludedPeriods: [{ days: [6, 7], period: 'morning', quote: '周末上午有兼职' }], unhandled: [] };
+}
+function intentCloud(stub, model) {
+  const requests = [];
+  const safeReply = { ok: true, text: JSON.stringify(intentFixture()), safety: {
+    provider: 'fixture', api: 'fixture', passed: true, checked: true, detail: '' } };
+  stub.wx.cloud = { callFunction: async ({ name, data }) => {
+    requests.push({ name, data });
+    if (name === 'ai') return { result: typeof model === 'function' ? await model() : (model ?? safeReply) };
+    if (data.action === 'list') return { result: { ok: true, courses: [], semester: '', count: 0, updatedAt: '' } };
+    if (data.action === 'getSettings') return { result: { ok: true, saved: true, settings: settings() } };
+    throw new Error('不允许写入云端：' + data.action);
+  } };
+  return { requests, safeReply };
+}
+
+test('AI计划页：先核对约束再排程，换排法/保存/重开不再请求AI', async () => {
+  const stub = wxStub(); seedGoal(stub); const cloud = intentCloud(stub);
+  const page = loadPage(stub); page.onLoad({ id: 'g1', today: TODAY });
+  page.onConstraintInput({ detail: { value: INTENT_TEXT } });
+  await page.understandAi();
+  assert.equal(page.data.aiDraftReady, true); assert.equal(page.data.plan, null);
+  assert.ok(stub.calls.scroll.some((options) => options.selector === '#plan-ai-draft'), '理解后自动定位核对结果');
+  assert.equal(stub.store.has('study-plan/v1'), false, '未确认之前不排、不写');
+  assert.equal(new Set(page.data.aiEvidence.map((item) => item.key)).size, page.data.aiEvidence.length);
+  await page.confirmAiPlan();
+  assert.ok(stub.calls.scroll.some((options) => options.selector === '.gp-card'), '确认后自动定位预览');
+  assert.equal(page.data.plan.origin, 'ai-constraints');
+  assert.equal(page.data.plan.blocks.length, 3);
+  assert.ok(page.data.plan.blocks.every((b) => b.weekday !== 2 && b.minutes <= 30));
+  const beforeVariant = JSON.stringify(page.data.plan.blocks);
+  page.onVariant();
+  assert.notEqual(JSON.stringify(page.data.plan.blocks), beforeVariant, '有其他可用空档时换排法应真的变化');
+  page.onSave();
+  assert.equal(page.data.savedView, true);
+  assert.equal(stub.calls.scroll.at(-1).scrollTop, 0, '保存后结果页回到顶部');
+  const restored = loadPage(stub); restored.onLoad({ id: 'g1', today: TODAY });
+  assert.equal(restored.data.plan.origin, 'ai-constraints');
+  assert.equal(restored.data.plan.aiEvidence.length, 5);
+  assert.equal(cloud.requests.filter((r) => r.name === 'ai').length, 1);
+  assert.equal(cloud.requests.filter((r) => r.name === 'timetable' && !['list', 'getSettings'].includes(r.data.action)).length, 0);
+  delete globalThis.wx;
+});
+
+test('AI计划页：重复点击只请求一次；编辑后旧回复不回填、不覆盖新输入', async () => {
+  const stub = wxStub(); seedGoal(stub);
+  let release; const deferred = new Promise((resolve) => { release = resolve; });
+  const cloud = intentCloud(stub, () => deferred);
+  const page = loadPage(stub); page.onLoad({ id: 'g1', today: TODAY });
+  page.onConstraintInput({ detail: { value: INTENT_TEXT } });
+  const first = page.understandAi(); const second = page.understandAi();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(cloud.requests.filter((r) => r.name === 'ai').length, 1);
+  page.onConstraintInput({ detail: { value: '晚上不排' } });
+  release(cloud.safeReply); await Promise.all([first, second]);
+  assert.equal(page.data.constraintText, '晚上不排'); assert.equal(page.data.aiDraftReady, false);
+  assert.equal(page.data.plan, null); assert.equal(stub.store.has('study-plan/v1'), false);
+  delete globalThis.wx;
+});
+
+test('AI计划页：三类失败和澄清均保留原话、原已存计划，不生成替代结果', async () => {
+  for (const reply of [
+    ...['model_unavailable', 'content_rejected', 'quota_exhausted'].map((failureClass) => ({ ok: false, failureClass, message: failureClass })),
+    { ok: true, text: '{"kind":"clarify","message":"请说明是否晚上不排"}', safety: { provider: 'fixture', api: 'fixture', passed: true, checked: true, detail: '' } },
+  ]) {
+    const stub = wxStub(); seedGoal(stub); const previous = JSON.stringify(build()); stub.store.set('study-plan/v1', previous);
+    intentCloud(stub, reply);
+    const page = loadPage(stub); page.onLoad({ id: 'g1', today: TODAY }); page.onRegenerate();
+    page.onConstraintInput({ detail: { value: INTENT_TEXT } }); await page.understandAi();
+    assert.equal(page.data.plan, null); assert.equal(page.data.aiDraftReady, false); assert.ok(page.data.aiMessage.length > 0);
+    assert.equal(page.data.constraintText, INTENT_TEXT); assert.equal(stub.store.get('study-plan/v1'), previous);
+    delete globalThis.wx;
+  }
+});
+
+test('AI计划页：目标变动和页面退出使旧理解失效，不能生成或保存', async () => {
+  const stub = wxStub(); seedGoal(stub); const cloud = intentCloud(stub);
+  const page = loadPage(stub); page.onLoad({ id: 'g1', today: TODAY }); page.onConstraintInput({ detail: { value: INTENT_TEXT } });
+  await page.understandAi();
+  seedGoal(stub, { date: '2027-01-01' });
+  await page.confirmAiPlan(); assert.equal(page.data.plan, null); assert.match(page.data.error, /目标日已变化/);
+  assert.equal(cloud.requests.filter((r) => r.name === 'ai').length, 1);
+  const fresh = loadPage(stub); fresh.onLoad({ id: 'g1', today: TODAY }); fresh.onConstraintInput({ detail: { value: INTENT_TEXT } });
+  let release; const deferred = new Promise((resolve) => { release = resolve; });
+  const pendingCloud = intentCloud(stub, () => deferred);
+  const pending = fresh.understandAi(); await new Promise((resolve) => setImmediate(resolve));
+  fresh.onUnload(); release(pendingCloud.safeReply); await pending;
+  assert.equal(fresh.data.aiDraftReady, false); assert.equal(stub.store.has('study-plan/v1'), false);
+  delete globalThis.wx;
+});
+
+test('计划保存后重开：断网也恢复原计划，不重新生成、不丢掉周末安排', () => {
+  const stub = wxStub(); seedGoal(stub);
+  const saved = { ...build({ today: '2026-11-10' }), goalId: 'g1', constraintText: '听力最弱' };
+  stub.store.set('study-plan/v1', JSON.stringify(saved));
+  const page = loadPage(stub);
+  page.onLoad({ id: 'g1', today: '2026-11-11' });
+  assert.equal(page.data.savedView, true);
+  assert.deepEqual(page.data.plan.blocks, saved.blocks);
+  assert.equal(page.data.savedRows.length, saved.blocks.length);
+  assert.match(page.data.headline, /已保存/u);
+  assert.equal(page.data.constraintText, '听力最弱');
+  page.onViewWeek();
+  assert.deepEqual(stub.calls.navigate, ['/pages/timetable/index?planDate=2026-11-10']);
+  assert.equal(stub.store.get('study-plan/v1'), JSON.stringify(saved), '打开不改存储');
+  delete globalThis.wx;
+});
+
+test('已存计划：同名目标按id对应，目标删除或修改日期不会丢失快照', () => {
+  const stub = wxStub(); seedGoal(stub);
+  const saved = { ...build(), goalId: 'g1' };
+  stub.store.set('study-plan/v1', JSON.stringify(saved));
+  stub.store.set('goal-days/v1', JSON.stringify([
+    { id: 'g1', name: '英语四级', date: '2027-01-01', countToday: false, createdAt: 1, updatedAt: 2 },
+    { id: 'g2', name: '英语四级', date: GOAL_DATE, countToday: false, createdAt: 1, updatedAt: 1 },
+  ]));
+  const other = loadPage(stub); other.onLoad({ id: 'g2', today: TODAY });
+  assert.equal(other.data.savedView, false, '同名另一个目标不自动取走旧计划');
+  const changed = loadPage(stub); changed.onLoad({ id: 'g1', today: TODAY });
+  assert.equal(changed.data.savedView, true); assert.equal(changed.data.plan.goalDate, GOAL_DATE);
+  assert.match(changed.data.savedNotice, /已修改/u);
+  changed.onRegenerate(); assert.equal(changed.data.goalDate, '2027-01-01');
+  stub.store.set('goal-days/v1', '[]');
+  const orphan = loadPage(stub); orphan.onLoad({ today: TODAY });
+  assert.equal(orphan.data.savedView, true); assert.equal(orphan.data.savedGoalMissing, true);
+  orphan.onRemove(); assert.equal(stub.store.has('study-plan/v1'), false);
+  assert.equal(orphan.data.savedView, false);
+  delete globalThis.wx;
+});
 
 test('计划页：没选目标时步骤条停在第一步', () => {
   const stub = wxStub();
@@ -595,10 +756,11 @@ test('计划页：加入课表（作为计划）只写本机 plan，写入的就
   assert.equal(saved.goalDate, GOAL_DATE);
   // 计划不是课程：不能往云端课表的 key 里写任何东西。
   assert.equal(stub.store.has('timetable/courses'), false);
-  assert.deepEqual(stub.calls.toast, ['已加入课表']);
-  assert.equal(stub.timers.length, 1, '保存后延时返回上一页');
-  stub.timers[0]();
-  assert.deepEqual(stub.calls.navigate, ['back']);
+  assert.deepEqual(stub.calls.toast, ['已保存到本机']);
+  assert.equal(stub.timers.length, 0, '保存后保留可见结果，不自动返回');
+  assert.equal(page.data.savedView, true);
+  assert.equal(page.data.savedRows.length, page.data.plan.blocks.length);
+  assert.deepEqual(stub.calls.navigate, []);
 });
 
 test('计划页：换一种排法只重算，不写库', () => {
@@ -649,8 +811,8 @@ test('计划页：认不出的原话在页面上照实说，不假装听懂', ()
   feed(page);
   page.showPlan('周四下午要去实验室，晚上不排');
   assert.ok(page.data.dropped.some((line) => line.includes('实验室')));
-  assert.ok(page.data.defaultNote.length > 0, '要说明哪些按默认排');
-  assert.ok(page.data.plan.blocks.every((block) => block.startSection < 9));
+  assert.equal(page.data.plan, null, '不能忽略未理解的部分继续排程');
+  assert.match(page.data.error, /实验室/u);
 });
 
 test('计划页：带 ?id= 进来时直接选中那个目标日；目标日没了就说没了', () => {

@@ -6,7 +6,7 @@
  * 2. 这几句话只是把「已保存的课表 + 本机目标日 + 作息设置」翻译成人话，
  *    规则能算准的事实没必要再让模型猜一遍；
  * 3. 所以界面标签写「今日简报」而不是「AI 简报」——AI 的真实落点在通知解析、
- *    课表问答与备考计划，不替它多认领一份功劳（见 docs/design/ai-innovation-2026-11/README.md）。
+ *    课表问答与截图识别，不替规则排程多认领一份功劳（见 docs/design/ai-innovation-2026-11/README.md）。
  *
  * 「没填作息就不出现具体时刻」沿用 now.ts 的约定：宁可少说，也不给半截时刻。
  */
@@ -75,6 +75,8 @@ export interface TodayBrief {
   hasTimes: boolean;
   /** 今天排到的段数（同一门课上下午两段就算两节课）。 */
   blockCount: number;
+  /** 无课程行时的说明；读取中和读取失败不等于真的没课。 */
+  emptyMessage: string;
 }
 
 interface Slot {
@@ -206,7 +208,10 @@ function itemOf(slot: Slot): TodayItem {
 function gapsOf(slots: Slot[]): (Gap | null)[] {
   const gaps: (Gap | null)[] = [];
   for (let index = 0; index + 1 < slots.length; index += 1) {
-    const previous = slots[index];
+    // 课程可能重叠：要等所有先前课程结束，不能拿短课的下课时刻当空档起点。
+    const preceding = slots.slice(0, index + 1);
+    const previous = preceding.reduce((latest, slot) =>
+      (slot.endMinutes ?? Infinity) > (latest.endMinutes ?? Infinity) ? slot : latest);
     const next = slots[index + 1];
     if (previous.endMinutes === null || next.startMinutes === null || previous.to === null || next.from === null) {
       gaps.push(null);
@@ -329,7 +334,7 @@ export function buildTodayBrief(input: BriefInput): TodayBrief {
     sentences.push(
       `${first ? '第一节课' : '下一节'}${startText}${place === '' ? '' : ` 在 ${place}`}${timing}。`,
     );
-  } else if (!hasTimes) {
+  } else if (!hasTimes || slots.some((slot) => slot.startMinutes === null || slot.endMinutes === null)) {
     // 没填作息时不知道现在是第几节，说「上完了」就是编答案：
     // 早上 7:50 打开首页却看到「今天的课已经上完」，比不给结论更糟。
     // 如实说「今天有课、节次如下」，把判断交给学生自己看。
@@ -377,5 +382,6 @@ export function buildTodayBrief(input: BriefInput): TodayBrief {
     hasCourses: slots.length > 0,
     hasTimes,
     blockCount: slots.length,
+    emptyMessage: '导入课表后，这里会按时间列出今天每一段安排；填好作息时间还会显示几点上课。',
   };
 }

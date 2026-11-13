@@ -2,160 +2,132 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
 const crypto = require('node:crypto');
 const XLSX = require('xlsx');
+const { harness } = require('./lib/timetable-harness.cjs');
 
-const FUNCTION_FILE = path.resolve('dist/cloudfunctions/timetable/index.js');
 const FIXTURES = path.resolve('tests/fixtures/timetable');
 const STANDARD_FIXTURE = '2026-2027学年第一学期班级课表.xls';
 
-// 只替换云存储、数据库与调用上下文；运行真实的云函数入口、真实解析器与校验逻辑。
-function harness(options = {}) {
-  const docs = [];
-  let stagedAdds = 0;
-  const storage = new Map();
-  const calls = { downloads: [], deletes: [], openid: '' };
-
-  function match(doc, condition) {
-    return Object.entries(condition).every(([key, expected]) => {
-      if (expected !== null && typeof expected === 'object' && '__neq' in expected) return doc[key] !== expected.__neq;
-      if (expected !== null && typeof expected === 'object' && '__lt' in expected) return doc[key] < expected.__lt;
-      return doc[key] === expected;
-    });
+test('限定周次调课：无效周次整项拒绝，既不修改原课也不新增课程', async () => {
+  const h = harness();
+  const created = await h.run('scope-owner', { action: 'createCourse', course: {
+    name: '数学', weekday: 3, sectionRanges: [{ start: 3, end: 4 }], weeks: [11, 12, 13], weeksRecognized: true, weekText: '11-13',
+  } });
+  const before = JSON.parse(JSON.stringify((await h.run('scope-owner', { action: 'list' })).courses));
+  for (const weeks of [[], [0], [31], [12.5], ['12']]) {
+    const result = await h.run('scope-owner', { action: 'applyScopedChange', id: created.course.id,
+      requestId: 'scope-invalid-request', weeks, course: { location: 'B604' }, expected: created.course });
+    assert.equal(result.ok, false);
+    assert.match(result.error, /周次/u);
   }
+  assert.deepEqual(JSON.parse(JSON.stringify((await h.run('scope-owner', { action: 'list' })).courses)), before);
+});
 
-  const db = {
-    command: { neq: (value) => ({ __neq: value }), lt: (value) => ({ __lt: value }) },
-    collection() {
-      const state = { condition: null, skip: 0, limit: 100 };
-      const api = {
-        where(condition) { state.condition = condition; return api; },
-        skip(value) { state.skip = value; return api; },
-        limit(value) { state.limit = value; return api; },
-        orderBy() { return api; },
-        async get() {
-          const rows = docs.filter((doc) => state.condition === null || match(doc, state.condition));
-          return { data: rows.slice(state.skip, state.skip + state.limit) };
-        },
-        async remove() {
-          if (options.failOldBatchDelete && state.condition?.staged?.__neq !== undefined) {
-            throw new Error('旧批次清理暂时失败');
-          }
-          if (options.failStagedDelete && typeof state.condition?.batch === 'string') {
-            throw new Error('暂存批次清理暂时失败');
-          }
-          if (options.failCleanupBatch && state.condition?.batch === options.failCleanupBatch) {
-            throw new Error('旧批次清理暂时失败');
-          }
-          const keep = docs.filter((doc) => state.condition === null || !match(doc, state.condition));
-          const removed = docs.length - keep.length;
-          docs.length = 0;
-          docs.push(...keep);
-          return { stats: { removed } };
-        },
-        async update({ data }) {
-          let updated = 0;
-          for (const doc of docs.filter((item) => state.condition === null || match(item, state.condition))) {
-            Object.assign(doc, data);
-            updated += 1;
-          }
-          return { stats: { updated } };
-        },
-        async add({ data }) {
-          if (data.staged === true) {
-            stagedAdds += 1;
-            if (stagedAdds === options.failStagedAddAt) throw new Error('课程写入暂时失败');
-          }
-          if (data.name === '并发新增' && options.beforeConcurrentManualAdd) {
-            const hook = options.beforeConcurrentManualAdd;
-            options.beforeConcurrentManualAdd = null;
-            await hook();
-          }
-          const doc = { _id: `doc-${docs.length + 1}`, ...data };
-          docs.push(doc);
-          return { _id: doc._id };
-        },
-        doc(id) {
-          return {
-            async get() {
-              const doc = docs.find((item) => item._id === id);
-              if (doc === undefined) throw new Error('document does not exist');
-              return { data: doc };
-            },
-            async set({ data }) {
-              if (options.failHeadSet && id.startsWith('timetable-head-')) throw new Error('批次提交失败');
-              const doc = docs.find((item) => item._id === id);
-              if (doc === undefined) docs.push({ _id: id, ...data });
-              else Object.assign(doc, data);
-              if (id.startsWith('timetable-head-')) await options.afterHeadSet?.(docs, data);
-              if (options.failHeadSetAfterWrite && id.startsWith('timetable-head-')) throw new Error('批次提交响应丢失');
-              return { stats: { updated: 1 } };
-            },
-            async update({ data }) {
-              if (data.name === '并发修改' && options.beforeConcurrentUpdate) {
-                const hook = options.beforeConcurrentUpdate;
-                options.beforeConcurrentUpdate = null;
-                await hook();
-              }
-              const doc = docs.find((item) => item._id === id);
-              if (doc === undefined) throw new Error('document not exists');
-              Object.assign(doc, data);
-              return { stats: { updated: 1 } };
-            },
-            async remove() {
-              const index = docs.findIndex((item) => item._id === id);
-              if (index < 0) throw new Error('document not exists');
-              docs.splice(index, 1);
-              return { stats: { removed: 1 } };
-            },
-          };
-        },
-      };
-      return api;
-    },
-  };
-
-  const cloud = {
-    init() {},
-    DYNAMIC_CURRENT_ENV: 'dynamic',
-    database: () => db,
-    getWXContext: () => ({ OPENID: calls.openid }),
-    async downloadFile({ fileID }) {
-      calls.downloads.push(fileID);
-      if (!storage.has(fileID)) throw new Error('file not found');
-      return { fileContent: storage.get(fileID) };
-    },
-    async deleteFile({ fileList }) {
-      calls.deletes.push(...fileList);
-      for (const fileID of fileList) {
-        if (!storage.has(fileID)) throw new Error('file not found');
-        storage.delete(fileID);
-      }
-      return { fileList: fileList.map((fileID) => ({ fileID, status: 0 })) };
-    },
-  };
-
-  const realRequire = require('module').createRequire(FUNCTION_FILE);
-  const context = {
-    exports: {}, Buffer, console, process,
-    require(name) {
-      if (name === 'wx-server-sdk') return cloud;
-      return realRequire(name);
-    },
-  };
-  vm.runInNewContext(fs.readFileSync(FUNCTION_FILE, 'utf8'), context, { filename: FUNCTION_FILE });
-  const run = (openid, event) => {
-    calls.openid = openid;
-    return context.exports.main(event);
-  };
-  return { run, docs, storage, calls };
-}
 
 function ownerPrefix(openid) {
   const digest = crypto.createHash('sha256').update(openid).digest('hex').slice(0, 16);
   return `timetable-imports/${digest}/`;
 }
+
+async function scopedFixture(h, overrides = {}) {
+  const created = await h.run('scope-owner', { action: 'createCourse', course: {
+    name: '数学', weekday: 3, sectionRanges: [{ start: 3, end: 4 }], weeks: [11, 12, 13],
+    weeksRecognized: true, weekText: '11-13', location: 'B602', teacher: '示例教师', color: 'c2', ...overrides,
+  } });
+  assert.equal(created.ok, true);
+  return { action: 'applyScopedChange', id: created.course.id, requestId: 'scope-valid-request',
+    weeks: [12], course: { weekday: 5, sectionRanges: [{ start: 5, end: 6 }], location: 'B604' }, expected: created.course };
+}
+
+test('限定周次调课：数据库返回保留标识时仍可撤销并再次读取', async () => {
+  const h = harness();
+  const event = await scopedFixture(h);
+  assert.equal((await h.run('scope-owner', event)).ok, true);
+  const undone = await h.run('scope-owner', { action: 'undoScopedChange', requestId: event.requestId });
+  assert.equal(undone.ok, true, undone.error);
+  const courses = (await h.run('scope-owner', { action: 'list' })).courses;
+  assert.equal(courses.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(courses[0].weeks)), [11, 12, 13]);
+  assert.equal((await h.run('scope-owner', { action: 'undoScopedChange', requestId: event.requestId })).repeated, true);
+});
+
+test('限定周次调课：仅第12周改变时间地点，其他周保持原样，整项撤销', async () => {
+  const h = harness();
+  const event = await scopedFixture(h);
+  const result = await h.run('scope-owner', event);
+  assert.equal(result.ok, true, result.error);
+  const courses = JSON.parse(JSON.stringify((await h.run('scope-owner', { action: 'list' })).courses));
+  assert.equal(courses.length, 2, '凭据不能作为课程返回');
+  const original = courses.find((c) => c.id === event.id);
+  const moved = courses.find((c) => c.id !== event.id);
+  assert.deepEqual(original.weeks, [11, 13]);
+  assert.equal(original.weekday, 3); assert.equal(original.location, 'B602');
+  assert.deepEqual(moved.weeks, [12]); assert.equal(moved.weekday, 5); assert.equal(moved.location, 'B604');
+  assert.equal(moved.teacher, '示例教师'); assert.equal(moved.color, 'c2');
+  const undone = await h.run('scope-owner', { action: 'undoScopedChange', requestId: event.requestId });
+  assert.equal(undone.ok, true, undone.error);
+  const restored = JSON.parse(JSON.stringify((await h.run('scope-owner', { action: 'list' })).courses));
+  assert.equal(restored.length, 1); assert.equal(restored[0].id, event.id);
+  assert.deepEqual(restored[0].weeks, [11, 12, 13]); assert.equal(restored[0].location, 'B602');
+});
+
+test('限定周次调课：事务中第二次写入失败，原课与新课均没有半成品', async () => {
+  const h = harness({ failTransactionWriteAt: 2 });
+  const event = await scopedFixture(h);
+  assert.equal((await h.run('scope-owner', event)).ok, false);
+  const courses = JSON.parse(JSON.stringify((await h.run('scope-owner', { action: 'list' })).courses));
+  assert.equal(courses.length, 1); assert.deepEqual(courses[0].weeks, [11, 12, 13]);
+});
+
+test('限定周次调课：提交响应丢失后同编号重试不重复拆课，撤销也可幂等重试', async () => {
+  const options = { loseScopedResponse: true };
+  const h = harness(options);
+  const event = await scopedFixture(h);
+  assert.equal((await h.run('scope-owner', event)).ok, false);
+  const retry = await h.run('scope-owner', event);
+  assert.equal(retry.ok, true, retry.error); assert.equal(retry.repeated, true);
+  assert.equal((await h.run('scope-owner', { action: 'list' })).courses.length, 2);
+  const undo = { action: 'undoScopedChange', requestId: event.requestId };
+  assert.equal((await h.run('scope-owner', undo)).ok, true);
+  assert.equal((await h.run('scope-owner', undo)).repeated, true);
+  assert.equal((await h.run('scope-owner', { action: 'list' })).courses.length, 1);
+});
+
+test('限定周次调课：其他身份不能改或撤销，后续手工修改不会被旧撤销覆盖', async () => {
+  const h = harness(); const event = await scopedFixture(h);
+  assert.equal((await h.run('other-owner', event)).ok, false);
+  assert.equal((await h.run('scope-owner', event)).ok, true);
+  assert.equal((await h.run('other-owner', { action: 'undoScopedChange', requestId: event.requestId })).ok, false);
+  await h.run('scope-owner', { action: 'updateCourse', id: event.id, course: { location: '手工的新教室' } });
+  const undo = await h.run('scope-owner', { action: 'undoScopedChange', requestId: event.requestId });
+  assert.equal(undo.ok, false); assert.match(undo.error, /后续修改|又发生变化/u);
+  const courses = (await h.run('scope-owner', { action: 'list' })).courses;
+  assert.equal(courses.length, 2); assert.equal(courses.find((c) => c.id === event.id).location, '手工的新教室');
+});
+
+test('限定周次调课：覆盖原课全部周次时原位更新，不产生空周次的课程', async () => {
+  const h = harness(); const event = await scopedFixture(h, { weeks: [12], weekText: '12' });
+  assert.equal((await h.run('scope-owner', event)).ok, true);
+  const courses = (await h.run('scope-owner', { action: 'list' })).courses;
+  assert.equal(courses.length, 1); assert.equal(courses[0].id, event.id); assert.equal(courses[0].location, 'B604');
+});
+
+test('限定周次调课：每周课先要求总周数，30周拆分后周次文本仍能保存和编辑', async () => {
+  const h = harness(); const event = await scopedFixture(h, { weeks: [], weekText: '', weeksRecognized: true });
+  const unknown = await h.run('scope-owner', event);
+  assert.equal(unknown.ok, false); assert.match(unknown.error, /总周数/u);
+  await h.run('scope-owner', { action: 'saveSettings', settings: {
+    semesterName: '', startDate: '2026-09-21', totalWeeks: 30,
+    sectionTimes: Array.from({ length: 12 }, () => ({ start: '', end: '' })),
+  } });
+  event.weeks = Array.from({ length: 29 }, (_, i) => i + 1);
+  const applied = await h.run('scope-owner', event);
+  assert.equal(applied.ok, true, applied.error);
+  const courses = (await h.run('scope-owner', { action: 'list' })).courses;
+  assert.equal(courses.length, 2); assert.ok(courses.every((course) => course.weekText.length <= 40));
+  assert.equal((await h.run('scope-owner', { action: 'updateCourse', id: event.id, course: { location: '还可编辑' } })).ok, true);
+});
 
 /** 云存储 fileID 的真实形状：cloud://环境.桶/<云存储路径>。 */
 const FILE_ID_BASE = 'cloud://test-env.test-bucket';

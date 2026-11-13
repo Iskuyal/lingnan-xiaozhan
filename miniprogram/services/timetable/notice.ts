@@ -66,6 +66,10 @@ export interface NoticeDiff {
  * 模型说的不算，只按当前课表算出来的结果才可信；有冲突/阻塞时一律默认不勾选。
  */
 export interface NoticeChange {
+  /** 有限定周次时显式展示；原始业务快照保证丢响应后仍用同一提案重试。 */
+  scopeLabel?: string;
+  unaffectedLabel?: string;
+  original?: CourseInput | null;
   action: NoticeAction;
   /** 标题行，如「停课 · 第 12 周 周三全天」；按结构化字段重算，不采用模型标题。 */
   title: string;
@@ -110,7 +114,7 @@ export type NoticeReply =
 export interface ApplyStep {
   /** 对应传入 `changes` 的下标，跳过的阻塞项不影响对回原提案。 */
   changeIndex: number;
-  kind: 'create' | 'update';
+  kind: 'create' | 'update' | 'scoped';
   /** 要修改的课程 id；新增为空字符串（写入后才知道新 id）。 */
   courseId: string;
   input: CourseInput;
@@ -123,7 +127,8 @@ export interface ApplyStep {
 /** 已经真正写入成功的一条：撤销时按它算逆操作。 */
 export interface AppliedChange {
   changeIndex: number;
-  kind: 'create' | 'update';
+  kind: 'create' | 'update' | 'scoped';
+  operationId?: string;
   /** 新建出来的课程 id / 被修改的课程 id。 */
   courseId: string;
   before: CourseInput | null;
@@ -133,7 +138,8 @@ export interface AppliedChange {
 
 /** 撤销的一步：新增的删除、改动的写回旧值。 */
 export interface InvertStep {
-  kind: 'delete' | 'update';
+  kind: 'delete' | 'update' | 'scoped';
+  operationId?: string;
   courseId: string;
   /** update 恢复写入前的整条内容；delete 为 null。 */
   input: CourseInput | null;
@@ -357,7 +363,23 @@ function structuralProblem(problem: string): { ok: false; problem: string } {
 type BuildResult = { ok: true; change: NoticeChange } | { ok: false; problem: string };
 
 /** 模型给的一条变更 → `NoticeChange`：结构校验 + 定位课程 + 冲突/阻塞判定 + 标题与差异行。 */
-function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks: number): BuildResult {
+function boundedWeeks(text: string, totalWeeks: number, currentWeek: number, courseWeeks: number[] = []) {
+  if (text === '' || /^(?:所有周次|全部周次|每周|全学期)$/u.test(text)) return { weeks: [] as number[], recognized: true };
+  const from = /^从?第?\s*(\d+)\s*周(?:起|开始)$/u.exec(text);
+  if (from !== null) {
+    const start = Number(from[1]);
+    const known = courseWeeks.length > 0 ? courseWeeks : Array.from({ length: Math.max(0, totalWeeks) }, (_, i) => i + 1);
+    const weeks = known.filter((week) => week >= start);
+    return { weeks, recognized: start >= 1 && start <= 30 && weeks.length > 0 };
+  }
+  if (/^(?:本周|这周|下周)$/u.test(text)) {
+    const week = currentWeek + (text === '下周' ? 1 : 0);
+    return currentWeek > 0 && week <= totalWeeks ? { weeks: [week], recognized: true } : { weeks: [], recognized: false };
+  }
+  return parseWeekNotation(text);
+}
+
+function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks: number, currentWeek = 0): BuildResult {
   const action = readAction(row.action);
   if (action === null) return structuralProblem('变更类型');
   const courseName = asText(row.courseName, MAX_NAME);
@@ -393,6 +415,8 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   const current = located.course;
   let blocked = current === null ? located.problem : '';
 
+  // 有限定范围时走服务端原子拆课；无法核实范围仍阻塞，不扩大为全学期。
+  const limitedTime = /第\s*[\d一二三四五六七八九十两]+\s*周|(?:本|这|下|上)周|临时|这次|本次|今天|明天|后天|\d+\s*月\s*\d+\s*[日号]/u;
   let weeks: number[] = [];
   let weeksRecognized = true;
   if (action === 'add' || action === 'cancel') {
@@ -410,6 +434,20 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
     }
   }
 
+  if (action === 'relocate' || action === 'move') {
+    const scope = boundedWeeks(weekText, totalWeeks, currentWeek, current?.weeks);
+    weeks = scope.weeks;
+    weeksRecognized = scope.recognized;
+    if (!scope.recognized || (weekText === '' && limitedTime.test(quote))) {
+      blocked = '周次或临时范围还不明确，请补成“第12周”这类可核对的周次后重新识别。';
+    } else if (weeks.length > 0 && current !== null) {
+      const all = current.weeks.length > 0 ? current.weeks
+        : totalWeeks > 0 ? Array.from({ length: totalWeeks }, (_, i) => i + 1) : [];
+      if (!current.weeksRecognized || all.length === 0) blocked = '课程原周次未识别或学期总周数未知，请先核对周次。';
+      else if (weeks.some((week) => !all.includes(week))) blocked = '指定周次中有这门课不上课的周，请先核对范围。';
+    }
+  }
+
   let remainingWeeks: number[] = [];
   if (action === 'cancel' && current !== null && blocked === '' && weeksRecognized) {
     const plan = remainingAfterCancel(current, weeks, totalWeeks);
@@ -418,7 +456,7 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   }
 
   // 目标位置：改时间用模型给的新值，其余沿用当前值；补课必须有完整位置。
-  const targetWeekday = action === 'add'
+  const targetWeekday = action === 'relocate' && current !== null ? current.weekday : action === 'add'
     ? weekday
     : (weekday >= 1 && weekday <= 7 ? weekday : (current === null ? 0 : current.weekday));
   const targetRanges: SectionRange[] = action === 'add' || (action === 'move' && sectionsGiven)
@@ -431,7 +469,8 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   if (action === 'move' && current !== null && blocked === '') {
     const nextStart = sectionsGiven ? startSection : current.startSection;
     const nextEnd = sectionsGiven ? endSection : current.endSection;
-    if (targetWeekday === current.weekday && nextStart === current.startSection && nextEnd === current.endSection) {
+    if (targetWeekday === current.weekday && nextStart === current.startSection && nextEnd === current.endSection
+      && (location === '' || location === current.location)) {
       blocked = '这条与当前课表一致（时间没变），不用应用。';
     }
   }
@@ -439,10 +478,10 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   // 冲突只对「新占一个时段」的动作算：补课与改时间。停课是腾出时段，改地点不动时间。
   let conflict = '';
   if (blocked === '' && (action === 'add' || action === 'move')) {
-    const everyWeek = action === 'add'
+    const everyWeek = action === 'move' && weeks.length > 0 ? false : action === 'add'
       ? !weeksRecognized || weeks.length === 0
       : !current || !current.weeksRecognized || current.weeks.length === 0;
-    const targetWeeks = action === 'add' ? weeks : (current === null ? [] : current.weeks);
+    const targetWeeks = action === 'add' || weeks.length > 0 ? weeks : (current === null ? [] : current.weeks);
     const skipId = action === 'move' && current !== null ? current.id : '';
     conflict = conflictText(findConflicts(courses, targetWeekday, targetRanges, targetWeeks, everyWeek, skipId));
   }
@@ -460,6 +499,8 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   })();
 
   const diffs: NoticeDiff[] = [];
+  const scoped = (action === 'move' || action === 'relocate') && weeks.length > 0;
+  const scopeLabel = scoped ? `仅第 ${condenseWeeks(weeks)} 周` : '';
   let detail = '';
   if (action === 'cancel') {
     const removed = weeksRecognized ? '第 ' + condenseWeeks(weeks) + ' 周不上' : weekText + '不上';
@@ -470,18 +511,22 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
         + condenseWeeks(remainingWeeks) + ' 周。';
   } else if (action === 'relocate') {
     const before = current === null ? '' : current.location;
-    diffs.push({ lead: '', old: before === '' ? '' : before, next: location, note: current === null ? weekLabel : courseWeekLabel(current) });
+    diffs.push({ lead: '', old: before === '' ? '' : before, next: location, note: scoped ? scopeLabel : current === null ? weekLabel : courseWeekLabel(current) });
     detail = current === null
       ? '写入：把地点改成「' + location + '」。'
       : '写入：「' + current.name + '」地点 ' + valueLabel(before) + ' → ' + location + '。';
   } else if (action === 'move') {
     const nextStart = sectionsGiven ? startSection : (current === null ? 0 : current.startSection);
     const nextEnd = sectionsGiven ? endSection : (current === null ? 0 : current.endSection);
-    if (current !== null) diffs.push({ lead: '', old: currentTimeText(current), next: timeText(targetWeekday, nextStart, nextEnd), note: courseWeekLabel(current) });
+    if (current !== null) diffs.push({ lead: '', old: currentTimeText(current), next: timeText(targetWeekday, nextStart, nextEnd), note: scoped ? scopeLabel : courseWeekLabel(current) });
     else diffs.push({ lead: '', old: '', next: timeText(targetWeekday, nextStart, nextEnd), note: weekLabel });
     detail = current === null
       ? '写入：改成 ' + timeText(targetWeekday, nextStart, nextEnd) + '。'
       : '写入：「' + current.name + '」时间 ' + currentTimeText(current) + ' → ' + timeText(targetWeekday, nextStart, nextEnd) + '。';
+    if (location !== '' && current !== null && location !== current.location) {
+      diffs.push({ lead: '', old: current.location, next: location, note: scopeLabel });
+      detail += `地点 ${valueLabel(current.location)} → ${location}。`;
+    }
   } else {
     const place = [weekLabel, dayShort, sectionText(startSection, endSection), location]
       .filter((part) => part !== '')
@@ -491,10 +536,14 @@ function buildChange(row: Record<string, unknown>, courses: Course[], totalWeeks
   }
 
   const defaultChecked = blocked === '' && conflict === '';
+  if (scoped) detail = `${scopeLabel}：${detail}其他周次保持原样。`;
   return {
     ok: true,
     change: {
       action,
+      scopeLabel,
+      unaffectedLabel: scoped ? '其他周次保持原时间、原地点；整项保存与撤销。' : '',
+      original: scoped && current !== null ? snapshotInput(current) : null,
       title,
       diffs,
       quote,
@@ -539,7 +588,7 @@ export function buildNoticePrompt(courses: Course[], semester: string, week: num
     '2. 没有变更：{"kind":"none","message":"说明这段通知里没有需要改课表的内容"}；',
     '3. 看不明白：{"kind":"clarify","message":"说明哪一处缺什么信息、需要学生补充什么"}；',
     '4. 超范围：{"kind":"out_of_scope","message":"说明这段内容不在课表能力范围内"}。',
-    'action 的含义：cancel＝停课（把某几周从这门课里去掉，weekText 必填，写被停掉的那几周）；relocate＝只改地点（location 必填，weekText 留空）；move＝只改星期或节次（weekday / startSection / endSection 至少填一项，weekText 留空）；add＝补课或临时加一次（courseName、weekday、节次必填，weekText 是这节补课在的周次，留空表示每周）。',
+    'action 的含义：cancel＝停课（weekText写被停掉的周次）；relocate＝改地点（location必填）；move＝改星期或节次，若同时改地点，把新地点一并写入location；add＝补课（课程名、星期、节次必填）。move和relocate的weekText必须保留通知限定的周次，支持第12周、12-13、从第11周起、本周、下周；原文没有周次时才留空表示整条课程。缺少可确定的周次要clarify，不猜。相同课程、相同周次的时间与地点调整合成一条move，不要拆成两条。',
     '纪律：quote 必须是通知原文里的逐字片段，不许改写；通知里没说的事一条都不要提；不要声称已经改好课表——你只是给出提案，学生逐条勾选并点「应用」之后才会写入；信息不足以下判断时用第 3 种形态追问，不要猜。冲突由系统按当前课表再核对一遍，你写的 conflict 只作参考。',
     '',
     '当前课表数据：',
@@ -554,7 +603,7 @@ export function buildNoticePrompt(courses: Course[], semester: string, week: num
  * `totalWeeks` 只在「每周都上的课要停某一周」时需要（要先把每周展开成明确周次）；
  * 页面传可切换的周次总数即可，不传时这种变更会被标成阻塞而不是瞎写。
  */
-export function parseNoticeReply(text: string, courses: Course[], totalWeeks = 0): NoticeReply {
+export function parseNoticeReply(text: string, courses: Course[], totalWeeks = 0, currentWeek = 0): NoticeReply {
   const parsed = extractJson(text);
   if (parsed === null) {
     return invalidOf('助手回复没法解析，这次没有生成任何变更，也没有写入课表。请重试，或把通知拆成几段再试。');
@@ -589,13 +638,32 @@ export function parseNoticeReply(text: string, courses: Course[], totalWeeks = 0
     if (item === null || typeof item !== 'object' || Array.isArray(item)) {
       return invalidOf('助手给出的第 ' + (index + 1) + ' 处变更格式不对，这次没有生成任何变更。');
     }
-    const built = buildChange(item as Record<string, unknown>, courses, totalWeeks);
+    const built = buildChange(item as Record<string, unknown>, courses, totalWeeks, currentWeek);
     if (!built.ok) {
       return invalidOf(
         '助手给出的第 ' + (index + 1) + ' 处变更缺少「' + built.problem + '」，这次没有生成任何变更。请重试或换个说法。',
       );
     }
     changes.push(built.change);
+  }
+  // 同课同周次的“改时间＋改地点”合并为一次原子操作；其他重复范围必须先澄清。
+  for (let i = 0; i < changes.length; i += 1) {
+    for (let j = i + 1; j < changes.length; j += 1) {
+      const a = changes[i], b = changes[j];
+      if (a.courseId === '' || a.courseId !== b.courseId || (!a.scopeLabel && !b.scopeLabel)) continue;
+      if (a.blocked === '' && b.blocked === '' && a.weeks.join(',') === b.weeks.join(',')
+        && ((a.action === 'move' && b.action === 'relocate' && (a.location === '' || a.location === b.location))
+          || (a.action === 'relocate' && b.action === 'move' && (b.location === '' || b.location === a.location)))) {
+        const move = a.action === 'move' ? a : b;
+        const relocate = a.action === 'relocate' ? a : b;
+        const combined = buildChange({ ...move, action: 'move', location: relocate.location,
+          quote: [a.quote, b.quote].filter(Boolean).join('\n') }, courses, totalWeeks, currentWeek);
+        if (combined.ok) { changes[i] = combined.change; changes.splice(j, 1); j -= 1; }
+      } else {
+        a.blocked = b.blocked = '同一门课包含不同范围或重复调整，请分段识别、逐次确认，避免覆盖。';
+        a.defaultChecked = b.defaultChecked = false;
+      }
+    }
   }
   if (changes.length === 0) {
     return { kind: 'none', message: message === '' ? '这段通知里没有识别到需要改课表的内容。' : message };
@@ -615,6 +683,8 @@ export function parseNoticeReply(text: string, courses: Course[], totalWeeks = 0
  */
 export function applyPlan(changes: NoticeChange[], courses: Course[], totalWeeks = 0): ApplyStep[] {
   const steps: ApplyStep[] = [];
+  // 同一课程可能既停课又改地点；后一步必须继承前一步的字段与撤销快照。
+  const working = new Map(courses.map((course) => [course.id, course]));
   for (let index = 0; index < changes.length; index += 1) {
     const change = changes[index];
     if (change.blocked !== '') continue;
@@ -638,8 +708,19 @@ export function applyPlan(changes: NoticeChange[], courses: Course[], totalWeeks
       });
       continue;
     }
-    const current = courses.find((course) => course.id === change.courseId);
+    const current = working.get(change.courseId);
     if (current === undefined) continue;
+    if ((change.action === 'move' || change.action === 'relocate') && change.weeks.length > 0) {
+      const base = change.original === null || change.original === undefined ? current : { ...current, ...change.original };
+      const proposed = { ...EMPTY_PROPOSED, weekday: change.action === 'move' ? change.weekday : 0,
+        startSection: change.action === 'move' ? change.startSection : 0,
+        endSection: change.action === 'move' ? change.endSection : 0,
+        location: change.location, weekText: condenseWeeks(change.weeks) };
+      steps.push({ changeIndex: index, kind: 'scoped', courseId: current.id,
+        input: buildChangeInput(proposed, base), before: snapshotInput(base),
+        summary: `${change.scopeLabel}：${change.detail}` });
+      continue;
+    }
     let proposed: ProposedCourse;
     if (change.action === 'cancel') {
       const plan = remainingAfterCancel(current, change.weeks, totalWeeks);
@@ -654,16 +735,19 @@ export function applyPlan(changes: NoticeChange[], courses: Course[], totalWeeks
         weekday: change.weekday,
         startSection: change.startSection,
         endSection: change.endSection,
+        location: change.location,
       };
     }
+    const input = buildChangeInput(proposed, current);
     steps.push({
       changeIndex: index,
       kind: 'update',
       courseId: current.id,
-      input: buildChangeInput(proposed, current),
+      input,
       before: snapshotInput(current),
       summary: summarizeChange(proposed, 'update', current).text,
     });
+    working.set(current.id, { ...current, ...input });
   }
   return steps;
 }
@@ -673,6 +757,11 @@ export function invertPlan(applied: AppliedChange[]): InvertStep[] {
   const steps: InvertStep[] = [];
   for (let index = applied.length - 1; index >= 0; index -= 1) {
     const item = applied[index];
+    if (item.kind === 'scoped') {
+      steps.push({ kind: 'scoped', courseId: item.courseId, operationId: item.operationId,
+        input: null, summary: '撤销这次限定周次的调课' });
+      continue;
+    }
     if (item.kind === 'create') {
       steps.push({ kind: 'delete', courseId: item.courseId, input: null, summary: '删除刚新增的这门课' });
       continue;

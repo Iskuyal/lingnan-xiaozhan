@@ -16,6 +16,8 @@ import {
   listCourses,
   messageOf,
   updateCourse,
+  applyScopedCourse,
+  undoScopedCourse,
 } from '../../services/timetable/index';
 import {
   CourseCard,
@@ -61,6 +63,8 @@ import {
   invertPlan,
   parseNoticeReply,
 } from '../../services/timetable/notice';
+import { loadPlan } from '../../services/goals/plan';
+import { SavedPlanView, savedPlanView } from '../../services/goals/saved';
 
 type Status = 'loading' | 'empty' | 'ready' | 'error';
 
@@ -262,6 +266,7 @@ function setupHintFor(settings: TimetableSettings, hasTimes: boolean, loadError:
  * 与提案一起在「应用」前不出这个页面——**确认前绝不写入**。
  */
 interface NoticeRow extends NoticeChange {
+  requestId?: string;
   /** 提案内的序号（从 0 起），勾选回写时按它对回提案。 */
   index: number;
   checked: boolean;
@@ -298,6 +303,7 @@ function changeOf(row: NoticeRow): NoticeChange {
 
 Page({
   data: {
+    savedPlanPanel: savedPlanView(null, [], emptySettings(), '') as SavedPlanView,
     status: 'loading' as Status,
     errorMessage: '',
     courses: [] as Course[],
@@ -350,6 +356,7 @@ Page({
   clockMinutes: 0,
   /** 学生自己翻过周次之后就不再自动跳到本周（否则每次 onShow 都把他拽回来）。 */
   weekPinned: false,
+  requestedPlanDate: '',
   /** 已写入成功、还能撤销的那些（10 秒窗口内有效）；窗口过了就清空。 */
   undoStack: [] as AppliedChange[],
   /** 撤销提示条的定时器；页面卸载或重新应用时先清掉旧的。 */
@@ -358,11 +365,17 @@ Page({
     const expanded = !this.data.gridExpanded;
     this.setData({ gridExpanded: expanded, gridUi: presentGrid(this.data.grid, expanded) });
   },
-  onLoad(query: { today?: string; clock?: string; ask?: string }) {
+  onLoad(query: { today?: string; clock?: string; ask?: string; week?: string; planDate?: string }) {
     const injectedToday = typeof query.today === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(query.today) ? query.today : '';
     this.today = injectedToday === '' ? localToday() : injectedToday;
     const injectedClock = typeof query.clock === 'string' ? minutesOfClock(query.clock) : null;
     this.clockMinutes = injectedClock === null ? localMinutes() : injectedClock;
+    this.requestedPlanDate = typeof query.planDate === 'string' && weekdayOf(query.planDate) !== null ? query.planDate : '';
+    const selectedWeek = Number(query.week);
+    if (Number.isInteger(selectedWeek) && selectedWeek >= 1 && selectedWeek <= 30) {
+      this.weekPinned = true;
+      this.setData({ week: selectedWeek, weekIndex: selectedWeek - 1 });
+    }
     // 首页输入条把问题带到这一页（`?ask=`）：只把问题填进输入框、帮他打开助手，**不自动发送**——
     // 发不发、发之前要不要改措辞，都留给学生自己决定。
     //
@@ -380,6 +393,7 @@ Page({
   },
   /** 从导入页或编辑页返回时也走这里，保证展示的是云端最新数据。 */
   onShow() {
+    this.setData({ savedPlanPanel: savedPlanView(loadPlan(), this.data.courses, this.data.settings, this.today, false, this.data.week) });
     return this.load();
   },
   load() {
@@ -392,7 +406,8 @@ Page({
         const options = Array.from({ length: weekSpanWithSemester(courses, settings) }, (_, index) => index + 1);
         // 设了开学日就落在「本周」——这是开学日的意义；学生自己翻过周就尊重他的选择。
         const todayWeek = weekIndexOf({ startDate: settings.startDate, totalWeeks: settings.totalWeeks }, this.today);
-        const preferred = this.weekPinned ? this.data.week : (todayWeek ?? 1);
+        const planWeek = this.requestedPlanDate === '' ? null : weekIndexOf(settings, this.requestedPlanDate);
+        const preferred = this.weekPinned ? this.data.week : (planWeek ?? todayWeek ?? 1);
         const week = Math.min(Math.max(preferred, 1), options.length);
         this.setData({
           courses,
@@ -408,11 +423,13 @@ Page({
           ...weekPatch(courses, week, { settings, today: this.today, clockMinutes: this.clockMinutes }),
           status: courses.length === 0 ? 'empty' : 'ready',
           errorMessage: '',
+          savedPlanPanel: savedPlanView(loadPlan(), courses, settings, this.today, true, week),
         });
       })
       .catch((error) => {
         // 读不到就如实说明并给重试入口，不静默显示旧内容。
-        this.setData({ status: 'error', errorMessage: messageOf(error) });
+        this.setData({ status: 'error', errorMessage: messageOf(error),
+          savedPlanPanel: savedPlanView(loadPlan(), [], this.data.settings, this.today, false, this.data.week) });
       });
   },
   retry() {
@@ -420,11 +437,14 @@ Page({
   },
   /** 切周时重算网格、日期区间与速查条（同一份课程，换的只是「看哪一周」）。 */
   patchWeek(week: number) {
-    return weekPatch(this.data.courses, week, {
+    return { ...weekPatch(this.data.courses, week, {
       settings: this.data.settings,
       today: this.today,
       clockMinutes: this.clockMinutes,
-    });
+    }), savedPlanPanel: savedPlanView(loadPlan(), this.data.courses, this.data.settings, this.today, true, week) };
+  },
+  openSavedPlan() {
+    wx.navigateTo({ url: '/pages/goals/plan/index' });
   },
   selectWeek(event: PickerEvent) {
     const index = pickerIndex(event.detail.value);
@@ -709,6 +729,8 @@ Page({
       this.setData({ noticeError: `这段字太多了（${text.length} 字），一次最多贴 ${NOTICE_INPUT_MAX} 字，可以分几次贴。` });
       return;
     }
+    this.clearUndoTimer();
+    this.undoStack = [];
     this.setData({ noticeReading: true, noticeError: '', noticeToast: null });
     const system = buildNoticePrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length);
     return callAi(chatEvent(NOTICE_FEATURE, system, chatMessages([{ role: 'user', text }], system)))
@@ -717,7 +739,8 @@ Page({
           this.setData({ noticeReading: false, noticeError: userMessage(result) });
           return;
         }
-        const reply = parseNoticeReply(result.text, this.data.courses, this.data.weekOptions.length);
+        const reply = parseNoticeReply(result.text, this.data.courses, this.data.weekOptions.length,
+          weekIndexOf(this.data.settings, this.today) ?? 0);
         // 服务端内容安全没真正执行时也照实说一句，不把「跳过」读成「干净」。
         const safetyNote = safetyNoteFor(result.safety);
         if (reply.kind !== 'changes') {
@@ -755,10 +778,15 @@ Page({
   },
   /** 部分勾选后一次性应用：逐条写，任一条失败都如实报「已应用 K 处」，不谎报全成功。 */
   applyNotice() {
+    if (this.data.noticeReading) return;
     const proposal = this.data.noticeProposal;
     if (proposal === null) return;
     const picked = proposal.rows.filter((row) => row.checked && row.blocked === '');
     if (picked.length === 0) return;
+    // 编号属于提案，同一提案重试不能换编号；原业务快照由解析器保留。
+    for (const row of proposal.rows) {
+      if (!row.requestId) row.requestId = `notice-${Date.now().toString(36)}-${row.index}-${Math.random().toString(36).slice(2, 12)}`;
+    }
     // 先用最新课表重算一次写入计划：学生可能在别处删/改过课程，提案里的快照可能已经过期。
     // 没勾的条目按「阻塞」传进去，applyPlan 会跳过它们，而 `changeIndex` 仍能对回原提案。
     const changes = proposal.rows.map((row) => {
@@ -770,10 +798,20 @@ Page({
       this.setData({ noticeError: '这些变更对不上当前课表了，已取消应用。请重新读一次通知。' });
       return;
     }
+    const previousApplied = this.undoStack.slice();
+    this.clearUndoTimer();
     this.setData({ noticeReading: true, noticeError: '', noticeToast: null });
     const applied: AppliedChange[] = [];
+    const remainingProposal = () => {
+      const done = new Set(applied.map((item) => item.changeIndex));
+      return noticeProposalOf(proposal.rows.map((row) => done.has(row.index)
+        ? { ...row, checked: false, blocked: '这条已应用，请勿重复写入；需要还原时可点撤销。' }
+        : row));
+    };
     const write = (step: ApplyStep): Promise<Course | null> => {
       if (step.kind === 'create') return createCourse(step.input, this.data.semester);
+      if (step.kind === 'scoped') return applyScopedCourse(step.courseId, step.input, step.before as CourseInput,
+        proposal.rows[step.changeIndex].requestId as string).then(() => null);
       // update 必须先确认这条课程还在：找不到就当作这一步失败，绝不新建一条去「顶替」。
       if (!this.data.courses.some((course) => course.id === step.courseId)) {
         return Promise.reject(new Error('这条课程已经不在课表里了'));
@@ -793,6 +831,7 @@ Page({
           applied.push({
             changeIndex: step.changeIndex,
             kind: step.kind,
+            operationId: step.kind === 'scoped' ? proposal.rows[step.changeIndex].requestId : undefined,
             courseId,
             before: step.before,
             after: step.input,
@@ -803,12 +842,12 @@ Page({
     };
     return runStep(0)
       .then(() => {
-        this.undoStack = applied;
+        this.undoStack = previousApplied.concat(applied);
         this.armUndoTimer();
         const count = applied.length;
         this.setData({
           noticeReading: false,
-          noticeProposal: noticeProposalOf(proposal.rows.map((row) => ({ ...row, checked: false }))),
+          noticeProposal: remainingProposal(),
           noticeToast: { text: `已更新 ${count} 处，课表已同步`, canUndo: true },
         });
         return this.load();
@@ -818,14 +857,17 @@ Page({
         const done = applied.length;
         const failedAt = done + 1;
         const reason = messageOf(error);
-        this.undoStack = applied;
+        this.undoStack = previousApplied.concat(applied);
         this.armUndoTimer();
         this.setData({
           noticeReading: false,
+          noticeProposal: remainingProposal(),
           noticeError: done === 0
-            ? `第 ${failedAt} 处失败：${reason}。课表没有变化。`
+            ? steps.some((step) => step.kind === 'scoped')
+              ? `第 ${failedAt} 处保存未确认：${reason}。请刷新或重试，同一提案重试不会重复拆课。`
+              : `第 ${failedAt} 处失败：${reason}。课表没有变化。`
             : `已应用 ${done} 处，第 ${failedAt} 处失败：${reason}。前 ${done} 处已在课表里，可以先撤销，或逐条核对后再应用。`,
-          noticeToast: done === 0 ? null : { text: `已更新 ${done} 处，还有 ${steps.length - done} 处没写进去`, canUndo: true },
+          noticeToast: this.undoStack.length === 0 ? null : { text: `已更新 ${this.undoStack.length} 处，还有 ${steps.length - done} 处没写进去`, canUndo: true },
         });
         return this.load();
       });
@@ -848,36 +890,37 @@ Page({
   },
   /** 10 秒内点「撤销」：按 invertPlan 反向逐条写回（新增的删掉、改动的还原成旧值）。 */
   undoNotice() {
-    const dirty = this.undoStack;
+    if (this.data.noticeReading) return;
+    const dirty = this.undoStack.slice();
     if (dirty.length === 0) {
       this.setData({ noticeToast: null });
       return;
     }
     this.undoStack = [];
     this.clearUndoTimer();
-    this.setData({ noticeToast: { text: '正在撤销…', canUndo: false } });
-    const inverse = invertPlan(dirty);
-    const runStep = (position: number, failed: number): Promise<number> => {
-      if (position >= inverse.length) return Promise.resolve(failed);
-      const step = inverse[position];
-      const task = step.kind === 'delete'
+    this.setData({ noticeReading: true, noticeToast: { text: '正在撤销…', canUndo: false } });
+    const runStep = (): Promise<void> => {
+      if (dirty.length === 0) return Promise.resolve();
+      const step = invertPlan([dirty[dirty.length - 1]])[0];
+      if (step === undefined) {
+        dirty.pop();
+        return runStep();
+      }
+      const task = step.kind === 'scoped' ? undoScopedCourse(step.operationId ?? '') : step.kind === 'delete'
         ? deleteCourse(step.courseId)
         : updateCourse(step.courseId, step.input as CourseInput);
-      return task.then(() => runStep(position + 1, failed), () => runStep(position + 1, failed + 1));
+      // 逆操作有先后依赖，失败就停；重试只继续尚未成功的步骤。
+      return task.then(() => { dirty.pop(); return runStep(); });
     };
-    return runStep(0, 0)
-      .then((failed) => {
-        // 全部还原成功才算撤销完成；有失败就照实说，并把剩下的逆操作留着再点一次。
-        if (failed > 0) {
-          this.undoStack = dirty;
-          this.setData({ noticeToast: { text: `撤销没做完：${failed} 处没还原成功`, canUndo: true } });
-        } else {
-          this.setData({ noticeToast: { text: '已撤销，课表回到应用前', canUndo: false } });
-        }
+    return runStep()
+      .then(() => {
+        this.setData({ noticeReading: false, noticeToast: { text: '已撤销，课表回到应用前', canUndo: false } });
         return this.load();
       })
       .catch((error) => {
-        this.setData({ noticeToast: { text: '撤销失败：' + messageOf(error), canUndo: false } });
+        this.undoStack = dirty;
+        this.setData({ noticeReading: false, noticeToast: { text: `撤销没做完，尚有 ${dirty.length} 处：` + messageOf(error), canUndo: dirty.length > 0 } });
+        return this.load();
       });
   },
   /** 页面卸载：清掉撤销定时器，避免离开页面后还去 setData。 */

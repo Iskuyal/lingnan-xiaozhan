@@ -20,8 +20,8 @@
     </view>
   </view>
   <view wx:else class="home-timeline-empty">
-    <view class="empty-title">今天没有课</view>
-    <view class="empty-copy">导入课表后，这里会按时间列出今天每一段安排；填好作息时间还会显示几点上课。</view>
+    <view class="empty-title">{{brief.headline}}</view>
+    <view class="empty-copy">{{brief.emptyMessage}}</view>
   </view>
 
   <view class="askbar-wrap">

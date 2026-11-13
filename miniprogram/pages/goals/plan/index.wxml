@@ -5,11 +5,29 @@
     <view class="gp-title">{{headline}}</view>
   </view>
 
-  <view class="steps">
+  <view class="steps" wx:if="{{!savedView}}">
     <view wx:for="{{steps}}" wx:key="text" class="steps-item {{item.state}}">{{item.text}}</view>
   </view>
 
-  <block wx:if="{{status === 'missing'}}">
+  <block wx:if="{{savedView}}">
+    <view class="gp-saved-intro">离线也能查看这份安排。</view>
+    <view id="saved-plan-card" class="gp-snapshot-card">
+      <view class="gp-snapshot-head"><text class="ai-tag">已保存到本机</text><text class="gp-tiny">{{savedRange}}</text></view>
+      <view class="gp-snapshot-summary">{{savedSummary}}</view>
+      <view class="gp-snapshot-row" wx:for="{{savedRows}}" wx:key="id">
+        <view class="gp-snapshot-label">{{item.label}}</view>
+        <view class="gp-tiny">{{item.date}}</view>
+        <view class="gp-snapshot-note gp-snapshot-{{item.status}}" wx:if="{{item.note}}">{{item.note}}</view>
+      </view>
+    </view>
+    <view class="gp-snapshot-copy" wx:if="{{plan.origin === 'ai-constraints'}}">生成时由AI整理约束，学习时段经规则校验；重开不会再次请求AI。</view>
+    <view class="gp-snapshot-copy">{{savedNotice}}</view>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="saved-plan-week" class="home-button gp-btn" bindtap="onViewWeek">查看对应周课表</button>
+    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="saved-plan-regenerate" class="home-button secondary gp-btn" bindtap="onRegenerate">{{savedGoalMissing ? '选择新的目标日' : '重新生成计划'}}</button>
+    <view id="saved-plan-remove" class="gp-remove" bindtap="onRemove" aria-role="button">撤回本机保存的计划</view>
+  </block>
+
+  <block wx:elif="{{status === 'missing'}}">
     <view class="gp-empty">
       <view class="gp-empty-title">这个目标日已经不在了</view>
       <view class="gp-empty-copy">它可能已经在列表里被删掉。回目标日列表看看现在还有哪些，再回来排。</view>
@@ -50,6 +68,7 @@
     <view class="gp-section">
       <view class="gp-section-title">说一句自己的情况</view>
       <view class="gp-saved" wx:if="{{savedNote}}">{{savedNote}}</view>
+      <view wx:if="{{hasSaved}}" class="gp-view-saved" bindtap="onViewSaved" aria-role="button">查看本机已保存的计划</view>
       <view class="bubble-me" wx:if="{{constraintText}}">{{constraintText}}</view>
       <textarea
         id="plan-constraint"
@@ -60,8 +79,23 @@
         bindinput="onConstraintInput"
         placeholder="例如：听力最弱，每次别超过 1 小时，周末上午不排。"
       />
-      <view class="gp-hint">只听得懂时长、每周几段、「周末上午不排」「晚上不排」和「×× 最弱」这几类说法。别的原话会原样告诉你没听懂，按默认排，不猜。</view>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate" class="home-button gp-btn" hover-class="pressed" disabled="{{busy}}" bindtap="generate">{{busy ? '正在读课表…' : '生成计划'}}</button>
+      <view class="gp-hint">可说每段时长、每周段数、弱项，以及哪天或上午/下午/晚上不能排。AI先整理，确认后再生成预览。</view>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate" class="home-button gp-btn" hover-class="pressed" disabled="{{busy || aiBusy}}" bindtap="understandAi">{{aiBusy ? 'AI正在理解…' : '让AI理解我的情况'}}</button>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate-rules" class="home-button secondary gp-btn" hover-class="pressed" disabled="{{busy || aiBusy}}" bindtap="generate">{{busy ? '正在核对课表…' : '使用基础规则排程'}}</button>
+      <view class="gp-hint">本次AI只接收目标名称和这段情况，不接收整份课表、教师或地点。基础规则只处理固定说法，未理解的情况会先要求核对。</view>
+    </view>
+
+    <view id="plan-ai-message" class="gp-ai-message" wx:if="{{aiMessage}}">{{aiMessage}}</view>
+    <view id="plan-ai-draft" class="gp-ai-draft" wx:if="{{aiDraftReady}}">
+      <view class="gp-ai-title">这些理解对吗？</view>
+      <view class="gp-ai-copy">确认后才生成预览，暂不保存。</view>
+      <view class="ai-tag">AI整理 · 待核对</view>
+      <view class="gp-ai-fact" wx:for="{{aiEvidence}}" wx:key="key">
+        <view>{{item.value}}</view><view class="gp-ai-quote">原话：{{item.quote}}</view>
+      </view>
+      <view class="gp-ai-copy" wx:for="{{aiDefaults}}" wx:key="*this">{{item}}</view>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-ai-confirm" class="home-button gp-btn" disabled="{{busy}}" bindtap="confirmAiPlan">{{busy ? '正在核对课表…' : '按这些约束生成预览'}}</button>
+      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-ai-edit" class="home-button secondary gp-btn" disabled="{{busy}}" bindtap="editAiInput">返回修改情况</button>
     </view>
 
     <view class="gp-error" wx:if="{{error}}">{{error}}</view>
@@ -90,7 +124,7 @@
 
         <view class="legend">
           <view class="legend-item l1">已有课程</view>
-          <view class="legend-item l2">AI 计划（未保存）</view>
+          <view class="legend-item l2">规则排程（未保存）</view>
           <view class="legend-item l3">空闲</view>
         </view>
 
@@ -115,16 +149,16 @@
 
       <view class="actions">
         <view id="plan-variant" class="btn secondary" hover-class="pressed" bindtap="onVariant" aria-role="button">换一种排法</view>
-        <button style="margin-left:0;margin-right:0" id="plan-save" class="btn primary" hover-class="pressed" bindtap="onSave">加入课表（作为计划）</button>
+        <button style="margin-left:0;margin-right:0" id="plan-save" class="btn primary" hover-class="pressed" bindtap="onSave">保存到本机</button>
       </view>
 
       <view class="gp-pending" wx:if="{{plan.blocks.length === 0}}">这份计划没有能排的时段，加了也是空的，所以先不给你加。</view>
 
-      <view class="gp-foot">金色虚线显示在周课表里，与正式课程分开；每周日晚根据完成情况重排下一周。</view>
+      <view class="gp-foot">{{plan.origin === 'ai-constraints' ? 'AI整理的约束已核对，时段由规则安排；换排法、保存与重开不会再请求模型。' : '本次使用基础规则，不调用模型。'}}保存后可重开查看，并在对应周课表中独立列出；不计正式课程数，完成记录与自动重排尚未实现。</view>
       <view id="plan-remove" class="gp-remove" wx:if="{{hasSaved}}" hover-class="pressed" bindtap="onRemove" aria-role="button">撤回本机保存的计划</view>
     </block>
 
-    <view class="gp-foot" wx:else>还没有排计划。上面写好一句约束，点「生成计划」就会把学习时段填进本周空闲格；排完先看着，确认了再加入课表。</view>
+    <view class="gp-foot" wx:else>还没有新计划。可先让AI整理约束，也可明确选择基础规则；核对后安排今天起、目标日以内的本周空闲格。已保存的旧计划保留，只有确认保存才会替换。</view>
   </block>
 
 </view>

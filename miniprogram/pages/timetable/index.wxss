@@ -138,3 +138,13 @@
 .diff-note { color:var(--text-3,#746760); }
 /* 课表页的「贴班群通知」直接入口：与「问问课表助手」并排，金色底表示这是 AI 产出要人确认。 */
 .tt-notice-entry { margin-top:10px; border-color:var(--ai-line,#e7d3a0); background:var(--ai-soft,#fbf4e2); color:var(--ai,#a67f1c); font-weight:600; }
+.saved-plan-panel { margin:16px 0; padding:16px; border:1px solid var(--ai-line, #e7d3a0); border-radius:10px; background:var(--surface, #ffffff); }
+.saved-plan-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.saved-plan-copy,.saved-plan-date { font-size:13px; line-height:1.65; color:var(--text-2, #6b5d57); }
+.saved-plan-copy { margin:8px 0; }
+.saved-plan-row { padding:12px 0; border-bottom:1px solid var(--line, #ded4cf); }
+.saved-plan-label { font-size:15px; line-height:1.65; font-weight:600; }
+.saved-plan-note { margin-top:8px; font-size:13px; line-height:1.65; color:var(--text-2, #6b5d57); }
+.saved-plan-conflict { color:var(--warn, #9a5b1e); }
+.notice-scope { margin:8px 0; padding:8px 12px; font-size:13px; line-height:1.65; border-radius:6px; background:var(--ai-soft, #fbf4e2); color:var(--text, #2b2422); }
+.notice-unaffected { margin-top:8px; font-size:13px; line-height:1.65; color:var(--text-2, #6b5d57); }

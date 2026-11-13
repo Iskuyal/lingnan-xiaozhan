@@ -53,6 +53,52 @@ const COURSES = [
 
 const TOTAL_WEEKS = 20;
 
+test('限定周次：同一条提案可修改时间和地点，写入与撤销走原子接口', () => {
+  const { parseNoticeReply, applyPlan, invertPlan } = notice();
+  const reply = parseNoticeReply(noticeOk([{ action: 'move', courseId: 'tc_math', courseName: '高等数学',
+    weekday: 5, startSection: 5, endSection: 6, weekText: '第12周', location: '新教室', quote: '第12周改到周五5-6节新教室' }]), COURSES, TOTAL_WEEKS, 11);
+  assert.equal(reply.kind, 'changes');
+  assert.equal(reply.changes[0].blocked, '');
+  assert.match(reply.changes[0].scopeLabel, /仅第.*12.*周/u);
+  assert.match(reply.changes[0].diffs[0].note, /仅第.*12.*周/u);
+  const steps = applyPlan(reply.changes, COURSES, TOTAL_WEEKS);
+  assert.equal(steps[0].kind, 'scoped');
+  assert.deepEqual(plain(steps[0].input.weeks), [12]);
+  assert.equal(steps[0].input.location, '新教室');
+  assert.deepEqual(plain(steps[0].before.weeks), [11, 12, 13]);
+  const inverse = invertPlan([{ ...steps[0], operationId: 'fixed-test-request', after: steps[0].input }]);
+  assert.equal(inverse[0].kind, 'scoped');
+  assert.equal(inverse[0].operationId, 'fixed-test-request');
+});
+
+test('限定周次：同课同范围的时间与地点两条回复合并，不同范围先澄清', () => {
+  const { parseNoticeReply } = notice();
+  const rows = [
+    { action: 'move', courseId: 'tc_math', weekday: 5, startSection: 5, endSection: 6, weekText: '第12周' },
+    { action: 'relocate', courseId: 'tc_math', weekText: '第12周', location: 'B604' },
+  ];
+  const merged = parseNoticeReply(noticeOk(rows), COURSES, TOTAL_WEEKS);
+  assert.equal(merged.changes.length, 1);
+  assert.equal(merged.changes[0].location, 'B604'); assert.equal(merged.changes[0].weekday, 5);
+  assert.equal(merged.changes[0].blocked, '');
+  const contradictory = parseNoticeReply(noticeOk([{ ...rows[0], location: 'B603' }, rows[1]]), COURSES, TOTAL_WEEKS);
+  assert.ok(contradictory.changes.every((change) => change.blocked !== ''), '同周次的两个不同新地点不能静默选后一个');
+  const ambiguous = parseNoticeReply(noticeOk([rows[0], { ...rows[1], weekText: '第13周' }]), COURSES, TOTAL_WEEKS);
+  assert.ok(ambiguous.changes.every((change) => !change.defaultChecked && change.blocked.includes('分段')));
+});
+
+test('限定周次：从某周起与相对周可核对；当前周未知时不猜下周', () => {
+  const { parseNoticeReply } = notice();
+  const row = { action: 'relocate', courseId: 'tc_math', location: 'B604' };
+  const from = parseNoticeReply(noticeOk([{ ...row, weekText: '从第12周起' }]), COURSES, 20, 11);
+  assert.deepEqual(plain(from.changes[0].weeks), [12, 13]);
+  assert.equal(from.changes[0].blocked, '');
+  const next = parseNoticeReply(noticeOk([{ ...row, weekText: '下周' }]), COURSES, 20, 11);
+  assert.deepEqual(plain(next.changes[0].weeks), [12]);
+  const unknown = parseNoticeReply(noticeOk([{ ...row, weekText: '下周' }]), COURSES, 20, 0);
+  assert.notEqual(unknown.changes[0].blocked, '');
+});
+
 function noticeOk(changes, message = '识别到 3 处变更。') {
   return JSON.stringify({ kind: 'changes', message, changes });
 }
@@ -66,7 +112,7 @@ function designChanges() {
       weekText: '第12周', location: '', teacher: '', conflict: '',
     },
     {
-      action: 'relocate', title: '改地点 网页设计与制作', quote: '从第 11 周起改到博雅楼 B604',
+      action: 'relocate', title: '改地点 网页设计与制作', quote: '所有周次改到博雅楼 B604',
       courseName: '网页设计与制作', courseId: '', weekday: 3, startSection: 0, endSection: 0,
       weekText: '', location: '博雅楼-B604', teacher: '', conflict: '',
     },

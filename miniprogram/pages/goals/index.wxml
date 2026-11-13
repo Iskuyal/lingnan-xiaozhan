@@ -16,7 +16,7 @@
         </view>
         <view class="goal-meta">{{item.meta}}</view>
         <view class="goal-actions">
-          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">AI 排计划</view>
+          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
           <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
           <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
         </view>
@@ -35,7 +35,7 @@
         </view>
         <view class="goal-meta">{{item.meta}}</view>
         <view class="goal-actions">
-          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">AI 排计划</view>
+          <view id="goal-plan-{{item.id}}" class="goal-action goal-action-plan" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onPlan">排学习计划</view>
           <view id="goal-edit-{{item.id}}" class="goal-action" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onEdit">修改</view>
           <view id="goal-delete-{{item.id}}" class="goal-action goal-action-warn" hover-class="pressed" aria-role="button" data-id="{{item.id}}" bindtap="onDelete">删除</view>
         </view>

@@ -1,0 +1,41 @@
+{
+  "verifiedAt": "2026-11-11T02:34:24.143Z",
+  "result": "passed",
+  "checks": [
+    "真实云端：仅第2周改变时间地点，第1/3周保留；同编号重试不重复拆课",
+    "真实云端：整项撤销与撤销重试成功",
+    "真实AI一次识别：限定周次、时间、地点与预期一致，经实际页面确认应用并撤销"
+  ],
+  "cleanup": {
+    "beforeCount": 51,
+    "afterCount": 51,
+    "originalCoursesUnchanged": true
+  },
+  "ai": {
+    "requests": 1,
+    "elapsedMs": 13091,
+    "ok": true,
+    "modelOk": true,
+    "safetyChecked": true,
+    "text": "{\"kind\":\"changes\",\"message\":\"识别到 1 条变更：仅第 2 周，将“功能验证-数学-mwbi9543-6unluo”从星期三第 3-4 节调整到星期五第 5-6 节，地点改为验证教室B。\",\"changes\":[{\"action\":\"move\",\"title\":\"第2周调整到星期五5-6节（验证教室B）\",\"quote\":\"功能验证-数学-mwbi9543-6unluo改到星期五5-6节，地点为验证教室B\",\"courseName\":\"功能验证-数学-mwbi9543-6unluo\",\"courseId\":\"tc_26046dade418813f\",\"weekday\":5,\"startSection\":5,\"endSection\":6,\"weekText\":\"第2周\",\"location\":\"验证教室B\",\"teacher\":\"\",\"conflict\":\"\"}]}",
+    "error": "",
+    "usage": {
+      "promptTokens": 798,
+      "completionTokens": 430,
+      "totalTokens": 1228,
+      "estimated": false,
+      "usageUnknown": false,
+      "costYuan": 0.000307,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25
+    }
+  },
+  "error": null,
+  "realDevice": false,
+  "realCloud": true,
+  "boundaries": [
+    "只新增、调整和删除唯一命名的临时课程，原课表逐条比对",
+    "可选AI最多一次请求且只发送临时课程，非独立效果评测",
+    "这是开发者工具，不是手机真机"
+  ]
+}
