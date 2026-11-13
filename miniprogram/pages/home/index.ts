@@ -7,6 +7,7 @@ import { Course } from '../../services/timetable/types';
 import { TimetableSettings, emptySettings, loadSettings } from '../../services/timetable/settings';
 import { listCourses } from '../../services/timetable/index';
 import { TodayBrief, buildTodayBrief } from '../../services/timetable/brief';
+import { openTimetable } from '../../ui/navigation';
 
 /** 只声明页面用到的事件字段，避免依赖 typings 内部结构。 */
 interface TapEvent {
@@ -145,9 +146,10 @@ Page({
     this.setData({ askText: text });
   },
   /**
-   * 把问题带到课表助手页。
+   * 把问题带到课表页的助手输入框。
    * 首页不自己发请求：助手要显示上下文、失败状态与安全说明，这些都在课表页已有实现里，
-   * 首页复制一套会分裂成两份口径。`?ask=` 只是把文字带过去，**不自动发送**。
+   * 首页复制一套会分裂成两份口径。课表现在是 tab，switchTab 不接受 query，
+   * 所以文字通过 `ui/navigation` 的一次性意图交过去，**不自动发送**。
    */
   sendAsk() {
     const text = this.data.askText.trim().slice(0, ASK_MAX_CHARS);
@@ -155,7 +157,9 @@ Page({
       wx.showToast({ title: '先写一句想问的', icon: 'none' });
       return;
     }
-    wx.navigateTo({ url: `/pages/timetable/index?ask=${encodeURIComponent(text)}` });
+    return openTimetable({ kind: 'assistant', text }).catch(() => {
+      wx.showToast({ title: '课表页暂时打不开，稍后再试', icon: 'none' });
+    });
   },
   /** 拍照提问走课表导入页既有的截图识别（vision），不在首页另开一条上传链路。 */
   openPhotoAsk() {
@@ -207,8 +211,11 @@ Page({
   openLostFound() {
     wx.navigateTo({ url: '/pages/lost-found/index' });
   },
+  /** 课表是 tab 页：只能用 switchTab 打开，navigateTo 会被基础库拒绝。 */
   openTimetable() {
-    wx.navigateTo({ url: '/pages/timetable/index' });
+    return openTimetable().catch(() => {
+      wx.showToast({ title: '课表页暂时打不开，稍后再试', icon: 'none' });
+    });
   },
   openAdvancement() {
     wx.navigateTo({ url: '/pages/advancement/index' });
