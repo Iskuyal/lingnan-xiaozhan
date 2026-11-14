@@ -1,0 +1,4 @@
+.campus-school { display:flex; align-items:center; gap:15px; }
+.campus-mark { flex:none; width:55px; height:64px; display:flex; align-items:center; justify-content:center; border-radius:15px 15px 23px 23px; background:var(--brand, #c41c23); color:#fff; font-size:24px; }
+.campus-school-main { flex:1; min-width:0; }
+.campus-copy { margin-top:12px; }

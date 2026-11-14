@@ -1,0 +1,43 @@
+<view class="u2-page">
+  <view class="u2-kicker">学习，也有好安排</view>
+  <view class="u2-h1">目标、计划与日常练习</view>
+  <view class="u2-lead">目标日与本周计划存在本机；问答与练习只依据项目已收录的资料。</view>
+
+  <button class="u2-hero study-goal" hover-class="pressed" bindtap="openGoals" aria-label="目标日与学习计划">
+    <view class="u2-hero-top">
+      <view class="u2-hero-label">{{goal.hasGoal ? goal.name : '目标日'}}</view>
+      <view wx:if="{{goal.hasGoal}}" class="u2-tag u2-tag-line">{{goal.days}}{{goal.unit}}</view>
+    </view>
+    <view wx:if="{{!goal.hasGoal}}" class="u2-hero-title">先写一个目标日</view>
+    <view class="u2-hero-meta">{{goal.meta}}</view>
+    <view class="u2-hero-foot"><text>继续查看本周计划</text><text>→</text></view>
+  </button>
+
+  <view class="u2-section"><view class="u2-section-title">学习工具</view></view>
+  <view class="u2-list">
+    <view class="u2-row" hover-class="pressed" data-route="/pages/goals/index" bindtap="openTool">
+      <view class="u2-icon">目</view>
+      <view class="u2-row-main"><view class="u2-row-title">目标日与学习计划</view><view class="u2-row-sub">管理目标与本周安排</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+    <view class="u2-row" hover-class="pressed" data-route="/pages/defense/index" bindtap="openTool">
+      <view class="u2-icon">答</view>
+      <view class="u2-row-main"><view class="u2-row-title">项目讲解与答辩练习</view><view class="u2-row-sub">三轮练习，一次复盘</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+    <view class="u2-row" hover-class="pressed" data-route="/pages/advancement/index" bindtap="openTool">
+      <view class="u2-icon">升</view>
+      <view class="u2-row-main"><view class="u2-row-title">升学与实习问答</view><view class="u2-row-sub">依据已收录的官方原文</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+    <view class="u2-row" hover-class="pressed" data-route="/pages/fitness/index" bindtap="openTool">
+      <view class="u2-icon">体</view>
+      <view class="u2-row-main"><view class="u2-row-title">体测估算</view><view class="u2-row-sub">国家标准参考 · 本机计算</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+  </view>
+
+  <view class="u2-source">
+    <view class="u2-source-line">目标日与学习计划只保存在本机，不写入正式课表。</view>
+  </view>
+</view>

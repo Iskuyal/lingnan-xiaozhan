@@ -1,0 +1,42 @@
+<view class="u2-page">
+  <view class="u2-kicker">在岭南，发现日常</view>
+  <view class="u2-h1">校园里的事</view>
+
+  <view class="u2-card campus-school">
+    <view class="campus-mark">岭</view>
+    <view class="campus-school-main">
+      <view class="u2-card-title">{{school.name}}</view>
+      <view class="u2-xs u2-muted">校园资料与日常工具</view>
+      <view class="u2-xs u2-muted">学生参赛作品 · 非学校官方应用</view>
+    </view>
+  </view>
+
+  <view class="u2-section"><view class="u2-section-title">先找到你需要的</view></view>
+  <view class="u2-list">
+    <view class="u2-row" hover-class="pressed" data-route="/pages/departments/index" bindtap="openRoute">
+      <view class="u2-icon">部</view>
+      <view class="u2-row-main"><view class="u2-row-title">学生部门</view><view class="u2-row-sub">认识组织，依据资料提问</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+    <view class="u2-row" hover-class="pressed" data-route="/pages/calendar/index" bindtap="openRoute">
+      <view class="u2-icon">历</view>
+      <view class="u2-row-main"><view class="u2-row-title">校历与考试</view><view class="u2-row-sub">日期、适用范围与出处</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+    <view class="u2-row" hover-class="pressed" data-route="/pages/news/index" bindtap="openRoute">
+      <view class="u2-icon">讯</view>
+      <view class="u2-row-main"><view class="u2-row-title">校园资讯</view><view class="u2-row-sub">官网来源，原文可核对</view></view>
+      <text class="u2-chev">›</text>
+    </view>
+  </view>
+
+  <view class="u2-section"><view class="u2-section-title">学校资料</view></view>
+  <view class="u2-card">
+    <view class="u2-body">{{school.introduction}}</view>
+    <view class="u2-source">
+      <view class="u2-source-line">资料来源：{{school.sourceLabel}}</view>
+      <view class="u2-source-line">核查于 {{school.verifiedAt}} · {{school.campuses}}</view>
+    </view>
+    <button class="u2-btn u2-btn-secondary campus-copy" id="copy-school-source" hover-class="pressed" bindtap="copySource">复制学校官网链接</button>
+  </view>
+</view>

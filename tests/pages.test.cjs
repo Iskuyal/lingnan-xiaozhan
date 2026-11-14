@@ -7,6 +7,9 @@ const { createRequire } = require('node:module');
 const { spawnSync } = require('node:child_process');
 
 function loadPage(name, wx, stack = [{}]) {
+  // 页面经 ui/navigation 走 tab 跳转；那个模块读的是小程序里的全局 wx，
+  // 与页面代码看到的是同一个对象。这里同步挂上，避免只 mock 了页面那一层。
+  globalThis.wx = wx;
   const filename = path.resolve(`dist/pages/${name}/index.js`);
   let page;
   vm.runInNewContext(fs.readFileSync(filename, 'utf8'), {
@@ -20,13 +23,24 @@ function loadPage(name, wx, stack = [{}]) {
 }
 
 test('首页两个入口分别进入部门和课表，目标均是已注册页面', () => {
+  // 课表在 2026-11-13 的定稿里升为四个 tab 之一：tab 页只能用 switchTab 打开，
+  // navigateTo 会被基础库拒绝（errMsg: can not navigateTo a tabbar page）。
+  // 部门仍是普通页面，继续用 navigateTo。两条通道一起断言，防止哪天又被改回去。
   const visited = [];
-  const home = loadPage('home', { navigateTo: ({ url }) => visited.push(url) });
+  const switched = [];
+  const home = loadPage('home', {
+    navigateTo: ({ url }) => visited.push(url),
+    switchTab: ({ url, success }) => { switched.push(url); success?.(); },
+    setStorageSync: () => {},
+    getStorageSync: () => '',
+    removeStorageSync: () => {},
+  });
   home.openDepartments();
   home.openTimetable();
-  assert.deepEqual(visited, ['/pages/departments/index', '/pages/timetable/index']);
+  assert.deepEqual(visited, ['/pages/departments/index']);
+  assert.deepEqual(switched, ['/pages/timetable/index']);
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
-  for (const url of visited) {
+  for (const url of [...visited, ...switched]) {
     assert.ok(app.pages.includes(url.slice(1)));
     for (const ext of ['js', 'json', 'wxml', 'wxss']) {
       assert.ok(fs.existsSync(`dist${url}.${ext}`));
