@@ -189,11 +189,13 @@ test('体测估算页：「改一个数字重算」回到输入区，输入不�
   assert.deepEqual(Array.from(stub.store.keys()), []);
 });
 
-test('首页新增两个入口，目标页面都已注册且产物齐全', () => {
+test('校历与体测两个入口，目标页面都已注册且产物齐全', () => {
+  // 定稿把这两个入口分派到两个聚合页：校历属于「校园」，体测属于「学习」。
   const stub = wxStub();
-  const home = loadPage('home', stub);
-  home.openCalendar();
-  home.openFitness();
+  const campus = loadPage('campus', stub);
+  campus.openRoute({ currentTarget: { dataset: { route: '/pages/calendar/index' } } });
+  const study = loadPage('study', stub);
+  study.openTool({ currentTarget: { dataset: { route: '/pages/fitness/index' } } });
   assert.deepEqual(stub.calls.navigate, ['/pages/calendar/index', '/pages/fitness/index']);
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
   for (const route of ['pages/calendar/index', 'pages/fitness/index']) {

@@ -1,17 +1,18 @@
-.news-heading { margin-bottom:22px; }
-.news-title { display:none; }
-.news-meta { color:#746760; font-size:12px; line-height:1.8; }
-.news-notice { margin:16px 0; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
-.news-list { margin-top:16px; }
-.news-item { padding:18px 0; border-bottom:1px solid #ded4cf; }
-.news-item-title { color:#2b2422; font-size:16px; font-weight:600; line-height:1.7; }
-.news-item-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
-.news-item-date,.news-item-stamp { color:#746760; font-size:11px; line-height:1.7; }
-.news-item-arrow { color:#8c1614; font-size:23px; }
-.news-item-feature { padding:22px 0; border-top:3px solid #c41c23; }
-.news-item-feature .news-item-title { font-size:27px; font-family:"Songti SC","STSong","SimSun",serif; line-height:1.5; }
-.news-empty { padding:40px 0; }
-.news-empty-copy,.news-more-copy { margin-top:12px; color:#6b5d57; font-size:13px; line-height:1.9; }
-.news-more { margin-top:22px; }
-.news-more-tap,.news-more-button { display:block; width:100%; min-height:48px; padding:12px; background:#fff; border:1px solid #b9847c; border-radius:8px; color:#8c1614; font-size:14px; text-align:center; }
-.news-more-error { color:#9a5b1e; }
+/* 校园资讯（设计图 23）：日期列 + 标题列表，来源与同步状态常驻可见。 */
+.news-title { font-size:30px; }
+.news-source-line { display:flex; flex-wrap:wrap; gap:4px 12px; margin:16px 0 4px; color:var(--text-2, #6b5d57); font-size:12px; line-height:1.8; }
+.news-state { margin-top:16px; }
+.news-state-copy { margin-top:6px; }
+.news-state-button { margin-top:10px; }
+.news-list { margin-top:10px; }
+.news-row { display:flex; gap:14px; padding:18px 0; border-bottom:1px solid var(--line-soft, #ececef); }
+.news-date { flex:none; width:46px; color:var(--text-2, #6b5d57); font-size:10px; line-height:1.4; }
+.news-date-day { display:block; color:var(--brand, #c41c23); font-size:25px; font-weight:500; }
+.news-date-month { display:block; margin-top:2px; }
+.news-row-main { flex:1; min-width:0; }
+.news-row-title { color:var(--text, #2b2422); font-size:16px; line-height:1.55; font-weight:650; }
+.news-row-meta { margin-top:6px; color:var(--text-2, #6b5d57); font-size:11px; line-height:1.7; }
+.news-more { padding:16px 0; color:var(--text-2, #6b5d57); font-size:12px; text-align:center; }
+.news-more-error { text-align:left; }
+.news-more-button { margin-top:8px; }
+.news-more-tap { min-height:44px; line-height:2.2; }

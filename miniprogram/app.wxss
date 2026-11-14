@@ -47,12 +47,28 @@ page {
   --ai-soft: #fbf4e2;
   --ai-line: #e7d3a0;
 
+  /* 岭南红重设计（2026-11-13 定稿）新增的灰白表面与圆角：
+     设计稿里这些值写在 _mockup.css，属于「提案」；本轮随实现一起落成生产令牌。
+     旧令牌名与值一律保留——B/C 页面仍在引用它们，改名会让别人的页面静默失色。 */
+  --canvas: #f5f6f8;
+  --canvas-2: #eceef1;
+  --line-soft: #ececef;
+  --chip: #f0f1f4;
+  --brand-soft: #fff0ef;
+  --brand-line: #e8a5a8;
+  --danger-soft: #fff0ef;
+  --r-hub: 36rpx;
+  --r-tile: 32rpx;
+  --r-hero: 44rpx;
+
   /* 课程颜色由 services/timetable/palette.ts 提供，以下仅为内联槽失效时的兜底。 */
   --blk-tint: rgba(255,255,255,0.72);
   --blk-line: rgba(255,255,255,0.62);
   --blk-solid: rgba(148,134,127,0.55);
 
-  background: var(--paper, #fdf7f5);
+  /* 画布底色：四个主入口与任务页统一用灰白底（设计稿 body 的 #f5f6f8），
+     卡片落在白面上。--paper 保留给仍在用的旧页面。 */
+  background: var(--canvas, #f5f6f8);
   color: var(--text, #2b2422);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 14px;

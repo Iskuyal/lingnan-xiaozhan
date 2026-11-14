@@ -1,25 +1,23 @@
 <import src="./qa.wxml" />
-<view class="page">
-  <view class="departments-heading">
-    <view class="eyebrow">{{view.source.label}}</view>
-    <view class="section-title">学生部门</view>
-    <view class="departments-intro">以下组织来自学校官网「学生组织」页面，介绍与下设部门按原文转录。</view>
-  </view>
+<view class="u2-page">
+  <view class="u2-h1 dept-title">在这里，<br/>找到同路的人。</view>
+  <view class="u2-lead">浏览项目已保存的公开组织资料，了解职责，也可以依据资料提问。</view>
 
-  <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="department-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到部门问答">
-    <view class="qa-entry-copy">
-      <view class="qa-entry-title">问问部门</view>
-      <view class="qa-entry-note">选一个组织，或直接提问 · 仅依据官网已核实资料</view>
+  <view id="department-qa-shortcut" class="u2-card dept-qa-card" hover-class="pressed" bindtap="scrollToQa" aria-roledescription="button" aria-label="跳到部门问答">
+    <view class="dept-qa-icon"><image class="u2-icon-img" src="/assets/ui-v2/v2-defense-light.svg" /></view>
+    <view class="dept-qa-copy">
+      <view class="u2-card-title">不确定找哪个部门？</view>
+      <view class="u2-row-sub">问问部门，先找到资料中的答案</view>
     </view>
-    <text class="qa-entry-arrow">↓</text>
-  </button>
-
-  <view wx:if="{{!view.isEmpty}}" class="departments-count">
-    <view class="departments-count-label">已核实名录</view>
-    <view class="departments-count-value">{{view.total}} 个组织</view>
+    <text class="dept-qa-arrow">→</text>
   </view>
 
-  <view wx:if="{{!view.isEmpty}}" id="departments-list" class="departments-list">
+  <view class="u2-section">
+    <view class="u2-section-title">已收录组织 · 节选</view>
+    <view class="u2-section-note">{{view.total}} 个</view>
+  </view>
+
+  <view wx:if="{{!view.isEmpty}}" id="departments-list" class="u2-list">
     <view
       wx:for="{{view.items}}"
       wx:key="id"
@@ -32,17 +30,18 @@
       aria-label="查看{{item.name}}，{{item.campusLabel}}"
     >
       <view class="department-mark">{{item.mark}}</view>
-      <view class="department-main">
-        <view class="department-name">{{item.name}}</view>
-        <view class="department-campus">{{item.campusLabel}}</view>
+      <view class="u2-row-main department-main">
+        <view class="department-name u2-row-title">{{item.name}}</view>
+        <view class="department-campus u2-row-sub">{{item.campusLabel}}</view>
       </view>
-      <text class="department-chevron">›</text>
+      <text class="u2-chev">›</text>
     </view>
   </view>
 
-  <view wx:else id="departments-empty" class="departments-empty">
-    <view class="status-title">{{view.emptyTitle}}</view>
-    <view class="status-copy">{{view.emptyCopy}}</view>
+  <view wx:else id="departments-empty" class="u2-empty">
+    <view class="u2-empty-icon">部</view>
+    <view class="u2-empty-title">{{view.emptyTitle}}</view>
+    <view class="u2-empty-copy">{{view.emptyCopy}}</view>
   </view>
 
   <view id="department-qa-panel">
@@ -52,12 +51,14 @@
     />
   </view>
 
-  <view id="departments-source" class="departments-source">
-    <view class="departments-source-label">资料来源：{{view.source.label}}</view>
-    <view class="departments-verified-date">核查于 {{view.source.verifiedAt}}</view>
-    <view class="departments-source-note">{{view.source.note}}</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-directory-source" class="source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
+  <view id="departments-source" class="u2-source">
+    <view class="u2-source-line">资料来源：{{view.source.label}}</view>
+    <view class="u2-source-line">核查于 {{view.source.verifiedAt}}；本轮未重新联网核查。</view>
+    <view class="u2-source-line">{{view.source.note}}</view>
+    <button id="copy-directory-source" class="u2-btn u2-btn-secondary dept-source-button" hover-class="pressed" bindtap="copySource">复制官网链接</button>
   </view>
 
-  <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回首页</button>
+  <view class="u2-actions">
+    <button id="back-home" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="goHome">返回首页</button>
+  </view>
 </view>

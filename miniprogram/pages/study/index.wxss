@@ -1,0 +1,7 @@
+/* 学习聚合页（设计图 11）：红色目标卡片 + 四个工具条目。 */
+.study-title { font-size:26px; }
+.study-hero { position:relative; margin-top:20px; text-align:left; }
+.study-hero-count { margin:8px 0 2px; font-size:44px; line-height:1.15; font-weight:700; letter-spacing:-1px; }
+.study-hero-unit { margin-left:8px; font-size:14px; font-weight:400; letter-spacing:0; }
+.study-hero-side { position:absolute; right:22px; top:64px; font-size:12px; opacity:.92; }
+.study-hero-arrow { font-size:16px; }

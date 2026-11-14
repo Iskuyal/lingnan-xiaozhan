@@ -1,65 +1,125 @@
-<view class="home page">
-  <view class="home-brand"><image class="school-logo" src="/assets/lingnan-logo-official.png" mode="widthFix" aria-label="{{school.name}}" /><view class="school-name ui-sr-only">{{school.name}}</view></view>
-
-  <view class="masthead"><view><view class="masthead-date">{{brief.dateLine}}</view><view class="masthead-greet">{{brief.greeting}}，{{brief.headline}}</view></view><view class="masthead-seal">校</view></view>
-
-  <view class="ai-card home-brief">
-    <view class="brief-head"><text class="ai-tag">今日简报</text><text class="brief-note">{{brief.hasTimes ? '来自课表与目标日' : '没填作息，先说个大概'}}</text></view>
-    <view class="brief-body"><text wx:for="{{brief.sentences}}" wx:key="*this" class="brief-line">{{item}}</text></view>
-    <view wx:if="{{brief.sources.length > 0}}" class="ai-src"><text wx:for="{{brief.sources}}" wx:key="*this" class="ai-src-item">依据 · {{item}}</text></view>
+<view class="u2-page">
+  <view class="u2-home-head">
+    <view class="u2-home-head-main">
+      <view class="u2-kicker">{{brief.dateLine}}</view>
+      <view class="u2-home-greet">{{brief.greeting}}，</view>
+      <view class="u2-home-greet">{{greetLine}}</view>
+    </view>
+    <view class="u2-date-tile" aria-label="今天日期">
+      <view class="u2-date-tile-top">{{dateTile.month}}</view>
+      <view class="u2-date-tile-num">{{dateTile.day}}</view>
+    </view>
   </view>
 
-  <view wx:if="{{brief.rows.length > 0}}" class="timeline">
-    <view class="section-head"><view class="section-title">今天</view><view class="section-note">{{brief.blockCount === 0 ? '没有安排' : brief.blockCount + ' 段安排'}}</view></view>
-    <view wx:for="{{brief.rows}}" wx:key="key" class="tl tl-{{item.kind}}{{item.isNow ? ' tl-now' : ''}}{{item.isNext ? ' tl-next' : ''}}">
-      <view class="tl-time"><text wx:if="{{item.timeText !== ''}}" class="tl-clock">{{item.timeText}}</text><text class="tl-section">{{item.sectionText}}</text></view>
-      <view class="tl-body">
-        <view class="tl-title">{{item.title}}<text wx:if="{{item.isNow}}" class="badge badge-now">正在上</text><text wx:elif="{{item.isNext}}" class="badge badge-now">下一节</text><text wx:elif="{{item.kind === 'free'}}" class="badge badge-free">空着</text></view>
-        <view wx:if="{{item.detail !== ''}}" class="tl-detail">{{item.detail}}</view>
+  <view wx:if="{{hero.mode === 'class'}}" id="hero-card" class="u2-hero home-hero" hover-class="pressed" data-id="{{hero.key}}" bindtap="openCourse" aria-label="{{hero.label}}{{hero.title}}">
+    <view class="u2-hero-top">
+      <text class="u2-hero-label">{{hero.label}}</text>
+      <text wx:if="{{hero.sectionText !== ''}}" class="u2-tag u2-tag-line">{{hero.sectionText}}</text>
+    </view>
+    <view wx:if="{{hero.timeRange !== ''}}" class="u2-hero-time u2-num">{{hero.timeRange}}</view>
+    <view class="u2-hero-title">{{hero.title}}</view>
+    <view wx:if="{{hero.meta !== ''}}" class="u2-hero-meta">{{hero.meta}}</view>
+    <view class="u2-hero-foot">
+      <text>{{hero.footNote}}</text>
+      <text wx:if="{{hero.key !== ''}}" class="u2-hero-link">课程详情 →</text>
+    </view>
+  </view>
+
+  <view wx:elif="{{hero.mode === 'unknown-times'}}" id="hero-unknown-times" class="u2-notice u2-notice-info home-notice">
+    <view class="u2-notice-title">还没有填写作息时间</view>
+    <view>{{hero.meta}}</view>
+  </view>
+
+  <view wx:elif="{{hero.mode === 'error'}}" id="hero-error" class="u2-notice u2-notice-error home-notice">
+    <view class="u2-notice-title">今天的课表暂时没读到</view>
+    <view class="home-notice-copy">{{hero.meta}}</view>
+    <button id="today-retry" class="u2-btn u2-btn-secondary home-notice-button" hover-class="pressed" bindtap="retryToday">重新读取</button>
+  </view>
+
+  <view wx:elif="{{hero.mode === 'empty'}}" id="hero-empty" class="u2-empty home-empty">
+    <view class="u2-empty-icon"><image class="u2-quick-img" src="/assets/ui-v2/v2-calendar.svg" /></view>
+    <view class="u2-empty-title">{{hero.title}}</view>
+    <view class="u2-empty-copy">{{hero.meta}}</view>
+    <view class="u2-actions">
+      <button id="import-entry-empty" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="openImport">导入我的课表</button>
+      <button id="manual-entry" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="openManualCourse">先手工添加一门课</button>
+    </view>
+    <view class="u2-quote home-empty-note">还没设置学期与作息时，只显示节次；不猜测「正在上课」或「今天没课」。</view>
+  </view>
+
+  <view wx:elif="{{hero.mode === 'loading'}}" id="hero-loading" class="u2-card u2-card-line home-loading">
+    <view class="u2-card-title">正在读取今天的安排</view>
+    <view class="u2-card-copy">课表读取完成后显示下一节课与今日时间线。</view>
+  </view>
+
+  <view wx:if="{{hero.mode === 'unknown-times'}}" class="u2-actions">
+    <button id="fill-settings" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="openTimetableSettings">填写我的作息时间</button>
+    <button id="week-link-unknown" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="openTimetable">直接看周课表</button>
+  </view>
+
+  <view class="u2-quick">
+    <button id="ask-entry" class="u2-quick-item" hover-class="pressed" bindtap="askTimetable" aria-label="问课表，打开课表助手">
+      <view class="u2-quick-icon"><image class="u2-quick-img" src="/assets/ui-v2/v2-ask.svg" /></view>
+      <text>问课表</text>
+    </button>
+    <button id="import-entry" class="u2-quick-item" hover-class="pressed" bindtap="openImport" aria-label="导入课表">
+      <view class="u2-quick-icon"><image class="u2-quick-img" src="/assets/ui-v2/v2-import.svg" /></view>
+      <text>导入课表</text>
+    </button>
+    <button id="goal-entry" class="u2-quick-item" hover-class="pressed" bindtap="openGoals" aria-label="目标日">
+      <view class="u2-quick-icon"><image class="u2-quick-img" src="/assets/ui-v2/v2-goal.svg" /></view>
+      <text>目标日</text>
+    </button>
+    <button id="news-entry" class="u2-quick-item" hover-class="pressed" bindtap="openNews" aria-label="校园资讯">
+      <view class="u2-quick-icon"><image class="u2-quick-img" src="/assets/ui-v2/v2-news.svg" /></view>
+      <text>校园资讯</text>
+    </button>
+  </view>
+
+  <block wx:if="{{brief.rows.length > 0}}">
+    <view class="u2-section">
+      <view class="u2-section-title">今天的安排</view>
+      <view id="week-link" class="u2-text-link" bindtap="openTimetable">看课表 →</view>
+    </view>
+    <view id="today-timeline" class="u2-timeline">
+      <view
+        wx:for="{{brief.rows}}"
+        wx:key="key"
+        class="u2-tl-row"
+        hover-class="{{item.kind === 'course' ? 'pressed' : 'none'}}"
+        data-id="{{item.key}}"
+        bindtap="openCourse"
+      >
+        <view class="u2-tl-time">
+          <text wx:if="{{item.timeText !== ''}}">{{item.timeText}}</text>
+          <text class="u2-tl-section">{{item.sectionText}}</text>
+        </view>
+        <view class="u2-tl-track {{item.isNow ? 'u2-tl-track-now' : ''}}{{item.kind === 'free' ? 'u2-tl-track-free' : ''}}"></view>
+        <view class="u2-tl-main">
+          <view class="u2-tl-title">{{item.title}}<text wx:if="{{item.isNow}}" class="u2-badge">正在上</text><text wx:elif="{{item.isNext}}" class="u2-badge">下一节</text></view>
+          <view wx:if="{{item.detail !== ''}}" class="u2-tl-detail">{{item.detail}}</view>
+        </view>
       </view>
     </view>
-  </view>
-  <view wx:else class="home-timeline-empty">
-    <view class="empty-title">{{brief.headline}}</view>
-    <view class="empty-copy">{{brief.emptyMessage}}</view>
-  </view>
+  </block>
 
-  <view class="askbar-wrap">
-    <view class="askbar">
-      <view class="askbar-tool" id="ask-photo" hover-class="pressed" bindtap="openPhotoAsk" aria-label="拍照提问，打开课表导入的截图识别"><image class="askbar-icon" src="/assets/ui/camera.svg" /></view>
-      <input id="ask-input" class="askbar-input" value="{{askText}}" placeholder="问课表、贴通知、改安排…" confirm-type="send" bindinput="onAskInput" bindconfirm="sendAsk" adjust-position />
-      <view class="askbar-tool" id="ask-voice" hover-class="pressed" bindtap="openVoiceAsk" aria-label="语音输入"><image class="askbar-icon" src="/assets/ui/mic.svg" /></view>
-      <view class="askbar-go" id="ask-send" hover-class="pressed" bindtap="sendAsk" aria-label="发送问题">↑</view>
+  <block wx:if="{{planStrip.hasPlan}}">
+    <view class="u2-section">
+      <view class="u2-section-title">继续计划</view>
+      <view class="u2-section-note">本机保存</view>
     </view>
-    <view class="ai-note">语音输入还没接入，先打字或拍照；发送后会打开课表助手，不会自动发送。</view>
-    <view class="askbar-suggest"><text wx:for="{{brief.suggestions}}" wx:key="*this" class="suggest-chip" data-text="{{item}}" bindtap="useSuggestion" hover-class="pressed">{{item}}</text></view>
-  </view>
+    <view id="plan-entry" class="u2-strip" hover-class="pressed" bindtap="openPlan">
+      <view class="u2-strip-mark"></view>
+      <view class="u2-strip-main">
+        <view class="u2-row-title">{{planStrip.title}}</view>
+        <view class="u2-row-sub">{{planStrip.meta}}</view>
+      </view>
+      <view class="u2-text-link">查看</view>
+    </view>
+  </block>
 
-  <view class="section-head"><view class="section-title">校园与日常</view><view class="section-note">常用入口</view></view>
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="timetable-entry" class="home-primary" hover-class="pressed" bindtap="openTimetable" aria-label="打开我的课表，可导入课程并按周查看"><view class="primary-inner"><view><view class="entry-label">每周安排</view><view class="entry-title">我的课表</view><view class="entry-description">导入课程，安排每一周</view></view><view class="primary-symbol"><image class="ui-icon" src="/assets/ui/calendar-white.svg" /></view></view></button>
-  <view class="entry-pair">
-    <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="departments-entry" class="home-entry" hover-class="pressed" bindtap="openDepartments" aria-label="学生部门，查看已核实的组织名录"><image class="ui-icon" src="/assets/ui/people.svg"/><view class="entry-title">学生部门</view><view class="entry-description">了解组织与职责</view></button>
-    <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="news-entry" class="home-entry" hover-class="pressed" bindtap="openNews" aria-label="校园资讯，阅读官网动态与通知"><image class="ui-icon" src="/assets/ui/news.svg"/><view class="entry-title">校园资讯</view><view class="entry-description">官网信息与来源</view></button>
+  <view class="u2-source">
+    <view class="u2-source-line">今日卡片与时间线只用本机课表、目标日与已填作息，不调用模型。</view>
+    <view class="u2-source-line">学生参赛作品 · 非学校官方应用</view>
   </view>
-  <view class="entry-pair">
-    <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="calendar-entry" class="home-entry" hover-class="pressed" bindtap="openCalendar" aria-label="校历与考试，查看官方日期和来源"><image class="ui-icon" src="/assets/ui/calendar.svg"/><view class="entry-title">校历与考试</view><view class="entry-description">查日期，也查依据</view></button>
-    <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="goal-days-entry" class="home-entry goal-strip" hover-class="pressed" bindtap="openGoals" aria-label="目标日，查看最近的目标日与剩余天数"><image class="ui-icon" src="/assets/ui/flag.svg"/><view class="entry-title">目标日</view><view class="entry-description goal-strip-name">{{goalStrip.hasGoal ? goalStrip.name : '记住重要的日子'}}</view><view wx:if="{{goalStrip.hasGoal}}" class="goal-strip-value">{{goalStrip.value}}{{goalStrip.unit}}</view></button>
-  </view>
-  <view class="section-head"><view class="section-title">学习与成长</view></view>
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="fitness-entry" class="home-wide-entry" bindtap="openFitness" hover-class="pressed"><view class="entry-row"><image class="ui-icon" src="/assets/ui/activity.svg"/><view class="entry-main"><view class="entry-title">体测估算</view><view class="entry-description">按国家标准估算，缺项不猜</view></view><text class="entry-arrow">›</text></view></button>
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="advancement-entry" class="home-wide-entry" bindtap="openAdvancement" hover-class="pressed"><view class="entry-row"><image class="ui-icon" src="/assets/ui/book.svg"/><view class="entry-main"><view class="entry-title">升学与实习问答</view><view class="entry-description">从官方原文中找依据</view></view><text class="entry-arrow">›</text></view></button>
-  <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="defense-entry" class="home-wide-entry" bindtap="openDefense" hover-class="pressed"><view class="entry-row"><image class="ui-icon" src="/assets/ui/chat.svg"/><view class="entry-main"><view class="entry-title">项目讲解与答辩练习</view><view class="entry-description">三轮练习，一次复盘</view></view><text class="entry-arrow">›</text></view></button>
-  <view class="news-section">
-    <view class="section-head"><view class="section-title">校园资讯</view><view class="section-note">最近动态</view></view>
-    <view wx:if="{{newsStatus === 'loading'}}" class="news-hint">正在读取最近资讯…</view>
-    <view wx:elif="{{newsStatus === 'error'}}" class="news-hint news-hint-error"><view>{{newsError}}</view><button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="news-retry" class="source-button" hover-class="pressed" bindtap="retryNews">重新读取</button></view>
-    <block wx:else>
-      <view wx:if="{{recentNews.length === 0}}" class="news-hint">暂时没有可展示的资讯，稍后再来看看。</view>
-      <view wx:else class="recent-news-list"><view wx:for="{{recentNews}}" wx:key="id" class="recent-news-item news-recent-item" data-id="{{item.id}}" bindtap="openNewsDetail" hover-class="pressed"><view class="recent-title news-recent-title">{{item.title}}</view><view class="recent-date news-recent-date">{{item.date === '' ? '日期待核实' : item.date}}</view></view></view>
-      <view class="news-source">来源：{{newsMeta.label}}<block wx:if="{{newsSyncedAtText !== ''}}"> · 最近写入：{{newsSyncedAtText}}</block></view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="news-view-all" class="source-button" bindtap="openNews" hover-class="pressed">查看全部校园资讯</button>
-    </block>
-  </view>
-  <view class="school-about"><view class="section-head"><view class="section-title">认识岭南</view></view><view class="introduction">{{school.introduction}}</view><view class="source-area"><view>资料来源：{{school.sourceLabel}}</view><view>核查于 {{school.verifiedAt}} · {{school.campuses}}</view><button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-source" class="source-button" bindtap="copySource" hover-class="pressed">复制学校官网链接</button></view></view>
-  <view class="home-footer">从了解校园，到安排每一天</view>
 </view>

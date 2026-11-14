@@ -44,6 +44,8 @@ interface DatasetEvent {
 Page({
   data: {
     detail: null as DepartmentDetailView | null,
+    /** 抬头红色徽记：取组织名首字，与列表页的称呼口径一致。 */
+    mark: '',
     notFound: false,
     notFoundTitle: NOT_FOUND_TITLE,
     notFoundCopy: NOT_FOUND_COPY,
@@ -67,6 +69,7 @@ Page({
     const detail = buildDepartmentDetail(id);
     this.setData({
       detail,
+      mark: detail === null ? '' : Array.from(detail.name)[0] ?? '',
       notFound: detail === null,
       qaDepartmentId: detail === null || typeof id !== 'string' ? '' : id,
     });
