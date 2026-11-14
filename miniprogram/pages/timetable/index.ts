@@ -974,10 +974,12 @@ Page({
     this.setData({ noticeOpen: !this.data.noticeOpen, noticeError: '' });
   },
   onNoticeInput(event: InputEvent) {
+    if (this.data.noticeApplying) return;
     this.noticeRequest += 1;
     this.setData({ noticeInput: String(event.detail.value ?? ''), noticeProposal: null, noticeReading: false, noticeError: '' });
   },
   onNoticeDraftInput(event: InputEvent) {
+    if (this.data.noticeApplying) return;
     this.setData({ noticeDraft: String(event.detail.value ?? '') });
   },
   toggleNoticeDetail() {
@@ -985,12 +987,14 @@ Page({
   },
   /** 设计图 70：原通知可改回再核对；原提案保留，改完取消不会丢。 */
   editNotice() {
+    if (this.data.noticeApplying) return;
     this.setData({ noticeEditing: true, noticeDraft: this.data.noticeInput, noticeError: '' });
   },
   keepProposal() {
     this.setData({ noticeEditing: false, noticeError: '' });
   },
   rereadNotice() {
+    if (this.data.noticeApplying) return;
     const text = this.data.noticeDraft.trim();
     this.setData({ noticeEditing: false, noticeInput: this.data.noticeDraft });
     return this.readNoticeText(text);
@@ -999,7 +1003,7 @@ Page({
     return this.readNoticeText(this.data.noticeInput.trim());
   },
   readNoticeText(text: string) {
-    if (this.data.noticeReading) return;
+    if (this.data.noticeReading || this.data.noticeApplying) return;
     this.setData({ noticeProposal: null });
     if (text === '') { this.setData({ noticeError: '先填写要核对的通知原文' }); return; }
     if (text.length > NOTICE_INPUT_MAX) {

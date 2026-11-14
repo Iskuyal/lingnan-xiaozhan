@@ -244,6 +244,9 @@ async function run() {
 
     await (await page.$('#notice-apply')).tap();
     await page.waitFor(1200);
+    // 自动化拍多张图会耗尽10秒窗口；只在夹具中暂停计时，撤销业务仍走真实页面处理器。
+    await mini.evaluate(() => getCurrentPages().slice(-1)[0].clearUndoTimer());
+    report.undoTimerFixture = '拍摄结果和周课表期间暂停撤销计时；不证明10秒截止边界，计时语义由本机测试另验';
     assert.equal(await page.data('week'), 11);
     assert.ok((await page.data('highlightIds')).includes('mock-java_w11'));
     const resultBody = await page.$('.tt2-overlay-body');

@@ -313,7 +313,7 @@
           <text class="tt2-kicker">原通知已保留</text>
           <text class="tt2-result-title tt2-small-title">先把原意改清楚。</text>
           <text class="tt2-muted">原提案不会在这里保存；重新识别后仍要核对生效周、节次与地点。</text>
-          <textarea id="notice-draft" class="tt2-textarea" value="{{noticeDraft}}" bindinput="onNoticeDraftInput" maxlength="4000" auto-height placeholder="第 11 周周三 3-4 节 Java 程序设计调到周五 5-6 节，地点改为博雅楼 A302，其余周次不变。" />
+          <textarea id="notice-draft" class="tt2-textarea" value="{{noticeDraft}}" bindinput="onNoticeDraftInput" disabled="{{noticeApplying}}" maxlength="4000" auto-height placeholder="第 11 周周三 3-4 节 Java 程序设计调到周五 5-6 节，地点改为博雅楼 A302，其余周次不变。" />
           <view class="tt2-notice info">重新识别会再请求一次 AI；你的原课表尚未改变。</view>
           <view class="tt2-actions">
             <button id="notice-reread" class="tt2-btn tt2-btn-primary" hover-class="pressed" disabled="{{noticeReading}}" bindtap="rereadNotice">重新识别，再核对提案</button>
@@ -323,9 +323,9 @@
 
         <view wx:if="{{!noticeEditing && noticeOpen}}" class="tt2-paste">
           <view class="tt2-paste-from">你粘贴的班群通知（这里只认文字；只是截图的话，可以用「导入课表」里的截图识别）</view>
-          <textarea id="notice-input" class="tt2-textarea" value="{{noticeInput}}" bindinput="onNoticeInput" maxlength="4000" auto-height placeholder="例如：第 11 周周三 3-4 节 Java 程序设计调到周五 5-6 节，地点改为博雅楼 A302，其余周次不变。" />
+          <textarea id="notice-input" class="tt2-textarea" value="{{noticeInput}}" bindinput="onNoticeInput" disabled="{{noticeApplying}}" maxlength="4000" auto-height placeholder="例如：第 11 周周三 3-4 节 Java 程序设计调到周五 5-6 节，地点改为博雅楼 A302，其余周次不变。" />
           <view class="tt2-row">
-            <button id="notice-read" class="tt2-btn tt2-btn-primary tt2-grow" hover-class="pressed" disabled="{{noticeReading}}" bindtap="readNotice">{{noticeReading ? '正在读…' : '识别变更'}}</button>
+              <button id="notice-read" class="tt2-btn tt2-btn-primary tt2-grow" hover-class="pressed" disabled="{{noticeReading || noticeApplying}}" bindtap="readNotice">{{noticeReading ? '正在读…' : '识别变更'}}</button>
           </view>
           <view id="notice-hint" class="tt2-muted">{{noticeHint}}</view>
           <view id="notice-error" class="tt2-warn" wx:if="{{noticeError !== ''}}">{{noticeError}}</view>

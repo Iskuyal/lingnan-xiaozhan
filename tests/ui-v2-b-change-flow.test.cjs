@@ -229,6 +229,25 @@ test('识别等待时更改原通知，迟到回复不能恢复旧提案或写�
   assert.equal(state.applyCount, 0);
 });
 
+test('正在应用通知时保持原文和提案锁定，不允许新解析清除写入批次', async () => {
+  const state = stateFor();
+  const cloud = cloudFor(state);
+  const page = loadPage(baseWx(cloud));
+  page.onLoad({ today: '2026-11-11', clock: '10:00' });
+  await page.onShow();
+  await openProposal(page);
+  const text = page.data.noticeInput;
+  const proposal = JSON.stringify(page.data.noticeProposal);
+  const beforeCalls = cloud.calls.length;
+  page.setData({ noticeApplying: true });
+  page.onNoticeInput({ detail: { value: '写入中改成另一份通知' } });
+  page.editNotice();
+  await page.readNoticeText('写入中请求新解析');
+  assert.equal(page.data.noticeInput, text);
+  assert.equal(JSON.stringify(page.data.noticeProposal), proposal);
+  assert.equal(cloud.calls.length, beforeCalls);
+});
+
 test('限定第 11 周调课：只拆这一周，其他周保留；保存后回到第 11 周并标出目标课程', async () => {
   const state = stateFor();
   const cloud = cloudFor(state);

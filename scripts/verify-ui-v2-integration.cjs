@@ -115,6 +115,8 @@ async function run() {
     await page.callMethod('readNotice');
     assert.ok(await page.data('noticeProposal'));
     await page.callMethod('applyNotice');
+    await mini.evaluate(() => getCurrentPages().slice(-1)[0].clearUndoTimer());
+    report.undoTimerFixture = '拍摄结果期间暂停撤销计时，不用于验证10秒截止边界';
     assert.equal(await page.data('week'), 11);
     await shot('07-notice-saved');
     await page.callMethod('undoNotice');
