@@ -1,0 +1,136 @@
+{
+  "date": "2026-11-14T12:55:56.816Z",
+  "git": "21f9b6e7a886ec7020c040b1271299198d834ac4",
+  "mode": "native_simulator_offline_fixtures",
+  "realAiCalls": 0,
+  "realCloudWrites": 0,
+  "boundary": "独立项目在app启动前安装请求/存储隔离；AI和业务全为夹具，不是真机或模型效果验收。",
+  "checks": [
+    {
+      "name": "首页真实点击切课表并打开助手，仅消费一次，不自动请求模型",
+      "passed": true
+    },
+    {
+      "name": "tab往返不重放旧助手意图",
+      "passed": true
+    },
+    {
+      "name": "已有课表的无课日不会引导重新导入",
+      "passed": true
+    },
+    {
+      "name": "首页点课程进入已有课程编辑，而非新增",
+      "passed": true
+    },
+    {
+      "name": "基础规则换排法仍保持时长、频次和不可用星期",
+      "passed": true
+    },
+    {
+      "name": "保存计划跨tab到对应日历周，计划独立于正式课程",
+      "passed": true
+    },
+    {
+      "name": "限定周次调课应用后定位第11周，并支持整项撤销",
+      "passed": true
+    },
+    {
+      "name": "练习反馈未返回时仍能复制已有原答，不生成未返回反馈",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-home.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "02-home-to-assistant.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "03-home-no-classes.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "04-home-course-edit.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "05-rule-preview.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "06-plan-to-week.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "07-notice-saved.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "08-notice-undo.png",
+      "width": 371,
+      "height": 802
+    },
+    {
+      "file": "09-copy-record.png",
+      "width": 371,
+      "height": 802
+    }
+  ],
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 671,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "passed": true
+}

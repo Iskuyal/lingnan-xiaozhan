@@ -36,7 +36,7 @@ const CLI = process.env.WECHAT_CLI || path.join('D:\\微信web开发者工具', 
 const WINDOW = { width: 1720, height: 1080 };
 
 function parseArgs(argv) {
-  const options = { out: '', only: null, width: 390, check: false };
+  const options = { out: '', only: null, width: 390, check: false, useSession: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--out') {
@@ -49,6 +49,7 @@ function parseArgs(argv) {
       index += 1;
       options.width = Number(argv[index]) || 390;
     } else if (arg === '--check') options.check = true;
+    else if (arg === '--use-session') options.useSession = true;
   }
   return options;
 }
@@ -924,7 +925,7 @@ async function main() {
 
   process.env.WECHAT_AUTO_PORT = PORT;
   try {
-    await ensureAutomation();
+    if (!options.useSession) await ensureAutomation();
   } catch (error) {
     console.error(`[capture] ${error && error.message ? error.message : error}`);
     return 2;
@@ -1059,7 +1060,8 @@ async function main() {
     // 先卸载尚在等待的练习页，再恢复平台方法；全部种子始终只在内存。
     await mini.reLaunch('/pages/campus/index').catch(() => {});
     await mini.evaluate(restoreOfflineUiSession).catch(() => {});
-    await mini.close().catch(() => {});
+    if (options.useSession) mini.disconnect();
+    else await mini.close().catch(() => {});
   }
 
   const report = {
