@@ -11,9 +11,14 @@
 | 公共基础 NAV_SHA | `2490ebd3ae94b8b58eebe70b1e658caf05fd6688` |
 | B 范围提交 | `62741e794de9f32b2284ba0ad5a9dd682c4b7e51` |
 | 合入 NAV_SHA 的 merge | `3e68984`（普通 merge，保留共同祖先） |
-| 实际被测代码提交 | `539e7985a3adcc9568e34ecd94de1799173ebf7d` |
-| 最终 HEAD | 本报告与截图提交后的 HEAD（交付消息给出；两者之间只有证据与文档） |
-| 分支 | `codex/lingnan-ui-b` |
+| 实际被测代码提交 | 本地 `539e7985a3adcc9568e34ecd94de1799173ebf7d`；远端同 tree 提交 `f643fca1881f97f25b4be54e9f42768bad91598b` |
+| 远端 B 范围提交 | `1cd6d1c1415eb4682fc07f1a66e7b9a84e487d29`（父提交 `da008af9`） |
+| 远端 NAV merge | `33a398946e8a623d772939b67fbbac7c05e3721b`（父提交 `1cd6d1c` + `2490ebd`） |
+| 远端证据提交 | `59b4acd8809998b1b283dbff69dc67e6ade2787b`（tree `8a08536`） |
+| 最终 HEAD | 交付消息给出；远端证据提交为 `59b4acd`，之后仅可能追加本报告的修正 |
+| 分支 | `codex/lingnan-ui-b`（远端已建立） |
+
+推送说明：本机 `github.com:443` 不可达，按既有 API 推送方式逐提交上传；远端提交 SHA 与本地不同，但四个提交的 tree 已逐一比对：`1acdbc7 / 836a80a / 2bf5812 / 8a08536` 与本地完全一致，父提交拓扑也保持「B 工作 → 普通 merge NAV_SHA → 接入 → 证据」。
 
 改动范围：`miniprogram/pages/timetable/`、`miniprogram/ui/timetable/`、课表专属测试与 `scripts/ui-v2-b-native.cjs`；未修改 `app.json`、`app.wxss`、`styles/ui.wxss`、`ui/navigation.ts`、公共组件、业务 service（色板亦未改）、云函数或存储。
 
