@@ -165,7 +165,7 @@ async function run() {
   const setMode = (mode) => mini.evaluate((next) => { globalThis.__uiV2A.mode = next; }, mode);
 
   try {
-    mini = await connectMini('9461');
+    mini = await connectMini(process.env.WECHAT_AUTO_PORT || '9461');
     await waitForApp(mini);
     report.environment = await mini.systemInfo();
     await install(mini, fixtures());

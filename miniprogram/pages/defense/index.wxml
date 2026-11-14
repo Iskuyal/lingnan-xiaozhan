@@ -29,7 +29,7 @@
       <view wx:if="{{recordView.empty}}" class="u2-empty">
         <view class="u2-empty-icon">◻</view>
         <view class="u2-empty-title">还没有可复制的内容</view>
-        <view class="u2-empty-copy">至少完成一轮作答并拿到反馈后，再回来复制；未返回的反馈不会被补写。</view>
+        <view class="u2-empty-copy">提交回答后可复制已有原答；未返回的反馈不会被补写。</view>
       </view>
 
       <block wx:else>

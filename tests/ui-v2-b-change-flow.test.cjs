@@ -190,6 +190,23 @@ test('修改通知后重新识别失败：旧提案失效，不能按旧内容�
   assert.equal(state.applyCount, 0);
 });
 
+test('重核空白或超长新通知也作废旧提案，不能应用不匹配原文的改动', async () => {
+  for (const text of ['', '新'.repeat(4001)]) {
+    const state = stateFor();
+    const wx = baseWx(cloudFor(state));
+    const page = loadPage(wx);
+    page.onLoad({ today: '2026-11-11', clock: '10:00' });
+    await page.onShow();
+    await openProposal(page);
+    page.editNotice();
+    page.setData({ noticeDraft: text });
+    await page.rereadNotice();
+    assert.equal(page.data.noticeProposal, null);
+    await page.applyNotice();
+    assert.equal(state.applyCount, 0);
+  }
+});
+
 test('限定第 11 周调课：只拆这一周，其他周保留；保存后回到第 11 周并标出目标课程', async () => {
   const state = stateFor();
   const cloud = cloudFor(state);

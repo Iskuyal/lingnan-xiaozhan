@@ -739,6 +739,9 @@ const PROJECT_NAME = 'wx-match-c';
 
 /** 把 dist 复制到独立项目目录。必须每次全新复制：IDE 会缓存编译产物，共用目录会串味。 */
 function syncProject(project) {
+  const scratch = path.resolve(ROOT, '.scratch');
+  const relative = path.relative(scratch, path.resolve(project));
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('截图项目必须位于本仓库 .scratch 内');
   fs.rmSync(project, { recursive: true, force: true });
   fs.cpSync(DIST, project, { recursive: true });
   for (const name of ['project.config.json', 'project.private.config.json']) {

@@ -453,7 +453,7 @@ Page({
   onCopyReview() {
     const text = practiceRecordText(this.buildRecord());
     if (text === '') {
-      this.setData({ copyHint: '当前会话还没有可复制的内容：至少完成一轮、拿到反馈后再复制。' });
+      this.setData({ copyHint: '当前会话还没有可复制的内容，提交回答后可复制已有原答。' });
       wx.showToast({ title: '没有可复制的内容', icon: 'none' });
       return;
     }

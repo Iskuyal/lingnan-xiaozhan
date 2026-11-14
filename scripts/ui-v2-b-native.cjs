@@ -168,7 +168,7 @@ async function run() {
     boundary: '开发者工具模拟器；云函数、数据库、AI 与本机存储接管为示例。真实云请求 0 次（连接前启动读取除外）；不是真机，不证明真实模型、部署或事务性能。',
     checks: [], screenshots: [], passed: false,
   };
-  const mini = await connectMini('9462');
+  const mini = await connectMini(process.env.WECHAT_AUTO_PORT || '9462');
   let installed = false;
   const shot = async (name, page) => {
     await page.waitFor(400);

@@ -973,7 +973,7 @@ Page({
     this.setData({ noticeOpen: !this.data.noticeOpen, noticeError: '' });
   },
   onNoticeInput(event: InputEvent) {
-    this.setData({ noticeInput: String(event.detail.value ?? ''), noticeError: '' });
+    this.setData({ noticeInput: String(event.detail.value ?? ''), noticeProposal: null, noticeError: '' });
   },
   onNoticeDraftInput(event: InputEvent) {
     this.setData({ noticeDraft: String(event.detail.value ?? '') });
@@ -997,7 +997,9 @@ Page({
     return this.readNoticeText(this.data.noticeInput.trim());
   },
   readNoticeText(text: string) {
-    if (text === '' || this.data.noticeReading) return;
+    if (this.data.noticeReading) return;
+    this.setData({ noticeProposal: null });
+    if (text === '') { this.setData({ noticeError: '先填写要核对的通知原文' }); return; }
     if (text.length > NOTICE_INPUT_MAX) {
       this.setData({ noticeError: `这段字太多了（${text.length} 字），一次最多贴 ${NOTICE_INPUT_MAX} 字，可以分几次贴。` });
       return;
