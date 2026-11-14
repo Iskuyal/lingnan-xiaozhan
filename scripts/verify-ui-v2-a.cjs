@@ -314,9 +314,10 @@ async function run() {
     page = await waitForPath('pages/timetable/index');
     assert.equal(page.path, 'pages/timetable/index', '切到课表 tab');
     const intent = await mini.evaluate(() => wx.getStorageSync('lingnan/ui-timetable-intent/v1'));
-    assert.ok(intent && intent.intent && intent.intent.kind === 'assistant', '意图已写入');
+    if (intent) assert.equal(intent.intent?.kind, 'assistant', '尚未消费时应保留正确意图');
+    else assert.equal(await page.data('assistantOpen'), true, 'B集成后应已消费意图并打开助手');
     await shot('21-timetable-from-home-intent', page);
-    check('首页问课表切到课表 tab 并留下意图', JSON.stringify({ id: intent.id, consumed: false }));
+    check('首页问课表切到课表 tab，意图已写入或被B正确消费', JSON.stringify({ id: intent?.id ?? '', consumed: !intent }));
 
     report.mockCalls = await mini.evaluate(() => globalThis.__uiV2A.calls);
     report.passed = true;

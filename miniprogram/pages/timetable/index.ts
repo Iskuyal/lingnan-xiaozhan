@@ -473,6 +473,7 @@ Page({
   /** 本轮应用/撤销涉及的周次，用于返回对应周与标出变化。 */
   lastChangeWeek: 0,
   applyNoticeTargetWeek: 0,
+  noticeRequest: 0,
 
   toggleGridExpansion() {
     const expanded = !this.data.gridExpanded;
@@ -973,7 +974,8 @@ Page({
     this.setData({ noticeOpen: !this.data.noticeOpen, noticeError: '' });
   },
   onNoticeInput(event: InputEvent) {
-    this.setData({ noticeInput: String(event.detail.value ?? ''), noticeProposal: null, noticeError: '' });
+    this.noticeRequest += 1;
+    this.setData({ noticeInput: String(event.detail.value ?? ''), noticeProposal: null, noticeReading: false, noticeError: '' });
   },
   onNoticeDraftInput(event: InputEvent) {
     this.setData({ noticeDraft: String(event.detail.value ?? '') });
@@ -1006,6 +1008,7 @@ Page({
     }
     this.clearUndoTimer();
     this.undoStack = [];
+    const request = ++this.noticeRequest;
     this.setData({
       noticeReading: true,
       noticeProposal: null,
@@ -1020,6 +1023,7 @@ Page({
     const system = buildNoticePrompt(this.data.courses, this.data.semester, this.data.week, this.data.weekOptions.length);
     return callAi(chatEvent(NOTICE_FEATURE, system, chatMessages([{ role: 'user', text }], system)))
       .then((result) => {
+        if (request !== this.noticeRequest) return;
         if (!result.ok) {
           this.setData({ noticeReading: false, noticeError: userMessage(result) });
           return;
@@ -1048,6 +1052,7 @@ Page({
         });
       })
       .catch((error) => {
+        if (request !== this.noticeRequest) return;
         this.setData({ noticeReading: false, noticeError: transportMessage(error) });
       });
   },
@@ -1361,6 +1366,7 @@ Page({
     this.setData({ noticeResult: null, noticeBatch: null, noticeOpen: true });
   },
   onUnload() {
+    this.noticeRequest += 1;
     this.clearUndoTimer();
     this.undoStack = [];
   },

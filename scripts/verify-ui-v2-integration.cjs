@@ -121,6 +121,26 @@ async function run() {
     check('限定周次调课应用后定位第11周，并支持整项撤销');
     await shot('08-notice-undo');
 
+    await mini.evaluate(async () => {
+      const p = getCurrentPages().slice(-1)[0];
+      const original = wx.cloud.callFunction;
+      let respond;
+      wx.cloud.callFunction = (options) => options.name === 'ai'
+        ? new Promise((resolve) => { respond = resolve; }) : original(options);
+      try {
+        p.onNoticeInput({ detail: { value: '第11周Java调课通知A' } });
+        const pending = p.readNotice();
+        p.onNoticeInput({ detail: { value: '新通知B：取消调课，不修改课程' } });
+        respond({ result: { ok: true, text: globalThis.__lingnanB.data.noticeReply, safety: { checked: true, passed: true }, warnings: [] } });
+        await pending;
+      } finally { wx.cloud.callFunction = original; }
+    });
+    assert.equal(await page.data('noticeProposal'), null);
+    assert.equal(await page.data('noticeInput'), '新通知B：取消调课，不修改课程');
+    assert.equal(await page.data('noticeReading'), false);
+    check('等待中改通知后，迟到模型夹具回复不能恢复旧提案');
+    await shot('09-notice-late-reply');
+
     page = await open('/pages/defense/index');
     await mini.evaluate(() => {
       const p = getCurrentPages().slice(-1)[0];
@@ -132,7 +152,7 @@ async function run() {
     await page.callMethod('onCopyReview');
     assert.equal(await page.data('copiedOpen'), true);
     check('练习反馈未返回时仍能复制已有原答，不生成未返回反馈');
-    await shot('09-copy-record');
+    await shot('10-copy-record');
     report.passed = true;
   } catch (error) { report.error = error.stack; process.exitCode = 1; }
   finally {

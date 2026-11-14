@@ -207,6 +207,28 @@ test('重核空白或超长新通知也作废旧提案，不能应用不匹配�
   }
 });
 
+test('识别等待时更改原通知，迟到回复不能恢复旧提案或写入旧改动', async () => {
+  const state = stateFor();
+  const cloud = cloudFor(state);
+  let respond;
+  const original = cloud.callFunction;
+  cloud.callFunction = (options) => options.name === 'ai'
+    ? new Promise((resolve) => { respond = resolve; }) : original(options);
+  const wx = baseWx(cloud);
+  const page = loadPage(wx);
+  page.onLoad({ today: '2026-11-11', clock: '10:00' });
+  await page.onShow();
+  const pending = openProposal(page);
+  page.onNoticeInput({ detail: { value: '新通知取消调课，不修改课程' } });
+  respond({ result: aiReply(replyText()) });
+  await pending;
+  assert.equal(page.data.noticeProposal, null);
+  assert.equal(page.data.noticeInput, '新通知取消调课，不修改课程');
+  assert.equal(page.data.noticeReading, false);
+  await page.applyNotice();
+  assert.equal(state.applyCount, 0);
+});
+
 test('限定第 11 周调课：只拆这一周，其他周保留；保存后回到第 11 周并标出目标课程', async () => {
   const state = stateFor();
   const cloud = cloudFor(state);
