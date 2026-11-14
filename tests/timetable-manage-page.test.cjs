@@ -477,7 +477,7 @@ test('课程管理页：行内编辑不改变勾选，取消单门删除不写�
   page.toggleRow({ currentTarget: { dataset: { id } } });
   const selected = list(page.data.selectedIds);
   page.editRow({ currentTarget: { dataset: { id } } });
-  assert.ok(wx.actions.includes(`navigateTo:/pages/timetable/edit/index?id=${encodeURIComponent(id)}`));
+  assert.ok(wx.actions.includes(`navigateTo:/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(id)}`));
   assert.deepEqual(list(page.data.selectedIds), selected);
   await page.deleteRow({ currentTarget: { dataset: { id } } });
   assert.ok(wx.modals[0].content.includes(unplaced.name));

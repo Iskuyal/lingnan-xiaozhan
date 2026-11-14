@@ -431,6 +431,14 @@ test('计划页基础规则：按规则生成预览走纯规则，不请求模�
   assert.deepEqual(cloud.requests.filter((item) => !['list', 'getSettings'].includes(item.data.action)), []);
   assert.equal(stub.store.has(PLAN_KEY), false);
   assert.deepEqual(stub.timers, [], '生成后不自动跳走');
+  const constraints = JSON.stringify(page.data.plan.constraints);
+  const text = page.data.plan.constraintText;
+  page.onVariant();
+  assert.equal(JSON.stringify(page.data.plan.constraints), constraints, '换排法保持控件确认的完整约束');
+  assert.equal(page.data.plan.constraintText, text);
+  assert.ok(page.data.plan.blocks.every((block) => block.weekday !== 4 && block.minutes <= 45));
+  assert.equal(page.data.plan.weeklyCount, 2);
+  assert.equal(cloud.aiCount(), 0);
   delete globalThis.wx;
 });
 

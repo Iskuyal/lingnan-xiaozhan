@@ -172,6 +172,24 @@ async function openProposal(page) {
   await page.readNotice();
 }
 
+test('修改通知后重新识别失败：旧提案失效，不能按旧内容写课', async () => {
+  const state = stateFor();
+  const cloud = cloudFor(state);
+  const wx = baseWx(cloud);
+  const page = loadPage(wx);
+  page.onLoad({ today: '2026-11-11', clock: '10:00' });
+  await page.onShow();
+  await openProposal(page);
+  assert.ok(page.data.noticeProposal);
+  const call = cloud.callFunction;
+  cloud.callFunction = (options) => options.name === 'ai'
+    ? Promise.reject(new Error('新通知识别失败')) : call(options);
+  await page.readNoticeText('改为第12周周五上课');
+  assert.equal(page.data.noticeProposal, null);
+  await page.applyNotice();
+  assert.equal(state.applyCount, 0);
+});
+
 test('限定第 11 周调课：只拆这一周，其他周保留；保存后回到第 11 周并标出目标课程', async () => {
   const state = stateFor();
   const cloud = cloudFor(state);

@@ -162,6 +162,7 @@ Page({
    * 从目标日页返回就能看到倒计时更新，不用手动刷新。
    */
   onShow() {
+    this.setData({ dateTile: dateTileOf(this.todayText()) });
     this.loadPlanStrip();
     return this.loadToday();
   },
@@ -258,7 +259,7 @@ Page({
     if (typeof key !== 'string' || key === '' || key.startsWith('free:')) return;
     const id = key.split(':')[0];
     if (id === '') return;
-    wx.navigateTo({ url: `/pages/timetable/edit/index?id=${encodeURIComponent(id)}` });
+    wx.navigateTo({ url: `/pages/timetable/edit/index?scope=saved&id=${encodeURIComponent(id)}` });
   },
 });
 

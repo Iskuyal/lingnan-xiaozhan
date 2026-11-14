@@ -124,7 +124,7 @@ test('三轮完成后：记录逐轮包含问题、原答、反馈，且原答�
   }
 });
 
-test('未返回反馈的轮次不出现在记录里，也不补写下一轮问题', () => {
+test('未返回反馈时仍保留已有原答，只复制已返回反馈，不补写下一轮问题', () => {
   const { mod } = loadPage();
   // 只完成第 1 轮，第 2/3 轮的问题即使已知也不得写进记录。
   const view = mod.buildRecordView({ materialName: '课表导入与校对', session: sessionWithRounds(1), reviewRows: [] });
@@ -136,15 +136,16 @@ test('未返回反馈的轮次不出现在记录里，也不补写下一轮问�
   assert.equal(text.includes(defense.questionFor(3).text), false);
 });
 
-test('申请中（有回答、反馈未回）的轮次同样不算完成', () => {
+test('等待或失败时复制已有原答，不冒充反馈已返回', () => {
   const { mod } = loadPage();
   let session = sessionWithRounds(1);
   session = defense.advanceRound(session);
   session = defense.submitAnswer(session, ANSWERS[1]); // 停在 pending：answ 有、feedback 还没有
   const text = mod.practiceRecordText(mod.buildRecordView({ materialName: '课表导入与校对', session, reviewRows: [] }));
   assert.ok(text.includes(ANSWERS[0]));
-  assert.equal(text.includes(ANSWERS[1]), false, '未返回反馈的回答不得写进记录');
-  assert.equal(text.includes(defense.questionFor(2).text), false);
+  assert.equal(text.includes(ANSWERS[1]), true, '未返回反馈也要保留用户已有原答');
+  assert.equal(text.includes(defense.questionFor(2).text), true);
+  assert.equal(text.includes(FEEDBACKS[1]), false);
 });
 
 test('重答后记录包含重答段，标明沿用第 3 轮问题，并保留重答原答与反馈', () => {

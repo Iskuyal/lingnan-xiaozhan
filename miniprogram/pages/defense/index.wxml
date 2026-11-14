@@ -43,7 +43,7 @@
           <view class="df-record-label">你的回答</view>
           <view class="df-record-text">{{item.answer}}</view>
           <view class="df-record-label">材料反馈</view>
-          <view class="df-record-text">{{item.feedback}}</view>
+          <view class="df-record-text">{{item.feedback || '反馈尚未返回'}}</view>
         </view>
 
         <view class="u2-card u2-card-line df-record" wx:if="{{recordView.review.length > 0}}">
@@ -65,7 +65,7 @@
           <view class="df-record-label">你的重答 · 沿用第 3 轮问题</view>
           <view class="df-record-text">{{recordView.reanswer.answer}}</view>
           <view class="df-record-label">重答反馈</view>
-          <view class="df-record-text">{{recordView.reanswer.feedback}}</view>
+          <view class="df-record-text">{{recordView.reanswer.feedback || '反馈尚未返回'}}</view>
         </view>
       </block>
 

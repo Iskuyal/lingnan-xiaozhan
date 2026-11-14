@@ -374,6 +374,7 @@ Page({
   timetableError: '',
   /** 「换一种排法」的计数：只换起点重算，不写库。 */
   variant: 0,
+  previewReadout: null as ConstraintReadout | null,
   coursesKnown: false,
   aiDraft: null as AiConstraintDraft | null,
   aiConfirmed: false,
@@ -942,6 +943,7 @@ Page({
   /** 用已读到的课表算一份计划并铺到页面上（纯计算，测试可直接调用）。 */
   showPlan(text: string, interpreted?: ConstraintReadout) {
     const readout = interpreted ?? readConstraints(text);
+    this.previewReadout = readout;
     const plan = buildPlan({
       goalName: this.data.goalName,
       goalId: this.data.goalId,
@@ -1025,7 +1027,7 @@ Page({
     if (this.data.plan === null) return;
     const before = JSON.stringify(this.data.plan.blocks);
     this.variant += 1;
-    this.showPlan(this.data.constraintText, this.aiConfirmed ? this.aiDraft?.readout : undefined);
+    this.showPlan(this.data.plan.constraintText, this.previewReadout ?? undefined);
     if (JSON.stringify(this.data.plan?.blocks) === before) wx.showToast({ title: '这次排法相同，可调整情况再试', icon: 'none' });
   },
 

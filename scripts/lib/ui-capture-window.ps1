@@ -62,5 +62,9 @@ if ($before -match 'state=min') {
   [void][UiCapWin]::ShowWindow($handle, [UiCapWin]::SW_RESTORE)
   Start-Sleep -Milliseconds 900
 }
-if ($Action -eq 'prepare') { Write-Output $before }
+if ($Action -eq 'prepare') {
+  $bounds = New-Object UiCapWin+Rect
+  [void][UiCapWin]::GetWindowRect($handle, [ref]$bounds)
+  @{left=$bounds.Left;top=$bounds.Top;width=($bounds.Right-$bounds.Left);height=($bounds.Bottom-$bounds.Top)} | ConvertTo-Json -Compress
+}
 if (![UiCapWin]::MoveWindow($handle,$Left,$Top,$Width,$Height,$true)) { throw 'Cannot resize the capture window' }

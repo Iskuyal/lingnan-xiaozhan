@@ -457,6 +457,8 @@ Page({
   },
   today: '',
   clockMinutes: 0,
+  fixedToday: '',
+  fixedClockMinutes: null as number | null,
   /** 学生自己翻过周次之后就不再自动跳到本周（否则每次 onShow 都把他拽回来）。 */
   weekPinned: false,
   /** 学生自己选过某一天后，切周也尊重这个选择；没选过时落在今天。 */
@@ -479,8 +481,10 @@ Page({
   },
   onLoad(query: Query) {
     const injectedToday = typeof query.today === 'string' && /^\d{4}-\d{2}-\d{2}$/u.test(query.today) ? query.today : '';
+    this.fixedToday = injectedToday;
     this.today = injectedToday === '' ? localToday() : injectedToday;
     const injectedClock = typeof query.clock === 'string' ? minutesOfClock(query.clock) : null;
+    this.fixedClockMinutes = injectedClock;
     this.clockMinutes = injectedClock === null ? localMinutes() : injectedClock;
     // 旧启动 query：有效则只在本页首次进入生效；之后由公共导航意图接管。
     this.startupPlanDate = typeof query.planDate === 'string' && weekdayOf(query.planDate) !== null ? query.planDate : '';
@@ -499,6 +503,8 @@ Page({
   },
   /** 从导入页或编辑页返回时也走这里，保证展示的是云端最新数据。 */
   onShow() {
+    this.today = this.fixedToday || localToday();
+    this.clockMinutes = this.fixedClockMinutes ?? localMinutes();
     this.setData({ savedPlanPanel: savedPlanView(loadPlan(), this.data.courses, this.data.settings, this.today, false, this.data.week) });
     return this.load();
   },
@@ -1000,6 +1006,7 @@ Page({
     this.undoStack = [];
     this.setData({
       noticeReading: true,
+      noticeProposal: null,
       noticeError: '',
       noticeToast: null,
       noticeResult: null,

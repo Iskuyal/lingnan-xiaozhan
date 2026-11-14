@@ -26,6 +26,7 @@ const path = require('node:path');
 const net = require('node:net');
 const crypto = require('node:crypto');
 const { spawn, execFileSync } = require('node:child_process');
+const { installOfflineUiSession, restoreOfflineUiSession } = require('./lib/offline-ui-session.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -938,6 +939,7 @@ async function main() {
 
   const results = [];
   try {
+    await mini.evaluate(installOfflineUiSession);
     const all = scenarios();
     const list = options.only === null ? all : all.filter((item) => options.only.includes(item.name));
     if (list.length === 0) {
@@ -1051,6 +1053,9 @@ async function main() {
       results.push(record);
     }
   } finally {
+    // 先卸载尚在等待的练习页，再恢复平台方法；全部种子始终只在内存。
+    await mini.reLaunch('/pages/campus/index').catch(() => {});
+    await mini.evaluate(restoreOfflineUiSession).catch(() => {});
     await mini.close().catch(() => {});
   }
 

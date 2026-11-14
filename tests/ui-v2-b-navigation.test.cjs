@@ -62,7 +62,7 @@ function instantiate(options) {
   return page;
 }
 
-function loadTimetable(wx, stack = [{}]) {
+function loadTimetable(wx, stack = [{}], Clock = Date) {
   globalThis.wx = wx;
   const filename = path.resolve('dist/pages/timetable/index.js');
   let page;
@@ -73,6 +73,7 @@ function loadTimetable(wx, stack = [{}]) {
     require: createRequire(filename),
     exports: {},
     console,
+    Date: Clock,
     setTimeout,
     clearTimeout,
   }, { filename });
@@ -124,6 +125,27 @@ test('assistant 意图：打开助手并预填，只填不发，意图读后即�
   });
 });
 
+test('常驻课表tab再次显示刷新日期和时刻，测试启动参数仍可固定时间', async () => {
+  let at = new Date(2026, 10, 14, 8, 30).getTime();
+  class Clock extends Date {
+    constructor(...args) { super(...(args.length ? args : [at])); }
+    static now() { return at; }
+  }
+  const wx = storageWx({ cloud: cloudStub(feed()) });
+  const page = loadTimetable(wx, [{}], Clock);
+  page.load = async () => {};
+  page.onLoad({});
+  at = new Date(2026, 10, 16, 14, 35).getTime();
+  await page.onShow();
+  assert.equal(page.today, '2026-11-16');
+  assert.equal(page.clockMinutes, 14 * 60 + 35);
+  page.onLoad({ today: '2026-11-11', clock: '10:00' });
+  await page.onShow();
+  assert.equal(page.today, '2026-11-11');
+  assert.equal(page.clockMinutes, 600);
+  delete globalThis.wx;
+});
+
 test('week 意图：切到指定有效周；超出范围只说明，不硬跳到错误周', async () => {
   await withPage(async (page, wx) => {
     await nav.openTimetable({ kind: 'week', week: 11 });
@@ -169,6 +191,7 @@ test('plan-week 意图：没设置开学日时说明原因，不编造周次', a
 
 test('畸形与过期意图：不打开助手、不改周次，并清掉坏数据', async () => {
   await withPage(async (page, wx) => {
+    page.onLoad({ today: '2026-09-07', clock: '08:00' });
     wx.setStorageSync(nav.TIMETABLE_INTENT_KEY, { id: 'bad', createdAt: Date.now(), intent: { kind: 'week', week: 999 } });
     await page.onShow();
     assert.equal(page.data.assistantOpen, false);

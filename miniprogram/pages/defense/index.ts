@@ -104,7 +104,7 @@ function reviewRows(session: DefenseSession): ReviewRow[] {
 
 /**
  * 汇总当前会话**真实已有**的内容。判定只看 session 里的 answers / feedbacks：
- * 两者缺一（或为空）的轮次一律跳过——这正是「不补写未返回内容」的实现点。
+ * 已有原答独立保留，反馈只有实际返回时才纳入；不补写未作答的轮次。
  */
 export function buildRecordView(input: {
   materialName: string;
@@ -113,30 +113,30 @@ export function buildRecordView(input: {
 }): PracticeRecordView {
   const rounds: PracticeRecordRound[] = [];
   for (const question of DEFENSE_QUESTIONS) {
-    const answer = input.session.answers.find((item) => item.round === question.round);
+    const answer = input.session.answers.find((item) => item.round === question.round)
+      ?? (input.session.round === question.round ? { text: input.session.draft } : undefined);
     const feedback = input.session.feedbacks.find((item) => item.round === question.round);
-    if (answer === undefined || feedback === undefined) continue;
-    if (answer.text.trim() === '' || feedback.text.trim() === '') continue;
+    if (answer === undefined || answer.text.trim() === '') continue;
     rounds.push({
       round: question.round,
       dimension: question.dimension,
       question: question.text,
       answer: answer.text,
-      feedback: feedback.text,
+      feedback: feedback?.text ?? '',
     });
   }
 
-  const reanswerAnswer = input.session.answers.find((item) => item.round === DEFENSE_REANSWER_ROUND);
+  const reanswerAnswer = input.session.answers.find((item) => item.round === DEFENSE_REANSWER_ROUND)
+    ?? (input.session.round === DEFENSE_REANSWER_ROUND ? { text: input.session.draft } : undefined);
   const reanswerFeedback = input.session.feedbacks.find((item) => item.round === DEFENSE_REANSWER_ROUND);
-  const hasReanswer = reanswerAnswer !== undefined && reanswerFeedback !== undefined
-    && reanswerAnswer.text.trim() !== '' && reanswerFeedback.text.trim() !== '';
+  const hasReanswer = reanswerAnswer !== undefined && reanswerAnswer.text.trim() !== '';
   const reanswer: PracticeRecordRound | null = hasReanswer
     ? {
       round: DEFENSE_REANSWER_ROUND,
       dimension: `沿用第 ${DEFENSE_QUESTIONS.length} 轮问题`,
       question: '',
       answer: reanswerAnswer.text,
-      feedback: reanswerFeedback.text,
+      feedback: reanswerFeedback?.text ?? '',
     }
     : null;
 
@@ -177,7 +177,7 @@ export function practiceRecordText(view: PracticeRecordView): string {
     lines.push('', `第 ${round.round} 轮 · ${round.dimension} · 原答`);
     lines.push(`问题：${round.question}`);
     lines.push('你的回答：', round.answer, '');
-    lines.push('材料反馈：', round.feedback);
+    if (round.feedback !== '') lines.push('材料反馈：', round.feedback);
   }
   if (view.review.length > 0) {
     lines.push('', '三轮复盘');
@@ -191,7 +191,8 @@ export function practiceRecordText(view: PracticeRecordView): string {
   }
   if (view.reanswer !== null) {
     lines.push('', `重答 · ${view.reanswer.dimension}`);
-    lines.push('你的重答：', view.reanswer.answer, '', '重答反馈：', view.reanswer.feedback);
+    lines.push('你的重答：', view.reanswer.answer);
+    if (view.reanswer.feedback !== '') lines.push('', '重答反馈：', view.reanswer.feedback);
   }
   return lines.join('\n');
 }

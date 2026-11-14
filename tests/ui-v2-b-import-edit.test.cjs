@@ -81,6 +81,19 @@ function baseWx(cloud, extra = {}) {
   };
 }
 
+test('管理页点已有课程会读取保存课程，保留编辑模式入参', async () => {
+  const wx = baseWx(cloudStub({}));
+  const page = loadPage('timetable/manage', wx);
+  page.data.courses = [{ id: 'saved-course' }];
+  page.editRow({ currentTarget: { dataset: { id: 'saved-course' } } });
+  assert.equal(wx.actions[0], 'navigateTo:/pages/timetable/edit/index?scope=saved&id=saved-course');
+  const edit = loadPage('timetable/edit', wx);
+  let id = '';
+  edit.loadSaved = (value) => { id = value; };
+  edit.onLoad(Object.fromEntries(new URLSearchParams(wx.actions[0].split('?')[1])));
+  assert.equal(id, 'saved-course');
+});
+
 test('导入核对：每条草稿都有来源与修正入口；修正后返回不需要重选文件', async () => {
   const draft = realDraft();
   const cloud = cloudStub({
