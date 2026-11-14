@@ -1,104 +1,99 @@
 <!--
-  课表设置（设计图 16）：学期与作息时间。
-  作息时刻**一个都不预置**：没填的节就是空框，不画「--:--」这类占位；填一半也合法。
+  课表设置（设计图 06）：学期与作息时间。
+  作息时刻一个都不预置：没填的节显示「选择时刻」，不画「--:--」这类占位；填一半也合法。
 -->
-<view class="page settings-page">
-  <view wx:if="{{status === 'loading'}}" class="settings-loading">正在读取设置…</view>
+<view class="tt2-page set2-page">
+  <view wx:if="{{status === 'loading'}}" class="tt2-state">
+    <text class="tt2-state-title">正在读取设置</text>
+    <text class="tt2-state-copy">正在从云端读取学期与作息…</text>
+  </view>
 
   <block wx:else>
-    <view class="settings-heading">
-      <view class="settings-heading-copy">
-        <view class="settings-lead">先定学期，再补作息</view>
-        <view class="settings-intro">日期和时刻只显示你亲自确认的内容。</view>
+    <view class="set2-head">
+      <view class="tt2-grow">
+        <view class="set2-kicker">学期与作息</view>
+        <view class="set2-title">让时间对得上。</view>
+        <view class="tt2-muted set2-intro">学期决定周次，作息决定具体上课时刻。示例值由用户填写，不代表学校官方作息。</view>
       </view>
-      <view id="settings-back" class="settings-back" hover-class="pressed" bindtap="goBack">返回课表</view>
+      <view id="settings-back" class="set2-back" hover-class="pressed" bindtap="goBack">返回</view>
     </view>
-    <view wx:if="{{loadNote !== ''}}" class="settings-note">{{loadNote}}</view>
+    <view wx:if="{{loadNote !== ''}}" class="tt2-notice info">{{loadNote}}</view>
 
-    <!-- 学期 -->
-    <view class="settings-card">
-      <view class="section-head"><view class="section-bar"></view><view class="section-title">学期</view></view>
-
-      <view class="settings-field">
-        <view class="settings-label">学期名称</view>
-        <input id="settings-semester-name" class="settings-input" type="text" value="{{semesterName}}" placeholder="如：2026-2027学年第一学期" bindinput="onSemesterNameInput" />
+    <view class="set2-card">
+      <view class="set2-card-head">
+        <text class="tt2-section-title">学期</text>
+        <text class="tt2-tag">必填</text>
       </view>
-
-      <view class="settings-field">
-        <view class="settings-label">第一周的星期一</view>
+      <view class="set2-field">
+        <view class="set2-label">学期名称</view>
+        <input id="settings-semester-name" class="set2-input" type="text" value="{{semesterName}}" placeholder="如：2026-2027学年第一学期" bindinput="onSemesterNameInput" />
+      </view>
+      <view class="set2-field">
+        <view class="set2-label">第 1 周的星期一</view>
         <picker id="settings-start-date" mode="date" value="{{startDate}}" bindchange="onStartDateChange">
-          <view class="settings-row">
-            <view class="settings-input settings-input-flex">{{startDate}}</view>
-            <view class="settings-pill">选择日期</view>
+          <view class="set2-select">
+            <text class="set2-select-value {{startDate === '' ? 'placeholder' : ''}}">{{startDate === '' ? '选择日期' : startDate}}</text>
+            <text class="tt2-caret">▾</text>
           </view>
         </picker>
+        <view class="set2-hint">不设置就一直按第 1 周查看；具体日期不显示。</view>
+        <view wx:if="{{startDateHint !== ''}}" class="tt2-warn set2-hint-warn">{{startDateHint}}</view>
       </view>
-
-      <view class="settings-field">
-        <view class="settings-label">总周数</view>
-        <view class="settings-row">
-          <input id="settings-total-weeks" class="settings-input settings-input-narrow settings-input-center" type="number" value="{{totalWeeksText}}" bindinput="onTotalWeeksInput" />
-          <view class="settings-pills">
-            <view id="settings-weeks-{{item}}" wx:for="{{weekOptions}}" wx:key="*this" class="settings-pill {{item === totalWeeks ? 'settings-pill-on' : ''}}" data-weeks="{{item}}" bindtap="chooseWeeks">{{item}}</view>
+      <view class="set2-field">
+        <view class="set2-label">学期总周数</view>
+        <view class="set2-week-row">
+          <input id="settings-total-weeks" class="set2-input set2-number" type="number" value="{{totalWeeksText}}" bindinput="onTotalWeeksInput" />
+          <view class="set2-week-pills">
+            <view id="settings-weeks-{{item}}" wx:for="{{weekOptions}}" wx:key="*this" class="set2-pill {{item === totalWeeks ? 'on' : ''}}" data-weeks="{{item}}" bindtap="chooseWeeks">{{item}} 周</view>
           </view>
         </view>
       </view>
-
-      <view class="settings-callout">设置开学日后，课表才会显示今天是第几周、本周是几月几号；不设置就一直按第 1 周查看</view>
-      <view class="settings-hint">开学日取第一周的星期一，多数学院是当周的周一</view>
-      <view wx:if="{{startDateHint !== ''}}" class="settings-hint settings-hint-warn">{{startDateHint}}</view>
+      <view id="settings-preview" class="set2-preview">{{preview}}</view>
     </view>
 
-    <view id="settings-preview" class="settings-preview">{{preview}}</view>
-
-    <!-- 作息时间 -->
-    <view class="settings-card">
-      <view class="section-head"><view class="section-bar"></view><view class="section-title">作息时间</view></view>
-
-      <view class="settings-callout settings-callout-warn">学校作息表尚未核实，这里不预置任何默认时刻——你按自己的课表填写，填了才会在课表上显示时刻与「正在上/下一节」</view>
+    <view class="set2-card">
+      <view class="set2-card-head">
+        <text class="tt2-section-title">作息时间</text>
+        <text class="tt2-tag">选填</text>
+      </view>
+      <view class="tt2-notice info set2-time-note">学校作息表尚未核实，这里不预置任何默认时刻；你按自己的课表填写，填了才会在课表上显示具体时刻与「正在上/下一节」。</view>
 
       <block wx:for="{{groups}}" wx:key="label" wx:for-item="group" wx:for-index="groupIndex">
         <view
           id="settings-group-{{groupIndex}}"
-          class="settings-group-toggle {{group.open ? 'settings-group-toggle-open' : ''}}"
+          class="set2-group {{group.open ? 'open' : ''}}"
           data-index="{{groupIndex}}"
           hover-class="pressed"
           aria-role="button"
           aria-label="{{group.label}}，{{group.toggleLabel}}"
           bindtap="toggleGroup"
         >
-          <view class="settings-group-copy">
-            <view class="settings-group-title">{{group.label}}</view>
-            <view class="settings-group-state">{{group.toggleLabel}}</view>
+          <view class="tt2-grow">
+            <view class="set2-group-title">{{group.label}}</view>
+            <view class="set2-group-state">{{group.toggleLabel}}</view>
           </view>
-          <text class="settings-group-chevron">{{group.open ? '−' : '+'}}</text>
+          <text class="set2-group-chevron">{{group.open ? '−' : '+'}}</text>
         </view>
         <block wx:if="{{group.open}}">
-          <view class="settings-time-rows">
-            <view class="settings-time-row {{row.last ? 'settings-time-row-last' : ''}}" wx:for="{{group.rows}}" wx:key="section" wx:for-item="row">
-              <view class="settings-time-no">{{row.label}}</view>
-              <view class="settings-time-fields">
-                <picker id="settings-section-time-{{row.section}}" mode="time" value="{{row.start}}" data-section="{{row.section}}" data-field="start" bindchange="onSectionTimeChange">
-                  <view class="settings-input settings-input-narrow settings-input-center">{{row.start}}</view>
-                </picker>
-                <view class="settings-time-sep">—</view>
-                <picker id="settings-section-time-{{row.section}}-end" mode="time" value="{{row.end}}" data-section="{{row.section}}" data-field="end" bindchange="onSectionTimeChange">
-                  <view class="settings-input settings-input-narrow settings-input-center">{{row.end}}</view>
-                </picker>
-              </view>
-            </view>
+          <view class="set2-time-heading"><text>节次</text><text>开始</text><text>结束</text></view>
+          <view class="set2-time-row" wx:for="{{group.rows}}" wx:key="section" wx:for-item="row">
+            <view class="set2-time-no">{{row.label}}</view>
+            <picker id="settings-section-time-{{row.section}}" mode="time" value="{{row.start}}" data-section="{{row.section}}" data-field="start" bindchange="onSectionTimeChange">
+              <view class="set2-time-input {{row.start === '' ? 'placeholder' : ''}}">{{row.start === '' ? '选择时刻' : row.start}} <text class="tt2-caret">▾</text></view>
+            </picker>
+            <picker id="settings-section-time-{{row.section}}-end" mode="time" value="{{row.end}}" data-section="{{row.section}}" data-field="end" bindchange="onSectionTimeChange">
+              <view class="set2-time-input {{row.end === '' ? 'placeholder' : ''}}">{{row.end === '' ? '选择时刻' : row.end}} <text class="tt2-caret">▾</text></view>
+            </picker>
           </view>
         </block>
       </block>
 
-      <view class="settings-hint settings-hint-top">填一半只会影响到那一节；清空某一节不会删除课表数据</view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="settings-clear-times" class="settings-secondary" hover-class="pressed" bindtap="clearTimes">清空作息</button>
+      <view class="set2-hint">填一半只会影响到那一节；清空某一节不会删除课表数据。</view>
+      <button id="settings-clear-times" class="tt2-btn tt2-btn-secondary set2-clear" hover-class="pressed" bindtap="clearTimes">清空作息</button>
     </view>
 
-    <view class="settings-gap"></view>
-    <view wx:if="{{saveError !== ''}}" class="settings-error">{{saveError}}</view>
-    <view class="settings-actions">
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="settings-save" class="home-button settings-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">保存设置</button>
-    </view>
+    <view wx:if="{{saveError !== ''}}" class="tt2-warn set2-save-error">{{saveError}}</view>
+    <button id="settings-save" class="tt2-btn tt2-btn-primary set2-save" hover-class="pressed" disabled="{{saving}}" bindtap="save">{{saving ? '正在保存…' : '保存设置'}}</button>
+    <view class="tt2-muted set2-footnote">保存后回到课表；课表数据与已保存计划不受影响。</view>
   </block>
 </view>

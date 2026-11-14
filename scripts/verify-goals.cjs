@@ -16,6 +16,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const { connectMini } = require('./lib/mini-connect.cjs');
+const { installOfflineUiSession, restoreOfflineUiSession } = require('./lib/offline-ui-session.cjs');
 
 const STORAGE_KEY = 'goal-days/v1';
 const output = path.resolve(process.env.WECHAT_VERIFY_OUTPUT || 'artifacts/verify/goals');
@@ -36,9 +37,11 @@ function diffDays(fromText, toText) {
 async function run() {
   mkdirSync(output, { recursive: true });
   const mini = await connectMini();
+  await mini.evaluate(installOfflineUiSession);
   const checks = [];
   const shots = [];
   let mockedModal = false;
+  const beforeGoals = await mini.callWxMethod('getStorageSync', STORAGE_KEY);
 
   async function waitForPage(route, timeoutMs = 30000) {
     const deadline = Date.now() + timeoutMs;
@@ -67,7 +70,9 @@ async function run() {
 
   /** 点开列表里某一组的某一条的「修改 / 删除」键。 */
   async function tapAction(page, groupClass, index, which) {
-    const items = await page.$$(`${groupClass} .goal-action${which === 'delete' ? '-warn' : ''}`);
+    // 岭南红 UI 给两个键各加了修饰类（-edit / -warn），不再靠 DOM 顺序猜：
+    // 未到期与今天两组现在有「排学习计划 / 修改 / 删除」三个键，按 .goal-action 取第 0 个会点到排计划。
+    const items = await page.$$(`${groupClass} .goal-action-${which === 'delete' ? 'warn' : 'edit'}`);
     assert.ok(items.length > index, `${groupClass} 里没有第 ${index + 1} 个${which === 'delete' ? '删除' : '修改'}键`);
     await items[index].tap();
   }
@@ -76,23 +81,26 @@ async function run() {
     // 0) 干净起点：上一次运行留下的目标日会干扰断言。
     await mini.evaluate((key) => wx.removeStorageSync(key), STORAGE_KEY);
 
-    // 1) 首页入口带：没有目标日时提示去添加。
-    await mini.reLaunch('/pages/home/index');
-    const home = await waitForPage('pages/home/index');
+    // 最近目标已迁到学习tab，按完整集成版本验入口与天数。
+    await mini.reLaunch('/pages/study/index');
+    const home = await waitForPage('pages/study/index');
     await home.waitFor(800);
-    assert.ok(await home.$('#goal-days-entry'), '首页缺少目标日入口带');
-    assert.equal(await (await home.$('.goal-strip-name')).text(), '还没有目标日');
-    assert.equal(await (await home.$('.goal-strip-value')).text(), '去添加');
-    checks.push('首页目标日入口带在无数据时显示「还没有目标日 / 去添加」');
+    // 首页入口带在岭南红 UI 里改成「标题 + 一句说明」的入口卡：没有目标日时说明位
+    // 落一句主动语（不是状态口号），也不再显示「去添加」这样的伪按钮文本。
+    assert.ok(await home.$('#study-hero'), '学习页缺少目标日入口');
+    assert.equal(await home.data('hero.hasGoal'), false);
+    assert.equal(await home.$('.study-hero-count'), null, '没有目标日时不该出现剩余天数');
+    checks.push('学习页无目标时显示空态，不编造倒计时');
     await shot('01-home-no-goal');
 
     // 2) 空态。
-    await (await home.$('#goal-days-entry')).tap();
+    await home.callMethod('openGoals');
     const emptyPage = await waitForPage('pages/goals/index');
     await emptyPage.waitFor(500);
+    // 空态标题已按设计稿 55 改写；`.goal-empty` / `.goal-empty-title` 作为语义钩子保留。
     assert.ok(await emptyPage.$('.goal-empty'), '目标日页没有空态');
-    assert.equal(await (await emptyPage.$('.goal-empty-title')).text(), '还没有目标日');
-    checks.push('没有数据时目标日页显示空态与新建入口');
+    assert.equal(await (await emptyPage.$('.goal-empty-title')).text(), '下一个目标，是什么？');
+    checks.push('没有数据时目标日页显示空态「下一个目标，是什么？」与新建入口');
     await shot('02-goals-empty');
 
     // 3) 新建一条未到期目标日：名称用真实输入框，日期用选择器同形状的事件载荷。
@@ -180,14 +188,14 @@ async function run() {
     await shot('08-goals-after-delete');
 
     // 8) 首页入口带显示最近一条目标日。
-    await mini.reLaunch('/pages/home/index');
-    const homeAgain = await waitForPage('pages/home/index');
+    await mini.reLaunch('/pages/study/index');
+    const homeAgain = await waitForPage('pages/study/index');
     await homeAgain.waitFor(800);
-    assert.equal(await (await homeAgain.$('.goal-strip-name')).text(), '计算机二级考试');
-    // `.goal-strip-value` 里还嵌着单位那个 text 节点，元素文本会把两段拼在一起，所以按拼好的一起断言。
-    assert.equal(await (await homeAgain.$('.goal-strip-value')).text(), `${expectedFar + 1}天后`);
-    assert.equal(await (await homeAgain.$('.goal-strip-unit')).text(), '天后');
-    checks.push('首页入口带显示最近一条目标日与剩余天数');
+    assert.equal(await homeAgain.data('hero.name'), '计算机二级考试');
+    // 岭南红 UI 把天数与单位合成同一段文本（不再有独立的 `.goal-strip-unit` 节点）。
+    assert.equal(await homeAgain.data('hero.days'), String(expectedFar + 1));
+    assert.equal(await homeAgain.data('hero.unit'), '天后');
+    checks.push('学习页显示最近一条目标日与正确剩余天数');
     await shot('09-home-with-goal');
 
     const system = await mini.systemInfo();
@@ -198,6 +206,7 @@ async function run() {
       SDKVersion: system.SDKVersion,
       checks,
       boundaries: [
+        '请求、剪贴板和本机存储先接管为内存夹具，不触碰真实目标或计划',
         '原生日期选择器（系统滚轮）不在小程序元素树里，选日期用 page.callMethod("onDateChange") 触发同形状载荷',
         '「退出重进」以 mini.reLaunch 重新加载页面代表；杀进程重启仍是人工步骤',
       ],
@@ -208,6 +217,7 @@ async function run() {
     writeFileSync(path.join(output, 'verification.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
   } finally {
+    await mini.callWxMethod('setStorageSync', STORAGE_KEY, beforeGoals).catch(() => {});
     if (mockedModal) {
       try {
         await mini.restoreWxMethod('showModal');
@@ -215,6 +225,7 @@ async function run() {
         console.log(`撤掉 showModal 的替身失败：${error && error.message ? error.message : error}`);
       }
     }
+    await mini.evaluate(restoreOfflineUiSession).catch(() => {});
     mini.disconnect();
   }
 }

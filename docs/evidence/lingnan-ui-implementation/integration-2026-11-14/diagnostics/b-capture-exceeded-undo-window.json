@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-14T13:08:37.633Z",
+  "mode": "wechat_simulator_mock_9462",
+  "boundary": "开发者工具模拟器；云函数、数据库、AI 与本机存储接管为示例。真实云请求 0 次（连接前启动读取除外）；不是真机，不证明真实模型、部署或事务性能。",
+  "checks": [
+    {
+      "name": "课表主页：第 10 周、七天、作息来自设置",
+      "passed": true
+    },
+    {
+      "name": "完整 12 节入口展开/收起",
+      "passed": true
+    },
+    {
+      "name": "每日安排：周三 3-4 节显示作息时刻",
+      "passed": true
+    },
+    {
+      "name": "通知提案：只改第 11 周，确认前不写入",
+      "passed": true
+    },
+    {
+      "name": "原通知可改回再核对，原提案保留",
+      "passed": true
+    },
+    {
+      "name": "应用后回到第 11 周，周五课块带「本次调整」标记；独立计划与助手入口在下方",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-week-390.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "02-week-full-12.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "03-day-agenda.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "04-assistant.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "05-notice-proposal.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "05b-notice-edit.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "06-change-result.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "07-week-11-changed.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "07b-plan-and-assistant.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    }
+  ],
+  "passed": false,
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 671,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "error": "TypeError: Cannot read properties of undefined (reading 'kind')\n    at run (F:\\VibeCoding\\wx-match\\scripts\\ui-v2-b-native.cjs:263:52)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+}

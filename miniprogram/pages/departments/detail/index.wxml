@@ -1,55 +1,54 @@
 <import src="../qa.wxml" />
-<view class="page">
+<view class="u2-page">
   <block wx:if="{{detail}}">
-    <view id="department-detail" class="department-detail">
-      <view class="department-profile">
-      <view class="eyebrow">{{detail.campusLabel}}</view>
-      <view class="department-name">{{detail.name}}</view>
-      <view class="department-campus-line">
-        <text class="department-campus-label">所属校区</text>
-        <text class="department-campus">{{detail.campusLabel}}</text>
-      </view>
-      <view wx:if="{{detail.campusNote}}" class="department-campus-note">{{detail.campusNote}}</view>
-      </view>
-
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="department-detail-qa-shortcut" class="qa-entry-shortcut" hover-class="pressed" bindtap="scrollToQa" aria-label="跳到当前部门问答">
-        <view class="qa-entry-copy">
-          <view class="qa-entry-title">问问{{detail.name}}</view>
-          <view class="qa-entry-note">查看已核实资料，或继续提问</view>
-        </view>
-        <text class="qa-entry-arrow">↓</text>
-      </button>
-
-      <view class="detail-block">
-        <view class="section-title">组织介绍</view>
-        <view class="detail-copy">{{detail.introduction}}</view>
-      </view>
-
-      <view class="detail-block">
-        <view class="section-title">下设部门</view>
-        <view class="detail-copy detail-unit-note">{{detail.unitNote}}</view>
-        <view class="detail-units">
-          <text wx:for="{{detail.units}}" wx:key="*this" class="detail-unit">{{item}}</text>
-      </view>
-      </view>
-
-      <view class="detail-block">
-        <view class="section-title">联系方式</view>
-        <view wx:if="{{detail.contactMissing}}" id="department-contact" class="detail-missing">{{detail.contactMissingText}}</view>
-        <view wx:else id="department-contact" class="detail-contacts">
-          <view wx:for="{{detail.contactItems}}" wx:key="label" class="detail-contact">{{item.label}}：{{item.value}}</view>
+    <view id="department-detail" class="dept-detail">
+      <view class="dept-profile">
+        <view class="dept-mark">{{mark}}</view>
+        <view class="dept-profile-main">
+          <view class="u2-h2">{{detail.name}}</view>
+          <view class="u2-xs u2-muted">学校官网保存资料 · {{detail.verifiedAt}}</view>
         </view>
       </view>
 
-      <view class="detail-block">
-        <view class="section-title">组织动态</view>
-        <view wx:if="{{detail.activityMissing}}" id="department-activities" class="detail-missing">{{detail.activityMissingText}}</view>
-        <view wx:else id="department-activities" class="detail-activities">
-          <view wx:for="{{detail.activities}}" wx:key="sourceUrl" class="detail-activity">
-            <view class="detail-activity-title">{{item.title}}</view>
-            <view class="detail-activity-date">{{item.publishedAt}}</view>
-            <button style="margin-left:0;margin-right:0;width:100%;max-width:none" class="source-button" hover-class="pressed" data-url="{{item.sourceUrl}}" bindtap="copyActivitySource">复制动态原文链接</button>
+      <view class="u2-notice u2-notice-info dept-campus-notice">
+        适用校区以原资料标注为准（{{detail.campusLabel}}）；未标注时不推断。
+      </view>
+
+      <view class="u2-section u2-section-first"><view class="u2-section-title">组织介绍</view></view>
+      <view class="u2-card">
+        <view class="u2-body" id="department-introduction">{{detail.introduction}}</view>
+      </view>
+
+      <view class="u2-section"><view class="u2-section-title">下设部门</view></view>
+      <view class="u2-card">
+        <view class="dept-units">
+          <text wx:for="{{detail.units}}" wx:key="*this" class="u2-tag dept-unit">{{item}}</text>
+        </view>
+        <view class="u2-card-copy">{{detail.unitNote}}</view>
+        <button id="department-detail-qa-shortcut" class="u2-btn u2-btn-soft dept-ask" hover-class="pressed" bindtap="scrollToQa">依据这些资料提问</button>
+      </view>
+
+      <view class="u2-section"><view class="u2-section-title">联系与动态</view></view>
+      <view class="u2-card">
+        <view class="dept-kv">
+          <text class="dept-kv-key">公开联系方式</text>
+          <text wx:if="{{detail.contactMissing}}" id="department-contact" class="dept-kv-val">{{detail.contactMissingText}}</text>
+          <text wx:else id="department-contact" class="dept-kv-val">{{detail.contactItems[0].label}}：{{detail.contactItems[0].value}}</text>
+        </view>
+        <view class="dept-kv dept-kv-block">
+          <text class="dept-kv-key">组织动态</text>
+          <view wx:if="{{detail.activityMissing}}" id="department-activities" class="dept-kv-val">{{detail.activityMissingText}}</view>
+          <view wx:else id="department-activities" class="dept-activities">
+            <view wx:for="{{detail.activities}}" wx:key="sourceUrl" class="dept-activity">
+              <view class="dept-activity-title">{{item.title}}</view>
+              <view class="dept-activity-meta">{{item.publishedAt}} · 已收录活动</view>
+              <button class="u2-btn u2-btn-secondary dept-activity-copy" hover-class="pressed" data-url="{{item.sourceUrl}}" bindtap="copyActivitySource">复制动态原文链接</button>
+            </view>
           </view>
+        </view>
+        <view class="u2-source">
+          <view class="u2-source-line">资料来源：{{detail.sourceLabel}}</view>
+          <view class="u2-source-line">资料核查 {{detail.verifiedAt}} · 未重新核查现状</view>
         </view>
       </view>
 
@@ -60,19 +59,24 @@
         />
       </view>
 
-      <view class="detail-source">
-        <view class="detail-source-label">资料来源：{{detail.sourceLabel}}</view>
-        <view class="detail-verified-date">核查于 {{detail.verifiedAt}}</view>
-        <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-detail-source" class="source-button" hover-class="pressed" bindtap="copySource">复制来源链接</button>
+      <view class="u2-actions">
+        <button id="ask-organization" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="scrollToQa">问问这个组织</button>
+        <button id="back-to-list" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
       </view>
 
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-to-list" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+      <view class="u2-source">
+        <view class="u2-source-line">来源链接：{{detail.sourceUrl}}</view>
+        <button id="copy-detail-source" class="u2-btn u2-btn-secondary dept-source-button" hover-class="pressed" bindtap="copySource">复制来源链接</button>
+      </view>
     </view>
   </block>
 
-  <view wx:else id="department-not-found" class="status-page">
-    <view class="status-title">{{notFoundTitle}}</view>
-    <view class="status-copy">{{notFoundCopy}}</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="not-found-back" class="home-button" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+  <view wx:else id="department-not-found" class="u2-empty">
+    <view class="u2-empty-icon">?</view>
+    <view class="u2-empty-title">{{notFoundTitle}}</view>
+    <view class="u2-empty-copy">{{notFoundCopy}}</view>
+    <view class="u2-actions">
+      <button id="not-found-back" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="goBackToList">返回部门列表</button>
+    </view>
   </view>
 </view>

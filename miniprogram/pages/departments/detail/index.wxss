@@ -1,18 +1,21 @@
 @import "../qa.wxss";
-.department-profile { margin-bottom:22px; }
-.department-profile .department-name { margin:8px 0; font-size:26px; font-weight:700; line-height:1.4; }
-.department-campus-line { display:flex; gap:12px; margin-top:12px; font-size:12px; color:#746760; }
-.department-campus-label { flex:none; }
-.department-campus-note { margin-top:8px; font-size:11px; line-height:1.8; color:#746760; }
-.detail-block { margin-top:24px; }
-.detail-copy,.detail-contact { margin-top:12px; color:#2b2422; font-size:14px; line-height:1.9; }
-.detail-unit-note { color:#6b5d57; font-size:13px; }
-.detail-units { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.detail-unit { padding:8px 12px; background:#fff; border:1px solid #ded4cf; border-radius:7px; color:#8c1614; font-size:13px; }
-.detail-missing { margin-top:12px; padding:14px 15px; background:#fff; border-left:3px solid #ded4cf; color:#6b5d57; font-size:13px; line-height:1.8; }
-.detail-activity { margin-top:12px; padding:16px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
-.detail-activity-title { font-size:15px; line-height:1.7; font-weight:600; }
-.detail-activity-date { margin-top:10px; color:#746760; font-size:11px; }
-.detail-source { margin-top:24px; padding-top:16px; border-top:1px solid #bca99d; }
-.detail-source-label { color:#8c1614; font-size:13px; font-weight:600; }
-.detail-verified-date { margin-top:8px; color:#746760; font-size:11px; }
+/* 部门资料（设计图 21）：抬头 + 校区说明 + 介绍 + 下设部门 + 联系与动态。 */
+.dept-profile { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.dept-mark { flex:none; width:52px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:16px; background:var(--brand, #c41c23); color:#fff; font-size:23px; font-weight:650; }
+.dept-profile-main { flex:1; min-width:0; }
+.dept-campus-notice { margin:4px 0 18px; }
+.dept-units { display:flex; flex-wrap:wrap; gap:8px; }
+.dept-unit { min-height:24px; }
+.dept-ask { margin-top:14px; justify-content:flex-start; padding:0; min-height:44px; background:transparent; color:var(--brand, #c41c23); font-size:13px; }
+.dept-kv { display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:11px 0; border-bottom:1px solid var(--line-soft, #ececef); font-size:13px; }
+.dept-kv-block { display:block; }
+.dept-kv-key { flex:none; color:var(--text-2, #6b5d57); }
+.dept-kv-val { text-align:right; }
+.dept-kv-block .dept-kv-val { margin-top:8px; text-align:left; }
+.dept-activities { margin-top:4px; }
+.dept-activity { padding:10px 0; }
+.dept-activity + .dept-activity { border-top:1px solid var(--line-soft, #ececef); }
+.dept-activity-title { font-size:13px; line-height:1.8; }
+.dept-activity-meta { margin-top:4px; color:var(--text-2, #6b5d57); font-size:11px; }
+.dept-activity-copy { margin-top:8px; min-height:44px; font-size:12px; }
+.dept-source-button { margin-top:10px; }

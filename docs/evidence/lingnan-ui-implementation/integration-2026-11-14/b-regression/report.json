@@ -1,0 +1,326 @@
+{
+  "date": "2026-11-14T13:23:49.707Z",
+  "mode": "wechat_simulator_mock_9462",
+  "boundary": "开发者工具模拟器；云函数、数据库、AI 与本机存储接管为示例。真实云请求 0 次（连接前启动读取除外）；不是真机，不证明真实模型、部署或事务性能。",
+  "checks": [
+    {
+      "name": "课表主页：第 10 周、七天、作息来自设置",
+      "passed": true
+    },
+    {
+      "name": "完整 12 节入口展开/收起",
+      "passed": true
+    },
+    {
+      "name": "每日安排：周三 3-4 节显示作息时刻",
+      "passed": true
+    },
+    {
+      "name": "通知提案：只改第 11 周，确认前不写入",
+      "passed": true
+    },
+    {
+      "name": "原通知可改回再核对，原提案保留",
+      "passed": true
+    },
+    {
+      "name": "应用后回到第 11 周，周五课块带「本次调整」标记；独立计划与助手入口在下方",
+      "passed": true
+    },
+    {
+      "name": "整项撤销回到原安排，其他周保留",
+      "passed": true
+    },
+    {
+      "name": "部分成功逐项列状态；重试只补失败项，已保存项不重复执行",
+      "passed": true
+    },
+    {
+      "name": "导入核对：每条草稿带原材料位置与修正入口，替换警告紧邻确认按钮",
+      "passed": true
+    },
+    {
+      "name": "字段错误：缺课程名时停在本页并保留其他输入",
+      "passed": true
+    },
+    {
+      "name": "作息设置三组，空时刻显示「选择时刻」",
+      "passed": true
+    },
+    {
+      "name": "空态与读取失败分开：失败不伪装成没课",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-week-390.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "02-week-full-12.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "03-day-agenda.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "04-assistant.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "05-notice-proposal.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "05b-notice-edit.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "06-change-result.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "07-week-11-changed.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "07b-plan-and-assistant.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "08-undo-result.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "08b-partial-result.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "08c-batch-result.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "09-import-guide.png",
+      "page": "pages/timetable/import/index",
+      "width": 371
+    },
+    {
+      "file": "10-import-review.png",
+      "page": "pages/timetable/import/index",
+      "width": 371
+    },
+    {
+      "file": "11-import-source.png",
+      "page": "pages/timetable/import/index",
+      "width": 371
+    },
+    {
+      "file": "11b-import-bottom.png",
+      "page": "pages/timetable/import/index",
+      "width": 371
+    },
+    {
+      "file": "12-course-edit.png",
+      "page": "pages/timetable/edit/index",
+      "width": 371
+    },
+    {
+      "file": "13-field-error.png",
+      "page": "pages/timetable/edit/index",
+      "width": 371
+    },
+    {
+      "file": "14-course-manage.png",
+      "page": "pages/timetable/manage/index",
+      "width": 371
+    },
+    {
+      "file": "15-settings.png",
+      "page": "pages/timetable/settings/index",
+      "width": 371
+    },
+    {
+      "file": "16-settings-times.png",
+      "page": "pages/timetable/settings/index",
+      "width": 371
+    },
+    {
+      "file": "17-empty.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    },
+    {
+      "file": "18-error.png",
+      "page": "pages/timetable/index",
+      "width": 371
+    }
+  ],
+  "passed": true,
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 671,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "undoTimerFixture": "拍摄结果和周课表期间暂停撤销计时；不证明10秒截止边界，计时语义由本机测试另验",
+  "mockCalls": [
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "undoScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "prepareUpload"
+    },
+    {
+      "name": "timetable",
+      "action": "importDraft"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    }
+  ]
+}

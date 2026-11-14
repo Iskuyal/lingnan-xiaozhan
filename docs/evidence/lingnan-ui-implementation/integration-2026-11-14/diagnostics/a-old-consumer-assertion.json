@@ -1,0 +1,223 @@
+{
+  "date": "2026-11-14T13:04:01.471Z",
+  "mode": "wechat_simulator_mock",
+  "port": 9461,
+  "boundary": "原生模拟器；云函数、数据库、本机存储接管为示例夹具。接管后真实云请求 0 次、真实模型调用 0 次。不含连接前的启动读取，不证明真机、读屏或 320px 布局。",
+  "checks": [
+    {
+      "name": "首页下一课卡片与今日时间线",
+      "passed": true,
+      "detail": "{\"hero\":\"Java 程序设计（布局示例）\",\"rows\":3}"
+    },
+    {
+      "name": "首页没填作息：只按节次看，不出现具体时刻",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "首页空课表：导入与手工添加入口",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "首页读取失败：不说「今天没课」",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "学习页目标卡读取本机目标日",
+      "passed": true,
+      "detail": "{\"days\":\"35\"}"
+    },
+    {
+      "name": "学习页没有目标日的空态",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "校园页最近资讯来自云端夹具",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "校园页资讯读取失败可重试",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "部门问答资料不足状态",
+      "passed": true,
+      "detail": "{\"turns\":3}"
+    },
+    {
+      "name": "部门详情、问答与未找到分支",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "资讯列表进入详情再返回",
+      "passed": true,
+      "detail": "回到 pages/news/index"
+    },
+    {
+      "name": "资讯刷新失败保留错误态，空态独立",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "分享直达详情返回列表",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-home-next-class.png",
+      "page": "pages/home/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "02-home-timeline.png",
+      "page": "pages/home/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "03-home-unknown-times.png",
+      "page": "pages/home/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "04-home-empty.png",
+      "page": "pages/home/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "05-home-error.png",
+      "page": "pages/home/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "06-study.png",
+      "page": "pages/study/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "07-study-no-goal.png",
+      "page": "pages/study/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "08-campus.png",
+      "page": "pages/campus/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "09-campus-news.png",
+      "page": "pages/campus/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "10-campus-news-error.png",
+      "page": "pages/campus/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "11-departments.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "12-department-qa.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "13-department-qa-insufficient.png",
+      "page": "pages/departments/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "14-department-detail.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "15-department-detail-qa.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "16-department-not-found.png",
+      "page": "pages/departments/detail/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "17-news-list.png",
+      "page": "pages/news/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "18-news-detail.png",
+      "page": "pages/news/detail/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "19-news-error.png",
+      "page": "pages/news/index",
+      "rasterWidth": 371
+    },
+    {
+      "file": "20-news-empty.png",
+      "page": "pages/news/index",
+      "rasterWidth": 371
+    }
+  ],
+  "passed": false,
+  "environment": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 671,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "error": "AssertionError [ERR_ASSERTION]: 意图已写入\n    at run (F:\\VibeCoding\\wx-match\\scripts\\verify-ui-v2-a.cjs:317:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+}

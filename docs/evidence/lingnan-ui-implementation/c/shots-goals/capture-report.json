@@ -1,0 +1,58 @@
+{
+  "capturedAt": "2026-11-13T11:51:08.001Z",
+  "port": "9470",
+  "shots": [
+    {
+      "name": "12-goals",
+      "route": "/pages/goals/index",
+      "file": "F:\\VibeCoding\\wx-match\\.worktrees\\lingnan-ui-c\\docs\\evidence\\lingnan-ui-implementation\\c\\shots-goals\\12-goals.png",
+      "missing": [],
+      "found": {
+        ".goals-h1-line": "每个目标，",
+        ".u2-hero-label": "今天的目标",
+        ".st-hero-name": "体测补测",
+        ".u2-card-title": "英语考试 · 第 11 周计划",
+        ".goal-item-upcoming .goal-name": "英语考试",
+        ".goal-action-plan": "排学习计划"
+      },
+      "size": 44626
+    },
+    {
+      "name": "55-goals-empty",
+      "route": "/pages/goals/index",
+      "file": "F:\\VibeCoding\\wx-match\\.worktrees\\lingnan-ui-c\\docs\\evidence\\lingnan-ui-implementation\\c\\shots-goals\\55-goals-empty.png",
+      "missing": [],
+      "found": {
+        ".u2-empty-title": "下一个目标，是什么？",
+        "#goal-new-empty": "新建目标日",
+        "#goal-history": "查看保留的历史计划"
+      },
+      "size": 41050
+    },
+    {
+      "name": "13-goal-edit",
+      "route": "/pages/goals/edit/index?id=g-exam",
+      "file": "F:\\VibeCoding\\wx-match\\.worktrees\\lingnan-ui-c\\docs\\evidence\\lingnan-ui-implementation\\c\\shots-goals\\13-goal-edit.png",
+      "missing": [],
+      "found": {
+        ".u2-h1": "给目标一个日期。",
+        ".st-label": "目标名称",
+        ".ge-preview-state": "还有 36 天",
+        "#goal-save": "保存目标日",
+        "#goal-remove": "删除目标日"
+      },
+      "size": 50061
+    },
+    {
+      "name": "13-goal-edit-new",
+      "route": "/pages/goals/edit/index",
+      "file": "F:\\VibeCoding\\wx-match\\.worktrees\\lingnan-ui-c\\docs\\evidence\\lingnan-ui-implementation\\c\\shots-goals\\13-goal-edit-new.png",
+      "missing": [],
+      "found": {
+        ".u2-h1": "给目标一个日期。",
+        "#goal-save": "保存目标日"
+      },
+      "size": 51204
+    }
+  ]
+}

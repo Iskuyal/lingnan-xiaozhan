@@ -104,14 +104,26 @@ test('校历与考试页：复制来源链接成功与失败都有反馈', () =>
   assert.deepEqual(failing.calls.toast, ['复制失败，请重试']);
 });
 
-test('校历与考试页：返回首页的两种路径', () => {
+test('校历与考试页：返回首页的两种路径', async () => {
+  // 栈里还有上一页 → navigateBack；只剩本页 → 走公共导航切「今天」tab（设计定稿后底栏才算
+  // 真的在 tab 之间切换），没有 switchTab 的宿主退回 reLaunch。两条路都不留在空栈上。
   for (const stack of [[{}, {}], [{}]]) {
     const stub = wxStub();
     const page = loadPage('calendar', stub, stack);
     page.onLoad({ today: TODAY });
     page.goHome();
+    await new Promise((resolve) => setImmediate(resolve));
     assert.deepEqual(stub.calls.navigate, [stack.length > 1 ? 'back' : '/pages/home/index']);
   }
+
+  // 有 tab 能力时走 switchTab，不 reLaunch：底栏高亮才会跟着变。
+  const tabStub = wxStub();
+  tabStub.wx.switchTab = (options) => tabStub.calls.navigate.push(options.url);
+  const tabPage = loadPage('calendar', tabStub, [{}]);
+  tabPage.onLoad({ today: TODAY });
+  tabPage.goHome();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(tabStub.calls.navigate, ['/pages/home/index']);
 });
 
 test('体测估算页：长跑输入三种写法都换算成秒，非法写法给提示', () => {
@@ -189,11 +201,13 @@ test('体测估算页：「改一个数字重算」回到输入区，输入不�
   assert.deepEqual(Array.from(stub.store.keys()), []);
 });
 
-test('首页新增两个入口，目标页面都已注册且产物齐全', () => {
+test('校历与体测两个入口，目标页面都已注册且产物齐全', () => {
+  // 定稿把这两个入口分派到两个聚合页：校历属于「校园」，体测属于「学习」。
   const stub = wxStub();
-  const home = loadPage('home', stub);
-  home.openCalendar();
-  home.openFitness();
+  const campus = loadPage('campus', stub);
+  campus.openRoute({ currentTarget: { dataset: { route: '/pages/calendar/index' } } });
+  const study = loadPage('study', stub);
+  study.openTool({ currentTarget: { dataset: { route: '/pages/fitness/index' } } });
   assert.deepEqual(stub.calls.navigate, ['/pages/calendar/index', '/pages/fitness/index']);
   const app = JSON.parse(fs.readFileSync('dist/app.json', 'utf8'));
   for (const route of ['pages/calendar/index', 'pages/fitness/index']) {

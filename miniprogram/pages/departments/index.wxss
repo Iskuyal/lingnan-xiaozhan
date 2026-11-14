@@ -1,17 +1,13 @@
 @import "./qa.wxss";
-.departments-heading { margin-bottom:18px; }
-.departments-heading .section-title { display:none; }
-.departments-intro { margin-top:8px; padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; color:#6b5d57; font-size:13px; line-height:1.9; }
-.departments-count { display:flex; justify-content:space-between; align-items:center; margin:24px 0 8px; }
-.departments-count-label { font-size:17px; font-weight:700; }
-.departments-count-value { color:#746760; font-size:11px; }
-.department-item { min-height:76px; display:flex; align-items:center; gap:12px; padding:16px 0; border-bottom:1px solid #ded4cf; }
-.department-mark { flex:none; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#faeee9; color:#8c1614; font-size:13px; font-weight:600; }
+/* 学生部门（设计图 20）：抬头 + 问答入口卡 + 组织名录 + 出处。 */
+.dept-title { font-size:30px; }
+.dept-qa-card { display:flex; align-items:center; gap:13px; margin:20px 0 4px; padding:16px; text-align:left; width:100%; max-width:none; }
+.dept-qa-icon { flex:none; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:13px; background:var(--brand, #c41c23); }
+.dept-qa-icon image { width:22px; height:22px; }
+.dept-qa-copy { flex:1; min-width:0; }
+.dept-qa-arrow { flex:none; color:var(--text, #2b2422); font-size:18px; }
+.department-mark { flex:none; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:13px; background:var(--brand-soft, #fff0ef); color:var(--brand, #c41c23); font-size:15px; font-weight:700; }
+.department-item { display:flex; align-items:center; gap:13px; min-height:78px; padding:14px 0; }
+.department-item + .department-item { border-top:1px solid var(--line-soft, #ececef); }
 .department-main { flex:1; min-width:0; }
-.department-name { color:#2b2422; font-size:15px; font-weight:600; line-height:1.6; }
-.department-campus { margin-top:5px; color:#746760; font-size:12px; line-height:1.6; }
-.department-chevron { color:#746760; font-size:23px; }
-.departments-empty { padding:38px 0; }
-.departments-source { margin-top:24px; padding-top:16px; border-top:1px solid #bca99d; }
-.departments-source-label { color:#8c1614; font-size:13px; font-weight:600; }
-.departments-verified-date,.departments-source-note { margin-top:8px; color:#746760; font-size:11px; line-height:1.8; }
+.dept-source-button { margin-top:12px; }

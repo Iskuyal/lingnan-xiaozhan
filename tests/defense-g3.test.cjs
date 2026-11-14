@@ -303,12 +303,15 @@ test('页面已注册且四件套都在构建产物里', () => {
   }
 });
 
-test('首页入口指向答辩练习，且文案不承诺等级或成绩', () => {
-  const wxml = fs.readFileSync(path.join(ROOT, 'miniprogram/pages/home/index.wxml'), 'utf8');
-  assert.ok(wxml.includes('bindtap="openDefense"'), '首页应当有答辩练习入口');
+test('学习入口指向答辩练习，且文案不承诺等级或成绩', () => {
+  // 定稿把学习类入口统一收进「学习」聚合页（设计图 11），首页不再挂全模块入口墙。
+  const wxml = fs.readFileSync(path.join(ROOT, 'miniprogram/pages/study/index.wxml'), 'utf8');
+  assert.ok(wxml.includes('data-route="/pages/defense/index"'), '学习页应当有答辩练习入口');
   assert.ok(wxml.includes('项目讲解与答辩练习'), '入口标题应当写明功能名');
-  const ts = fs.readFileSync(path.join(ROOT, 'miniprogram/pages/home/index.ts'), 'utf8');
-  assert.ok(/openDefense\(\)[\s\S]{0,120}\/pages\/defense\/index/u.test(ts), 'openDefense 应当跳转到答辩练习页');
+  const ts = fs.readFileSync(path.join(ROOT, 'miniprogram/pages/study/index.ts'), 'utf8');
+  assert.ok(/openTool\(event[\s\S]{0,160}navigateTo/u.test(ts), 'openTool 应当跳转到已注册页面');
+  const app = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist/app.json'), 'utf8'));
+  assert.ok(app.pages.includes('pages/defense/index'), '答辩练习页应当已注册');
 
   const pageWxml = fs.readFileSync(path.join(ROOT, 'miniprogram/pages/defense/index.wxml'), 'utf8');
   for (const forbidden of ['职业能力等级', '通过率', '面试保证']) {

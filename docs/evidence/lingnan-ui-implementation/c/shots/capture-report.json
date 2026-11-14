@@ -1,0 +1,446 @@
+{
+  "capturedAt": "2026-11-13T12:53:10.948Z",
+  "port": "9463",
+  "width": 390,
+  "mode": "capture",
+  "dist": "dist",
+  "results": [
+    {
+      "name": "12-goals",
+      "route": "/pages/goals/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/12-goals.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "55-goals-empty",
+      "route": "/pages/goals/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/55-goals-empty.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "13-goal-edit",
+      "route": "/pages/goals/edit/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/13-goal-edit.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "54-goal-delete",
+      "route": "/pages/goals/edit/index?id=exam",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/54-goal-delete.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "14-plan-input",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/14-plan-input.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "49-basic-rules",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/49-basic-rules.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "rules"
+      }
+    },
+    {
+      "name": "15-ai-draft",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/15-ai-draft.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "started": true
+      }
+    },
+    {
+      "name": "16-preview",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/16-preview.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "preview",
+        "blocks": 3,
+        "totalMinutes": 135,
+        "statCells": [
+          {
+            "value": "3",
+            "unit": "次",
+            "caption": "本周安排"
+          },
+          {
+            "value": "135",
+            "unit": "分钟",
+            "caption": "总学习时长"
+          },
+          {
+            "value": "0",
+            "unit": "",
+            "caption": "已知冲突"
+          }
+        ]
+      }
+    },
+    {
+      "name": "17-saved",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/17-saved.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "saved",
+        "savedView": true
+      }
+    },
+    {
+      "name": "18-conflict",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/18-conflict.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "conflict",
+        "conflicts": 3,
+        "heroTitle": "有一处时间撞上了。"
+      }
+    },
+    {
+      "name": "40-expired-plan",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/40-expired-plan.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "expired",
+        "savedExpired": true
+      }
+    },
+    {
+      "name": "64-constraint-clarify",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/64-constraint-clarify.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "screen": "clarify",
+        "heroTitle": "有一句，还需要说具体一点。"
+      }
+    },
+    {
+      "name": "25-calendar",
+      "route": "/pages/calendar/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/25-calendar.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "26-fitness",
+      "route": "/pages/fitness/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/26-fitness.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "27-fitness-result",
+      "route": "/pages/fitness/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/27-fitness-result.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "63-fitness-missing",
+      "route": "/pages/fitness/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/63-fitness-missing.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "28-advancement",
+      "route": "/pages/advancement/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/28-advancement.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "30-answer",
+      "route": "/pages/advancement/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/30-answer.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "modelPhase": "loading",
+        "hasResult": true
+      }
+    },
+    {
+      "name": "29-clarify",
+      "route": "/pages/advancement/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/29-clarify.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "behavior": "clarify",
+        "choices": 3,
+        "modelPhase": "idle"
+      }
+    },
+    {
+      "name": "31-defense",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/31-defense.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "32-practice",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/32-practice.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "33-pending",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/33-pending.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "phase": "pending",
+        "round": 1
+      }
+    },
+    {
+      "name": "34-feedback",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/34-feedback.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "35-recap",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/35-recap.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "42-material",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/42-material.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "materialOpen": true,
+        "rows": 12
+      }
+    },
+    {
+      "name": "60-reanswer",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/60-reanswer.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "61-reanswer-result",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/61-reanswer-result.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "43-ai-unavailable",
+      "route": "/pages/goals/plan/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/43-ai-unavailable.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      },
+      "advanced": {
+        "started": true
+      }
+    },
+    {
+      "name": "77-practice-record",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/77-practice-record.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "78-copied-record",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/78-copied-record.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    },
+    {
+      "name": "62-exit",
+      "route": "/pages/defense/index",
+      "ok": true,
+      "missing": [],
+      "error": "",
+      "file": "docs/evidence/lingnan-ui-implementation/c/shots/62-exit.png",
+      "size": {
+        "width": 371,
+        "height": 802
+      }
+    }
+  ]
+}

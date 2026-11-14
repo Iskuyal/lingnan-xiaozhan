@@ -467,31 +467,25 @@ test('课表页面模板里不出现具体时刻（学校作息未核实）', ()
     assert.ok(!/\d{1,2}:\d{2}/u.test(text), `${file}: 不应出现时刻`);
     assert.ok(!/\d{1,2}\s*[点時时]/u.test(text), `${file}: 不应出现「点/时」时刻`);
   }
-  // 课表按节次展示这一点要写在页面上
+  // 课表按节次展示这一点要写在页面上；具体时刻只来自用户填写的作息。
   const main = fs.readFileSync(path.resolve(templates[0]), 'utf8');
   assert.match(main, /按节次展示/u);
-  assert.match(main, /不显示具体时刻|尚未核实/u);
+  assert.match(main, /具体时刻只来自你填写的作息|未填作息/u);
 });
 
 // 品牌红 (#c41c23) 上的正文色 #2b2422 对比度约 2.5:1（WCAG AA 正文要 4.5:1）。
-// 「问问课表助手」曾经只有 .tt-assistant，没写 color，于是继承了正文色，红底上是一片深字。
-test('课表主页：品牌红底上的主按钮写明白字，「手工新增」用次级样式', () => {
+// 新设计里助手入口是白底卡片，红底只留给主按钮与图标；主按钮必须写明白字。
+test('课表主页：红底主按钮写明白字，手工新增用次级样式', () => {
   const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
-  const appWxss = fs.readFileSync(path.resolve('miniprogram/app.wxss'), 'utf8')
-    + fs.readFileSync(path.resolve('miniprogram/styles/ui.wxss'), 'utf8');
+  assert.match(wxml, /id="assistant-open"[^>]*class="[^"]*tt2-assistant-entry/u, '助手入口应是白底卡片');
 
-  const assistant = wxml.match(/<button[^>]*id="assistant-open"[^>]*>/u);
-  assert.ok(assistant !== null, '助手入口按钮应当存在');
-  assert.match(assistant[0], /class="[^"]*\bhome-button\b[^"]*"/u, '助手入口要用全局主按钮');
-
-  const mainButton = appWxss.match(/\.home-button\s*\{[^}]*\}/u);
-  assert.ok(mainButton !== null, 'app.wxss 里应当有 .home-button');
-  assert.match(mainButton[0], /background:\s*var\(--brand/u);
-  assert.match(mainButton[0], /color:\s*#fff/u, '品牌红底必须写白字');
+  const wxss = fs.readFileSync(path.resolve('miniprogram/ui/timetable/page.wxss'), 'utf8');
+  assert.match(wxss, /\.tt2-btn-primary\s*\{[^}]*background:\s*#c41c23[^}]*color:\s*#ffffff/u);
+  assert.match(wxss, /\.tt2-orb\s*\{[^}]*background:\s*#c41c23[^}]*color:\s*#ffffff/u);
 
   const manual = wxml.match(/<button[^>]*id="manual-add"[^>]*>/u);
   assert.ok(manual !== null, '空态的「手工新增课程」按钮应当存在');
-  assert.match(manual[0], /class="[^"]*\bsecondary\b[^"]*"/u, '次级动作要用 .secondary（.tt-secondary 没有定义）');
+  assert.match(manual[0], /class="[^"]*tt2-btn-secondary/u, '次级动作要用次级按钮样式');
 });
 
 // 无课的星期也保留；已确认设计采用等宽七天和横向滚动，节次轴始终在滚动区域外。
@@ -504,8 +498,10 @@ test('周网格保留完整七天，节次轴独立于横向滚动区域', () =>
     assert.match(wxml, /wx:for="\{\{(?:gridUi|draftGridUi)\.columns\}\}"/u);
     assert.doesNotMatch(wxml, /column\.narrow \?/u, `${file}: 七天采用相同列宽`);
   }
-  const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
-  assert.match(wxss, /\.grid-col\s*\{[^}]*width:66px/u);
+  // 设计图 02/51：7 列 × 74px，不再按「有课/没课」收窄。
+  const wxss = fs.readFileSync(path.resolve('miniprogram/ui/timetable/page.wxss'), 'utf8');
+  assert.match(wxss, /\.grid-col\s*\{[^}]*width:\s*74px/u);
+  assert.match(wxss, /\.grid-th\s*\{[^}]*width:\s*74px/u);
 });
 
 test('周课表主页：填了开学日与作息后，日期、今日列、速查条与详情弹层都到位', async () => {
@@ -815,31 +811,30 @@ test('贴通知：冲突项未勾选时可点开勾上（学生坚持要加）�
   delete globalThis.wx;
 });
 
-test('贴通知：模板按设计图 02 摆出粘贴框、金色提案卡、勾选框、冲突提示与撤销提示条', () => {
+test('贴通知：模板按设计图 09 摆出粘贴框、金色提案卡、勾选框、冲突提示与撤销提示条', () => {
   const wxml = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxml'), 'utf8');
   // 粘贴区带「来自班群通知」的小字说明（文案全部在 WXML 里，WXSS 不出现中文）
-  assert.match(wxml, /class="paste"/u);
+  assert.match(wxml, /class="tt2-paste"/u);
   assert.match(wxml, /你粘贴的班群通知/u);
   assert.match(wxml, /id="notice-input"/u, '要有真正的粘贴输入框');
   // 金色提案卡：卡片头 + 全局 ai-tag 金标签（不重复定义）
-  assert.match(wxml, /class="proposal"/u);
+  assert.match(wxml, /class="tt2-proposal"/u);
   assert.match(wxml, /识别到 \{\{noticeProposal\.rows\.length\}\} 处变更/u);
   assert.match(wxml, /class="ai-tag">AI 提案 · 待确认/u);
   // 勾选：已勾是红底打勾，未勾是白底描边
-  assert.match(wxml, /class="check \{\{item\.checked \? '' : 'off'\}\}"/u);
-  assert.match(wxml, /class="check off"/u);
+  assert.match(wxml, /class="tt2-check \{\{item\.checked \? 'on' : ''\}\}"/u);
   // 差异行 + 冲突提示 + 原文引用（原文：前缀写在 WXML 里）
-  assert.match(wxml, /class="diff-old"/u);
-  assert.match(wxml, /class="diff-new"/u);
-  assert.match(wxml, /class="warnline"/u);
-  assert.match(wxml, /class="quote">原文：/u);
+  assert.match(wxml, /class="tt2-diff-old"/u);
+  assert.match(wxml, /class="tt2-diff-new"/u);
+  assert.match(wxml, /class="tt2-warn"/u);
+  assert.match(wxml, /class="tt2-quote">原文：/u);
   // 两个按钮：逐条修改（白底红字）+ 应用 N 处变更（红底，0 条禁用）
-  assert.match(wxml, /id="notice-expand"[^>]*class="btn-secondary"/u);
-  assert.match(wxml, /id="notice-apply"[^>]*class="btn-primary"/u);
+  assert.match(wxml, /id="notice-expand"[^>]*class="[^"]*btn-secondary/u);
+  assert.match(wxml, /id="notice-apply"[^>]*class="[^"]*btn-primary/u);
   assert.match(wxml, /disabled="\{\{noticeProposal\.checkedCount === 0 \|\| noticeReading\}\}"/u);
   // 深色撤销提示条 + 金色「撤销」
-  assert.match(wxml, /id="notice-toast" class="toast"/u);
-  assert.match(wxml, /id="notice-undo" class="toast-undo"[^>]*bindtap="undoNotice">撤销/u);
+  assert.match(wxml, /id="notice-toast" class="tt2-toast"/u);
+  assert.match(wxml, /id="notice-undo" class="tt2-toast-undo"[^>]*bindtap="undoNotice">撤销/u);
   // 脚注：确认前不写入 / 10 秒内可撤销
   const ts = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.ts'), 'utf8');
   assert.match(ts, /确认前不写入课表，应用后 10 秒内可撤销/u);
@@ -847,15 +842,13 @@ test('贴通知：模板按设计图 02 摆出粘贴框、金色提案卡、勾�
   assert.match(ts, /NOTICE_UNDO_MS/u);
   assert.match(fs.readFileSync(path.resolve('miniprogram/services/timetable/notice.ts'), 'utf8'), /NOTICE_UNDO_MS = 10000/u);
 
-  // 这些样式确实在页面 wxss 里，且引用的令牌都带回退值（wxss.test 另有全量校验）
-  const wxss = fs.readFileSync(path.resolve('miniprogram/pages/timetable/index.wxss'), 'utf8');
-  for (const rule of ['.paste {', '.proposal {', '.proposal-head {', '.check {', '.check.off {', '.diff-old {', '.diff-new {', '.warnline {', '.quote {', '.btn-primary {', '.btn-secondary {', '.toast {', '.toast-undo {']) {
+  // 这些样式在共享样式表里（wxss.test 另有令牌回退与中文泄漏的全量校验）
+  const wxss = fs.readFileSync(path.resolve('miniprogram/ui/timetable/page.wxss'), 'utf8');
+  for (const rule of ['.tt2-paste {', '.tt2-proposal {', '.tt2-proposal-head {', '.tt2-check {', '.tt2-diff-old {', '.tt2-diff-new {', '.tt2-warn {', '.tt2-quote {', '.tt2-btn-primary {', '.tt2-btn-secondary {', '.tt2-toast {', '.tt2-toast-undo {']) {
     assert.ok(wxss.includes(rule), '缺少样式 ' + rule);
   }
-  assert.match(wxss, /\.paste \{[^}]*border:1px dashed var\(--control-line,#aa9990\)/u);
-  assert.match(wxss, /\.proposal \{[^}]*border:1px solid var\(--ai-line,#e7d3a0\)[^}]*border-radius:12px/u);
-  assert.match(wxss, /\.proposal-head \{[^}]*background:var\(--ai-soft,#fbf4e2\)/u);
-  assert.match(wxss, /\.quote \{[^}]*border-left:2px solid var\(--ai-line,#e7d3a0\)/u);
-  assert.match(wxss, /\.toast \{[^}]*background:#2b2422/u);
-  assert.match(wxss, /\.toast-undo \{[^}]*color:#f2c96b/u);
+  assert.match(wxss, /\.tt2-proposal \{[^}]*border:\s*1px solid #e7d3a0[^}]*border-radius:\s*14px/u);
+  assert.match(wxss, /\.tt2-quote \{[^}]*border-left:\s*2px solid #e7d3a0/u);
+  assert.match(wxss, /\.tt2-toast \{[^}]*background:\s*#2b2422/u);
+  assert.match(wxss, /\.tt2-toast-undo \{[^}]*color:\s*#f2c96b/u);
 });

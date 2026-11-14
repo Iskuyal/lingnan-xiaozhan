@@ -7,6 +7,21 @@ interface TapEvent {
 }
 
 type Status = 'loading' | 'ready' | 'empty' | 'error';
+
+/** 列表左侧的日期块：WXML 的表达式里没有 String#slice，日期拆解放在这里做。 */
+interface NewsRow extends NewsListItem {
+  day: string;
+  month: string;
+}
+
+function toRow(item: NewsListItem): NewsRow {
+  const valid = /^\d{4}-\d{2}-\d{2}$/.test(item.date);
+  return {
+    ...item,
+    day: valid ? item.date.slice(8, 10) : '--',
+    month: valid ? `${Number(item.date.slice(5, 7))} 月` : '待核实',
+  };
+}
 /** 页脚状态：加载更多只在 ready 时出现，与整页四态分开。 */
 type MoreState = 'idle' | 'loading' | 'error';
 
@@ -14,6 +29,8 @@ Page({
   data: {
     status: 'loading' as Status,
     items: [] as NewsListItem[],
+    /** 与 items 同序的展示行；items 保持服务原样，页面只在这里加渲染字段。 */
+    rows: [] as NewsRow[],
     source: { label: SOURCE_LABEL, syncedAt: '', fromServer: true } as NewsSourceMeta,
     syncedAtText: '',
     errorMessage: '',
@@ -28,12 +45,13 @@ Page({
   /** 读取云端已同步的资讯；失败时页面显示可重试的错误状态，不静默降级为旧内容。 */
   load() {
     this.fetched = 0;
-    this.setData({ status: 'loading', errorMessage: '', items: [], hasMore: false, moreState: 'idle' });
+    this.setData({ status: 'loading', errorMessage: '', items: [], rows: [], hasMore: false, moreState: 'idle' });
     return listNews(LIST_LIMIT, 0)
       .then((feed) => {
         this.fetched = feed.items.length;
         this.setData({
           items: feed.items,
+          rows: feed.items.map(toRow),
           source: feed.meta,
           syncedAtText: formatSyncTime(feed.meta.syncedAt),
           status: feed.items.length === 0 ? 'empty' : 'ready',
@@ -53,8 +71,10 @@ Page({
         const known = new Set(this.data.items.map((item) => item.id));
         const fresh = feed.items.filter((item) => !known.has(item.id));
         this.fetched += feed.items.length;
+        const items = this.data.items.concat(fresh);
         this.setData({
-          items: this.data.items.concat(fresh),
+          items,
+          rows: items.map(toRow),
           hasMore: feed.items.length >= LIST_LIMIT,
           moreState: 'idle',
         });

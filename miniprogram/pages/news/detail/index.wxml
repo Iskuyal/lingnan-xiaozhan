@@ -1,45 +1,52 @@
-<view class="page">
+<view class="u2-page">
   <block wx:if="{{status === 'ready'}}">
-    <view class="detail-heading">
-      <view class="detail-title">{{article.title}}</view>
-      <view class="detail-meta">
-        {{article.date === '' ? '日期待核实' : article.date}} · 来源：{{source.label}}
+    <view class="article">
+      <view class="u2-kicker">{{source.label}} · 原文可核对</view>
+      <view class="u2-h1 article-title">{{article.title}}</view>
+      <view class="article-meta">
+        <text>来源：{{source.label}}</text>
+        <text>{{article.date === '' ? '日期待核实' : article.date}}</text>
+      </view>
+
+      <view class="u2-notice u2-notice-info article-notice">
+        正文为云端已同步的原文段落，图片未同步；引用请以原文链接为准。
+      </view>
+
+      <view class="article-body">
+        <view class="article-paragraph" wx:for="{{article.paragraphs}}" wx:key="index">{{item.text}}</view>
+      </view>
+
+      <view class="u2-source">
+        <view class="u2-source-line">原文链接</view>
+        <view class="u2-source-line article-url">{{article.url}}</view>
+        <view wx:if="{{syncedAtText !== ''}}" class="u2-source-line">本条最近一次成功写入：{{syncedAtText}}</view>
+      </view>
+
+      <view class="u2-actions">
+        <button id="copy-article-source" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="copySource">复制原文链接</button>
+        <button id="back-from-detail" class="u2-btn u2-btn-secondary article-back" hover-class="pressed" bindtap="goBack">返回</button>
       </view>
     </view>
-
-    <view class="detail-body">
-      <view class="detail-paragraph" wx:for="{{article.paragraphs}}" wx:key="index">{{item.text}}</view>
-    </view>
-
-    <view class="detail-source">
-      <view class="detail-source-label">原文链接</view>
-      <view class="detail-url">{{article.url}}</view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="copy-article-source" class="source-button" hover-class="pressed" bindtap="copySource">复制原文链接</button>
-    </view>
-
-    <view class="detail-note" wx:if="{{syncedAtText !== ''}}">
-      本条内容最近一次成功写入：{{syncedAtText}}；正文图片未同步，请以原文为准。
-    </view>
-
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-detail" class="home-button" hover-class="pressed" bindtap="goBack">返回</button>
   </block>
 
-  <view wx:elif="{{status === 'loading'}}" class="status-page">
-    <view class="status-title">加载中</view>
-    <view class="status-copy">正在从云端读取这篇资讯…</view>
+  <view wx:elif="{{status === 'loading'}}" id="article-loading" class="u2-card u2-card-line">
+    <view class="u2-card-title">正在读取</view>
+    <view class="u2-card-copy">正在从云端读取这篇资讯…</view>
   </view>
 
-  <view wx:elif="{{status === 'error'}}" class="status-page">
-    <view class="status-title">暂时读不到这篇资讯</view>
-    <view class="status-copy">{{errorMessage}}</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-load" class="home-button" hover-class="pressed" bindtap="retry">重试</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
+  <view wx:elif="{{status === 'error'}}" id="article-error" class="u2-notice u2-notice-error">
+    <view class="u2-notice-title">暂时读不到这篇资讯</view>
+    <view class="article-state-copy">{{errorMessage}}</view>
+    <button id="retry-load" class="u2-btn u2-btn-secondary article-state-button" hover-class="pressed" bindtap="retry">重试</button>
+    <button id="back-home" class="u2-btn u2-btn-secondary article-state-button" hover-class="pressed" bindtap="goHome">返回</button>
   </view>
 
-  <view wx:else class="status-page">
-    <view class="status-title">没有找到这篇资讯</view>
-    <view class="status-copy">该条目不在云端已同步的内容里，可能是链接不完整或文章尚未收录。</view>
-    <view class="status-note">数据由云函数从官网同步，同步成功后即可在这里查看。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-home" class="home-button" hover-class="pressed" bindtap="goHome">返回</button>
+  <view wx:else id="article-missing" class="u2-empty">
+    <view class="u2-empty-icon">讯</view>
+    <view class="u2-empty-title">没有找到这篇资讯</view>
+    <view class="u2-empty-copy">该条目不在云端已同步的内容里，可能是链接不完整或文章尚未收录。</view>
+    <view class="u2-actions">
+      <button id="back-home" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="goHome">返回</button>
+    </view>
   </view>
 </view>
