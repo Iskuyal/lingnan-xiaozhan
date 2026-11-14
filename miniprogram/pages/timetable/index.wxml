@@ -237,7 +237,7 @@
           <view class="tt2-result-icon {{noticeResult.kind === 'undone' ? 'undone' : ''}}">{{noticeResult.kind === 'undone' ? '↺' : '✓'}}</view>
           <text class="tt2-result-title">{{noticeResult.title}}</text>
           <text class="tt2-result-intro">{{noticeResult.intro}}</text>
-          <view class="tt2-card">
+          <view wx:if="{{noticeResult.kind !== 'batch'}}" class="tt2-card">
             <view class="tt2-result-head">
               <text class="tt2-kicker">第 {{noticeResult.week}} 周</text>
               <text class="tt2-tag {{noticeResult.kind === 'undone' ? '' : 'success'}}">{{noticeResult.kind === 'undone' ? '已撤销' : '已保存'}}</text>

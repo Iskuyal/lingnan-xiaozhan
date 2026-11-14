@@ -65,6 +65,7 @@ import {
 } from '../../services/timetable/notice';
 import { loadPlan } from '../../services/goals/plan';
 import { SavedPlanView, savedPlanView } from '../../services/goals/saved';
+import { TimetableIntent, consumeTimetableIntent, openUiTab } from '../../ui/navigation';
 import {
   DayChip,
   DayView,
@@ -278,6 +279,12 @@ function courseInputText(input: CourseInput): string {
   return [weekdayLabel(input.weekday), rangeTextOf(input), input.location].filter((part) => part !== '').join(' · ');
 }
 
+/** 变化提示条只留「谁、哪天、第几节、哪」；完整前后对比在结果页里。 */
+function shortChangeText(input: CourseInput): string {
+  return [input.name, weekdayLabel(input.weekday), rangeTextOf(input), input.location]
+    .filter((part) => part !== '').join(' · ');
+}
+
 function noticeProposalOf(rows: NoticeRow[]): NoticeProposal {
   return { rows, checkedCount: rows.filter((row) => row.checked && row.blocked === '').length };
 }
@@ -288,14 +295,21 @@ function changeOf(row: NoticeRow): NoticeChange {
 }
 
 /** 提案行的逐条状态：已保存/失败/待重试/未勾选，页面按此画设计图 39 的每项状态。 */
-function withStatuses(rows: NoticeRow[], saved: Set<number>, failed: number | null, retried: boolean): NoticeRow[] {
+function withStatuses(
+  rows: NoticeRow[],
+  saved: Set<number>,
+  failed: number | null,
+  retried: boolean,
+  previouslySaved: Set<number> = new Set<number>(),
+): NoticeRow[] {
   return rows.map((row) => {
     if (saved.has(row.index)) {
       const status: NoticeRow['status'] = 'saved';
+      const label = previouslySaved.has(row.index) ? '先前已保存' : retried ? '重试后已保存' : '已保存';
       return {
         ...row,
         status,
-        statusLabel: retried ? '重试后已保存' : '已保存',
+        statusLabel: label,
         checked: false,
         blocked: row.blocked === '' ? '这条已应用，请勿重复写入；需要还原时可点撤销。' : row.blocked,
       };
@@ -520,8 +534,40 @@ Page({
             } else {
               week = mapped;
               weekPinned = true;
+              this.weekPinned = true;
             }
             this.startupPlanDate = '';
+          }
+        }
+
+        // 公共导航意图：只在课程与设置读完以后消费一次；不自动调用模型、不写课表。
+        const intent: TimetableIntent | null = consumeTimetableIntent();
+        if (intent !== null) {
+          if (intent.kind === 'assistant') {
+            this.openAssistant();
+            if (intent.text !== undefined && intent.text !== '') this.setData({ assistantInput: intent.text });
+            intentNotice = '';
+          } else if (intent.kind === 'week') {
+            if (intent.week >= 1 && intent.week <= options.length) {
+              week = intent.week;
+              weekPinned = true;
+              this.weekPinned = true;
+              intentNotice = '';
+            } else {
+              intentNotice = `导航要打开第 ${intent.week} 周，但当前课表只有 ${options.length} 周；已保留当前周。`;
+            }
+          } else {
+            const mapped = weekIndexOf(settings, intent.planDate);
+            if (mapped === null) {
+              intentNotice = settings.startDate === ''
+                ? '还没设置开学日，无法按日期定位学习计划；请先在课表设置里填写第一周星期一。'
+                : `学习计划日期 ${intent.planDate} 不在当前学期范围内，没有强行当作第 1 周。`;
+            } else {
+              week = mapped;
+              weekPinned = true;
+              this.weekPinned = true;
+              intentNotice = '';
+            }
           }
         }
 
@@ -1050,7 +1096,8 @@ Page({
     this.setData({ noticeReading: true, noticeApplying: true, noticeError: '', noticeToast: null, noticeResult: null, noticeBatch: null });
     this.applyNoticeTargetWeek = targetWeek;
     const applied: AppliedChange[] = [];
-    const saved = new Set<number>(proposal.rows.filter((row) => row.status === 'saved').map((row) => row.index));
+    const previouslySaved = new Set<number>(proposal.rows.filter((row) => row.status === 'saved').map((row) => row.index));
+    const saved = new Set<number>(previouslySaved);
     let failedIndex: number | null = null;
     let failure = '';
 
@@ -1085,8 +1132,11 @@ Page({
           return runStep(position + 1);
         })
         .catch((error) => {
-          failedIndex = step.changeIndex;
-          failure = messageOf(error);
+          // 内层的 catch 先拿到真正失败的那一步；外层 catch 只做透传，不能把下标改成第 1 步。
+          if (failedIndex === null) {
+            failedIndex = step.changeIndex;
+            failure = messageOf(error);
+          }
           throw error;
         });
     };
@@ -1098,7 +1148,7 @@ Page({
         this.setData({
           noticeReading: false,
           noticeApplying: false,
-          noticeProposal: noticeProposalOf(withStatuses(proposal.rows, saved, null, retried)),
+          noticeProposal: noticeProposalOf(withStatuses(proposal.rows, saved, null, retried, previouslySaved)),
           noticeToast: { text: `已更新 ${applied.length} 处，课表已同步`, canUndo: true },
         });
         return this.finishApply(applied, beforeIds, targetWeek, retried, null);
@@ -1111,7 +1161,7 @@ Page({
         this.setData({
           noticeReading: false,
           noticeApplying: false,
-          noticeProposal: noticeProposalOf(withStatuses(proposal.rows, saved, failedIndex, retried)),
+          noticeProposal: noticeProposalOf(withStatuses(proposal.rows, saved, failedIndex, retried, previouslySaved)),
           noticeError: done === 0
             ? (steps.some((step) => step.kind === 'scoped')
               ? `第 1 处保存未确认：${reason}。同一提案重试不会重复拆课。`
@@ -1153,24 +1203,33 @@ Page({
     const highlightIds = Array.from(highlight);
     const changeStrip = first === undefined ? null : {
       label: `已保存${first.kind === 'scoped' ? ' · 仅第 ' + targetWeek + ' 周' : ''}`,
-      detail: first.summary,
+      detail: first.kind === 'scoped' ? shortChangeText(first.after) : first.summary,
     };
+    const resultKind: NoticeResult['kind'] = retried && batch.total > applied.length ? 'batch' : 'changed';
+    const batchMode = resultKind === 'batch';
     const result: NoticeResult | null = allDone
       ? {
-        kind: retried && batch.total > applied.length ? 'batch' : 'changed',
-        title: firstScoped === undefined ? '课表，已更新。' : `第 ${targetWeek} 周，已调整。`,
-        intro: firstScoped === undefined ? '已按确认的内容写入课表。' : `${firstScoped.after.name} 的新安排已保存。`,
+        kind: resultKind,
+        title: batchMode ? `这次，${batch.saved} 项都完成了。` : (firstScoped === undefined ? '课表，已更新。' : `第 ${targetWeek} 周，已调整。`),
+        intro: batchMode
+          ? '已保存项没有重复执行；刚才待重试的修改已确认成功。'
+          : (firstScoped === undefined ? '已按确认的内容写入课表。' : `${firstScoped.after.name} 的新安排已保存。`),
         week: targetWeek,
-        courseName: firstScoped === undefined ? (first === undefined ? '' : first.after.name) : firstScoped.after.name,
-        afterLine: first === undefined ? '' : `${courseInputText(first.after)}${timeRangeTextOf(this.data.settings, first.after) === '' ? '' : ' · ' + timeRangeTextOf(this.data.settings, first.after)}`,
-        originalLine: first === undefined || first.before === null ? '' : courseInputText(first.before),
-        locationLine: first === undefined ? '' : first.after.location,
+        courseName: batchMode ? '' : (firstScoped === undefined ? (first === undefined ? '' : first.after.name) : firstScoped.after.name),
+        afterLine: batchMode || first === undefined ? '' : `${courseInputText(first.after)}${timeRangeTextOf(this.data.settings, first.after) === '' ? '' : ' · ' + timeRangeTextOf(this.data.settings, first.after)}`,
+        originalLine: batchMode || first === undefined || first.before === null ? '' : courseInputText(first.before),
+        locationLine: batchMode || first === undefined ? '' : first.after.location,
         canUndo: true,
-        rows: batch.rows.map((row) => ({ name: row.courseName, status: row.statusLabel, summary: row.detail })),
+        rows: batchMode ? batch.rows.map((row) => ({ name: row.courseName, status: row.statusLabel, summary: row.detail })) : [],
       }
       : null;
     this.setData({
       highlightIds,
+      gridUi: presentWeekGrid(this.data.grid, { expanded: this.data.gridExpanded, highlightIds }),
+      dayView: presentDayView(this.data.courses, this.data.week, this.data.selectedWeekday, this.data.settings, {
+        highlightIds,
+        todayWeekday: weekIndexOf(this.data.settings, this.today) === this.data.week ? (weekdayOf(this.today) ?? 0) : 0,
+      }),
       changeStrip,
       noticeBatch: allDone ? null : batch,
       noticeResult: result,
@@ -1236,8 +1295,10 @@ Page({
         this.setData({
           noticeReading: false,
           noticeApplying: false,
+          assistantOpen: true,
           noticeToast: { text: '已撤销，课表回到应用前', canUndo: false },
           highlightIds: [],
+          gridUi: presentWeekGrid(this.data.grid, { expanded: this.data.gridExpanded, highlightIds: [] }),
           changeStrip: null,
           noticeResult: {
             kind: 'undone',
@@ -1252,7 +1313,10 @@ Page({
             rows: [],
           },
         });
-        return this.load();
+        return this.load().then(() => {
+          // 结果页在重读之后打开，确保撤销提示与恢复后的课表同时可见。
+          this.setData({ assistantOpen: true });
+        });
       })
       .catch((error) => {
         this.undoStack = dirty;
@@ -1278,7 +1342,10 @@ Page({
     const firstId = this.data.highlightIds[0];
     const course = firstId === undefined ? undefined : this.data.courses.find((item) => item.id === firstId);
     if (course !== undefined) {
-      this.setData({ scrollLeft: scrollLeftForWeekday(course.weekday), selectedWeekday: course.weekday });
+      this.setData({ scrollLeft: scrollLeftForWeekday(course.weekday), selectedWeekday: course.weekday }, () => {
+        // 让目标课程所在的大节进入视口：保存后不是只给一句 toast，而是直接把变化摆到眼前。
+        if (typeof wx.pageScrollTo === 'function') wx.pageScrollTo({ scrollTop: 330, duration: 200 });
+      });
     }
   },
   continueAssistant() {
@@ -1289,7 +1356,14 @@ Page({
     this.undoStack = [];
   },
   goHome() {
-    if (getCurrentPages().length > 1) wx.navigateBack();
-    else wx.reLaunch({ url: '/pages/home/index' });
+    if (getCurrentPages().length > 1) {
+      wx.navigateBack();
+      return;
+    }
+    if (typeof wx.switchTab === 'function') {
+      openUiTab('today').catch(() => wx.reLaunch({ url: '/pages/home/index' }));
+      return;
+    }
+    wx.reLaunch({ url: '/pages/home/index' });
   },
 });

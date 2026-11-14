@@ -31,7 +31,7 @@
 }
 .tt2-week-control { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
 .tt2-week-nav { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.tt2-week-title { font-size: 25px; line-height: 1.3; font-weight: 750; letter-spacing: -0.5px; padding: 4px 2px; }
+.tt2-week-title { font-size: 25px; line-height: 1.3; font-weight: 750; letter-spacing: -0.5px; padding: 4px 2px; white-space: nowrap; }
 .tt2-icon-button {
   display: flex;
   align-items: center;
@@ -730,7 +730,8 @@
 
 @media (max-width: 350px) {
   .tt2-page { padding-left: 16px; padding-right: 16px; }
-  .tt2-week-title { font-size: 23px; }
+  .tt2-week-title { font-size: 20px; }
+  .tt2-week-actions { gap: 4px; }
   .tt2-day-time { width: 58px; }
   .tt2-result-title { font-size: 22px; }
 }

@@ -20,7 +20,7 @@ import { createCourse, deleteCourse, listCourses, messageOf, updateCourse } from
 import { getDraft, removeCourseAt, replaceCourseAt } from '../../../services/timetable/draft';
 import { CourseExtras, CourseForm, buildCourseInput, draftFromInput, emptyForm, formFromCourse, formFromDraft } from '../../../services/timetable/form';
 import { COURSE_COLORS, CourseColor, colorAt, colorIndexFor, colorIndexFromKey } from '../../../services/timetable/palette';
-import { SECTION_COUNT, WEEKDAY_SHORT } from '../../../services/timetable/view';
+import { SECTION_COUNT, WEEKDAY_LABELS, WEEKDAY_SHORT } from '../../../services/timetable/view';
 import { MAX_WEEK, parseWeekNotation } from '../../../services/timetable/weeks';
 import {
   WEEKS_MODES,
@@ -217,7 +217,7 @@ Page({
     scope: 'new' as Scope,
     title: '新增课程',
     form: emptyForm(),
-    weekdayLabels: WEEKDAY_SHORT,
+    weekdayLabels: WEEKDAY_LABELS,
     sectionStartText: '1',
     sectionEndText: '2',
     weeksEditor: EMPTY_EDITOR,
