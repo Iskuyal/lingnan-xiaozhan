@@ -143,6 +143,19 @@ async function run() {
     check('等待中改通知后，迟到模型夹具回复不能恢复旧提案');
     await shot('09-notice-late-reply');
 
+    const lockedText = await page.data('noticeInput');
+    await mini.evaluate(() => {
+      const p = getCurrentPages().slice(-1)[0];
+      p.setData({ noticeApplying: true });
+      p.onNoticeInput({ detail: { value: '不应在写入中改动原文' } });
+      p.readNoticeText('不应在写入中发起新解析');
+    });
+    assert.equal(await page.data('noticeInput'), lockedText);
+    assert.equal(await page.data('noticeProposal'), null);
+    check('写入锁定时输入和新解析处理器均不改变原文及提案');
+    await shot('10-notice-input-locked');
+    await mini.evaluate(() => getCurrentPages().slice(-1)[0].setData({ noticeApplying: false }));
+
     page = await open('/pages/defense/index');
     await mini.evaluate(() => {
       const p = getCurrentPages().slice(-1)[0];
@@ -154,7 +167,7 @@ async function run() {
     await page.callMethod('onCopyReview');
     assert.equal(await page.data('copiedOpen'), true);
     check('练习反馈未返回时仍能复制已有原答，不生成未返回反馈');
-    await shot('10-copy-record');
+    await shot('11-copy-record');
     report.passed = true;
   } catch (error) { report.error = error.stack; process.exitCode = 1; }
   finally {

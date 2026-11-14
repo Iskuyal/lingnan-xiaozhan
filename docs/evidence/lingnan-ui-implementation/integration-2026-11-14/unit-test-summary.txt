@@ -1,0 +1,9 @@
+✔ 样式引用设计令牌一律带回退值，且回退值与令牌定义一致 (18.8749ms)
+ℹ tests 1025
+ℹ suites 0
+ℹ pass 1025
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46436.7655

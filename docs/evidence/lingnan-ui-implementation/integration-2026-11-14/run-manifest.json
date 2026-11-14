@@ -1,0 +1,14 @@
+{
+  "productFinalCommit": "8dda8d363d88d670bd2d5d0edb432434e47fb35c",
+  "localTests": { "tests": 1025, "pass": 1025, "fail": 0, "skipped": 0 },
+  "nativeModuleSnapshotCommit": "21f9b6e7a886ec7020c040b1271299198d834ac4",
+  "nativeModuleProject": ".scratch/ui-integration-1794660913667",
+  "effectiveAutomationPort": 9465,
+  "nativeModuleHashComparison": {
+    "against": "dist built from 8dda8d3 product source",
+    "algorithm": "SHA256 per generated file",
+    "checkedFolders": ["pages/home", "pages/study", "pages/campus", "pages/departments", "pages/news", "pages/goals", "pages/calendar", "pages/fitness", "pages/advancement", "pages/defense", "ui/study"],
+    "changedFiles": []
+  },
+  "boundary": "A/C and goal pages in module snapshot are byte-identical to final product. Timetable final late-reply and applying-lock changes need their final cross-module run; do not relabel earlier native snapshot. Some A/B report port labels retain their default 9461/9462; actual invocation used WECHAT_AUTO_PORT=9465."
+}

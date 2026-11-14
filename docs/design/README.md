@@ -61,7 +61,7 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
-- [岭南红全量 UI/UX 重设计（2026-11-11，79 张静态提案，待负责人定稿）](lingnan-red-2026-11-11/README.md)
+- [岭南红全量 UI/UX 重设计（79图已确认，三人实现已交付并集成审查）](lingnan-red-2026-11-11/README.md)
 
 - [AI理解学习约束与规则校验（已确认并本地实现，真实模型样例另计）](ai-study-plan-2026-11-11/README.md)
 
