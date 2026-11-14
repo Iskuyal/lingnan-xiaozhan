@@ -30,7 +30,7 @@ function prepareProject() {
 async function run() {
   fs.mkdirSync(OUTPUT, { recursive: true });
   const report = { date: new Date().toISOString(), git: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-    mode: 'native_simulator_offline_fixtures', realAiCalls: 0, realCloudWrites: 0,
+    mode: 'native_simulator_offline_fixtures', port: Number(PORT), realAiCalls: 0, realCloudWrites: 0,
     boundary: '独立项目在app启动前安装请求/存储隔离；AI和业务全为夹具，不是真机或模型效果验收。', checks: [], screenshots: [] };
   const mini = await connectMini(PORT);
   const check = (name) => report.checks.push({ name, passed: true });
@@ -137,7 +137,7 @@ async function run() {
         await pending;
       } finally { wx.cloud.callFunction = original; }
     });
-    assert.equal(await page.data('noticeProposal'), null);
+    assert.equal((await page.data()).noticeProposal, null);
     assert.equal(await page.data('noticeInput'), '新通知B：取消调课，不修改课程');
     assert.equal(await page.data('noticeReading'), false);
     check('等待中改通知后，迟到模型夹具回复不能恢复旧提案');
@@ -151,7 +151,7 @@ async function run() {
       p.readNoticeText('不应在写入中发起新解析');
     });
     assert.equal(await page.data('noticeInput'), lockedText);
-    assert.equal(await page.data('noticeProposal'), null);
+    assert.equal((await page.data()).noticeProposal, null);
     check('写入锁定时输入和新解析处理器均不改变原文及提案');
     await shot('10-notice-input-locked');
     await mini.evaluate(() => getCurrentPages().slice(-1)[0].setData({ noticeApplying: false }));

@@ -14,7 +14,7 @@
 
 B/C均包含同一NAV_SHA，保留普通merge祖先。集成分支为 `codex/lingnan-ui-integration-20261114`，按A→B→C合入，无文本冲突。修补提交包括 `3e55177`、`972da4d`、`21f9b6e`、`6c2e359`、`8dda8d3`。产品代码最终测试版本为 `8dda8d363d88d670bd2d5d0edb432434e47fb35c`；后续验证脚本与文档单独记录，不冒用其他分支的测试成绩。
 
-关联[Issue #147](https://github.com/Iskuyal/wx-match/issues/147)、[公共基础PR #148](https://github.com/Iskuyal/wx-match/pull/148)、[A模块PR #149](https://github.com/Iskuyal/wx-match/pull/149)。用户引用的关联聊天因本次会话未提供Codex `read_thread` 工具而未读；实施范围依据仓库任务书、远端提交、PR和Issue内容确定。
+交付入口为[集成审查PR #150](https://github.com/Iskuyal/wx-match/pull/150)，最终远端合并状态以该PR为准。关联[Issue #147](https://github.com/Iskuyal/wx-match/issues/147)、[公共基础PR #148](https://github.com/Iskuyal/wx-match/pull/148)、[A模块PR #149](https://github.com/Iskuyal/wx-match/pull/149)。用户引用的关联聊天因本次会话未提供Codex `read_thread` 工具而未读；实施范围依据仓库任务书、远端提交、PR和Issue内容确定。
 
 ## Standards
 
@@ -45,6 +45,6 @@ B/C均包含同一NAV_SHA，保留普通merge祖先。集成分支为 `codex/lin
 
 代码版本 `8dda8d3`：类型检查通过；全量 **1025 tests / 1025 pass / 0 fail / 0 skipped**。新增复现保留在相应模块测试；不是仅适配截图选择器。完整结果及原生画面见[集成证据](../evidence/lingnan-ui-implementation/integration-2026-11-14/README.md)。文档检查在最终归档时再跑。
 
-原生集成8项检查覆盖真实按钮跳转、一次性意图、课程编辑、无课日、规则换排、计划对应周、限定调课与撤销、复制已有原答。所有AI/云端写入均为夹具，不能宣称真实模型质量、事务性能或真机通过。390逻辑宽度与371像素截图栅格分别记录；本轮独立复跑未覆盖320逻辑宽度，B开发者自测的320证据仍按原身份保留。完整键盘、安全区、分享深链与读屏也未补验。
+最终原生集成10项检查覆盖真实按钮跳转、一次性意图、课程编辑、无课日、规则换排、计划对应周、限定调课与撤销、迟到通知、写入锁与复制已有原答。A的14项、B的12项、C的31场景和目标日9项扩展原生复跑均通过。所有AI/云端写入均为夹具，不能宣称真实模型质量、事务性能或真机通过。390逻辑宽度与371像素截图栅格分别记录；本轮独立复跑未覆盖320逻辑宽度，B开发者自测的320证据仍按原身份保留。完整键盘、安全区、分享深链与读屏也未补验。
 
 设计13的备注字段受冻结存储契约限制未实现；删除仍使用原生确认框；部门问答的图标位置与原稿有偏差。它们作为已披露差异保留，不把79张静态图或8.5/8.6分数写成79张运行验收成绩。本次合并面向审查主线 `codex/review-ai-experience-20261110`，不自动合 `main`、部署、上传体验版或制作新的参赛包；Issue #147不因离线回归自动关闭。

@@ -4,11 +4,14 @@
   "nativeModuleSnapshotCommit": "21f9b6e7a886ec7020c040b1271299198d834ac4",
   "nativeModuleProject": ".scratch/ui-integration-1794660913667",
   "effectiveAutomationPort": 9465,
+  "nativeFinalProductProject": ".scratch/ui-integration-1794662352165",
+  "nativeFinalProductSourceCommit": "8dda8d363d88d670bd2d5d0edb432434e47fb35c",
+  "nativeFinalProductPort": 9466,
   "nativeModuleHashComparison": {
     "against": "dist built from 8dda8d3 product source",
     "algorithm": "SHA256 per generated file",
     "checkedFolders": ["pages/home", "pages/study", "pages/campus", "pages/departments", "pages/news", "pages/goals", "pages/calendar", "pages/fitness", "pages/advancement", "pages/defense", "ui/study"],
     "changedFiles": []
   },
-  "boundary": "A/C and goal pages in module snapshot are byte-identical to final product. Timetable final late-reply and applying-lock changes need their final cross-module run; do not relabel earlier native snapshot. Some A/B report port labels retain their default 9461/9462; actual invocation used WECHAT_AUTO_PORT=9465."
+  "boundary": "A/C and goal pages in module snapshot are byte-identical to final product. Timetable and final cross-module runs use the final product project. Do not relabel the earlier native snapshot. A/B report labels retain default 9461/9462; actual A/C/goals used 9465 and final B/cross used 9466. CLI requested 9465 for final project but returned allocated autoPort 9466; the final invocations follow that returned port."
 }
