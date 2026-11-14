@@ -1,22 +1,26 @@
 /**
- * 新建 / 编辑一条目标日。
+ * 新建 / 编辑一条目标日（岭南红 UI 第二轮 · C 分支，设计稿 13 编辑态）。
  *
  * 只有三个字段由学生决定：事项名称、目标日期、是否计入当天。**不预填任何学校日期**：
  * 日期默认取今天（北京时间）只为省一次翻日历，学生自己改。
  *
+ * 设计稿 13 里的「备注（选填）」**本轮未落地**：`GoalDay`（`services/goals`）没有备注字段，
+ * 本机 `goal-days/v1` 的结构是冻结区，不能为了对齐一张设计图在存储里加一个没有消费方的假字段。
+ * 所以这一栏不渲染、不采集、不写库；要真加，先改存储结构与读取方，再回来补 UI。
+ *
+ * 删除走系统确认弹窗（设计稿 54 的确认内容原样搬进弹窗文案），不新开一页：
+ * 新页面要注册进 `app.json`，而 `app.json` 不属本任务可改范围；系统弹窗也保留了原生的误触保护。
+ *
  * 保存与删除都直接写本机存储（`services/goals`），失败时弹窗说明原因并留在本页，
- * 不悄悄把改动丢掉。删除走系统确认弹窗，与课表删除同一套交互。
+ * 不悄悄把改动丢掉。
  *
  * 测试注入：`onLoad({ today: 'YYYY-MM-DD' })` 固定「今天」，预览文案不随真实日期漂移。
  */
 import { MAX_NAME_LENGTH, addGoal, findGoal, isValidDate, parseDate, removeGoal, shanghaiToday, statusOf, updateGoal } from '../../../services/goals/index';
+import { openUiTab } from '../../../ui/navigation';
 
 interface InputEvent {
   detail: { value: string };
-}
-
-interface SwitchEvent {
-  detail: { value: boolean };
 }
 
 interface Query {
@@ -86,6 +90,7 @@ Page({
         form: { name: '', date: shanghaiToday(now), countToday: false },
         todayText: shanghaiToday(now),
       });
+      this.setNavigationTitle('新建目标日');
       this.refreshPreview();
       return;
     }
@@ -101,7 +106,15 @@ Page({
       form: { name: goal.name, date: goal.date, countToday: goal.countToday },
       todayText: shanghaiToday(now),
     });
+    this.setNavigationTitle('编辑目标日');
     this.refreshPreview();
+  },
+  /**
+   * 导航栏标题跟着「新建 / 编辑」走（设计稿 13 的 nav-title 是「编辑目标日」）。
+   * 运行时没有这个 API（例如单元测试的 wx 桩）就跳过，不能为了标题把页面打挂。
+   */
+  setNavigationTitle(title: string) {
+    if (typeof wx.setNavigationBarTitle === 'function') wx.setNavigationBarTitle({ title });
   },
   now(): number {
     return this.fixedNow === null ? Date.now() : this.fixedNow;
@@ -163,7 +176,7 @@ Page({
     const form: FormState = this.data.form;
     wx.showModal({
       title: '删除这个目标日？',
-      content: `删除后无法恢复，目标日只存在本机。\n${form.name} · ${form.date}`,
+      content: `删除后无法恢复，目标日只存在本机。\n${form.name} · ${form.date}\n已保存的学习计划保留原快照，并提示目标已删除。`,
       confirmText: '删除',
       success: (result: ModalResult) => {
         if (result.confirm !== true) return;
@@ -178,8 +191,17 @@ Page({
       },
     });
   },
+  /**
+   * 返回：栈里有上一页就退回去；只剩本页时（从分享或重开直接落在编辑页）切到「今天」tab，
+   * 切不过去再退到目标日列表——两条路都比停在一个空栈页面上强。
+   */
   goBack() {
-    if (getCurrentPages().length > 1) wx.navigateBack();
-    else wx.reLaunch({ url: '/pages/goals/index' });
+    if (getCurrentPages().length > 1) {
+      wx.navigateBack();
+      return;
+    }
+    openUiTab('today').catch(() => {
+      wx.reLaunch({ url: '/pages/goals/index' });
+    });
   },
 });

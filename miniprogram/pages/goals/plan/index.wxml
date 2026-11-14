@@ -1,164 +1,503 @@
-<view class="page">
+<!--
+  学习计划页：一个路由承载九种界面状态（设计稿 14 输入 / 49 基础规则 / 15 约束核对 /
+  64 约束澄清 / 43 AI 不可用 / 16 预览 / 17 已保存 / 18 冲突 / 40 过期快照）。
+  `screen` 是由真实状态推导出来的判别字段，这里只按它分屏，不自己造第二套状态。
+-->
+<view class="st-screen">
+  <view class="st-screen-body">
 
-  <view class="gp-head">
-    <view class="eyebrow">{{eyebrow}}</view>
-    <view class="gp-title">{{headline}}</view>
-  </view>
-
-  <view class="steps" wx:if="{{!savedView}}">
-    <view wx:for="{{steps}}" wx:key="text" class="steps-item {{item.state}}">{{item.text}}</view>
-  </view>
-
-  <block wx:if="{{savedView}}">
-    <view class="gp-saved-intro">离线也能查看这份安排。</view>
-    <view id="saved-plan-card" class="gp-snapshot-card">
-      <view class="gp-snapshot-head"><text class="ai-tag">已保存到本机</text><text class="gp-tiny">{{savedRange}}</text></view>
-      <view class="gp-snapshot-summary">{{savedSummary}}</view>
-      <view class="gp-snapshot-row" wx:for="{{savedRows}}" wx:key="id">
-        <view class="gp-snapshot-label">{{item.label}}</view>
-        <view class="gp-tiny">{{item.date}}</view>
-        <view class="gp-snapshot-note gp-snapshot-{{item.status}}" wx:if="{{item.note}}">{{item.note}}</view>
-      </view>
-    </view>
-    <view class="gp-snapshot-copy" wx:if="{{plan.origin === 'ai-constraints'}}">生成时由AI整理约束，学习时段经规则校验；重开不会再次请求AI。</view>
-    <view class="gp-snapshot-copy">{{savedNotice}}</view>
-    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="saved-plan-week" class="home-button gp-btn" bindtap="onViewWeek">查看对应周课表</button>
-    <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="saved-plan-regenerate" class="home-button secondary gp-btn" bindtap="onRegenerate">{{savedGoalMissing ? '选择新的目标日' : '重新生成计划'}}</button>
-    <view id="saved-plan-remove" class="gp-remove" bindtap="onRemove" aria-role="button">撤回本机保存的计划</view>
-  </block>
-
-  <block wx:elif="{{status === 'missing'}}">
-    <view class="gp-empty">
-      <view class="gp-empty-title">这个目标日已经不在了</view>
-      <view class="gp-empty-copy">它可能已经在列表里被删掉。回目标日列表看看现在还有哪些，再回来排。</view>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-open-goals" class="home-button gp-btn" hover-class="pressed" bindtap="onOpenGoals">去看目标日</button>
-    </view>
-  </block>
-
-  <block wx:elif="{{status === 'pick'}}">
-    <view class="gp-empty">
-      <view class="gp-empty-title">还没有目标日</view>
-      <view class="gp-empty-copy">先建一个目标日（比如「英语四级 · 12 月 13 日」），再回来让它把每周的学习时段排进空闲格。</view>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-create-goal" class="home-button gp-btn" hover-class="pressed" bindtap="onCreateGoal">新建目标日</button>
-    </view>
-  </block>
-
-  <block wx:else>
-    <view class="gp-section">
-      <view class="gp-section-head">
-        <view class="gp-section-title">选一个目标日</view>
-        <view class="gp-tiny">只读，不改目标日本身</view>
-      </view>
-      <view class="gp-goals">
-        <view
-          wx:for="{{goals}}"
-          wx:key="id"
-          class="gp-goal {{item.id === goalId ? 'gp-goal-on' : ''}}"
-          hover-class="pressed"
-          data-id="{{item.id}}"
-          bindtap="onPickGoal"
-          aria-role="button"
-        >
-          <view class="gp-goal-name">{{item.name}}</view>
-          <view class="gp-goal-meta">{{item.date}} · {{item.label}}</view>
+    <!-- 三步条：说说情况 → 核对约束 → 预览计划（保存后不再是「步骤」，直接收起来） -->
+    <view class="st-steps" wx:if="{{stepBar.length && screen !== 'saved' && screen !== 'conflict' && screen !== 'expired' && screen !== 'pick' && screen !== 'missing'}}">
+      <block wx:for="{{stepBar}}" wx:key="num">
+        <view class="st-step {{item.state === 'on' ? 'st-step-on' : ''}}">
+          <view class="st-step-dot">{{item.num}}</view>
+          <text>{{item.label}}</text>
         </view>
-      </view>
+        <view class="st-step-line" wx:if="{{index < stepBar.length - 1}}"></view>
+      </block>
     </view>
 
-    <view class="gp-section">
-      <view class="gp-section-title">说一句自己的情况</view>
-      <view class="gp-saved" wx:if="{{savedNote}}">{{savedNote}}</view>
-      <view wx:if="{{hasSaved}}" class="gp-view-saved" bindtap="onViewSaved" aria-role="button">查看本机已保存的计划</view>
-      <view class="bubble-me" wx:if="{{constraintText}}">{{constraintText}}</view>
-      <textarea
-        id="plan-constraint"
-        class="gp-input"
-        value="{{constraintText}}"
-        maxlength="120"
-        auto-height
-        bindinput="onConstraintInput"
-        placeholder="例如：听力最弱，每次别超过 1 小时，周末上午不排。"
-      />
-      <view class="gp-hint">可说每段时长、每周段数、弱项，以及哪天或上午/下午/晚上不能排。AI先整理，确认后再生成预览。</view>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate" class="home-button gp-btn" hover-class="pressed" disabled="{{busy || aiBusy}}" bindtap="understandAi">{{aiBusy ? 'AI正在理解…' : '让AI理解我的情况'}}</button>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-generate-rules" class="home-button secondary gp-btn" hover-class="pressed" disabled="{{busy || aiBusy}}" bindtap="generate">{{busy ? '正在核对课表…' : '使用基础规则排程'}}</button>
-      <view class="gp-hint">本次AI只接收目标名称和这段情况，不接收整份课表、教师或地点。基础规则只处理固定说法，未理解的情况会先要求核对。</view>
-    </view>
-
-    <view id="plan-ai-message" class="gp-ai-message" wx:if="{{aiMessage}}">{{aiMessage}}</view>
-    <view id="plan-ai-draft" class="gp-ai-draft" wx:if="{{aiDraftReady}}">
-      <view class="gp-ai-title">这些理解对吗？</view>
-      <view class="gp-ai-copy">确认后才生成预览，暂不保存。</view>
-      <view class="ai-tag">AI整理 · 待核对</view>
-      <view class="gp-ai-fact" wx:for="{{aiEvidence}}" wx:key="key">
-        <view>{{item.value}}</view><view class="gp-ai-quote">原话：{{item.quote}}</view>
-      </view>
-      <view class="gp-ai-copy" wx:for="{{aiDefaults}}" wx:key="*this">{{item}}</view>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-ai-confirm" class="home-button gp-btn" disabled="{{busy}}" bindtap="confirmAiPlan">{{busy ? '正在核对课表…' : '按这些约束生成预览'}}</button>
-      <button style="margin-left:0;margin-right:0;display:block;width:100%;max-width:none" id="plan-ai-edit" class="home-button secondary gp-btn" disabled="{{busy}}" bindtap="editAiInput">返回修改情况</button>
-    </view>
-
-    <view class="gp-error" wx:if="{{error}}">{{error}}</view>
-
-    <block wx:if="{{plan}}">
-      <view class="gp-card">
-        <view class="sec">
-          <view class="gp-card-title">{{weekTitle}}</view>
-          <view class="gp-tiny">{{hoursText}}</view>
-        </view>
-
-        <view class="week">
-          <view class="week-corner"></view>
-          <view wx:for="{{gridWeekdays}}" wx:key="*this" class="week-head">{{item}}</view>
-          <block wx:for="{{gridRows}}" wx:for-item="row" wx:key="label">
-            <view class="week-side" style="{{row.labelStyle}}">{{row.label}}</view>
-            <view
-              wx:for="{{row.cells}}"
-              wx:for-item="cell"
-              wx:key="style"
-              class="cell {{cell.kind}}"
-              style="{{cell.style}}"
-            >{{cell.label}}</view>
-          </block>
-        </view>
-
-        <view class="legend">
-          <view class="legend-item l1">已有课程</view>
-          <view class="legend-item l2">规则排程（未保存）</view>
-          <view class="legend-item l3">空闲</view>
-        </view>
-
-        <view class="gp-weekend" wx:if="{{weekendLines.length}}">
-          <view class="gp-tiny">这些排在了周末，不在上面这张周一到周五的网格里：</view>
-          <view class="gp-weekend-line" wx:for="{{weekendLines}}" wx:key="*this">{{item}}</view>
-        </view>
-      </view>
-
-      <view class="ai-card brief">
-        <view class="ai-tag">为什么这样排</view>
-        <view class="ai-src" wx:if="{{constraintLines.length}}">
-          <view class="ai-src-item" wx:for="{{constraintLines}}" wx:key="*this">依据 · {{item}}</view>
-        </view>
-        <view class="brief-line" wx:for="{{rationale}}" wx:key="*this">{{item}}</view>
-        <block wx:if="{{dropped.length}}">
-          <view class="ai-note">这几句没听懂，按默认排：</view>
-          <view class="brief-drop" wx:for="{{dropped}}" wx:key="*this">{{item}}</view>
-        </block>
-        <view class="ai-note" wx:if="{{defaultNote}}">{{defaultNote}}</view>
-      </view>
-
-      <view class="actions">
-        <view id="plan-variant" class="btn secondary" hover-class="pressed" bindtap="onVariant" aria-role="button">换一种排法</view>
-        <button style="margin-left:0;margin-right:0" id="plan-save" class="btn primary" hover-class="pressed" bindtap="onSave">保存到本机</button>
-      </view>
-
-      <view class="gp-pending" wx:if="{{plan.blocks.length === 0}}">这份计划没有能排的时段，加了也是空的，所以先不给你加。</view>
-
-      <view class="gp-foot">{{plan.origin === 'ai-constraints' ? 'AI整理的约束已核对，时段由规则安排；换排法、保存与重开不会再请求模型。' : '本次使用基础规则，不调用模型。'}}保存后可重开查看，并在对应周课表中独立列出；不计正式课程数，完成记录与自动重排尚未实现。</view>
-      <view id="plan-remove" class="gp-remove" wx:if="{{hasSaved}}" hover-class="pressed" bindtap="onRemove" aria-role="button">撤回本机保存的计划</view>
+    <!-- 读课表中：占位条，不闪空白页 -->
+    <block wx:if="{{screen === 'loading'}}">
+      <view class="st-loading-bars"><view></view><view></view><view></view></view>
     </block>
 
-    <view class="gp-foot" wx:else>还没有新计划。可先让AI整理约束，也可明确选择基础规则；核对后安排今天起、目标日以内的本周空闲格。已保存的旧计划保留，只有确认保存才会替换。</view>
-  </block>
+    <!-- 还没有目标日 -->
+    <block wx:elif="{{screen === 'pick'}}">
+      <view class="u2-empty">
+        <view class="u2-empty-icon">＋</view>
+        <view class="u2-empty-title">还没有目标日</view>
+        <view class="u2-empty-copy">先建一个目标日（比如「英语四级 · 12 月 13 日」），再回来让它把每周的学习时段排进空闲格。</view>
+        <button id="plan-create-goal" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onCreateGoal">新建目标日</button>
+      </view>
+    </block>
 
+    <!-- 带进来的目标日已经被删了 -->
+    <block wx:elif="{{screen === 'missing'}}">
+      <view class="u2-empty">
+        <view class="u2-empty-icon">!</view>
+        <view class="u2-empty-title">这个目标日已经不在了</view>
+        <view class="u2-empty-copy">它可能已经在列表里被删掉。回目标日列表看看现在还有哪些，再回来排。</view>
+        <button id="plan-open-goals" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onOpenGoals">去看目标日</button>
+      </view>
+    </block>
+
+    <block wx:else>
+      <!-- 目标日：一句话说清是哪个，可换 -->
+      <view class="gp-goal-head">
+        <view class="u2-kicker gp-goal-kicker">{{eyebrow}}</view>
+        <view id="plan-goal-switch" class="u2-text-link gp-goal-switch" wx:if="{{goals.length > 1}}" hover-class="pressed" bindtap="onToggleGoalPicker">{{goalPickerOpen ? '收起' : '换一个'}}</view>
+      </view>
+
+      <view class="u2-list gp-goal-list" wx:if="{{goalPickerOpen}}">
+        <view class="u2-row" wx:for="{{goals}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="onPickGoal">
+          <view class="u2-icon {{item.id === goalId ? '' : 'u2-icon-plain'}}">{{item.kind === 'expired' ? '旧' : '日'}}</view>
+          <view class="u2-row-main">
+            <view class="u2-row-title">{{item.name}}{{item.id === goalId ? ' · 当前' : ''}}</view>
+            <view class="u2-row-sub">{{item.date}} · {{item.label}}</view>
+          </view>
+          <view class="u2-chev">›</view>
+        </view>
+      </view>
+
+      <!-- AI 的结论 / 失败原因：先摆在最上面，不让学生猜刚才发生了什么 -->
+      <view id="plan-ai-message" class="u2-notice u2-notice-error gp-gap-top" wx:if="{{aiMessage && screen !== 'unavailable'}}">{{aiMessage}}</view>
+      <view class="gp-error u2-notice u2-notice-error gp-gap-top" wx:if="{{error}}">{{error}}</view>
+
+      <!-- ───────────────── 14 输入：说说情况 ───────────────── -->
+      <block wx:if="{{screen === 'input'}}">
+        <view class="u2-h1 gp-hero">{{heroTitle}}</view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view class="st-field gp-gap-top">
+          <text class="st-label">你的情况</text>
+          <textarea
+            id="plan-constraint"
+            class="st-input st-textarea"
+            value="{{constraintText}}"
+            maxlength="120"
+            auto-height
+            bindinput="onConstraintInput"
+            placeholder="我周四没空，周末上午有兼职，每次半小时，听力总拖后腿，一周安排三回。"
+            placeholder-class="st-input-placeholder"
+          />
+          <view class="gp-note-row">
+            <text class="st-field-hint">只发送目标名称和这段情况</text>
+            <text class="u2-tag">课表不发送</text>
+          </view>
+        </view>
+
+        <button id="plan-generate" class="u2-btn u2-btn-primary" hover-class="pressed" disabled="{{busy || aiBusy}}" bindtap="understandAi">{{aiBusy ? 'AI 正在理解…' : '整理我的学习约束'}}</button>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">识别结果先给你核对，不会直接创建或保存计划。</view>
+
+        <view class="st-field-hint gp-gap-top">可说每段时长、每周段数、弱项，以及哪天或上午/下午/晚上不能排。AI 先整理，确认后再生成预览。</view>
+
+        <view class="u2-section">
+          <view class="u2-section-title">也可以直接设置</view>
+        </view>
+        <view class="u2-list">
+          <view class="u2-row" hover-class="pressed" bindtap="showRules">
+            <view class="u2-icon u2-icon-plain">规</view>
+            <view class="u2-row-main">
+              <view class="u2-row-title">用基础规则安排</view>
+              <view class="u2-row-sub">手动选择时长、频率和可用时段，不请求 AI</view>
+            </view>
+            <view class="u2-chev">›</view>
+          </view>
+        </view>
+
+        <view class="u2-source" wx:if="{{hasSaved}}">
+          <view class="u2-source-line">{{savedNote}}</view>
+          <view class="u2-source-line"><text class="u2-text-link gp-inline-link" hover-class="pressed" bindtap="onViewSaved">查看本机已保存的计划</text></view>
+        </view>
+        <view class="u2-source" wx:else>本次 AI 只接收目标名称和这段情况，不接收整份课表、教师或地点。基础规则只处理固定说法，未理解的情况会先要求核对。</view>
+      </block>
+
+      <!-- ───────────────── 49 基础规则：五组控件 ───────────────── -->
+      <block wx:elif="{{screen === 'rules'}}">
+        <view class="u2-kicker">基础规则 · 不请求 AI</view>
+        <view class="u2-h1 gp-hero">{{heroTitle}}</view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view class="st-field gp-gap-top">
+          <text class="st-label">每次学习时长</text>
+          <view class="st-seg">
+            <view
+              wx:for="{{ruleMinuteOptions}}"
+              wx:key="key"
+              class="st-seg-item {{item.on ? 'st-seg-on' : ''}}"
+              data-value="{{item.key}}"
+              hover-class="pressed"
+              bindtap="onRuleMinutes"
+            >{{item.label}}</view>
+          </view>
+        </view>
+
+        <view class="st-field">
+          <text class="st-label">每周安排次数</text>
+          <view class="st-seg">
+            <view
+              wx:for="{{ruleBlockOptions}}"
+              wx:key="key"
+              class="st-seg-item {{item.on ? 'st-seg-on' : ''}}"
+              data-value="{{item.key}}"
+              hover-class="pressed"
+              bindtap="onRuleBlocks"
+            >{{item.label}}</view>
+          </view>
+        </view>
+
+        <view class="st-field">
+          <text class="st-label">优先练习</text>
+          <input
+            id="plan-rule-focus"
+            class="st-input"
+            value="{{ruleFocus}}"
+            maxlength="12"
+            bindinput="onRuleFocusInput"
+            placeholder="例如：听力"
+            placeholder-class="st-input-placeholder"
+          />
+        </view>
+
+        <view class="st-field">
+          <text class="st-label">不安排的星期</text>
+          <view class="st-chips">
+            <view
+              wx:for="{{ruleWeekdays}}"
+              wx:key="key"
+              class="st-chip {{item.on ? 'st-chip-on' : ''}}"
+              data-value="{{item.key}}"
+              hover-class="pressed"
+              bindtap="onRuleWeekday"
+            >{{item.label}}</view>
+          </view>
+        </view>
+
+        <view class="st-field">
+          <text class="st-label">不可用时段 · 可多选</text>
+          <view class="gp-period-row" wx:for="{{rulePeriodRows}}" wx:key="weekday" wx:for-item="row">
+            <text class="gp-period-day">{{row.label}}</text>
+            <view class="st-chips gp-period-chips">
+              <view
+                wx:for="{{row.options}}"
+                wx:key="key"
+                wx:for-item="slot"
+                class="st-chip {{slot.on ? 'st-chip-on' : ''}}"
+                data-weekday="{{row.weekday}}"
+                data-start="{{slot.start}}"
+                data-end="{{slot.end}}"
+                hover-class="pressed"
+                bindtap="onRulePeriod"
+              >{{slot.label}}</view>
+            </view>
+          </view>
+          <view class="gp-switch-row st-chips">
+            <view class="st-chip {{ruleNoEvening ? 'st-chip-on' : ''}}" hover-class="pressed" bindtap="onRuleNoEvening">晚上一律不排</view>
+          </view>
+          <view class="st-field-hint">上午按第 1–4 节排除；规则检查已知课程、日期和时长，不安排过去时段。</view>
+        </view>
+      </block>
+
+      <!-- ───────────────── 15 核对 AI 整理出来的约束 ───────────────── -->
+      <block wx:elif="{{screen === 'draft'}}">
+        <view class="u2-h1 gp-hero">{{heroTitle}}</view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view id="plan-ai-draft" class="u2-card gp-gap-top">
+          <view class="gp-row-between">
+            <view class="u2-card-title">识别到的约束</view>
+            <view class="ai-tag">AI 草稿</view>
+          </view>
+          <view class="st-constraint" wx:for="{{aiEvidence}}" wx:key="key">
+            <view class="st-constraint-head">
+              <view class="st-draft-mark">{{index + 1}}</view>
+              <view class="st-constraint-body">
+                <view class="st-constraint-text">{{item.value}}</view>
+                <view class="st-constraint-evidence">原话：{{item.quote}}</view>
+              </view>
+              <view class="u2-text-link gp-constraint-edit" hover-class="pressed" bindtap="editAiInput">修改</view>
+            </view>
+          </view>
+          <view class="st-field-hint" wx:for="{{aiDefaults}}" wx:key="*this">{{item}}</view>
+        </view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">确认后才生成预览，暂不保存；每条都附上你的原话。</view>
+      </block>
+
+      <!-- ───────────────── 64 有一句还需要确认 ───────────────── -->
+      <block wx:elif="{{screen === 'clarify'}}">
+        <view class="u2-h1 gp-hero">{{heroTitle}}</view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view class="u2-quote gp-gap-top" wx:if="{{clarifyQuote}}">「{{clarifyQuote}}」</view>
+        <view class="u2-notice u2-notice-info gp-gap-top">{{clarifyReason}}</view>
+        <view class="st-field-hint">已确认的其他条件都保留；这里不会悄悄忽略限制，也不会按默认排。</view>
+      </block>
+
+      <!-- ───────────────── 43 AI 暂时没整理出来 ───────────────── -->
+      <block wx:elif="{{screen === 'unavailable'}}">
+        <view class="u2-empty gp-empty-block">
+          <view class="u2-empty-icon">A</view>
+          <view class="u2-empty-title">{{heroTitle}}</view>
+          <view class="u2-empty-copy">{{aiMessage}}</view>
+        </view>
+        <view class="st-field">
+          <text class="st-label">已保留的情况</text>
+          <textarea
+            id="plan-constraint-keep"
+            class="st-input st-textarea"
+            value="{{constraintText}}"
+            maxlength="120"
+            auto-height
+            bindinput="onConstraintInput"
+            placeholder="可以继续修改这段话。"
+            placeholder-class="st-input-placeholder"
+          />
+        </view>
+        <view class="u2-notice u2-notice-info">不会自动重复请求，也没有保存新计划。</view>
+      </block>
+
+      <!-- ───────────────── 16 预览：规则排出来的这一周 ───────────────── -->
+      <!-- 设计 16 的 h1「这一周，这样安排。」由 heroTitle 渲染；统计三格是本周安排 / 总学习时长 / 已知冲突。 -->
+      <block wx:elif="{{screen === 'preview'}}">
+        <view class="gp-row-between gp-hero">
+          <view class="u2-h1">{{heroTitle}}</view>
+          <view class="ai-tag">未保存</view>
+        </view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view class="u2-card gp-card gp-gap-top">
+          <view class="st-stat">
+            <view class="st-stat-cell" wx:for="{{statCells}}" wx:key="caption">
+              <view class="st-stat-value">{{item.value}}<text class="st-stat-unit">{{item.unit}}</text></view>
+              <view class="st-stat-caption">{{item.caption}}</view>
+            </view>
+          </view>
+          <view class="gp-divider"></view>
+          <view class="gp-check-row">
+            <view class="st-check-mark">✓</view>
+            <view class="gp-check-text">已检查已知课程与不可用时段</view>
+          </view>
+          <view class="st-field-hint">上面三个数只算这份计划：本周安排几次、总学习时长多少分钟、还有几处已知冲突。</view>
+        </view>
+
+        <view class="u2-section">
+          <view class="u2-section-title">{{plan.blocks.length}} 次练习</view>
+          <view class="u2-section-note">{{hoursText}}</view>
+        </view>
+        <view class="u2-card">
+          <view class="gp-window-note">节次为可用窗口，具体起点未定。</view>
+          <view class="st-plan-item" wx:for="{{planItems}}" wx:key="id">
+            <view class="st-plan-date">
+              <text>{{item.weekday}}</text>
+              <text class="st-plan-day">{{item.day}}</text>
+            </view>
+            <view class="st-plan-main">
+              <view class="u2-card-title">{{item.title}}</view>
+              <view class="gp-plan-window"><text>{{item.window}}</text><text>{{item.minutes}}</text></view>
+            </view>
+          </view>
+          <view class="gp-window-note gp-window-foot" wx:if="{{plan.blocks.length === 0}}">{{plan.headline}}</view>
+        </view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">排在所示节次内，每次学习 {{planMinutesText}} 分钟。未填写作息，不推算具体钟点。只保存本机计划，不加入正式课程。</view>
+
+        <view class="u2-card gp-gap-top">
+          <view class="u2-card-title">对照本周课表</view>
+          <view class="gp-week">
+            <view class="gp-week-corner"></view>
+            <view class="gp-week-head" wx:for="{{gridWeekdays}}" wx:key="*this">{{item}}</view>
+            <block wx:for="{{gridRows}}" wx:for-item="row" wx:key="label">
+              <view class="gp-week-side" style="{{row.labelStyle}}">{{row.label}}</view>
+              <view
+                wx:for="{{row.cells}}"
+                wx:for-item="cell"
+                wx:key="style"
+                class="gp-cell gp-cell-{{cell.kind}}"
+                style="{{cell.style}}"
+              >{{cell.label}}</view>
+            </block>
+          </view>
+          <view class="gp-legend">
+            <view class="gp-legend-item gp-legend-busy">已有课程</view>
+            <view class="gp-legend-item gp-legend-plan">规则排程（未保存）</view>
+            <view class="gp-legend-item gp-legend-free">空闲</view>
+          </view>
+          <view class="gp-weekend" wx:if="{{weekendLines.length}}">
+            <view class="st-field-hint">这些排在了周末，不在上面这张周一到周五的网格里：</view>
+            <view class="gp-weekend-line" wx:for="{{weekendLines}}" wx:key="*this">{{item}}</view>
+          </view>
+        </view>
+
+        <view class="u2-card gp-gap-top">
+          <view class="u2-card-title">为什么这样排</view>
+          <view class="u2-card-copy" wx:for="{{rationale}}" wx:key="*this">{{item}}</view>
+          <view class="st-field-hint" wx:for="{{constraintLines}}" wx:key="*this">依据 · {{item}}</view>
+          <block wx:if="{{dropped.length}}">
+            <view class="gp-divider"></view>
+            <view class="st-field-error" wx:for="{{dropped}}" wx:key="*this">{{item}}</view>
+          </block>
+          <view class="st-field-hint" wx:if="{{defaultNote}}">{{defaultNote}}</view>
+          <view class="u2-source">{{plan.origin === 'ai-constraints' ? 'AI 整理的约束已经你核对，时段由规则安排；换排法、保存与重开不会再请求模型。' : '本次使用基础规则，不调用模型。'}}</view>
+        </view>
+
+        <view class="u2-source" wx:if="{{hasSaved}}">
+          <view class="u2-source-line">{{savedNote}}</view>
+          <view class="u2-source-line"><text id="plan-remove" class="u2-text-link gp-inline-link" hover-class="pressed" bindtap="onRemove">撤回本机保存的计划</text></view>
+        </view>
+      </block>
+
+      <!-- ───────────────── 17 已保存 / 40 过期快照 / 18 冲突 ───────────────── -->
+      <block wx:elif="{{screen === 'saved' || screen === 'expired'}}">
+        <!-- 设计 17 / 40 的眉标：一眼看出这份是「存在本机」还是「只是历史快照」。 -->
+        <view class="u2-kicker">{{screen === 'expired' ? '历史快照 · 目标有变化' : '已保存在本机'}}</view>
+        <view class="gp-row-between gp-hero">
+          <view class="u2-h1">{{heroTitle}}</view>
+          <view class="u2-tag {{screen === 'expired' ? '' : 'gp-tag-ok'}}">{{screen === 'expired' ? '历史记录' : '离线可查看'}}</view>
+        </view>
+        <view class="u2-lead">{{heroLead}}</view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top" wx:if="{{screen === 'expired'}}">只供回看；不再作为本周有效安排。不会自动创建目标或重新排程。</view>
+
+        <view id="saved-plan-card" class="u2-card gp-gap-top">
+          <view class="st-stat">
+            <view class="st-stat-cell" wx:for="{{statCells}}" wx:key="caption">
+              <view class="st-stat-value">{{item.value}}<text class="st-stat-unit">{{item.unit}}</text></view>
+              <view class="st-stat-caption">{{item.caption}}</view>
+            </view>
+          </view>
+          <view class="gp-divider"></view>
+          <view class="gp-window-note">节次为可用窗口，具体起点未定。</view>
+          <view class="st-plan-item" wx:for="{{planItems}}" wx:key="id">
+            <view class="st-plan-date">
+              <text>{{item.weekday}}</text>
+              <text class="st-plan-day">{{item.day}}</text>
+            </view>
+            <view class="st-plan-main">
+              <view class="u2-card-title">{{item.title}}</view>
+              <view class="gp-plan-window"><text>{{item.window}}</text><text>{{item.minutes}}</text></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 保存时的逐段核对结果：冲突 / 已过去 / 未核对，都摆出来 -->
+        <view class="u2-card gp-gap-top" wx:if="{{savedRows.length}}">
+          <view class="u2-card-title">保存时的核对</view>
+          <view class="gp-saved-row" wx:for="{{savedRows}}" wx:key="id">
+            <view class="gp-saved-main">
+              <view class="gp-saved-label">{{item.label}}</view>
+              <view class="u2-row-sub">{{item.date}}</view>
+            </view>
+            <view class="gp-saved-status gp-saved-{{item.status}}" wx:if="{{item.note}}">{{item.note}}</view>
+          </view>
+          <view class="u2-source">{{savedSummary}} · {{savedRange}}</view>
+        </view>
+
+        <view class="u2-section">
+          <view class="u2-section-title">这份计划的依据</view>
+        </view>
+        <view class="u2-card">
+          <view class="st-kv" wx:for="{{evidenceRows}}" wx:key="key">
+            <view class="st-kv-key">{{item.key}}</view>
+            <view class="st-kv-val">{{item.value}}</view>
+          </view>
+          <view class="u2-source">{{savedSourceNote}}</view>
+        </view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">{{savedNotice}}</view>
+
+        <view class="u2-actions">
+          <button id="saved-plan-week" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onViewWeek">去课表查看本周安排</button>
+        </view>
+        <view class="gp-link-row">
+          <view id="saved-plan-regenerate" class="u2-text-link" hover-class="pressed" bindtap="onRegenerate">{{savedGoalMissing ? '选择一个有效目标' : '重新生成计划'}}</view>
+          <view id="saved-plan-remove" class="u2-text-link" hover-class="pressed" bindtap="onRemove">撤回本机计划</view>
+        </view>
+      </block>
+
+      <block wx:elif="{{screen === 'conflict'}}">
+        <!-- 设计 18 的眉标：先说清「这是已保存的计划，是课表变了」，再说撞在哪。 -->
+        <view class="u2-kicker">已保存计划 · 课表有变化</view>
+        <view class="u2-h1 gp-hero">{{heroTitle}}</view>
+        <view class="u2-lead">原计划仍在，没有自动改动。</view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">
+          <view class="u2-notice-title">{{conflictItems[0].noteTitle}}</view>
+          <view>请核对后决定是否重新生成。</view>
+        </view>
+
+        <view id="saved-plan-card" class="gp-gap-top">
+          <view class="u2-card" wx:for="{{conflictItems}}" wx:key="id">
+            <view class="gp-row-between">
+              <view class="u2-card-title">{{item.title}}</view>
+              <view class="u2-tag u2-tag-red">冲突</view>
+            </view>
+            <view class="st-kv"><view class="st-kv-key">原计划</view><view class="st-kv-val">{{item.original}}</view></view>
+            <view class="st-kv"><view class="st-kv-key">新增课程</view><view class="st-kv-val">{{item.course}}</view></view>
+            <view class="u2-source">{{item.when}}</view>
+          </view>
+          <view class="u2-card" wx:if="{{conflictRestTitle}}">
+            <view class="u2-card-title">{{conflictRestTitle}}</view>
+            <view class="u2-row-sub">{{conflictRestNote}}</view>
+          </view>
+        </view>
+
+        <view class="u2-notice u2-notice-info gp-gap-top">{{savedNotice}}</view>
+
+        <view class="u2-actions">
+          <button id="saved-plan-regenerate" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onRegenerate">按最新课表重新生成</button>
+          <button class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onKeepSaved">先保留这份计划</button>
+        </view>
+        <view class="gp-link-row">
+          <view id="saved-plan-week" class="u2-text-link" hover-class="pressed" bindtap="onViewWeek">去看课表</view>
+          <view id="saved-plan-remove" class="u2-text-link" hover-class="pressed" bindtap="onRemove">撤回本机计划</view>
+        </view>
+      </block>
+
+      <view class="gp-page-foot">保存后可重开查看，并在对应周课表中独立列出；不计正式课程数，完成记录与自动重排尚未实现。</view>
+    </block>
+  </view>
+
+  <!-- ───────────────── 底部固定操作区 ───────────────── -->
+  <view class="st-dock" wx:if="{{screen === 'draft'}}">
+    <button id="plan-ai-confirm" class="u2-btn u2-btn-primary" hover-class="pressed" disabled="{{busy}}" bindtap="confirmAiPlan">{{busy ? '正在核对课表…' : '确认这些约束，生成预览'}}</button>
+    <view class="gp-link-row">
+      <view id="plan-ai-edit" class="u2-text-link" hover-class="pressed" bindtap="editAiInput">返回修改情况</view>
+    </view>
+    <view class="st-dock-note">只生成预览，不会保存或改动正式课程。</view>
+  </view>
+
+  <view class="st-dock" wx:elif="{{screen === 'preview'}}">
+    <view class="st-dock-note">只保存本机计划，不加入正式课程。</view>
+    <button id="plan-save" class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onSave">保存这份计划</button>
+    <view class="gp-link-row">
+      <view id="plan-variant" class="u2-text-link" hover-class="pressed" bindtap="onVariant">换一个安排</view>
+      <view class="u2-text-link" hover-class="pressed" bindtap="editAiInput">重新核对约束</view>
+    </view>
+  </view>
+
+  <view class="st-dock" wx:elif="{{screen === 'rules'}}">
+    <button id="plan-generate-rules" class="u2-btn u2-btn-primary" hover-class="pressed" disabled="{{busy}}" bindtap="generateRules">{{busy ? '正在核对课表…' : '按这些规则生成预览'}}</button>
+    <view class="gp-link-row">
+      <view class="u2-text-link" hover-class="pressed" bindtap="hideRules">返回 AI 整理入口</view>
+    </view>
+    <view class="st-dock-note">规则只读已知课程、日期与时长，不请求模型。</view>
+  </view>
+
+  <view class="st-dock" wx:elif="{{screen === 'clarify'}}">
+    <button class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="editAiInput">返回修改这句话</button>
+    <view class="gp-link-row">
+      <view class="u2-text-link" hover-class="pressed" bindtap="onRulesFromAi">自己选择不可用时段</view>
+    </view>
+    <button class="u2-btn u2-btn-secondary gp-btn-disabled" disabled>澄清后再生成预览</button>
+  </view>
+
+  <view class="st-dock" wx:elif="{{screen === 'unavailable'}}">
+    <button class="u2-btn u2-btn-primary" hover-class="pressed" bindtap="onRulesFromAi">用基础规则设置</button>
+    <view class="gp-link-row">
+      <view class="u2-text-link" hover-class="pressed" bindtap="editAiInput">返回修改情况</view>
+    </view>
+  </view>
 </view>

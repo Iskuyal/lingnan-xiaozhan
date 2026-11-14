@@ -1,99 +1,125 @@
-<view class="page">
-  <view class="eyebrow">只答官方原文里写过的事 · 语料 4 份 / 25 个段落 · 核查 {{collectedAt}}</view>
-  <view class="qa-title">升学与实习问答</view>
-
-  <view class="qa-note">
-    检索到官方原文后由 <text class="qa-strong">AI 依据原文解释</text>，每句含日期、条件或数字的话都要带出处编号；
-    <text class="qa-strong">核不到出处的回答不会显示</text>，会退回原文摘录。澄清与拒答仍由规则触发。
-    回答不构成录取或报考资格判断。
-  </view>
+<view class="u2-page">
+  <view class="u2-kicker qa-kicker">依据已收录的官方原文</view>
+  <view class="u2-h1">下一步怎么走，<br />先把依据找清楚。</view>
+  <view class="u2-lead">先确认你问的是哪一类升学或实习，有出处再解释；资料里没有就说明。</view>
+  <view class="u2-lead u2-sm qa-principle">页面会先用本地收录的官方原文核对范围，再由 AI 依据原文解释；解释里每句都要能对上原文，对不上就退回原文摘录。</view>
 
   <view class="qa-ask">
-    <input id="qa-input" class="qa-input" value="{{question}}" bindinput="onInput" placeholder="例如：转段考核包括哪几个部分？" confirm-type="search" bindconfirm="onAsk" />
-    <view id="qa-ask" class="qa-ask-btn" hover-class="pressed" bindtap="onAsk">提问</view>
+    <textarea
+      id="qa-input"
+      class="st-textarea qa-input"
+      value="{{question}}"
+      bindinput="onInput"
+      maxlength="120"
+      placeholder="例如：转段考核包括哪些部分？"
+      auto-height
+    />
+    <button id="qa-ask" class="u2-btn u2-btn-primary qa-submit" hover-class="pressed" bindtap="onAsk">查找相关原文</button>
   </view>
+
   <view class="qa-chips">
-    <view
-      class="qa-chip"
-      wx:for="{{examples}}"
-      wx:key="*this"
-      hover-class="pressed"
-      data-value="{{item}}"
-      bindtap="onExample"
-    >{{item}}</view>
+    <view class="st-chip qa-chip" wx:for="{{examples}}" wx:key="*this" wx:for-item="example" data-value="{{example}}" bindtap="onExample">{{example}}</view>
   </view>
+
+  <view class="u2-notice u2-notice-info qa-scope-guard">仅覆盖已收录资料；回答不作为报考资格或录取判断。</view>
 
   <block wx:if="{{hasResult}}">
-    <view class="qa-question">{{asked}}</view>
+    <view class="qa-question">
+      <view class="qa-question-label">你问的是</view>
+      <view class="qa-question-text">{{asked}}</view>
+    </view>
 
     <block wx:if="{{result.behavior === 'answer'}}">
-      <view class="qa-pending" wx:if="{{modelPhase === 'loading'}}">
-        <view class="qa-pending-label">正在依据官方原文生成解释…</view>
-        <view class="qa-pending-note">模型只能用下面这些原文段落；核对不上出处的回答不会显示。</view>
-        <view id="qa-cancel" class="qa-pending-cancel" hover-class="pressed" bindtap="onCancelModel">取消，直接看原文</view>
+      <view class="qa-scope">
+        <view class="qa-scope-label">{{scopeLabel}}</view>
+        <view class="st-kv qa-scope-row" wx:for="{{scopeRows}}" wx:key="key" wx:for-item="row">
+          <view class="st-kv-key">{{row.key}}</view>
+          <view class="st-kv-val">{{row.value}}</view>
+        </view>
       </view>
 
-      <block wx:else>
-        <view class="qa-answer {{modelRefused ? 'qa-answer-guard' : ''}}">
-          <view class="qa-answer-label">{{modelLabel}}</view>
-          <view class="qa-answer-text">{{modelText}}</view>
-          <view class="qa-answer-note">{{modelNote}}</view>
+      <view class="qa-pending" wx:if="{{modelPhase === 'loading'}}">
+        <view class="st-loading-bars"><view></view><view></view><view></view></view>
+        <view class="qa-pending-label">AI 依据原文解释中…</view>
+        <view class="qa-pending-note">用的是已收录的官方原文；不是实时查网。</view>
+        <view id="qa-cancel" class="u2-text-link qa-cancel" bindtap="onCancelModel">取消，直接看原文</view>
+      </view>
+
+      <view class="u2-card qa-answer" wx:if="{{modelPhase === 'ready' || modelPhase === 'fallback'}}">
+        <view class="qa-answer-head">
+          <view class="u2-card-title">{{modelLabel}}</view>
+          <view class="u2-tag qa-answer-tag">{{modelPhase === 'ready' ? '解释' : '原文'}}</view>
+        </view>
+        <view class="qa-answer-body {{modelRefused ? 'qa-answer-guard' : ''}}">
+          <block wx:for="{{segments}}" wx:key="key" wx:for-item="segment">
+            <text wx:if="{{segment.kind === 'text'}}" class="qa-seg-text">{{segment.text}}</text>
+            <text wx:else class="qa-ref {{activeRef === segment.ref ? 'qa-ref-on' : ''}}" data-ref="{{segment.ref}}" bindtap="onJumpRef">{{segment.text}}</text>
+          </block>
+        </view>
+        <view class="qa-answer-note" wx:if="{{modelNote !== ''}}">{{modelNote}}</view>
+        <view class="u2-sm u2-muted qa-answer-caveat">这里只解释收录文件，不据此判断你本人能否报考。</view>
+        <view id="qa-retry" class="u2-text-link qa-retry" wx:if="{{modelPhase === 'fallback'}}" bindtap="onRetryModel">重试 AI 解释</view>
+      </view>
+
+      <block wx:if="{{sources.length > 0}}">
+        <view class="u2-section">
+          <view class="u2-section-title">对应原文 · {{sources.length}} 处依据</view>
+          <view class="u2-section-note">编号与上面的解释一一对应</view>
+        </view>
+
+        <view class="u2-card qa-source {{activeRef === source.ref ? 'qa-source-on' : ''}}" wx:for="{{sources}}" wx:key="ref" wx:for-item="source">
+          <view class="qa-source-title">{{source.title}}</view>
+          <view class="u2-source qa-source-meta">
+            <view class="u2-source-line">{{source.issuer}} · {{source.documentNumber}}</view>
+            <view class="u2-source-line">发布 {{source.publishedAt}} · 收录 {{source.collectedAt}}</view>
+            <view class="u2-source-line">{{source.applicableText}}</view>
+            <view class="u2-source-line">适用人群：{{source.applicableAudience}}</view>
+          </view>
+          <view class="qa-source-divider"></view>
+          <view class="qa-source-ref" data-ref="{{source.ref}}" bindtap="onJumpRef">{{source.ref}} 原文摘录</view>
+          <view class="qa-source-quote">{{source.quote}}</view>
+          <view class="u2-text-link qa-copy" data-url="{{source.sourceUrl}}" bindtap="onCopySource">复制原文链接</view>
         </view>
       </block>
 
-      <view class="qa-source" wx:for="{{result.citations}}" wx:key="passageId" wx:for-item="cite" wx:for-index="citeIndex">
-        <view class="qa-source-head">
-          <view class="qa-source-title">
-            <text class="qa-source-badge" wx:if="{{modelPhase === 'ready'}}">[S{{citeIndex + 1}}]</text>{{cite.title}}
-          </view>
-          <view class="qa-source-meta">{{cite.documentNumber}}</view>
-        </view>
-        <view class="qa-source-quote">{{cite.quote}}</view>
-        <view class="qa-source-meta">发布主体 {{cite.issuer}} · 发布 {{cite.publishedAt}} · 适用 {{cite.applicableRegion}} · 核查 {{cite.collectedAt}}</view>
-        <view class="qa-source-foot">
-          <view class="qa-source-url">{{cite.sourceUrl}}</view>
-          <view class="qa-copy" hover-class="pressed" data-url="{{cite.sourceUrl}}" bindtap="onCopySource">复制原文链接 ›</view>
-        </view>
-      </view>
-
-      <view class="qa-actions" wx:if="{{modelPhase === 'fallback'}}">
-        <view id="qa-retry" class="qa-retry" hover-class="pressed" bindtap="onRetryModel">重试 AI 解释</view>
-      </view>
+      <view class="u2-actions">
+        <button id="qa-again" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onAskAgain">继续提问</button>      </view>
     </block>
 
     <block wx:else>
       <view class="qa-guard">
-        <view class="qa-guard-label">{{result.behavior === 'clarify' ? '需要先确认' : '无法核实'}}</view>
+        <view class="qa-guard-label">{{result.behavior === 'clarify' ? '需要先确认范围' : '这件事没法用收录原文回答'}}</view>
         <view class="qa-guard-text">{{result.answer}}</view>
-        <view class="qa-guard-note">{{result.note}}</view>
+        <view class="qa-guard-note" wx:if="{{result.note !== ''}}">{{result.note}}</view>
       </view>
-      <view class="qa-choices" wx:if="{{result.choices.length > 0}}">
-        <view
-          class="qa-choice"
-          wx:for="{{result.choices}}"
-          wx:key="*this"
-          hover-class="pressed"
-          data-value="{{item}}"
-          bindtap="onChoice"
-        >{{item}}</view>
-      </view>
-      <view class="qa-links" wx:if="{{result.links.length > 0}}">
-        <view class="qa-source-title">官方入口</view>
-        <view
-          class="qa-choice"
-          wx:for="{{result.links}}"
-          wx:key="url"
-          hover-class="pressed"
-          data-url="{{item.url}}"
-          bindtap="onCopySource"
-        >复制链接：{{item.label}}</view>
+
+      <block wx:if="{{result.choices.length > 0}}">
+        <view class="qa-choice" wx:for="{{result.choices}}" wx:key="*this" wx:for-item="choice" data-value="{{choice}}" bindtap="onChoice">
+          <view class="qa-choice-main">
+            <view class="qa-choice-title">{{choice}}</view>
+            <view class="qa-choice-sub">按这个范围再找一次原文</view>
+          </view>
+          <view class="qa-choice-chev">›</view>
+        </view>
+      </block>
+
+      <block wx:if="{{result.links.length > 0}}">
+        <view class="u2-section">
+          <view class="u2-section-title">官方入口</view>
+          <view class="u2-section-note">这里没有的，去原文自己查</view>
+        </view>
+        <view class="u2-card qa-link" wx:for="{{result.links}}" wx:key="url" wx:for-item="link" data-url="{{link.url}}" bindtap="onCopySource">
+          <view class="qa-link-label">{{link.label}}</view>
+          <view class="qa-link-url">{{link.url}}</view>
+        </view>
+      </block>
+
+      <view class="u2-actions">
+        <button id="qa-reask" class="u2-btn u2-btn-secondary" hover-class="pressed" bindtap="onAskAgain">换个问法</button>
       </view>
     </block>
   </block>
 
-  <view class="quiet qa-foot">
-    回答来自 4 份官方材料的 25 个逐字段落，不包含岗位、薪资与录取分数线——问这些会直接告诉你「无法核实」。
-    澄清与拒答由规则触发；模型只解释检索到的原文，日期、条件与数字必须能核到出处，否则退回原文摘录。
-  </view>
-  <view id="back-from-qa" class="qa-back" hover-class="pressed" bindtap="goHome">返回首页</view>
+  <view class="u2-sm u2-muted qa-foot">语料 {{collectedAt}} 核查；页面不保存你的提问。</view>
+  <view id="back-from-qa" class="u2-btn u2-btn-secondary qa-back" hover-class="pressed" bindtap="goHome">返回</view>
 </view>

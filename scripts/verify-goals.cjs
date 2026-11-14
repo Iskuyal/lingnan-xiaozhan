@@ -67,7 +67,9 @@ async function run() {
 
   /** 点开列表里某一组的某一条的「修改 / 删除」键。 */
   async function tapAction(page, groupClass, index, which) {
-    const items = await page.$$(`${groupClass} .goal-action${which === 'delete' ? '-warn' : ''}`);
+    // 岭南红 UI 给两个键各加了修饰类（-edit / -warn），不再靠 DOM 顺序猜：
+    // 未到期与今天两组现在有「排学习计划 / 修改 / 删除」三个键，按 .goal-action 取第 0 个会点到排计划。
+    const items = await page.$$(`${groupClass} .goal-action-${which === 'delete' ? 'warn' : 'edit'}`);
     assert.ok(items.length > index, `${groupClass} 里没有第 ${index + 1} 个${which === 'delete' ? '删除' : '修改'}键`);
     await items[index].tap();
   }
@@ -80,19 +82,22 @@ async function run() {
     await mini.reLaunch('/pages/home/index');
     const home = await waitForPage('pages/home/index');
     await home.waitFor(800);
+    // 首页入口带在岭南红 UI 里改成「标题 + 一句说明」的入口卡：没有目标日时说明位
+    // 落一句主动语（不是状态口号），也不再显示「去添加」这样的伪按钮文本。
     assert.ok(await home.$('#goal-days-entry'), '首页缺少目标日入口带');
-    assert.equal(await (await home.$('.goal-strip-name')).text(), '还没有目标日');
-    assert.equal(await (await home.$('.goal-strip-value')).text(), '去添加');
-    checks.push('首页目标日入口带在无数据时显示「还没有目标日 / 去添加」');
+    assert.equal(await (await home.$('.goal-strip-name')).text(), '记住重要的日子');
+    assert.equal(await home.$('.goal-strip-value'), null, '没有目标日时不该出现剩余天数');
+    checks.push('首页目标日入口带在无数据时显示「记住重要的日子」，且不显示天数');
     await shot('01-home-no-goal');
 
     // 2) 空态。
     await (await home.$('#goal-days-entry')).tap();
     const emptyPage = await waitForPage('pages/goals/index');
     await emptyPage.waitFor(500);
+    // 空态标题已按设计稿 55 改写；`.goal-empty` / `.goal-empty-title` 作为语义钩子保留。
     assert.ok(await emptyPage.$('.goal-empty'), '目标日页没有空态');
-    assert.equal(await (await emptyPage.$('.goal-empty-title')).text(), '还没有目标日');
-    checks.push('没有数据时目标日页显示空态与新建入口');
+    assert.equal(await (await emptyPage.$('.goal-empty-title')).text(), '下一个目标，是什么？');
+    checks.push('没有数据时目标日页显示空态「下一个目标，是什么？」与新建入口');
     await shot('02-goals-empty');
 
     // 3) 新建一条未到期目标日：名称用真实输入框，日期用选择器同形状的事件载荷。
@@ -184,9 +189,8 @@ async function run() {
     const homeAgain = await waitForPage('pages/home/index');
     await homeAgain.waitFor(800);
     assert.equal(await (await homeAgain.$('.goal-strip-name')).text(), '计算机二级考试');
-    // `.goal-strip-value` 里还嵌着单位那个 text 节点，元素文本会把两段拼在一起，所以按拼好的一起断言。
+    // 岭南红 UI 把天数与单位合成同一段文本（不再有独立的 `.goal-strip-unit` 节点）。
     assert.equal(await (await homeAgain.$('.goal-strip-value')).text(), `${expectedFar + 1}天后`);
-    assert.equal(await (await homeAgain.$('.goal-strip-unit')).text(), '天后');
     checks.push('首页入口带显示最近一条目标日与剩余天数');
     await shot('09-home-with-goal');
 
