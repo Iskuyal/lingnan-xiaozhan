@@ -101,10 +101,16 @@ function buildHero(options: {
   const classes = brief.rows.filter((row) => row.kind === 'course');
   const current = classes.find((row) => row.isNow);
   const next = classes.find((row) => row.isNext);
-  if (!brief.hasCourses) {
+  if (courses.length === 0) {
     return {
       mode: 'empty', key: '', label: '新的一天', timeRange: '', title: '这里还没有课表',
       meta: '导入后，就能按周看课程、查询和核对自己的安排。', sectionText: '', footNote: '',
+    };
+  }
+  if (!brief.hasCourses) {
+    return {
+      mode: 'class', key: '', label: '今天的安排', timeRange: '', title: '今天没有课',
+      meta: '已导入的课程仍在周课表里，可以查看其他日期。', sectionText: '', footNote: '',
     };
   }
   if (!hasTimes) {
@@ -249,7 +255,7 @@ Page({
   /** 时间线里点课程：打开该课程的详情编辑页（与课表页同一入口，不复制逻辑）。 */
   openCourse(event: TapEvent) {
     const key = event.currentTarget.dataset.id;
-    if (typeof key !== 'string' || key === '') return;
+    if (typeof key !== 'string' || key === '' || key.startsWith('free:')) return;
     const id = key.split(':')[0];
     if (id === '') return;
     wx.navigateTo({ url: `/pages/timetable/edit/index?id=${encodeURIComponent(id)}` });

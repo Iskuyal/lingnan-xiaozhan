@@ -92,5 +92,6 @@ test('首页时间线点课程：带课程 id 进编辑页，空白 key 不跳�
   home.openCourse({ currentTarget: { dataset: { id: 'tc_abc:3' } } });
   home.openCourse({ currentTarget: { dataset: {} } });
   home.openCourse({ currentTarget: { dataset: { id: ':3' } } });
+  home.openCourse({ currentTarget: { dataset: { id: 'free:600:660' } } });
   assert.deepEqual(rec.visited, ['/pages/timetable/edit/index?id=tc_abc']);
 });

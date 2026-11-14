@@ -176,3 +176,16 @@ test('首页：课表读取失败明确显示未知，不能断言今天没课',
   assert.match(page.data.brief.headline, /读取|读到|暂时/u);
   assert.ok(page.data.brief.sentences.every((s) => !s.includes('没有安排课程')));
 });
+
+test('首页：已有课程但今日无课，与完全没有课表分别展示', async () => {
+  const page = loadPage('home', { listCourses: async () => ({ courses: [course()] }) });
+  page.fixedToday = '2026-11-14'; // 周六，已有周二课程。
+  await page.loadToday();
+  assert.equal(page.data.hero.mode, 'class');
+  assert.match(page.data.hero.title, /今天没有课/);
+  assert.equal(page.data.hero.key, '');
+  const empty = loadPage('home', { listCourses: async () => ({ courses: [] }) });
+  empty.fixedToday = '2026-11-14';
+  await empty.loadToday();
+  assert.equal(empty.data.hero.mode, 'empty');
+});

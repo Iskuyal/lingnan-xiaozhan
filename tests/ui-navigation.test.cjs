@@ -217,3 +217,20 @@ test('同一个模块连续写两次意图：后一次覆盖前一次，不会�
   assert.deepEqual(plain(nav.consumeTimetableIntent()), { kind: 'week', week: 5 });
   assert.equal(nav.consumeTimetableIntent(), null, '旧意图没有被留成第二条');
 });
+
+test('意图无法写入时保留当前页面，不能把丢失意图的跳转报为成功', async () => {
+  const { nav, wx, calls } = load();
+  wx.setStorageSync = () => { throw new Error('storage full'); };
+  await assert.rejects(() => nav.openTimetable({ kind: 'plan-week', planDate: '2026-11-16' }), /意图|保存/);
+  assert.equal(calls.some(([name]) => name === 'switchTab'), false);
+});
+
+test('未来时间戳的意图无效，删除失败的意图不能被重复应用', async () => {
+  const { nav, storage, wx } = load();
+  storage.set(KEY, { id: 'future', createdAt: Date.now() + 60000, intent: { kind: 'week', week: 3 } });
+  assert.equal(nav.consumeTimetableIntent(), null);
+  await nav.openTimetable({ kind: 'week', week: 4 });
+  wx.removeStorageSync = () => { throw new Error('storage unavailable'); };
+  assert.equal(nav.consumeTimetableIntent(), null);
+  assert.equal(nav.consumeTimetableIntent(), null);
+});

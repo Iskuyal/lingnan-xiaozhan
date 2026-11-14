@@ -115,15 +115,16 @@ function writeStored(stored: StoredIntent): boolean {
 }
 
 /** 只清理与给定 id 相同的那条：别人（或更晚的一次点击）写的新意图保持不动。 */
-function clearStored(id: string | null): void {
-  if (typeof wx === 'undefined' || typeof wx.removeStorageSync !== 'function') return;
+function clearStored(id: string | null): boolean {
+  if (typeof wx === 'undefined' || typeof wx.removeStorageSync !== 'function') return false;
   const current = readStored();
   // 读不出来（已过期 / 已损坏 / 非本模块结构）时也清掉，避免坏数据常驻。
-  if (id !== null && current !== null && current.id !== id) return;
+  if (id !== null && current !== null && current.id !== id) return false;
   try {
     wx.removeStorageSync(TIMETABLE_INTENT_KEY);
+    return true;
   } catch {
-    /* 清理失败不影响主流程；下次读取仍会按 TTL 与校验作废。 */
+    return false;
   }
 }
 
@@ -160,6 +161,7 @@ export function openTimetable(intent?: TimetableIntent): Promise<void> {
   if (normalized === null) return Promise.reject(new Error('课表意图不合法'));
   const stored: StoredIntent = { id: nextIntentId(), createdAt: now(), intent: normalized };
   const written = writeStored(stored);
+  if (!written) return Promise.reject(new Error('课表意图暂时无法保存，请稍后重试'));
   return switchTabRoute(TAB_ROUTES.timetable).catch((error: unknown) => {
     if (written) clearStored(stored.id);
     throw error;
@@ -178,8 +180,9 @@ export function consumeTimetableIntent(): TimetableIntent | null {
     clearStored(null);
     return null;
   }
-  clearStored(stored.id);
-  if (now() - stored.createdAt > INTENT_TTL_MS) return null;
+  if (!clearStored(stored.id)) return null;
+  const age = now() - stored.createdAt;
+  if (age < 0 || age > INTENT_TTL_MS) return null;
   return stored.intent;
 }
 
