@@ -1,35 +1,67 @@
-.mg-hint,.mg-empty { padding-top:36px; }
-.mg-hint-copy,.mg-empty-copy { margin-top:14px; color:#6b5d57; font-size:13px; line-height:1.9; }
-.mg-empty-title { font-size:22px; font-weight:700; }
-.mg-head { margin-bottom:18px; }
-.mg-main-stat { display:flex; gap:12px; align-items:baseline; }
-.mg-total-num { font-size:28px; font-weight:700; }
-.mg-total-copy { flex:1; }
-.mg-total-label { font-size:15px; font-weight:600; }
-.mg-total-term { margin-top:5px; color:#746760; font-size:11px; }
-.mg-stat { display:flex; gap:12px; margin-top:16px; }
-.mg-stat-item { flex:1; min-width:0; padding:12px 8px; border:1px solid #ded4cf; border-radius:8px; background:#fff; }
-.mg-stat-num { font-size:19px; font-weight:600; color:#8c1614; }
-.mg-stat-label { margin-top:5px; color:#746760; font-size:11px; }
-.mg-pills { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0; }
-.mg-pill { min-height:44px; padding:10px 14px; border:1px solid #aa9990; border-radius:8px; background:#fff; font-size:12px; }
-.mg-pill-on { color:#fff; background:#8c1614; border-color:#8c1614; }
-.mg-row { display:flex; gap:10px; padding:15px; margin-top:12px; border:1px solid #ded4cf; border-radius:10px; background:#fff; }
-.mg-row-on { border-color:#8c1614; background:#faeee9; }
-.mg-check { flex:none; width:22px; height:22px; border:1px solid #aa9990; border-radius:50%; color:#fff; font-size:13px; line-height:20px; text-align:center; margin-top:3px; }
-.mg-check-on { background:#8c1614; border-color:#8c1614; }
-.mg-bar { display:none; }
-.mg-main { flex:1; min-width:0; }
-.mg-name { font-size:15px; font-weight:600; line-height:1.6; }
-.mg-sub { margin-top:7px; color:#746760; font-size:12px; line-height:1.8; }
-.mg-chip { margin-left:6px; color:#9a5b1e; font-size:10px; }
-.mg-chip-plain { color:#746760; }
-.mg-row-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
-.mg-row-action { flex:none; min-width:64px; min-height:44px; padding:10px 12px; border:1px solid #b9847c; border-radius:7px; color:#8c1614; background:#fff; font-size:13px; }
-.mg-actions { margin-top:22px; padding-top:16px; border-top:1px solid #ded4cf; }
-.mg-quiet { color:#746760; font-size:11px; line-height:1.8; }
-.mg-btn-row { display:flex; gap:10px; margin-top:12px; }
-.mg-btn { flex:1; width:100%; min-width:0; min-height:48px; padding:12px; border-radius:8px; background:#c41c23; color:#fff; font-size:14px; }
-.mg-btn-secondary { border:1px solid #b9847c; background:#fff; color:#8c1614; }
-.mg-empty-btn { margin-top:16px; }
-.mg-back { min-height:44px; margin-top:16px; padding:12px; text-align:center; color:#8c1614; font-size:13px; }
+@import "../../../ui/timetable/page.wxss";
+
+/* Course management (design 07). Keep the existing management semantics:
+   filters, multi-select and per-row edit/delete. */
+.page { min-height: 100vh; padding: 22px 20px calc(30px + env(safe-area-inset-bottom)); background: #f5f6f8; color: #2b2422; font-size: 14px; line-height: 1.65; box-sizing: border-box; }
+.mg-hint, .mg-empty { padding-top: 30px; }
+.mg-hint-copy, .mg-empty-copy { margin-top: 10px; color: #6b5d57; font-size: 13px; line-height: 1.85; }
+.mg-empty-title { color: #2b2422; font-size: 22px; line-height: 1.45; font-weight: 750; }
+.mg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 8px; }
+.mg-main-stat { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.mg-total-num { color: #2b2422; font-size: 40px; line-height: 1.2; font-weight: 750; font-variant-numeric: tabular-nums; }
+.mg-total-label { color: #2b2422; font-size: 14px; line-height: 1.5; font-weight: 650; }
+.mg-total-term { margin-top: 2px; color: #6b5d57; font-size: 11px; line-height: 1.6; }
+.mg-add {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e4e5e8;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #c41c23;
+  font-size: 25px;
+  line-height: 1;
+}
+.mg-stat-strip { display: flex; gap: 10px; margin: 4px 0 12px; }
+.mg-stat-item { flex: 1; padding: 12px 14px; border-radius: 12px; background: #ffffff; }
+.mg-stat-num { color: #2b2422; font-size: 22px; line-height: 1.3; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mg-stat-label { margin-top: 2px; color: #6b5d57; font-size: 11px; line-height: 1.6; }
+.mg-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.mg-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 6px 12px; border: 1px solid #ded4cf; border-radius: 9px; background: #ffffff; color: #6b5d57; font-size: 12px; line-height: 1.4; }
+.mg-pill-on { border-color: #e8a5a8; background: #fff0ef; color: #c41c23; font-weight: 650; }
+.mg-list { display: grid; gap: 8px; margin-top: 8px; }
+.mg-row { display: flex; align-items: flex-start; gap: 10px; padding: 13px 12px; border: 1px solid #e6e7eb; border-radius: 13px; background: #ffffff; }
+.mg-row-on { border-color: #e8a5a8; background: #fffafa; }
+.mg-check { width: 22px; height: 22px; flex: none; margin-top: 3px; display: flex; align-items: center; justify-content: center; border: 1px solid #aa9990; border-radius: 50%; color: transparent; font-size: 12px; line-height: 1; box-sizing: border-box; }
+.mg-check-on { border-color: #c41c23; background: #c41c23; color: #ffffff; }
+.mg-bar { width: 3px; align-self: stretch; flex: none; border-radius: 3px; background: var(--blk-solid, rgba(148,134,127,0.55)); }
+.mg-main { flex: 1; min-width: 0; }
+.mg-name { color: #2b2422; font-size: 15px; line-height: 1.5; font-weight: 650; word-break: break-all; }
+.mg-sub { margin-top: 3px; color: #6b5d57; font-size: 12px; line-height: 1.7; }
+.mg-chip { display: inline-flex; align-items: center; margin-left: 6px; padding: 1px 6px; border-radius: 5px; background: #f0f1f4; color: #6b5d57; font-size: 10px; line-height: 1.6; }
+.mg-chip-review { background: #fbf4e2; color: #865e17; }
+.mg-chip-plain { background: #f0f1f4; color: #6b5d57; }
+.mg-row-actions { display: flex; gap: 8px; margin-top: 8px; }
+.mg-row-action { min-height: 36px; padding: 0 10px; border: 1px solid #ded4cf; border-radius: 8px; background: #ffffff; color: #c41c23; font-size: 12px; line-height: 1.4; }
+.mg-actions { margin: 12px 0 4px; padding: 12px; border-radius: 12px; background: #ffffff; }
+.mg-quiet { color: #6b5d57; font-size: 11px; line-height: 1.7; }
+.mg-btn-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 8px; margin-top: 8px; }
+.mg-btn { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 10px; border-radius: 10px; font-size: 13px; line-height: 1.4; font-weight: 650; text-align: center; }
+.mg-btn-secondary { border: 1px solid #ded4cf; background: #ffffff; color: #2b2422; }
+.mg-btn-warn { border: 1px solid #e8a5a8; background: #fff0ef; color: #c41c23; }
+.mg-empty-btn { margin-top: 16px; }
+.mg-back { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 8px; color: #c41c23; font-size: 13px; }
+.mg-settings { margin-top: 18px; padding: 0 14px; border-radius: 14px; background: #ffffff; }
+.mg-settings-title { padding: 14px 0 4px; color: #2b2422; font-size: 15px; line-height: 1.5; font-weight: 650; }
+.mg-setting-row { display: flex; align-items: center; gap: 11px; min-height: 64px; padding: 10px 0; border-top: 1px solid #efeff2; }
+.mg-setting-icon { width: 36px; height: 36px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #fff0ef; color: #c41c23; font-size: 16px; }
+.mg-setting-main { flex: 1; min-width: 0; }
+.mg-setting-name { color: #2b2422; font-size: 14px; line-height: 1.5; font-weight: 600; }
+.mg-setting-sub { margin-top: 2px; color: #6b5d57; font-size: 11px; line-height: 1.6; }
+@media (max-width: 350px) {
+  .page { padding-left: 16px; padding-right: 16px; }
+  .mg-total-num { font-size: 36px; }
+}

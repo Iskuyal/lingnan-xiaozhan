@@ -40,15 +40,16 @@
           <view class="mg-total-term">{{semesterText}}</view>
         </view>
       </view>
-      <view class="mg-stat">
-        <view class="mg-stat-item">
-          <view class="mg-stat-num">{{weekInCount}}</view>
-          <view class="mg-stat-label">本周开课</view>
-        </view>
-        <view class="mg-stat-item">
-          <view class="mg-stat-num">{{reviewCount}}</view>
-          <view class="mg-stat-label">待核对</view>
-        </view>
+      <view id="manage-add" class="mg-add" hover-class="pressed" bindtap="openCreate" aria-label="添加课程">+</view>
+    </view>
+    <view class="mg-stat-strip">
+      <view class="mg-stat-item">
+        <view class="mg-stat-num">{{weekInCount}}</view>
+        <view class="mg-stat-label">本周开课</view>
+      </view>
+      <view class="mg-stat-item">
+        <view class="mg-stat-num">{{reviewCount}}</view>
+        <view class="mg-stat-label">待核对</view>
       </view>
     </view>
 
@@ -107,6 +108,26 @@
           disabled="{{rows.length === 0}}"
           bindtap="toggleSelectAll"
         >{{allSelected ? '取消全选' : '全选'}}</button>
+      </view>
+    </view>
+
+    <view class="mg-settings">
+      <view class="mg-settings-title">课表设置</view>
+      <view id="manage-import" class="mg-setting-row" hover-class="pressed" bindtap="openImport">
+        <view class="mg-setting-icon">⇧</view>
+        <view class="mg-setting-main">
+          <view class="mg-setting-name">重新导入课表</view>
+          <view class="mg-setting-sub">核对后替换整份课表</view>
+        </view>
+        <text class="tt2-chev">›</text>
+      </view>
+      <view id="manage-settings" class="mg-setting-row" hover-class="pressed" bindtap="openSettings">
+        <view class="mg-setting-icon">◷</view>
+        <view class="mg-setting-main">
+          <view class="mg-setting-name">学期与作息</view>
+          <view class="mg-setting-sub">设置第 1 周和节次时刻（可不填）</view>
+        </view>
+        <text class="tt2-chev">›</text>
       </view>
     </view>
 
