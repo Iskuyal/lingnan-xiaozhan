@@ -20,7 +20,7 @@ import { createCourse, deleteCourse, listCourses, messageOf, updateCourse } from
 import { getDraft, removeCourseAt, replaceCourseAt } from '../../../services/timetable/draft';
 import { CourseExtras, CourseForm, buildCourseInput, draftFromInput, emptyForm, formFromCourse, formFromDraft } from '../../../services/timetable/form';
 import { COURSE_COLORS, CourseColor, colorAt, colorIndexFor, colorIndexFromKey } from '../../../services/timetable/palette';
-import { SECTION_COUNT, WEEKDAY_SHORT } from '../../../services/timetable/view';
+import { SECTION_COUNT, WEEKDAY_LABELS, WEEKDAY_SHORT } from '../../../services/timetable/view';
 import { MAX_WEEK, parseWeekNotation } from '../../../services/timetable/weeks';
 import {
   WEEKS_MODES,
@@ -217,7 +217,7 @@ Page({
     scope: 'new' as Scope,
     title: '新增课程',
     form: emptyForm(),
-    weekdayLabels: WEEKDAY_SHORT,
+    weekdayLabels: WEEKDAY_LABELS,
     sectionStartText: '1',
     sectionEndText: '2',
     weeksEditor: EMPTY_EDITOR,
@@ -241,6 +241,10 @@ Page({
     saving: false,
     deletable: false,
     footnote: '',
+    /** 设计图 52：字段级错误与「修正上述 N 项后保存」；输入修改后立即消失。 */
+    fieldErrors: { name: '', sections: '' },
+    errorCount: 0,
+    saveError: '',
   },
   courseId: '',
   draftIndex: -1,
@@ -354,8 +358,30 @@ Page({
       miniColumns: miniColumnsOf(this.data.form.weekdayIndex, this.data.form.startIndex, this.data.form.endIndex, color),
     });
   },
+  /** 设计图 52：课程名与节次是保存的硬前提；输入一改就重算，错误文案紧贴字段。 */
+  fieldProblems(name: string, startIndex: number, endIndex: number) {
+    const errors = { name: '', sections: '' };
+    if (name.trim() === '') errors.name = '填写课程名，方便你在课表中识别。';
+    const start = startIndex + 1;
+    const end = endIndex + 1;
+    if (start < 1 || start > SECTION_COUNT || end < 1 || end > SECTION_COUNT) {
+      errors.sections = `节次需要在第 1-${SECTION_COUNT} 节之间。`;
+    } else if (end < start) {
+      errors.sections = '结束节不能小于起始节。';
+    }
+    const problems = [errors.name, errors.sections].filter((part) => part !== '');
+    return {
+      fieldErrors: errors,
+      errorCount: problems.length,
+      saveError: problems.length === 0 ? '' : `还不能保存：${problems.join('；')}`,
+    };
+  },
   onNameInput(event: InputEvent) {
-    this.setData({ 'form.name': event.detail.value });
+    const name = String(event.detail.value);
+    this.setData({
+      'form.name': name,
+      ...this.fieldProblems(name, this.data.form.startIndex, this.data.form.endIndex),
+    });
     this.refreshColor();
   },
   onTeacherInput(event: InputEvent) {
@@ -384,10 +410,23 @@ Page({
     const current = (field === 'startIndex' ? this.data.form.startIndex : this.data.form.endIndex) + 1;
     const parsed = Number(text);
     const filled = Number.isInteger(parsed) && parsed >= 1 && parsed <= SECTION_COUNT;
-    if (!filled && !clampToCurrent) return;
+    if (!filled && !clampToCurrent) {
+      const patch = field === 'startIndex' ? { sectionStartText: text } : { sectionEndText: text };
+      this.setData({
+        ...patch,
+        fieldErrors: { name: this.data.fieldErrors.name, sections: `节次需要在第 1-${SECTION_COUNT} 节之间。` },
+        errorCount: this.data.fieldErrors.name === '' ? 1 : 2,
+        saveError: '还不能保存：节次需要在第 1-12 节之间。',
+      });
+      return;
+    }
     const next = filled ? parsed : current;
-    if (field === 'startIndex') this.setData({ 'form.startIndex': next - 1, sectionStartText: String(next) });
-    else this.setData({ 'form.endIndex': next - 1, sectionEndText: String(next) });
+    const startIndex = field === 'startIndex' ? next - 1 : this.data.form.startIndex;
+    const endIndex = field === 'endIndex' ? next - 1 : this.data.form.endIndex;
+    const patch = field === 'startIndex'
+      ? { 'form.startIndex': next - 1, sectionStartText: String(next) }
+      : { 'form.endIndex': next - 1, sectionEndText: String(next) };
+    this.setData({ ...patch, ...this.fieldProblems(this.data.form.name, startIndex, endIndex) });
     this.refreshColor();
   },
   onStartInput(event: InputEvent) {
@@ -484,11 +523,34 @@ Page({
   },
   save() {
     if (this.data.saving) return;
+    const startText = Number(this.data.sectionStartText);
+    const endText = Number(this.data.sectionEndText);
+    if (!Number.isInteger(startText) || !Number.isInteger(endText)
+      || startText < 1 || startText > SECTION_COUNT || endText < 1 || endText > SECTION_COUNT || endText < startText) {
+      this.setData({
+        fieldErrors: { name: this.data.fieldErrors.name, sections: '结束节不能小于起始节，且节次要在第 1-12 节之间。' },
+        errorCount: this.data.fieldErrors.name === '' ? 1 : 2,
+        saveError: '还不能保存：请检查节次。',
+      });
+      wx.showToast({ title: '请检查节次', icon: 'none' });
+      return;
+    }
+    const problems = this.fieldProblems(this.data.form.name, this.data.form.startIndex, this.data.form.endIndex);
+    if (problems.errorCount > 0) {
+      this.setData(problems);
+      wx.showToast({ title: problems.fieldErrors.name !== '' ? '请填写课程名' : '请检查节次', icon: 'none' });
+      return;
+    }
     const built = buildCourseInput(this.data.form, this.extras);
     if (!built.ok) {
+      const fallback = built.error.includes('课程名')
+        ? { name: built.error, sections: '' }
+        : { name: '', sections: built.error };
+      this.setData({ fieldErrors: fallback, errorCount: 1, saveError: `还不能保存：${built.error}` });
       wx.showToast({ title: built.error, icon: 'none' });
       return;
     }
+    this.setData({ fieldErrors: { name: '', sections: '' }, errorCount: 0, saveError: '' });
     const input: CourseInput = built.value;
     const scope = this.data.scope;
     if (scope === 'draft') return this.saveDraftItem(input);

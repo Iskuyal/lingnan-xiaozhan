@@ -206,6 +206,18 @@ Page({
     if (this.data.deleting || !course) return;
     wx.navigateTo({ url: `/pages/timetable/edit/index?id=${encodeURIComponent(course.id)}` });
   },
+  openCreate() {
+    if (this.data.deleting) return;
+    wx.navigateTo({ url: '/pages/timetable/edit/index?scope=new' });
+  },
+  openImport() {
+    if (this.data.deleting) return;
+    wx.navigateTo({ url: '/pages/timetable/import/index' });
+  },
+  openSettings() {
+    if (this.data.deleting) return;
+    wx.navigateTo({ url: '/pages/timetable/settings/index' });
+  },
   deleteRow(event: DatasetEvent) {
     const course = this.data.courses.find((item) => item.id === event.currentTarget.dataset.id);
     if (!course || this.data.deleting) return;
