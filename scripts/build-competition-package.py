@@ -82,7 +82,12 @@ def build_package(source_zip, version, output, current_video):
         items['版本与验证/' + filename] = (DOCS / filename).read_bytes()
     judge = ROOT / 'docs/competition/submission-2026-10-30/judge-timetable'
     items['附件/评委测试课表/岭南小栈-评委测试课表.xlsx'] = (judge / '岭南小栈-评委测试课表.xlsx').read_bytes()
-    items['附件/评委测试课表/导入说明.md'] = (judge / 'README.md').read_bytes()
+    items['附件/评委测试课表/导入说明.md'] = '''# 虚构评委测试课表
+
+同目录Excel为13条虚构课程记录、12个课程名，不是学生真实课表。先把文件发送到微信聊天，再从小程序的Excel入口选择。
+解析后逐条核对星期、节次、周次、教师和地点。确认保存会整份替换该账号全部已有课程，包括手工新增和修改；应使用空白或专用测试账号，不确定时选择放弃。
+附件离线校验不证明真实云端整表替换或完整学期图片识别准确率。截图样例只覆盖1至6节，其余节次是否有课无法由该图确认。
+'''.encode('utf-8')
     items['附件/评委测试课表/离线校验.json'] = (judge / 'validation.json').read_bytes()
     items['附件/截图识别样例-虚构数据.png'] = (ROOT / 'docs/competition/demo-video-2026-10-30/虚构课表-截图识别样例.png').read_bytes()
     items['演示视频/01-新版原生流程-固定响应.mp4'] = current_video.read_bytes()
@@ -90,7 +95,13 @@ def build_package(source_zip, version, output, current_video):
     evidence = ROOT / 'docs/evidence/lingnan-ui-implementation/integration-2026-11-14'
     for rel in ['native/01-home.png', 'native/02-home-to-assistant.png', 'native/04-home-course-edit.png', 'native/06-plan-to-week.png', 'native/07-notice-saved.png', 'native/08-notice-undo.png', 'native/09-notice-late-reply.png', 'native/10-notice-input-locked.png', 'c-regression/15-ai-draft.png', 'c-regression/77-practice-record.png', 'a-regression/08-campus.png', 'a-regression/18-news-detail.png']:
         items['附件/新版原生截图/' + rel.replace('/', '_')] = (evidence / rel).read_bytes()
-    items['附件/集成审查.md'] = (ROOT / 'docs/review/lingnan-ui-integration-2026-11-14.md').read_bytes()
+    items['附件/集成审查摘要.md'] = '''# 集成审查摘要
+
+公共基础及A/B/C原生交付保留共同祖先并完成集成，修复通知旧提案及迟到回复、写入锁、规则换排丢约束、已有课程误进新增、常驻tab时钟、无课日误报、导航意图与原答复制等问题。
+类型检查及1025项仓库回归通过，A14项、B12项、C31场景、目标日9项与最终跨模块10项原生夹具检查通过。原生结果JSON保留原始字段，截图路径是仓库证据位置；本包另选12张截图统一放在“附件/新版原生截图”。
+390逻辑宽度与371像素PNG分别记录。拍图期间暂停夹具撤销计时的轮次不证明10秒截止边界。全部夹具结果不代替真实模型、云端、真机或完整320独立验证。
+完整报告位于仓库docs/review/lingnan-ui-integration-2026-11-14.md，来源与未覆盖项按原记录保留。
+'''.encode('utf-8')
     items['附件/原生跨模块结果.json'] = (evidence / 'native/report.json').read_bytes()
     items['README.md'] = '''# 岭南小栈r4参赛交付
 
