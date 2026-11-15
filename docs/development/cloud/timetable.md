@@ -1,5 +1,13 @@
 # 课表云函数与导入存储
 
+## 2026-11-10：限定周次调课
+
+新增 `applyScopedChange`、`undoScopedChange`，实现见 [scoped.ts](../../../cloudfunctions/timetable/scoped.ts) 与 [ADR-0004](../../adr/0004-scoped-timetable-change.md)。`applyScopedChange` 使用本人课程id、整数周次数组、时间/地点补丁、原业务快照和稳定 `requestId`；拆课与保留原课在同一事务写入。撤销只接受本人的编号，核对提交后未再改动，事务恢复两部分；原位覆盖全部周次时不新增记录。
+
+凭据为同集合的服务端文档，不含课程 `owner` 字段；通过 `receiptOwner` 和 `receiptCreatedAt` 在后续 `list` 中尽力清理24小时前数据。若环境要求组合索引，应配置 `receiptOwner`、`receiptCreatedAt`；未取得实际清理记录前不宣称已按时删除。课程读取仍由原 owner/可见批次条件隔离。
+
+部署应包含 `scoped.js` 和锁定的依赖。新旧客户端原有接口继续保留；只有本地实现或模拟器夹具通过不等于真实云端已更新。部署、回读与临时课程验证结果见[本轮证据](../../evidence/notice-plan-loop-2026-11-10/README.md)。
+
 按主题拆分的配置与操作参考。带日期的探测和部署记录是历史快照；执行前按当前代码和控制台状态复核。
 
 [当前状态](../../status.md) · [云开发总览](README.md)

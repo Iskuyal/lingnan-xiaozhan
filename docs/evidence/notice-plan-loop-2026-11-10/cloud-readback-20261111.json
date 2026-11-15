@@ -1,0 +1,29 @@
+{
+  "resumedOn": "2026-11-11",
+  "readAt": "2026-11-11T02:33:51.959Z",
+  "environment": "cloudbase-d2gjtbbwu3575cd7b",
+  "function": "timetable",
+  "result": "matched",
+  "matchedRootFiles": [
+    "index.js",
+    "package-lock.json",
+    "package.json",
+    "parse.js",
+    "record.js",
+    "scoped.js",
+    "settings.js",
+    "types.js"
+  ],
+  "total": 8,
+  "followRedirectsInstalled": "1.16.3",
+  "rootHashes": {
+    "index.js": "7f9b8e774179c5443c6b8f80889b1789114fade945ec0934e1dd23e3c5484176",
+    "package-lock.json": "da1c8012d7839e82e1f338946abfc0ae94db3f58238c7d08adb2d0aafd9e7b8c",
+    "package.json": "5556a2c15ef61043facadc98b213fd218cf3dd506bbff6ecbb75f197a84f2e21",
+    "parse.js": "9ed4c38933667ced3c26dd81f207a24c65141ba85319e15e0c391e230388aabe",
+    "record.js": "595b5f5d19a618642783311e6a09d89715a0a2d9415267e61855fbc9277d0281",
+    "scoped.js": "1a9433770fbc92c6455c8e2b1ffc8cdea621d30fd5ec672f474586d9fbd4e012",
+    "settings.js": "e81363b3ea03e48c4253e2b2c455cd57f9600af77b40464f8ea1f2e9f8f4d637",
+    "types.js": "882c3955b173982189578e7b51e1516c4ecf16cd18945437d0dafa7e74c3be7f"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-11-10T11:08:20.078Z",
+  "baseHead": "18beaa60c4982c9a6eb387f808957a07c5f3a714",
+  "workingTree": true,
+  "sources": {
+    "miniprogram/services/timetable/notice.ts": "3dc81001cda301bd81dc0a02d7ddef00fa94c1f2c388caee1d3540f590c4f721",
+    "miniprogram/pages/timetable/index.ts": "ed04585a380b75ede9a6e9dc99c46d3a366f97719427203c210955c42c10b58d",
+    "miniprogram/services/goals/plan.ts": "3228deaf0abf72cd9365f9b3051c246790618cf6535d606a4ab09049634105dd",
+    "miniprogram/services/timetable/brief.ts": "2326646d993bce2614d47cb20e22a316daceffa706bb2b732d3c42c76472d514",
+    "miniprogram/pages/home/index.ts": "8b5cc95781f62ab298dcfd65575eb8f3ecebe842cd81383cc5c0c481287e0eba",
+    "miniprogram/pages/home/index.wxml": "c906b9a593b711dbeab2e6d28b988719a3fb07d322cac5d9858f8bf9e2d3a895",
+    "miniprogram/pages/timetable/index.wxml": "8bd67b3874d568ae16e19f2d39f49b991b63a617743bf6c716322060b8526190",
+    "miniprogram/pages/goals/plan/index.ts": "397f61223ac03f36cbecc92ba88a9890d12383bb2b77942e390538ac48c7278a",
+    "miniprogram/pages/goals/plan/index.wxml": "0acdfd791dae53e6ae2cc41d720c4cb034967e8764a1688654bd2b01f7309604",
+    "miniprogram/pages/goals/index.wxml": "18fbfc70dc9d5f26899e5dad6ba79a930b1fef42d1ed7dae69720fd55e8bf4c6"
+  },
+  "system": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "checks": [
+    "部分成功后：成功项取消勾选，失败项保留",
+    "重试后：A/B各一条，没有重复新增",
+    "撤销：重试前后同批变更均还原，夹具课表回到一条",
+    "首页读取失败：简报与空态均显示未知，未声称今天无课",
+    "计划：仅排周二中午以后至周三，未排昨天或目标日之后",
+    "计划文案：规则排程、保存到本机、尚未实现的功能均明确显示"
+  ],
+  "screenshots": [
+    "01-partial-write.png",
+    "02-home-read-error.png",
+    "03-plan-window.png",
+    "04-plan-actions.png"
+  ],
+  "result": "passed",
+  "screenshotSource": "Windows截图技能：前台开发者工具最大化后的模拟器区域；149px自动化截图已拒绝",
+  "realDevice": false,
+  "modelCalls": 0,
+  "liveCloudWrites": 0,
+  "localStorageWrites": 0,
+  "boundaries": [
+    "云函数全部由内存夹具接管，写入和撤销不涉及真实课表",
+    "计划目标仅注入页面内存，未点击保存，不修改真实目标日或本机计划",
+    "原生模拟器截图，不是真机、真实模型或AI质量评估"
+  ]
+}

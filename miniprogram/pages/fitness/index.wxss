@@ -1,30 +1,113 @@
-.fit-title { display:none; }
-.fit-copy { margin:12px 0 20px; padding:14px 15px; border-left:3px solid #ded4cf; background:#fff; color:#6b5d57; font-size:13px; line-height:1.8; }
-.fit-field { margin-top:18px; }
-.fit-label { margin-bottom:8px; font-size:13px; font-weight:600; }
-.fit-pills { display:flex; gap:8px; }
-.fit-pill { flex:1; min-height:44px; padding:10px 12px; border:1px solid #aa9990; border-radius:8px; background:#fff; font-size:13px; text-align:center; }
-.fit-pill-on { color:#fff; background:#8c1614; border-color:#8c1614; }
-.fit-input { width:100%; height:48px; padding:12px 13px; background:#fff; border:1px solid #aa9990; border-radius:7px; font-size:14px; }
-.fit-hint { margin-top:7px; color:#746760; font-size:11px; line-height:1.8; }
-.fit-row { display:flex; gap:12px; }
-.fit-row .fit-field { flex:1; min-width:0; }
-.fit-warn { margin-top:20px; padding:14px 15px; border-left:3px solid #9a5b1e; background:#fff4e4; color:#78420e; font-size:13px; line-height:1.8; }
-.fit-summary { margin-top:20px; padding:22px 18px; border-radius:12px; background:#8c1614; color:#fff; }
-.fit-summary-top { display:flex; align-items:baseline; gap:12px; }
-.fit-total { font-size:48px; font-weight:700; line-height:1.2; }
-.fit-total-partial { font-size:32px; font-weight:700; }
-.fit-grade { font-size:16px; }
-.fit-summary-line { margin-top:12px; font-size:12px; line-height:1.8; }
-.fit-em { font-weight:700; }
-.fit-table { margin-top:20px; background:#fff; }
-.fit-table-row { display:flex; gap:8px; padding:13px 10px; border-bottom:1px solid #ded4cf; align-items:center; }
-.fit-item-main { flex:1; min-width:0; }
-.fit-item-name { font-size:12px; }
-.fit-item-note { margin-top:5px; font-size:11px; color:#746760; line-height:1.7; }
-.fit-item-value { flex:none; max-width:112px; font-size:11px; color:#6b5d57; text-align:right; }
-.fit-item-score { flex:none; width:35px; text-align:right; font-size:13px; font-weight:600; }
-.fit-item-score-null { font-size:11px; color:#9a5b1e; }
-.fit-bonus,.fit-notes { margin-top:16px; font-size:11px; color:#746760; line-height:1.9; }
-.fit-foot { margin-top:18px; }
-.fit-back { margin-top:16px; min-height:44px; padding:12px; color:#8c1614; font-size:13px; text-align:center; }
+@import "../../ui/study/study.wxss";
+
+/* 体测估算页：通用件用 u2-，本页专用件用 fit- 前缀；表格/大分数/键值复用 st-。 */
+
+.fit-result {
+  margin-top: 26px;
+}
+
+.fit-summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fit-total {
+  margin: 6px 0 2px;
+}
+
+/* 总分与标准分之间用一条细线分开，避免两个数字看着像同一件事。 */
+.fit-divider {
+  height: 1px;
+  margin: 16px 0;
+  background: var(--line-soft, #ececef);
+}
+
+.fit-summary-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-2, #6b5d57);
+}
+
+.fit-partial {
+  margin-top: 18px;
+}
+
+.fit-warn {
+  margin-bottom: 12px;
+}
+
+.fit-strong {
+  font-weight: 650;
+  color: var(--text, #2b2422);
+}
+
+.fit-missing-row {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+
+.fit-missing-row:first-of-type {
+  margin-top: 12px;
+}
+
+.fit-missing-note {
+  color: var(--text-2, #6b5d57);
+}
+
+.fit-missing-fields {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.fit-missing-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.fit-recalc {
+  margin-top: 18px;
+}
+
+.fit-table-row .fit-item-name {
+  font-weight: 650;
+}
+
+.fit-item-note {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-2, #6b5d57);
+}
+
+.fit-score-null {
+  color: var(--text-3, #746760);
+}
+
+.fit-note-guard {
+  margin-top: 12px;
+}
+
+.fit-bonus {
+  margin-top: 12px;
+}
+
+.fit-notes {
+  margin-top: 16px;
+}
+
+.fit-actions {
+  margin-top: 20px;
+}
+
+.fit-foot {
+  margin: 24px 0 12px;
+}
+
+.fit-back {
+  margin-top: 4px;
+}

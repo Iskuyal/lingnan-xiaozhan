@@ -1,34 +1,68 @@
-.settings-heading { display:flex; align-items:flex-start; gap:12px; margin-bottom:20px; }
-.settings-heading-copy { flex:1; min-width:0; }
-.settings-lead { font-size:20px; font-weight:700; line-height:1.5; }
-.settings-intro { margin-top:8px; font-size:13px; line-height:1.8; color:#6b5d57; }
-.settings-back { flex:none; min-height:44px; padding:10px; font-size:12px; color:#8c1614; }
-.settings-card { margin-top:22px; }
-.settings-field { margin-top:16px; }
-.settings-label { margin-bottom:8px; font-size:13px; font-weight:600; }
-.settings-input { width:100%; min-height:48px; padding:12px 13px; border:1px solid #aa9990; border-radius:7px; background:#fff; font-size:14px; }
-.settings-row { display:flex; align-items:center; gap:10px; }
-.settings-input-flex { flex:1; min-width:0; }
-.settings-input-narrow { width:92px; }
-.settings-input-center { text-align:center; }
-.settings-pills { display:flex; flex-wrap:wrap; gap:8px; }
-.settings-pill { min-height:44px; padding:10px 14px; border:1px solid #aa9990; border-radius:7px; background:#fff; font-size:13px; }
-.settings-pill-on { background:#8c1614; color:#fff; border-color:#8c1614; }
-.settings-callout,.settings-note { padding:14px 15px; margin-top:16px; border-left:3px solid #ded4cf; background:#fff; font-size:13px; line-height:1.8; color:#6b5d57; }
-.settings-callout-warn { border-color:#9a5b1e; background:#fff4e4; color:#78420e; }
-.settings-hint { margin-top:7px; color:#746760; font-size:11px; line-height:1.8; }
-.settings-hint-warn,.settings-error { color:#9a5b1e; }
-.settings-preview { padding:14px 15px; margin-top:16px; border:1px solid #ded4cf; background:#fff; border-radius:8px; font-size:13px; line-height:1.8; }
-.settings-group-toggle { display:flex; align-items:center; gap:12px; padding:14px 0; margin-top:10px; border-bottom:1px solid #ded4cf; min-height:52px; }
-.settings-group-copy { flex:1; }
-.settings-group-title { font-size:15px; font-weight:600; }
-.settings-group-state { margin-top:4px; font-size:11px; color:#746760; }
-.settings-group-chevron { color:#8c1614; font-size:23px; }
-.settings-time-row { display:flex; align-items:center; gap:10px; margin-top:12px; }
-.settings-time-no { flex:1; font-size:13px; }
-.settings-time-fields { display:flex; align-items:center; gap:8px; }
-.settings-time-sep { font-size:12px; color:#746760; }
-.settings-secondary { display:block; width:100%; min-height:48px; padding:12px; margin-top:16px; border:1px solid #b9847c; color:#8c1614; background:#fff; font-size:13px; }
-.settings-gap { height:12px; }
-.settings-loading { padding-top:36px; font-size:14px; color:#6b5d57; }
-.settings-error { margin-top:14px; font-size:13px; line-height:1.8; }
+@import "../../../ui/timetable/page.wxss";
+
+/* Semester and section times (design 06). Missing times stay visibly empty. */
+.set2-page { padding-bottom: calc(34px + env(safe-area-inset-bottom)); }
+.set2-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.set2-kicker { color: #c41c23; font-size: 12px; line-height: 1.7; font-weight: 650; }
+.set2-title { margin-top: 6px; color: #2b2422; font-size: 29px; line-height: 1.32; font-weight: 750; letter-spacing: -0.6px; }
+.set2-intro { margin-top: 8px; }
+.set2-back { flex: none; min-width: 52px; min-height: 44px; display: flex; align-items: center; justify-content: center; color: #c41c23; font-size: 13px; }
+.set2-card { margin-top: 14px; padding: 18px; border-radius: 18px; background: #ffffff; }
+.set2-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.set2-field { margin: 15px 0; }
+.set2-label { margin-bottom: 7px; color: #2b2422; font-size: 13px; line-height: 1.6; font-weight: 650; }
+.set2-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #8d8d98;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #2b2422;
+  font-size: 15px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+.set2-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #8d8d98;
+  border-radius: 11px;
+  background: #ffffff;
+  font-size: 15px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+.set2-select-value.placeholder { color: #746760; }
+.set2-hint { margin-top: 6px; color: #6b5d57; font-size: 11px; line-height: 1.7; }
+.set2-hint-warn { margin-top: 8px; }
+.set2-week-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.set2-number { width: 76px; flex: none; text-align: center; }
+.set2-week-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.set2-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 5px 10px; border: 1px solid #ded4cf; border-radius: 9px; background: #ffffff; color: #6b5d57; font-size: 12px; line-height: 1.4; }
+.set2-pill.on { border-color: #e8a5a8; background: #fff0ef; color: #c41c23; font-weight: 650; }
+.set2-preview { margin-top: 12px; padding: 11px 13px; border-radius: 10px; background: #f5f6f8; color: #6b5d57; font-size: 13px; line-height: 1.7; }
+.set2-time-note { margin: 8px 0 12px; font-size: 12px; }
+.set2-group { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 8px 0; border-top: 1px solid #efeff2; }
+.set2-group-title { color: #2b2422; font-size: 14px; line-height: 1.5; font-weight: 650; }
+.set2-group-state { margin-top: 2px; color: #6b5d57; font-size: 11px; line-height: 1.6; }
+.set2-group-chevron { flex: none; color: #6b5d57; font-size: 20px; line-height: 1; }
+.set2-time-heading, .set2-time-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
+.set2-time-heading { margin: 10px 0 6px; color: #6b5d57; font-size: 11px; line-height: 1.6; text-align: center; }
+.set2-time-row { margin: 7px 0; }
+.set2-time-no { color: #2b2422; font-size: 12px; line-height: 1.5; }
+.set2-time-input { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 8px 6px; border: 1px solid #8d8d98; border-radius: 9px; background: #ffffff; color: #2b2422; font-size: 12px; line-height: 1.4; text-align: center; box-sizing: border-box; }
+.set2-time-input.placeholder { color: #746760; border-color: #c2b7b1; }
+.set2-clear { margin-top: 12px; }
+.set2-save-error { margin-top: 14px; }
+.set2-save { margin-top: 16px; }
+.set2-footnote { margin-top: 10px; text-align: center; }
+@media (max-width: 350px) {
+  .set2-title { font-size: 26px; }
+  .set2-card { padding: 16px; }
+  .set2-time-heading, .set2-time-row { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); }
+}

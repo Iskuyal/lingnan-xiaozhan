@@ -61,6 +61,16 @@ node scripts/render-mockups.mjs docs/design/timetable --only 01,02
 
 ## 设计主题索引
 
+- [岭南红全量 UI/UX 重设计（79图已确认，三人实现已交付并集成审查）](lingnan-red-2026-11-11/README.md)
+
+- [AI理解学习约束与规则校验（已确认并本地实现，真实模型样例另计）](ai-study-plan-2026-11-11/README.md)
+
+- [限定周次调课与计划保存后可见（本轮三图已确认并实现）](notice-plan-loop-2026-11-10/README.md)
+
+- [2026-11-10 反馈复查：事实与状态修正已确认，首页聚焦方案仅保留建议](ai-review-2026-11-10/README.md)
+
+- [AI 创新点与界面升级（回应评语：通知一键调课、今日简报、目标倒排；讨论稿待拍板）](ai-innovation-2026-11/README.md)
+
 - [部门问答守卫与缺失说明修正（现有布局下的文案对照评审件）](department-qa-guard-2026-10-30/README.md)
 - [正式作品名同步（明确命名下的导航文字更新）](app-name-2026-10-29/README.md)
 

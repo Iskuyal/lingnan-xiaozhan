@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-11-10T12:35:49.100Z",
+  "result": "failed",
+  "checks": [
+    "真实云端：仅第2周改变时间地点，第1/3周保留；同编号重试不重复拆课"
+  ],
+  "cleanup": {
+    "beforeCount": 51,
+    "afterCount": 51,
+    "originalCoursesUnchanged": true
+  },
+  "ai": null,
+  "error": "课表操作失败：document.set:fail -501007 invalid parameters. 不能更新_id的值\n\nfalse !== true\n",
+  "realDevice": false,
+  "realCloud": true,
+  "boundaries": [
+    "只新增、调整和删除唯一命名的临时课程，原课表逐条比对",
+    "可选AI最多一次请求且只发送临时课程，非独立效果评测",
+    "这是开发者工具，不是手机真机"
+  ]
+}

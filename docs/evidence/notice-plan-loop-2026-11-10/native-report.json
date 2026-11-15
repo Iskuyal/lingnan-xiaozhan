@@ -1,0 +1,174 @@
+{
+  "checkedAt": "2026-11-10T12:18:16.701Z",
+  "result": "passed",
+  "checks": [
+    "实际云函数入口：限定第8周调课、响应丢失后同编号重试、整项撤销，其他周次保留",
+    "计划：实际保存按钮写本机，重开恢复同一份安排和目标id，不重新生成",
+    "周课表：按日历周匹配，计划不计课程数；课程后改发生冲突有提示，翻周不重复显示",
+    "断网重开：本机计划仍完整可见，保留原日期与原安排",
+    "目标删除仍可查看原计划；撤回只移除本机计划，不修改正式课程"
+  ],
+  "screenshots": [
+    "01-scoped-proposal.png",
+    "02-plan-saved.png",
+    "03-week-plan.png",
+    "04-plan-conflict.png",
+    "05-offline-reopen.png"
+  ],
+  "requests": [
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "ai",
+      "action": "chat"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "applyScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "undoScopedChange"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "getSettings"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    },
+    {
+      "name": "timetable",
+      "action": "list"
+    }
+  ],
+  "system": {
+    "brand": "devtools",
+    "model": "iPhone 12/13 (Pro)",
+    "system": "iOS 10.0.1",
+    "platform": "devtools",
+    "benchmarkLevel": -1,
+    "pixelRatio": 3,
+    "screenWidth": 390,
+    "screenHeight": 844,
+    "windowWidth": 390,
+    "windowHeight": 753,
+    "statusBarHeight": 47,
+    "safeArea": {
+      "top": 47,
+      "left": 0,
+      "right": 390,
+      "bottom": 810,
+      "width": 390,
+      "height": 763
+    },
+    "language": "zh_CN",
+    "version": "8.0.5",
+    "fontSizeSetting": 16,
+    "SDKVersion": "3.17.2",
+    "host": {
+      "env": "WeChat"
+    },
+    "enableDebug": false,
+    "mode": "default",
+    "deviceOrientation": "portrait",
+    "bluetoothEnabled": true,
+    "locationEnabled": true,
+    "wifiEnabled": true,
+    "albumAuthorized": true,
+    "cameraAuthorized": true,
+    "locationAuthorized": true,
+    "microphoneAuthorized": true,
+    "notificationAuthorized": true,
+    "notificationAlertAuthorized": true,
+    "notificationBadgeAuthorized": true,
+    "notificationSoundAuthorized": true,
+    "phoneCalendarAuthorized": true,
+    "bluetoothAuthorized": true,
+    "locationReducedAccuracy": true,
+    "devicePixelRatio": 3
+  },
+  "realDevice": false,
+  "realModelCalls": 0,
+  "liveCloudWrites": 0,
+  "screenshotSource": "Windows截图技能：已核对的最大化模拟器区域，拒绝149px原始截图",
+  "sources": {
+    "cloudfunctions/timetable/index.ts": "65761c9465f5dcb22869aa8fb247ef3f0cd94d35068223331f5e917089bd27bc",
+    "cloudfunctions/timetable/scoped.ts": "716478569088a9d95476dbd6ddf454b673a9f2fd892f556392568db8cc4a70b2",
+    "miniprogram/services/timetable/notice.ts": "4b39ad3e74593097e6df009e603f8ae28512719d7120749fe36b954e686fa6ae",
+    "miniprogram/services/goals/plan.ts": "45d9b05c2f373df035b29641b35e48ea7445ba7622b0ebb74f2eaf68bc6bfe09",
+    "miniprogram/services/goals/saved.ts": "1c766b9e0a4525c03a203a6d0261c4f12e244b503e6ee756c84588361856bd24",
+    "miniprogram/pages/timetable/index.ts": "42a14ddd7f55808ca880fc2a747a9b6d0ba8dff3da69b32a41a15a0f74552c70",
+    "miniprogram/pages/timetable/index.wxml": "bf60aa96d7871733fdbe1f6f9eb675d64f625deacd9f93a8b2b7d196d5959b8b",
+    "miniprogram/pages/goals/plan/index.ts": "0ad0b011af677962d5a49ad3731d1acd3a70150a6beebf7806697a0756d79b3c",
+    "miniprogram/pages/goals/plan/index.wxml": "4dc63700e04dfe0c37cffd90819087b4f07016b9decad479924d0cc59fd3d1c1"
+  },
+  "boundaries": [
+    "实际小程序页面通过自动化桥调用本机真实云函数入口，数据库和微信身份由夹具接管",
+    "模型返回为固定JSON，不属于真实AI效果评测",
+    "本机两项存储在finally恢复，未部署或写入真实云端"
+  ]
+}

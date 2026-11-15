@@ -1,0 +1,114 @@
+{
+  "verifiedAt": "2026-11-11T08:53:54.576Z",
+  "status": "passed",
+  "requests": 1,
+  "elapsedMs": 11301,
+  "source": "我周四没空，周末上午有兼职，每次半小时，听力总拖后腿，一周安排三回。",
+  "goal": "演示英语目标",
+  "rawModelText": "{\"kind\":\"constraints\",\"minutes\":{\"value\":30,\"quote\":\"每次半小时\"},\"sessions\":{\"value\":3,\"quote\":\"一周安排三回\"},\"focus\":{\"value\":\"听力\",\"quote\":\"听力总拖后腿\"},\"excludedDays\":[{\"days\":[4],\"quote\":\"周四没空\"}],\"excludedPeriods\":[{\"days\":[6,7],\"period\":\"morning\",\"quote\":\"周末上午有兼职\"}],\"unhandled\":[]}",
+  "result": {
+    "constraints": {
+      "maxMinutesPerBlock": 30,
+      "noWeekendMorning": false,
+      "noEvening": false,
+      "blocksPerWeek": 3,
+      "focus": "听力",
+      "excludedWeekdays": [
+        4
+      ],
+      "blockedSections": [
+        {
+          "weekday": 6,
+          "start": 1,
+          "end": 4
+        },
+        {
+          "weekday": 7,
+          "start": 1,
+          "end": 4
+        }
+      ]
+    },
+    "evidence": [
+      {
+        "label": "每段时长",
+        "value": "每段不超过30分钟",
+        "quote": "每次半小时"
+      },
+      {
+        "label": "每周安排",
+        "value": "每周希望安排3段",
+        "quote": "一周安排三回"
+      },
+      {
+        "label": "重点练习",
+        "value": "重点练听力",
+        "quote": "听力总拖后腿"
+      },
+      {
+        "label": "不可用星期",
+        "value": "周四不排",
+        "quote": "周四没空"
+      },
+      {
+        "label": "不可用时段",
+        "value": "周六、周日上午不排（1–4节）",
+        "quote": "周末上午有兼职"
+      }
+    ],
+    "requestedBlocks": 3,
+    "placedBlocks": 3,
+    "headline": "还剩 30 天，每周 3 段",
+    "blocks": [
+      {
+        "id": "plan-1-5-1",
+        "weekday": 5,
+        "startSection": 1,
+        "endSection": 2,
+        "minutes": 30,
+        "topic": "听力",
+        "week": 1
+      },
+      {
+        "id": "plan-1-6-5",
+        "weekday": 6,
+        "startSection": 5,
+        "endSection": 6,
+        "minutes": 30,
+        "topic": "听力",
+        "week": 1
+      },
+      {
+        "id": "plan-1-7-5",
+        "weekday": 7,
+        "startSection": 5,
+        "endSection": 6,
+        "minutes": 30,
+        "topic": "真题",
+        "week": 1
+      }
+    ],
+    "safetyChecked": true,
+    "provider": "openai",
+    "usage": {
+      "promptTokens": 437,
+      "completionTokens": 275,
+      "totalTokens": 712,
+      "estimated": false,
+      "usageUnknown": false,
+      "costYuan": 0.000178,
+      "priceInputPerMillion": 0.25,
+      "priceOutputPerMillion": 0.25
+    }
+  },
+  "error": null,
+  "courseCount": 51,
+  "courseWriteActions": 0,
+  "localStorageWrites": 0,
+  "realDevice": false,
+  "boundaries": [
+    "最多一次真实AI业务请求，失败不自动重试",
+    "只发送虚构目标与情况，课表仅由本机规则读取",
+    "没有保存新计划或改写课程；这是功能样例，不是独立质量评测"
+  ]
+}

@@ -1,0 +1,3042 @@
+{
+  "version": "LN-6c774710ba24831b",
+  "contentFingerprintSHA256": "6c774710ba24831bd6a9b247dc74b543c26630301c232f0030ee4e81e9487061",
+  "scope": "79 static screens, all 22 registered routes plus proposed study/campus hubs; no motion requirement",
+  "sources": [
+    {
+      "file": "01-today.html",
+      "sha256": "b657934a04371a9936b4c4b717affc30ba12b16d695f81b3529f72b3abda8781"
+    },
+    {
+      "file": "02-week.html",
+      "sha256": "920dfb7b04924194659c93fc130ad07dee2414d3919c691a88369195d78598ba"
+    },
+    {
+      "file": "03-import.html",
+      "sha256": "6c0ff1d2d6680686086d22ed905e8a85a58aa376f2a50c8296bcc882d15b4030"
+    },
+    {
+      "file": "04-review.html",
+      "sha256": "c9c7612874905955ced99d103117c36b55fce4ff56960768d5e7516cb64cf31d"
+    },
+    {
+      "file": "05-course.html",
+      "sha256": "5503334fee8b83b9e66864aca204d6e0207022494c8b0ddde155f812aa97a38f"
+    },
+    {
+      "file": "06-settings.html",
+      "sha256": "02b7a9805b4cc3c1fc29856b02b59226bd004d2fd2d86257d126d2f61c89e9b2"
+    },
+    {
+      "file": "07-manage.html",
+      "sha256": "ecff46a64cb3ce7c18aa60c9f1edf2fc5b2f014003d0d1dd2551f99124bbe5f3"
+    },
+    {
+      "file": "08-assistant.html",
+      "sha256": "622e5915d4c43fe67ef2caa25e71e33f406a128ae5f86c8359ac6333e3c8ddb2"
+    },
+    {
+      "file": "09-notice.html",
+      "sha256": "df12e580020449d234e904ec0681bc4f873506a6231297a445a0bea7460c4f3f"
+    },
+    {
+      "file": "10-changed.html",
+      "sha256": "50611406931cb0c32211cf6589406bd4dc22e378722c82be479a46bcdd9b3c51"
+    },
+    {
+      "file": "11-study.html",
+      "sha256": "7d828bcbcfe9c8ab388718a70f24efe30ff14cee5a04e438ad9c69338db77f8e"
+    },
+    {
+      "file": "12-goals.html",
+      "sha256": "9f34526ceb7b97abc43384d1bdddc2bab61f2ab4f406c5f2811b4ee47cf46e8a"
+    },
+    {
+      "file": "13-goal-edit.html",
+      "sha256": "f3b22afcc99bdd6614391b2857b8f7d469b5216922470ba4f4d7670d520f88f0"
+    },
+    {
+      "file": "14-plan-input.html",
+      "sha256": "c53097fcd7f67c4ebdf449279ae9d09bc4c03efd630867c341b65aed573b01d4"
+    },
+    {
+      "file": "15-constraints.html",
+      "sha256": "d73452d12ec967f2c28720d058b251857ff335432e0d42a11fc50f4ca2652dff"
+    },
+    {
+      "file": "16-preview.html",
+      "sha256": "fa1da04937538e96eebd525d1cddcac137b2fcf1a1bfea7ee1113b9e9c239deb"
+    },
+    {
+      "file": "17-saved.html",
+      "sha256": "0b5f8ca4b3326166d6cf7d8fa83118c2c8d06227038d58efe2de8ffbe72484bd"
+    },
+    {
+      "file": "18-conflict.html",
+      "sha256": "9473ac2fb8ff2b80d5c938d104ee40c3fec07fff264f79d4127a1d8d64092038"
+    },
+    {
+      "file": "19-campus.html",
+      "sha256": "029daff17f7883241fc2bc7e9ca24230b01731ad454d1f114cf891f8ae258314"
+    },
+    {
+      "file": "20-departments.html",
+      "sha256": "98dd6eb92721cb5335afc79c4d66cf50df648af97d59f0ae0be52d4bacd12524"
+    },
+    {
+      "file": "21-department.html",
+      "sha256": "37843e3289f1b3f32f5a00ed62d24610d7d35826198ecc8da68c44868a2700b9"
+    },
+    {
+      "file": "22-department-qa.html",
+      "sha256": "eb72b5b0d20ba66ba8419ce76dc65c5d79307bd85876187b60f4c91afde4e0c5"
+    },
+    {
+      "file": "23-news.html",
+      "sha256": "cbf6a8247c98a91048b7eeb483943fb67bc1036adcc5f3e78a7adf6761d392e9"
+    },
+    {
+      "file": "24-article.html",
+      "sha256": "02fe0ba27e59dccc9fba0aafb5139fb3dd0d55aaaa1d32d3c429c0ba87b0f763"
+    },
+    {
+      "file": "25-calendar.html",
+      "sha256": "ab32f505752ae64333b8794767ba32fb4743a89d8c801da2c6052cb12b178ea0"
+    },
+    {
+      "file": "26-fitness.html",
+      "sha256": "67dcf9cfc97a3dd03bff4274c6d23841e995e99ccc268f2b03215e4379229283"
+    },
+    {
+      "file": "27-fitness-result.html",
+      "sha256": "9d36187cb35031e7e7bc77e2d92ec26553c9a0f131f04297a437b8dace305871"
+    },
+    {
+      "file": "28-advancement.html",
+      "sha256": "e2298eadcd8bb5b04672315c51ec9fdc46f2eabc4e0d166f2635ab86076811f8"
+    },
+    {
+      "file": "29-clarify.html",
+      "sha256": "b0b0dca898ae5cfd54e3412a06a73c8e6b94a5157713383f2a786e622d3dd3a2"
+    },
+    {
+      "file": "30-answer.html",
+      "sha256": "9e91a00128cbaf417c99f5df51c60e47e5905e1faebd96da987c50db6a1476be"
+    },
+    {
+      "file": "31-defense.html",
+      "sha256": "32189469222d90a0843f2c4348cb69540eb36a3c323c98a62cf32aebb904edda"
+    },
+    {
+      "file": "32-practice.html",
+      "sha256": "1ce33dff188a47ab7b453be5f1885b57d6fa36723d5a4c3bc361ce5212095df2"
+    },
+    {
+      "file": "33-pending.html",
+      "sha256": "a62c2edabb446c2afeef762e4be263b1e7f9a611c86f5d63f9f7c03eab40cb4b"
+    },
+    {
+      "file": "34-feedback.html",
+      "sha256": "b149eea11476489b8f8848c197735f278b3c50e3caf95712e938d65f711c3d02"
+    },
+    {
+      "file": "35-recap.html",
+      "sha256": "d6c1b039d1ac575857a6ceb154aa9807a0de73d2c74f72ff3ceed80a912819c1"
+    },
+    {
+      "file": "36-empty.html",
+      "sha256": "c7c52fc233a7cad0d8f7a9fe3216b52c5e39dc6a582dbfb5058580bb7f435789"
+    },
+    {
+      "file": "37-read-error.html",
+      "sha256": "5ccdaea65514c5dc91d8b7919af49f380f94dd6c8508710ab3ca8b6d7124f749"
+    },
+    {
+      "file": "38-import-error.html",
+      "sha256": "32f28a1867de3a73da00c6ab5f125b6a497ab387913c8d92ffb0a85d7f3f9797"
+    },
+    {
+      "file": "39-partial-change.html",
+      "sha256": "56d55857f7c066ed67364bdbf8d9057331c8cc088f9fccbe7cbda0bcfb9fd393"
+    },
+    {
+      "file": "40-expired-plan.html",
+      "sha256": "3a0d2653aa5633ba9315ad0dc170db34044ded8897822310248d0d69d7cfa1b7"
+    },
+    {
+      "file": "41-delete.html",
+      "sha256": "c97f1d25a9eca02691c952494e85595c4c5c726ee2b1d63909bd78eba892c983"
+    },
+    {
+      "file": "42-material.html",
+      "sha256": "52d4b97830b0ec352d54335e7f366b2f01336d975529d6d271a6495187a8c477"
+    },
+    {
+      "file": "43-ai-unavailable.html",
+      "sha256": "613cf454066ca9652aa0f94ce8e009cb08b7b8820a762ab479c2e101727e3d4e"
+    },
+    {
+      "file": "44-lost-found.html",
+      "sha256": "e1cd9675fdf3df3ebfbdda469d829fb4dcd26f916e6e5e558a83579aadf14a09"
+    },
+    {
+      "file": "45-publish.html",
+      "sha256": "1c17a3b10093c7a2040009ceb449e2bb675c4204d0f79e25c2413687e97b0307"
+    },
+    {
+      "file": "46-item.html",
+      "sha256": "9ff78f8ddd0c3aeab6f2243d4045cb78a46a35fe4eacb196573793f2b8db4530"
+    },
+    {
+      "file": "47-claim.html",
+      "sha256": "3319bceb4e43475a6a938d38e122ad8e95030d6666493d92205e1197fd65173d"
+    },
+    {
+      "file": "48-mine.html",
+      "sha256": "c85a65529739630df26353bafb4f859573ed7a93ff37744200ff985746fd99e0"
+    },
+    {
+      "file": "49-basic-rules.html",
+      "sha256": "9544bb4b75e18628d5ed89903ac18e1375b6ffdca0458bf6e5ff5bdd1faa250f"
+    },
+    {
+      "file": "50-claim-review.html",
+      "sha256": "4d7097725700362c13c100c2ba312cfc8eeb6889cb4e6bac47393afb491ab3d1"
+    },
+    {
+      "file": "51-full-week.html",
+      "sha256": "5d77328c212ef5c01c56db1b85317bad71049a13814f0d9beca9d14048065721"
+    },
+    {
+      "file": "52-field-error.html",
+      "sha256": "34339ced37e04941e15494da887e0d3d2668043205dfb6f312def1293ce38be8"
+    },
+    {
+      "file": "53-unknown-times.html",
+      "sha256": "87f2594f5291a7da9bb0fa1a0f192f80f810a12e47b8f3551a666882e4a38683"
+    },
+    {
+      "file": "54-goal-delete.html",
+      "sha256": "f36f3519ee309a448e3141e3a93528e0fc1c5e55a93bcde16700b2aade007ca7"
+    },
+    {
+      "file": "55-goals-empty.html",
+      "sha256": "04c1c62e8f199ecc6e22eb38a598e40d97f561d2744f0ed522f2e1a32566d00d"
+    },
+    {
+      "file": "56-practice-2.html",
+      "sha256": "0af8045ba5bb7aff791647efd4e203e915abdb62d73b23cfacb0f67c17dd8f8c"
+    },
+    {
+      "file": "57-feedback-2.html",
+      "sha256": "b2031d922dd8f25d3cd1425002ec22a38369ab085148b3b1fe876cd57a0d38d3"
+    },
+    {
+      "file": "58-practice-3.html",
+      "sha256": "2aae7d4d6fdf34292bc7686735b0b53d5d9aeae7518bacf643d463272927fcd5"
+    },
+    {
+      "file": "59-feedback-3.html",
+      "sha256": "80e4108acda3fa94612851fb41be359fe2964a64fd5a035493e3e89f91c06385"
+    },
+    {
+      "file": "60-reanswer.html",
+      "sha256": "6b88ed8a4b3d383198024c9c66462080110998b268dfdee86f4872c48f653238"
+    },
+    {
+      "file": "61-reanswer-result.html",
+      "sha256": "8c7955fc5e50f84ecdff0b584e4f96b3e8f40206b544359d8cdf261836cac4d3"
+    },
+    {
+      "file": "62-exit.html",
+      "sha256": "6c6f3c958f382b9b803533d10151b820d043fd88f43629cc20dc31a575678c50"
+    },
+    {
+      "file": "63-fitness-missing.html",
+      "sha256": "fd1cbaff55be8834edd4f26918629d711def4251780ea005af0049e9729c0ee7"
+    },
+    {
+      "file": "64-constraint-clarify.html",
+      "sha256": "0a1cf5222fdbe4016bd689dcd66af3bdbf3f35f6588abb02ba218fa93419f705"
+    },
+    {
+      "file": "65-department-answer.html",
+      "sha256": "ad878434cef8ddcc63086bb61578da74e047613ef55820cd130489fcd2e7d48b"
+    },
+    {
+      "file": "66-course-detail.html",
+      "sha256": "e17ff7ea522eeb1bc96f83b816c2372c41f61ee9eebc7984bb25af591fecaf33"
+    },
+    {
+      "file": "67-day-agenda.html",
+      "sha256": "20e09e312d728a98f683b35ec83960df40e2c6a09bfb7b2067112a5e007b743f"
+    },
+    {
+      "file": "68-draft-edit.html",
+      "sha256": "878a22eff0cd8cd573590328e701b98be998db25b1618ec49839227e45df6e1c"
+    },
+    {
+      "file": "69-import-ready.html",
+      "sha256": "be9ae78e413021028aaf9543a08bf888f8691f6105817ad4bc11d7836f3e32a0"
+    },
+    {
+      "file": "70-notice-edit.html",
+      "sha256": "1cb495e30fb10528134f2239e697402a27240e2e1e54461b0e70da0206db5580"
+    },
+    {
+      "file": "71-week-eleven.html",
+      "sha256": "2eef02d1934cd47c54fc4a9ebbce0fdc276f4ee40e3d0ddb7bd82a634a7d0319"
+    },
+    {
+      "file": "72-undo-result.html",
+      "sha256": "4dd02c3efd2b74c4e1bebbfe84beb7f87da7756e0fcd1e7071a1c4b21601b380"
+    },
+    {
+      "file": "73-batch-result.html",
+      "sha256": "50c09adc4c71a79552527aa6c6e3cef2c908575075adb2835eeea396dc48c35c"
+    },
+    {
+      "file": "74-long-course.html",
+      "sha256": "d81cdd25d29d70875d54bc8155b26b055653f487545216a5c204775796d5ce6a"
+    },
+    {
+      "file": "75-photo-source.html",
+      "sha256": "889ebaf3dfc7c1d63054ca4cf590dfa3285042597f2a7aa6dada3800b73475ae"
+    },
+    {
+      "file": "76-excel-review.html",
+      "sha256": "239022c117fd269997076b8012ffd763928667ef9df791a0b1e68f4281afddd4"
+    },
+    {
+      "file": "77-practice-record.html",
+      "sha256": "bc4b40d55c088f6a1eba5b073ff24a9fe2aa91050916ecad399c910e94b60447"
+    },
+    {
+      "file": "78-copied-record.html",
+      "sha256": "4a099a1dcb8cb6b78ec2c670d957578302def848a2535566b958a347729f2c61"
+    },
+    {
+      "file": "79-review-other-course.html",
+      "sha256": "a7d62bec0db01492f58f36870f3e309069422c9b19adab045d099a89e3a6934e"
+    },
+    {
+      "file": "_mockup.css",
+      "sha256": "d00a171d6f23f77c220965938f31af9c2e0e6fae5a504a846cdb4deced283262"
+    },
+    {
+      "file": "_tokens.css",
+      "sha256": "2690af4bee90ad50ef04d548e3eddcd13870a2ecd8c8114b7829b6b08c0213b0"
+    },
+    {
+      "file": "generate.mjs",
+      "sha256": "e9df2782ea1331c0387b6241db5f8f6387c15f00a6bd310cd6889818bd856d59"
+    },
+    {
+      "file": "package-review.py",
+      "sha256": "4155bf9857ca98b8077ef1d4db5092b23e18c50e44d4d08f1fc9912f2d825176"
+    },
+    {
+      "file": "review/index.htm",
+      "sha256": "2c95cb26799c3d46f63ac3d103a2ba7d77119cb71f471d34df5d0b3cd282a569"
+    },
+    {
+      "file": "screens.json",
+      "sha256": "e754d8c49984c5c1df3ff9f62de80efd82e77419406668fda3bd20863c3a2acd"
+    },
+    {
+      "file": "verify-design.py",
+      "sha256": "fff7f382d30ed4997714507a8b88ba6ae8ac72e3081e92c301f845a910df7f5d"
+    }
+  ],
+  "images": [
+    {
+      "file": "png/01-today.png",
+      "sha256": "2688303c5391dae7382675acdb45a3010ee7d88505131cc10932036e93e87408",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "01",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/02-week.png",
+      "sha256": "7fbc214469a38b8475667a514afd876badee078d3a49303e7b588f60928b4521",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "02",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/03-import.png",
+      "sha256": "e80633d80bd31e92753fb399e3a8b4ab12de90f5765ec811eadda8c2e39b9429",
+      "pixelSize": [
+        780,
+        1984
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "03",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/04-review.png",
+      "sha256": "2350c0c50e79ab5639f29ffd0ae63d431b8670157816348f0af9cc26aa42ab57",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/05-course.png",
+      "sha256": "71562581657997d3349f140a859d177cc8f5091b31a0fcef92e0ec1c9359378e",
+      "pixelSize": [
+        780,
+        2134
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "05",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/06-settings.png",
+      "sha256": "c48511f1f6320bc07a9be0fa28521418c05787ec1de5c34de63fc4885c9f1ebc",
+      "pixelSize": [
+        780,
+        2366
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "06",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/07-manage.png",
+      "sha256": "d38f97066278ce12cfc16ef1c1a309a46a7251dca7115ecbd19ef0e4e848fe48",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "07",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/08-assistant.png",
+      "sha256": "82a033161cc179334089219b0080a1b868881ff78ed128e28f59d07ac12841f1",
+      "pixelSize": [
+        780,
+        1760
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "08",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/09-notice.png",
+      "sha256": "64d3862be2e10cf9263416f11384e1c63f3c69e15a5c13db796a04a39b9265ac",
+      "pixelSize": [
+        780,
+        1890
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "09",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/10-changed.png",
+      "sha256": "d08732546cb8892c208ac595b4fdca9b62781ed589ef60cb25d8d9c7acbd7e66",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "10",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/11-study.png",
+      "sha256": "05af69e0073f723492f0d4ae5a1e09b064646cd4e91c1d013390f8a0aa51284b",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "11",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/12-goals.png",
+      "sha256": "61455e3ffd33f523e5de6be79ad0b4c0b8ea547c993c23ce261bc0b001db9447",
+      "pixelSize": [
+        780,
+        1716
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "12",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/13-goal-edit.png",
+      "sha256": "2c7e58ca9ee6967f8da6d69470839b2545e4bdb849cd2acfe249e01e35749fb5",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "13",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/14-plan-input.png",
+      "sha256": "64c6a26a8561f04a59d6d6c40cfd8ad2ce1070fee619b07a23449271277556b6",
+      "pixelSize": [
+        780,
+        1866
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "14",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/15-constraints.png",
+      "sha256": "ada90316c37b59d15814419a58c3e5098dd2b72a74553afb166be43ca2faf2b3",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "15",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/16-preview.png",
+      "sha256": "cc9e86c771f0a12ff48e1eeb0ccea5c8d8162806e8f3cb1d3f371da6b9f7e9de",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "16",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/17-saved.png",
+      "sha256": "3ded2bcff4a3339df16decb4421020bd1b7a8285cbbdada0bbbff31452b2d23c",
+      "pixelSize": [
+        780,
+        2366
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "17",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/18-conflict.png",
+      "sha256": "5b1454b40976a29b6b39a0791a06b0ca1f8501b2dd9cc241311620ae9b812a51",
+      "pixelSize": [
+        780,
+        1742
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "18",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/19-campus.png",
+      "sha256": "ec6bd60ee3e463bd39302d591f368ff4740159bad954477d39ecfd3693daef1d",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "19",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/20-departments.png",
+      "sha256": "c53a3594e435072ed5d200172fc34653e62b2bb2c6b43bead43c32d1071b9cab",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "20",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/21-department.png",
+      "sha256": "ba0399ccc95e512e948169cd6479819a7035406dedadffe309d1cd306e84fe14",
+      "pixelSize": [
+        780,
+        2278
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "21",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/22-department-qa.png",
+      "sha256": "360c78349f7d0fb7be324d52d78dc0d9cf9e7ce2c9844b8e3453e3a999414975",
+      "pixelSize": [
+        780,
+        1716
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "22",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/23-news.png",
+      "sha256": "d7f65904e5458f14b17309a80aaab2d4503bbec28ba16f509b25c687d8caeb4f",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "23",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/24-article.png",
+      "sha256": "1b9092d0de7d7d7b7d897b937e30cf92a94a4382dc62a9f937528022ff7f506c",
+      "pixelSize": [
+        780,
+        1946
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "24",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/25-calendar.png",
+      "sha256": "152df84e6f3851d917c34d8b33b0f945cf81c44948ca8c5f2a450dbb6a6b1b9d",
+      "pixelSize": [
+        780,
+        1944
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "25",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/26-fitness.png",
+      "sha256": "43c3eaed72b39a332a180ad5f88f2444c7cac3d6ffd25cc3aae2b6ee24bb1c99",
+      "pixelSize": [
+        780,
+        2552
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "26",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/27-fitness-result.png",
+      "sha256": "a7c60dda0c7bbd74b3f2a271937ac0df16ba841b14a02047f07f73a4d22e63b2",
+      "pixelSize": [
+        780,
+        2370
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "27",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/28-advancement.png",
+      "sha256": "61522dcdd8097711997789b4dcdf57009ce8bc2f0a09883a38177ec365b79d49",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "28",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/29-clarify.png",
+      "sha256": "3c9a406601b41966030277fed13e3f5e59da668d11d0b22d550cca5012af670e",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "29",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/30-answer.png",
+      "sha256": "941ab3ed400b2dc41d935730de93862c69576ae7cf7b1eadd0f967d8cad41ac6",
+      "pixelSize": [
+        780,
+        2330
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "30",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/31-defense.png",
+      "sha256": "f70e36b650e8a335fc15fa962755446237607a1e8f9835f6a7702e5172be671f",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "31",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/32-practice.png",
+      "sha256": "134ce8c130ee619b8c55e353ffe38e2c2ae047c1dc2e0ac9f96c980e98283776",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "32",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/33-pending.png",
+      "sha256": "6d6263ee1346a59191ed87cb4b4a460dd863f2f7bf60c4d6cfcf56a69842647d",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "33",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/34-feedback.png",
+      "sha256": "8ce049748a81e1439ebdd3a08a62b2240af75b8b2378745c3954496ee667cad2",
+      "pixelSize": [
+        780,
+        1984
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "34",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/35-recap.png",
+      "sha256": "b80a54fc59e5b36ef9c6a42f336b67fe6683e5c102cdf82d5c5e28f6a5dd8ffc",
+      "pixelSize": [
+        780,
+        1926
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "35",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/36-empty.png",
+      "sha256": "4967db1dddeb2e9c32ab8e41fb79843d150dba2ce84f0ceaed27f086915366a7",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "36",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/37-read-error.png",
+      "sha256": "a378917594acffc3f1f20ce269bfaf8f8c9847065c51c6a295571c509f6f07bd",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "37",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/38-import-error.png",
+      "sha256": "5e61055d001ce580edf719ec79623c320b1cb6b83f6d70217d3fa58bc10d7158",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "38",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/39-partial-change.png",
+      "sha256": "912ea6b09737cdcb1cc6af682b319d1e3f9c9576117006f9cb78dae7991cfea6",
+      "pixelSize": [
+        780,
+        1854
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "39",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/40-expired-plan.png",
+      "sha256": "ccd741038ec2f2d7a57b617c5eccc5c63c26305b188f7f698fa2d5848be6fbc4",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "40",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/41-delete.png",
+      "sha256": "26e1a9971ea2a1533571b379ee1950dcc8c54c4480fd7aff38be077cb7326b1f",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "41",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/42-material.png",
+      "sha256": "b51f0299e729300d5fe41659f52ddb9eb70417b89c8179e3af13675bfe40dae4",
+      "pixelSize": [
+        780,
+        1746
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "42",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/43-ai-unavailable.png",
+      "sha256": "d85491ac5a190f0b0abbf9165c3e1a90ccb85ad97e6f1a95fabc3a1119793350",
+      "pixelSize": [
+        780,
+        1786
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "43",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/44-lost-found.png",
+      "sha256": "54501b98754ab6a1d863d367e85560edbbbbd33aef3735fed3ca32a50f50a99c",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "44",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/45-publish.png",
+      "sha256": "1c871f1dc2edde714d5375421166d5b5c7336cdaf6f445318eab66cb35b7df57",
+      "pixelSize": [
+        780,
+        2078
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "45",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/46-item.png",
+      "sha256": "200f053366f321c48c4817ea560d6dcedfc4db83f84de453b689347d4ae91de0",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "46",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/47-claim.png",
+      "sha256": "b74e071d3505cd66a6e73d41584307a3e486fb0b24eb676a9c8a9a82e2df2f2c",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "47",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/48-mine.png",
+      "sha256": "8c8b7bbef46752ba5a1876be80b57d0f84883ab5f37597f79dd85ebbd4394ea5",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "48",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/49-basic-rules.png",
+      "sha256": "62f695a26d513be0f24516f844b7e5d6aaf9b33a28c0990835d2db996cfc5094",
+      "pixelSize": [
+        780,
+        2248
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "49",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/50-claim-review.png",
+      "sha256": "77c242ae0f7393bd97bd498dad5bcb4b3d80cd05ae758861f36e7cb1075a85c1",
+      "pixelSize": [
+        780,
+        1716
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "50",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/51-full-week.png",
+      "sha256": "a1fe2d46b93bb47b6155e2c4233163b0a0bc1f6cc659fb6bae12a133cffbcd6d",
+      "pixelSize": [
+        780,
+        2446
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "51",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/52-field-error.png",
+      "sha256": "0625caa5e023b57e9a400f272b666ac82b87e862db080d3c14e6193e79903bcc",
+      "pixelSize": [
+        780,
+        1906
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "52",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/53-unknown-times.png",
+      "sha256": "23a45b1042630fbad1cf52bd243ff993128cfd2fa41d68d0bcf090bb5c76cb14",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "53",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/54-goal-delete.png",
+      "sha256": "e169dcd3ba8e157d1efe4695821b47b60b3d233b74b9318573d8ba27ad4c5f85",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "54",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/55-goals-empty.png",
+      "sha256": "87d407e69c355b9da126d3b349451d958f402ae11a2daa30ad65feaadf0b2980",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "55",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/56-practice-2.png",
+      "sha256": "8072422c46bab183ba5400186be316f0b884dc18f8ee350531786c544b1aa3d8",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "56",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/57-feedback-2.png",
+      "sha256": "7856ca6903fc11f95e159847caf42a471e2f8c98b599432d89694eb76e98ab77",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "57",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/58-practice-3.png",
+      "sha256": "273a6bd8b044ed4228c78331f30ad594196739b068c250f8496ad6b5afa3f335",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "58",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/59-feedback-3.png",
+      "sha256": "299dc45fa3b6b2c2ec59afbc6de5a4bb7096e45942bc2dc1dcd889bb4029edd0",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "59",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/60-reanswer.png",
+      "sha256": "6f9d02869ab1f6edb01f2d07e2e2664ae15b94a2ec7da5b18e930a44b21804c2",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "60",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/61-reanswer-result.png",
+      "sha256": "54775a48c2f56b56d2534169ef9bed489a93f7368904c87a508fedc59cbfc311",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "61",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/62-exit.png",
+      "sha256": "61ecd871fdedf9e1042671ea13ee24877e5e02035abcc818d634b624bce49cb4",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "62",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/63-fitness-missing.png",
+      "sha256": "f7afdfdcbaed0db2f2c929b9c0371a4927b8c40899448a0598c35878e592f60c",
+      "pixelSize": [
+        780,
+        2538
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "63",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/64-constraint-clarify.png",
+      "sha256": "6d41c4603009641f09e702397982c841577d95f6265a383e88823f9f0a84201b",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "64",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/65-department-answer.png",
+      "sha256": "4488b9530686e8c8c7d0ebd68c92dcc991f8978260ab54cefa3fd00677e879d0",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "65",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/66-course-detail.png",
+      "sha256": "c0a399fa9cb4cda1e2f2ee9838d176ba242af70aea254609d5bc6d47315b48b3",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "66",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/67-day-agenda.png",
+      "sha256": "3e1bb67ea4c3eac268505a240827df75a459ba55cbc2d0fd64d5423965b72eed",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "67",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/68-draft-edit.png",
+      "sha256": "c523fb4ea800d71e3b9ea5dfd039fca1f66c42a463bc5919fc30bca0ea2a8523",
+      "pixelSize": [
+        780,
+        1918
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "68",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/69-import-ready.png",
+      "sha256": "0c3cb1ea55a8ec8206731588a1907ee422220ffc57639e2f38cbf900d7178384",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "69",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/70-notice-edit.png",
+      "sha256": "71a3a5f2015ad29d62e40350fb7c44527d86ff0219b3551a5e0002dc8af849fe",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "70",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/71-week-eleven.png",
+      "sha256": "04ee1c3caca84075edb35afe43cb71f844fd9aab39485cfd839f2c3328b7dc20",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "71",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/72-undo-result.png",
+      "sha256": "b4a8bdfe7eb613abde2d882487ef91c69545e5306ef2d10a002b5e72ac6728f9",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "72",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/73-batch-result.png",
+      "sha256": "e3b9c9ef121eb61d8201e3c156de925d8d21e3327c22ba3ba6f67f1b5d573344",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "73",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/74-long-course.png",
+      "sha256": "09066f0ccdc4e386235b4d2e6eed072dd087a32549e881ad24c08409d5a3fa93",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "74",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/75-photo-source.png",
+      "sha256": "308e50b953a3ae6bb560079f880b83914d7325f89f0fb55fbf7bef64e4075a20",
+      "pixelSize": [
+        780,
+        1718
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "75",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/76-excel-review.png",
+      "sha256": "a74e1202cfab389998cbd01c563e339c5fc3c1168e1c0f369aca4e285f4a15ca",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "76",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/77-practice-record.png",
+      "sha256": "123cf9172fd55c33d3ac0d8832be861f8e24713fbb4b42a1cb5bcab380515501",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/78-copied-record.png",
+      "sha256": "8272ea8dff05915c5d5678657e113a3bff0ad8d5d2574b83abe0a07dceca4e4d",
+      "pixelSize": [
+        780,
+        1688
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "78",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "png/79-review-other-course.png",
+      "sha256": "e6477988a044acb4943cf750e103f895294c6f48d2d9619083f0c33a0dcf8abc",
+      "pixelSize": [
+        780,
+        1864
+      ],
+      "viewportWidth": 390,
+      "type": "main",
+      "screenId": "79",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-01.png",
+      "sha256": "1725d94b6be28ff1b8f9860d316c2cc78bc4103cc38dde327ab6a9c9358edb39",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-02.png",
+      "sha256": "11f36698e41d0d2b89ea463d06f03cd115890e20cc876ea024d9192b3e72421d",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-03.png",
+      "sha256": "0f40a457cd4ec713cd6170b4b6d33846c30ce85ece21a770416987ea1b10eebb",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-04.png",
+      "sha256": "d670e2114a23c28d93e17264127255a96fdcf43b70c52779e2e27f67309f931d",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-05.png",
+      "sha256": "a3d1591aabb138841de1cfd186a3c374416ab935639055c777be3ba5d33e3a42",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-06.png",
+      "sha256": "3eb8fa81c89de3020fe034e730cd1ded04990dd8aba4149217455c40df2ae0f9",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-07.png",
+      "sha256": "8e53c8c870aa6d617c410444e3ce20a4b72f1f1dcf25a6a09f4ae4b846095ccb",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-08.png",
+      "sha256": "3f1c869b17504973392103a6a0382300d19b6919baef33ee3b8836fe8e6db09d",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-09.png",
+      "sha256": "453c2c27df99c3c7de4ea7e76606df1eef609d1437a43dab77f2dcad2a484692",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/contact-10.png",
+      "sha256": "5cbcb61cb9e77a040af7e6b2e8c3a8992013dd0f2de68bab06d70ec4e75f9a11",
+      "pixelSize": [
+        1512,
+        1753
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-44-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "44",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-44-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "44",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-45-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "45",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-45-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "45",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-46-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "46",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-46-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "46",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-47-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "47",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-47-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "47",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-48-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "48",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-48-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "48",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-50-320.png",
+      "sha256": "f8ed025cc36df03607886275e93a323fb536c5a9ec851a20875304db28d935fe",
+      "pixelSize": [
+        960,
+        120
+      ],
+      "viewportWidth": 320,
+      "type": "element render at DPR3",
+      "screenId": "50",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/details/appendix-50-390.png",
+      "sha256": "0f74f94dc0a8f885d617f5d8a9fa3665b60328d56f7ec061ed701190c63661a0",
+      "pixelSize": [
+        1170,
+        120
+      ],
+      "viewportWidth": 390,
+      "type": "element render at DPR3",
+      "screenId": "50",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/01-today.png",
+      "sha256": "1e91eba065f59621bcb2f640624f16a77d3bccc143a6cf0e2d7cd493b69b0b85",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "01",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/02-week.png",
+      "sha256": "ae3ad317ec06b39bc94d1499735bcbfcd293bc49e81c99553e979275726e0c2e",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "02",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/03-import.png",
+      "sha256": "6d52beebe7ba5f9a7cba9d4d5ec806e805aacabd0e486e67c2b228f8dce3c91a",
+      "pixelSize": [
+        320,
+        985
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "03",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/04-review.png",
+      "sha256": "0315cb1d05d19022fa3aa42a5f91f20ada53cff395a0b56d608fd90a0f282c13",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/05-course.png",
+      "sha256": "a01524085ffc05a9a25450bd2574aaf3acddfd7abb88cb58bf77867f7c666a0b",
+      "pixelSize": [
+        320,
+        1114
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "05",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/06-settings.png",
+      "sha256": "b76876022602a95734ec1efbd3be130452656e2649e560eca2fe1d1eb837be42",
+      "pixelSize": [
+        320,
+        1163
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "06",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/07-manage.png",
+      "sha256": "a6b9a5c569808e984cfc66ccd5a9e0d1102d047d0faf2a14f12f5efff9805633",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "07",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/08-assistant.png",
+      "sha256": "8035d3783dc823209c153b118699c4aa458eae2424950634a46868bf3d93a639",
+      "pixelSize": [
+        320,
+        894
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "08",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/09-notice.png",
+      "sha256": "f2499c6381c94e1dfe57f3d6cc5d9ce396670c5e4dd5e17170da82bb365f7050",
+      "pixelSize": [
+        320,
+        979
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "09",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/10-changed.png",
+      "sha256": "1e36df9bc699dddc2c106326cd2e73a151791d5578a08ec1d87ac62d4a336a47",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "10",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/11-study.png",
+      "sha256": "bbfdc0c4c2dfd2dad736f80c083ce9d084de78e5ac75aaee9de1019fc86df04a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "11",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/12-goals.png",
+      "sha256": "223e3b4c67c7e3945f2392ce91c139c71084f00b198a5f8880020853549697de",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "12",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/13-goal-edit.png",
+      "sha256": "b738e38cb3087f501ee90277ba635999bc1d81dfaacfa072d94cb62bef11e63d",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "13",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/14-plan-input.png",
+      "sha256": "d43830251f6d2745dde8755a7d05657d25324feabaeec3efc92b68d6da92d82f",
+      "pixelSize": [
+        320,
+        947
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "14",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/15-constraints.png",
+      "sha256": "79818081bf59ec73ebfe9b4c74abcebac476fc37155fb04dba46cfd49889f241",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "15",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/16-preview.png",
+      "sha256": "6d4354f0f5fb69c60f68c031e9093442e057596a115e63e06890cc774c5527b8",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "16",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/17-saved.png",
+      "sha256": "d127f0179f915924aeacc91c342e1bd46fde5d8ca5fb99f1180b6aed9363f391",
+      "pixelSize": [
+        320,
+        1184
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "17",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/18-conflict.png",
+      "sha256": "6e332fe275559bd77c1ddc23b3b1e562151249860c00b993231bf422dca602ac",
+      "pixelSize": [
+        320,
+        851
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "18",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/19-campus.png",
+      "sha256": "3f4ad074f14c8c91bdb05ff4ac0080d2acd8740c08596bcb011d1156b76a1767",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "19",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/20-departments.png",
+      "sha256": "5c08bc07035eb269a8d748f08ddc383dd28280a8402df663016c5df492717c42",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "20",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/21-department.png",
+      "sha256": "ea39ea442489d2483efcee7f68db64a10164092930d86b8020ce8c5c5cd76ec2",
+      "pixelSize": [
+        320,
+        1185
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "21",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/22-department-qa.png",
+      "sha256": "9c80262c4d589f8ff881466041055fc94fadd2172f390a10f4c13a21af10b722",
+      "pixelSize": [
+        320,
+        850
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "22",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/23-news.png",
+      "sha256": "69f9898707f5acbcf59ae71a91d9a75fdd33917317cf8e52622713adf4b4ce1a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "23",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/24-article.png",
+      "sha256": "8acf69a79d0f1f53a64ea273b25965a7ddc6164fb33c1b67fe882f145f545c2d",
+      "pixelSize": [
+        320,
+        995
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "24",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/25-calendar.png",
+      "sha256": "135b2caf37d9481779d6fd57758db8e2ef75f0075d24c8d8cd5f0ba643b80338",
+      "pixelSize": [
+        320,
+        947
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "25",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/26-fitness.png",
+      "sha256": "1f07afbf94b5164e72e21a030fd42665504501950bf698c4cee25f3d792f106a",
+      "pixelSize": [
+        320,
+        1271
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "26",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/27-fitness-result.png",
+      "sha256": "e44de377d9bbbefe2d99f5213a62eda35a73fbbfd37f6073e30734d729e49730",
+      "pixelSize": [
+        320,
+        1165
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "27",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/28-advancement.png",
+      "sha256": "f1f8bfed048cee9b3476b5cab2967a603c3e3d2e6ac34855a18aa2d5a1f86bb6",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "28",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/29-clarify.png",
+      "sha256": "040ec9a7f134d9538f5f50fa21abd97b04b7ef3961fe8b6c56322ded036fc8ca",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "29",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/30-answer.png",
+      "sha256": "3ad64bbe723239c90a333dce1a5ea4d509f76bfd4cd396d2ceb411728f18f30d",
+      "pixelSize": [
+        320,
+        1272
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "30",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/31-defense.png",
+      "sha256": "86f39f0d58e5a3fb03e7e3915a35adeb139911dfd39b8ab6ade36ab606e6122b",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "31",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/32-practice.png",
+      "sha256": "2ccc27e9e2c1069a4189a516372e6a26be1c0392b2170638178008eab0399eb4",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "32",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/33-pending.png",
+      "sha256": "b04f8663025757b87d52e87210c52c1edaf9579a82619a2d39126ccbc3aa791a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "33",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/34-feedback.png",
+      "sha256": "f54538e5e2a829063605d77004ece07ed2332d8935cef85b48cd1c4dca49ccbd",
+      "pixelSize": [
+        320,
+        968
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "34",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/35-recap.png",
+      "sha256": "9aa5bae29350dcfad214b4ddf0c3a0502ef9124fdc5dac9fa0e306d5cf5df959",
+      "pixelSize": [
+        320,
+        946
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "35",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/36-empty.png",
+      "sha256": "0f0ffcebf703b10e9e88bd85b18a851f676d0cd4f8815af87dd35ba4cceba83f",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "36",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/37-read-error.png",
+      "sha256": "95f442784c29674a854d07bbcf1354851f53549cbcd84373e4ee931b856f9129",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "37",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/38-import-error.png",
+      "sha256": "6cc9054a8064bc681736f3d2c9bd1f9910be6ddbb784ae779fa5f171949da8f2",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "38",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/39-partial-change.png",
+      "sha256": "ef6c7d13bbf92d37459e9e79575c06e201b47461f21d3442bd2c841ca2867e75",
+      "pixelSize": [
+        320,
+        926
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "39",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/40-expired-plan.png",
+      "sha256": "009754facee02f5884731e4b3f92ac6fe9feeb9cf8f1657cee6ecf9ac7b8f7bd",
+      "pixelSize": [
+        320,
+        845
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "40",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/41-delete.png",
+      "sha256": "a25a156aacea33741bf2f4a135cb0b3e359a171aa38312e3d7c38576f8e80fb5",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "41",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/42-material.png",
+      "sha256": "75f9121af66a903c3a51be0224a5d0e221af867d24a8a36258d25a8cb6df599a",
+      "pixelSize": [
+        320,
+        860
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "42",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/43-ai-unavailable.png",
+      "sha256": "17890d66a7d966b719ad97c02a6d3f7c44dfeb920f5336a3107abed98661a248",
+      "pixelSize": [
+        320,
+        888
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "43",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/44-lost-found.png",
+      "sha256": "365b169661728b02c0c0a1fdf9460bf38d0259199a3777081d7bbc4fc1ec28d0",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "44",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/45-publish.png",
+      "sha256": "f67cc9befef6e90d59f718308aba85d85cbd7d45ca98f033f6f1ed1c6f067267",
+      "pixelSize": [
+        320,
+        1035
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "45",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/46-item.png",
+      "sha256": "69125cb44ffde1a401294ee216fd448d672bb327c28289c8aa426cb1140f4fe3",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "46",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/47-claim.png",
+      "sha256": "b96ecd6889510513b9f4756ec586e9ed73c5aed7ef25407a6e02cd94c9a80418",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "47",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/48-mine.png",
+      "sha256": "e071509b70620f20e097cafaa5533337ee1893d9f47de3e4a14894b8ad6871b9",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "48",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/49-basic-rules.png",
+      "sha256": "0839c5d17dc113dca18b590e930aea0f987b38ecdc8342995dfa043009bf0ca7",
+      "pixelSize": [
+        320,
+        1116
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "49",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/50-claim-review.png",
+      "sha256": "b986f60fff3eea051db8b04c761be218a485ed81b14fc455ab5e410a66990a05",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "50",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/51-full-week.png",
+      "sha256": "247042889b0de817e47f987c0a95ce389591f8b07826b7be712180ca28df13ad",
+      "pixelSize": [
+        320,
+        1241
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "51",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/52-field-error.png",
+      "sha256": "01b73159435cb1efb3eedd4f853bbceeb88029bb70b12497f1e2423dcc096e1a",
+      "pixelSize": [
+        320,
+        971
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "52",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/53-unknown-times.png",
+      "sha256": "15ca76f85366f7c7cdadda8d8600c254c22ae896a0e3f4b5f3ca2b63147a6bed",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "53",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/54-goal-delete.png",
+      "sha256": "15347820110c9bcdaf95c73ef0c0da18a43e88de37ee6b5d4482111291c7e3bb",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "54",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/55-goals-empty.png",
+      "sha256": "b0481bd592023c3724bc1d1540b8989c12db9d99744ddd746e8c8ea37df4af72",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "55",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/56-practice-2.png",
+      "sha256": "828e10ef5e6e3fc40302ff9200741be08a27878f90d0cb7505351108aabe1df9",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "56",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/57-feedback-2.png",
+      "sha256": "49b2b9f8ae681a8d8424abf5365a6bc499335bad22393076b6b6743589cc77c2",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "57",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/58-practice-3.png",
+      "sha256": "c6fc0c371dc499f94025ba68234f73c692046ef86b414d411b24e03fcf801875",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "58",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/59-feedback-3.png",
+      "sha256": "8d160bf1bffee89f02c5cb86260313d84637d8d19ee995f587b14049271695b8",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "59",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/60-reanswer.png",
+      "sha256": "2b95d0f9fe587f2601a1757056fc6d27d90094a86aebb302881d72860236d52b",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "60",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/61-reanswer-result.png",
+      "sha256": "74baf7dff7f82fbe2291331ebda0a7a7c0bc8b720e01931185b0411733a7853a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "61",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/62-exit.png",
+      "sha256": "d7fd40e20342421a1077bd008d22dc8d4130ace0b3e7997026a46a8115320799",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "62",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/63-fitness-missing.png",
+      "sha256": "278a4f2b1f57fc3146a022392b4b86dbd877673990371c12756e54e50379011a",
+      "pixelSize": [
+        320,
+        1266
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "63",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/64-constraint-clarify.png",
+      "sha256": "7ce621be89edace21f30ccd36d6f6743d228e51936bdd500ac4f5b951222894e",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "64",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/65-department-answer.png",
+      "sha256": "39f5eff5b453b82cef2f1491836d1147113ebca7fe2e11eb3b38e3acf50500ca",
+      "pixelSize": [
+        320,
+        848
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "65",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/66-course-detail.png",
+      "sha256": "44d7eea707227eb57afe0d729c9505702b30b757951b9a796cf495844096ba70",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "66",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/67-day-agenda.png",
+      "sha256": "22c93c8473f0e093047f694c5236ca9daca9acb5c89cf77e14aa709e9948ed47",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "67",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/68-draft-edit.png",
+      "sha256": "362c941089dd540e2eadc62e5db7040058610e7acd2b767a0a87c7aa1a275474",
+      "pixelSize": [
+        320,
+        962
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "68",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/69-import-ready.png",
+      "sha256": "7654b0454b9f8ecda7b7cffa32d68222cf905ec162e7a3d59c0427d76669345a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "69",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/70-notice-edit.png",
+      "sha256": "852553209c30cf7e986906a2a4d8a5d05e2e6f8fa7e410b16bed5f3af14dfd3e",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "70",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/71-week-eleven.png",
+      "sha256": "1521e128056b022646aebdd41f2119e232cbaaafd9131b0a80aedc0d606bf54f",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "71",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/72-undo-result.png",
+      "sha256": "5c3c3c97e49b1df5e8c77a769a2a9fcc2219d4a5ff8b1eb4b53b0a39e2d8b294",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "72",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/73-batch-result.png",
+      "sha256": "02221aabeec88697495a20b8369b43b7a746c0e0478acbc0ef985c1779530f36",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "73",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/74-long-course.png",
+      "sha256": "5744078face064d153df0d89a478f788fc00058bdded1238a7691288cf0090a2",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "74",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/75-photo-source.png",
+      "sha256": "b0d19709bae54ea42cc7f17776829608fe51ffb6406c522428a346c6b45eac9d",
+      "pixelSize": [
+        320,
+        859
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "75",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/76-excel-review.png",
+      "sha256": "b55f9633f328f106f2b7ebfb4167491278ba8428181447da6f82bfb8229a76b1",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "76",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/77-practice-record.png",
+      "sha256": "45e216872f31921a2f7a57c9246c05413968046a946af090a71bb0fa53c12d5a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/78-copied-record.png",
+      "sha256": "9c41a3e89ccf0fad44d933adea388fe0f1b0abaeaffe3bb32d27a462909bf146",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "78",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/narrow/79-review-other-course.png",
+      "sha256": "4766e833b338bee645ab5c0c44823e960d2ad880231b2ab3c67b5fb1bdb4ebd2",
+      "pixelSize": [
+        320,
+        932
+      ],
+      "viewportWidth": 320,
+      "type": "narrow full-page",
+      "screenId": "79",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/overview.png",
+      "sha256": "523d4b98420669fe2b7ebcb0610aa429eeb2a8449f2af2560ea14378c64f2f00",
+      "pixelSize": [
+        1512,
+        954
+      ],
+      "viewportWidth": null,
+      "type": "contact sheet",
+      "screenId": null,
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/01-320-bottom.png",
+      "sha256": "23ab961379fce5d4f41bf61156203b6a085a43662c8f9919bfaa7286735d525e",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "01",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/01-390-bottom.png",
+      "sha256": "4e195943310fc4215ef8b1b462f4c0322c93caab270612f816c4a36330b62af3",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "01",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/02-320-bottom.png",
+      "sha256": "0866a1dc3ee920e6fc1e01a0ea9c1da6e33cd6dbfbfad93ae0f1e15aac653183",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "02",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/02-390-bottom.png",
+      "sha256": "05adf715e4135e7565ed4945ea53a44c9f1f3ebf3834c08e6bbd237f5a681209",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "02",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/04-320-confirmation-bottom.png",
+      "sha256": "2335d6f98f7b0e20c532b2f52402d145f2d9ad11698036804415e7028f278c82",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/04-320-expanded-courses.png",
+      "sha256": "4baad1774127ef0a70af42ac708bfcd56ccbb796e0a94c73e1e9e52ffffe9906",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/04-390-confirmation-bottom.png",
+      "sha256": "7177fd27db714d8ccc87d4406b9ef9a230fa1e063dfe205b5099c83c1629a3b3",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/04-390-expanded-courses.png",
+      "sha256": "073866f146851b5a3ce7d0576b7c8fbf256c3be0773490408aec6017b9978980",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "04",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/11-320-bottom.png",
+      "sha256": "bbfdc0c4c2dfd2dad736f80c083ce9d084de78e5ac75aaee9de1019fc86df04a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "11",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/11-390-bottom.png",
+      "sha256": "a7ee14ca4c587eeffc335a23804187d08b21f55d130f58f528cbcb43d40be867",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "11",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/15-320-confirmation-bottom.png",
+      "sha256": "79818081bf59ec73ebfe9b4c74abcebac476fc37155fb04dba46cfd49889f241",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "15",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/15-390-confirmation-bottom.png",
+      "sha256": "be15e8f1acd7e243787f5921ab840cf9db9c2abbbc153c2bf7590be1d82dbd92",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "15",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/16-320-confirmation-bottom.png",
+      "sha256": "2da5e8e837771614ec7da5268dad5a7bbcef08dcae571eba5f5710754d305f6e",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "16",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/16-390-confirmation-bottom.png",
+      "sha256": "3dca0ce8f7793f90394d5422eec94e0703eb8e876bbc5dbd8690a6b37becd525",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "16",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/19-320-bottom.png",
+      "sha256": "1340385394c8e40016dcf6221a958f16673d909764eb68098abf245ccad6783b",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "19",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/19-390-bottom.png",
+      "sha256": "ebf63aca5b7e2492fdd246d3dd7267601a26ea1f6504a824c4972487a96e2190",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "19",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/31-320-confirmation-bottom.png",
+      "sha256": "86f39f0d58e5a3fb03e7e3915a35adeb139911dfd39b8ab6ade36ab606e6122b",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "31",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/31-320-material-two.png",
+      "sha256": "468d3c3fb821b6dd526ff46205ea1e5ec91722a28f066dee0207d73ca48f36f3",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "31",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/31-390-confirmation-bottom.png",
+      "sha256": "8e7daa59b70cc10209017e3ef906a5aa8d171b1f63ed2bc01e298f7529da665a",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "31",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/36-320-bottom.png",
+      "sha256": "05300596bf8baeb49c1d84a82313d49a79d2730def61684cbeb4efcd4a369bda",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "36",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/36-390-bottom.png",
+      "sha256": "3c57c7de358c47e0afd7a7cd3bb2aa55d7f2088e1308f7bc5e229188ec017d48",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "36",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/53-320-bottom.png",
+      "sha256": "15ca76f85366f7c7cdadda8d8600c254c22ae896a0e3f4b5f3ca2b63147a6bed",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "53",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/53-390-bottom.png",
+      "sha256": "41428d4f3119fa6dd5a3da40dabc691e1061aead030f915aec328d0166616cb0",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "53",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/67-320-bottom.png",
+      "sha256": "7ce5f93905c9d90184b560b9f2bfc2c05052945a25fb75315017345f743c8be9",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "67",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/67-320-dates-right.png",
+      "sha256": "52682d92824d06181c938e8bac04f00625dba3576b4217144676074216391cb9",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "67",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/67-390-bottom.png",
+      "sha256": "cbe94e43b01711c55b754c6d95bb7a3bdf09d7c841dc29093d05eef9da6f0396",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "67",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/69-320-confirmation-bottom.png",
+      "sha256": "efd4efa033b1c3e84eeda131aea4fff399dada7660dea0eca3fae99bb3b55f7a",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "69",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/69-390-confirmation-bottom.png",
+      "sha256": "c68050fe54834cb04a900c68e58f961964288e0d01809ac5b25e230180b17e5a",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "69",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/71-320-changed-friday.png",
+      "sha256": "1521e128056b022646aebdd41f2119e232cbaaafd9131b0a80aedc0d606bf54f",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "71",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/71-320-changed-initial.png",
+      "sha256": "1521e128056b022646aebdd41f2119e232cbaaafd9131b0a80aedc0d606bf54f",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "71",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/71-390-changed-initial.png",
+      "sha256": "394140ceeeb9b9c0b688774a9a810e0731d628d115e6200e75e8eb2d4eb9a972",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "71",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/76-320-confirmation-bottom.png",
+      "sha256": "502a9f8e95179b28d4aed1581adafae4e0154cbd97dd0a7b5d7b3c51d1c3e310",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "76",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/76-390-confirmation-bottom.png",
+      "sha256": "fe803ae36a0ec0b6885f0dca78d8e2441f3c1146252ba7b9250ecf55cda4ebd1",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "76",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/77-320-confirmation-bottom.png",
+      "sha256": "a9f1d6f6eb2448c095aad04a88671cf4a2f08cc16dbab0b07d6415bd78dc52e5",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/77-320-record-middle.png",
+      "sha256": "f9430a151d4ff0c29c9554d38a6f27dc49f302ce89e1bf119976191be5fdf642",
+      "pixelSize": [
+        320,
+        844
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/77-390-confirmation-bottom.png",
+      "sha256": "8d69678e98ebab4102ea89db37bb730bda39762b1b6e3ca41aa66cdac3a19a30",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/77-390-record-middle.png",
+      "sha256": "282008080da2bb1e13a86f1415d5d090b1a3195f4861069fcd1ee8fbbf6f1b33",
+      "pixelSize": [
+        390,
+        844
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "77",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-320-left.png",
+      "sha256": "247042889b0de817e47f987c0a95ce389591f8b07826b7be712180ca28df13ad",
+      "pixelSize": [
+        320,
+        1241
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-320-middle.png",
+      "sha256": "d54eb373c15456b2134f507d79e2d4742126d4cfd243967797464d95c53b17a1",
+      "pixelSize": [
+        320,
+        1241
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-320-right.png",
+      "sha256": "73a08572e5476b6b2d1825d353568bcf6f20f621181be77a131d34fa264c9555",
+      "pixelSize": [
+        320,
+        1241
+      ],
+      "viewportWidth": 320,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-390-left.png",
+      "sha256": "d928575cbf3e8464f27a3be2de9cd3d553044e9a41682ca944cdb1e7c3fbe911",
+      "pixelSize": [
+        390,
+        1222
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-390-middle.png",
+      "sha256": "e4f359aa3e5b1ee32e293476aeab9259c340af6417a62b56617effb1190c1ef3",
+      "pixelSize": [
+        390,
+        1222
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    },
+    {
+      "file": "review/scroll/week-390-right.png",
+      "sha256": "b5d349c2b83c20335eba9461eb1a12ee720042246cd1d317b7eff7a1ac7792db",
+      "pixelSize": [
+        390,
+        1222
+      ],
+      "viewportWidth": 390,
+      "type": "scroll state",
+      "screenId": "we",
+      "data": "fictional scenario 2026-11-11; school/department records 2026-09-17/18, policy record 2026-10-03; not refreshed live"
+    }
+  ],
+  "checksSHA256": "6ddab385a168ef00d1262ddae21b56de077787fdda5ccc5ce90fadfeb9174964"
+}

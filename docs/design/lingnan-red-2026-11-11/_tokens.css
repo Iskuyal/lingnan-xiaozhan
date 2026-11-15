@@ -1,0 +1,18 @@
+:root {
+  --brand: #c41c23;
+  --brand-deep: #8c1614;
+  --brand-ink: #7a1a12;
+  --paper: #fdf7f5;
+  --paper-shade: #faeee9;
+  --text: #2b2422;
+  --text-2: #6b5d57;
+  --text-3: #746760;
+  --surface: #ffffff;
+  --line: #ded4cf;
+  --control-line: #aa9990;
+  --success: #147a70;
+  --success-soft: #e8f3f0;
+  --warn: #9a5b1e;
+  --ai: #a67f1c;
+  --ai-soft: #fbf4e2;
+}

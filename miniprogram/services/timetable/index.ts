@@ -177,6 +177,14 @@ export async function updateCourse(id: string, course: CourseInput): Promise<voi
   await callTimetable<{ id: string }>({ action: 'updateCourse', id, course });
 }
 
+/** 指定周次的原子调课：服务端保存原课与拆课，操作编号用于幂等重试和撤销。 */
+export async function applyScopedCourse(id: string, course: CourseInput, expected: CourseInput, requestId: string): Promise<void> {
+  await callTimetable({ action: 'applyScopedChange', id, weeks: course.weeks, course, expected, requestId });
+}
+export async function undoScopedCourse(requestId: string): Promise<void> {
+  await callTimetable({ action: 'undoScopedChange', requestId });
+}
+
 /** 删除一条已保存的课程，返回剩余条数。 */
 export async function deleteCourse(id: string): Promise<number> {
   const result = await callTimetable<{ count: number }>({ action: 'deleteCourse', id });

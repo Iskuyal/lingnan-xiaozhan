@@ -1,141 +1,172 @@
-<view class="page {{step === 'review' ? 'imp-review-page' : ''}}">
-  <!-- 确认页摘要（设计图 13）在页面内；引导/解析/失败态显示页面标题。 -->
-  <block wx:if="{{step !== 'review'}}">
-    <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
-    <view class="section-title">导入课表文件</view>
+<view class="tt2-page {{step === 'review' ? 'imp2-review-page' : ''}}">
+  <!-- 引导（设计图 03）：先选来源，再说清 Excel 要从聊天记录选。 -->
+  <block wx:if="{{step === 'guide'}}">
+    <view class="imp2-steps">
+      <view class="imp2-step on"><text class="imp2-step-num">1</text>选择文件</view>
+      <view class="imp2-step-line"></view>
+      <view class="imp2-step"><text class="imp2-step-num">2</text>核对课程</view>
+      <view class="imp2-step-line"></view>
+      <view class="imp2-step"><text class="imp2-step-num">3</text>保存课表</view>
+    </view>
+    <view class="imp2-hero-title">把课表带进来。</view>
+    <view class="tt2-muted imp2-hero-copy">选择文件或截图，核对后再保存。不用绑定教务账号。</view>
+
+    <view id="choose-file" class="imp2-choice featured" hover-class="pressed" bindtap="chooseFile">
+      <view class="imp2-choice-icon">▤</view>
+      <view class="tt2-grow">
+        <view class="imp2-choice-title">从微信聊天选择 Excel</view>
+        <view class="imp2-choice-sub">支持 .xls、.xlsx 课表文件</view>
+      </view>
+      <text class="tt2-chev">›</text>
+    </view>
+    <view id="choose-photo" class="imp2-choice" hover-class="pressed" bindtap="choosePhoto">
+      <view class="imp2-choice-icon">◎</view>
+      <view class="tt2-grow">
+        <view class="imp2-choice-title">拍照或选择截图</view>
+        <view class="imp2-choice-sub">AI 识别，逐项核对课程</view>
+      </view>
+      <text class="tt2-chev">›</text>
+    </view>
+
+    <view class="tt2-section-title imp2-section">Excel 怎么准备？</view>
+    <view class="tt2-card">
+      <view class="imp2-howto"><text class="imp2-howto-num">01</text><text class="tt2-grow">在教务系统下载自己的课表</text></view>
+      <view class="imp2-howto"><text class="imp2-howto-num">02</text><text class="tt2-grow">发送给微信「文件传输助手」</text></view>
+      <view class="imp2-howto"><text class="imp2-howto-num">03</text><text class="tt2-grow">回到这里，从聊天记录选择</text></view>
+      <view id="file-guide" class="tt2-guide">{{fileGuide}}</view>
+      <view class="tt2-guide tt2-guide-note">{{offlineNote}}</view>
+    </view>
+
+    <view class="tt2-notice info imp2-replace-note">保存前都会显示核对页；重新导入会替换整份已保存课表，包括手工修改。</view>
+    <button id="manual-add" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="goManualAdd">手工添加课程</button>
+    <view id="back-from-import" class="tt2-text-link imp2-back" hover-class="pressed" bindtap="goBack">返回课表</view>
   </block>
 
-  <view wx:if="{{step === 'guide'}}" class="imp-block">
-    <view id="file-guide" class="imp-guide">{{fileGuide}}</view>
-    <view class="imp-guide imp-guide-note">{{offlineNote}}</view>
-    <view class="imp-steps">
-      <view class="imp-step">1. 在教务系统下载课表（.xls 或 .xlsx）</view>
-      <view class="imp-step">2. 把文件发到微信，例如发给「文件传输助手」</view>
-      <view class="imp-step">3. 回到这里点下面的按钮，从聊天记录里选它</view>
+  <!-- 解析中（设计图 04 的等待态）：只说正在做什么，不预支结果。 -->
+  <view wx:elif="{{step === 'parsing'}}" class="tt2-state">
+    <view class="imp2-parsing-icon">◌</view>
+    <text class="tt2-state-title">正在核对课表</text>
+    <text class="tt2-state-copy">{{parsingText}}</text>
+    <view class="imp2-file-pill">已选{{importKind === 'photo' ? '图片' : '文件'}}：{{fileName}}</view>
+    <view class="imp2-progress" wx:if="{{progress > 0}}">
+      <view class="imp2-progress-bar" style="width:{{progress}}%"></view>
     </view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="choose-file" class="home-button" hover-class="pressed" bindtap="chooseFile">从微信聊天记录选择课表文件</button>
-    <view class="imp-guide imp-guide-note">{{photoGuide}}</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="choose-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="choosePhoto">拍照或从相册选择课表截图</button>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+    <text class="tt2-muted" wx:if="{{progress > 0}}">上传进度 {{progress}}%</text>
   </view>
 
-  <view wx:elif="{{step === 'parsing'}}" class="imp-block">
-    <view class="section-title">正在解析</view>
-    <view class="imp-copy">{{parsingText}}</view>
-    <view class="imp-file">已选{{importKind === 'photo' ? '图片' : '文件'}}：{{fileName}}</view>
-    <view class="imp-progress" wx:if="{{progress > 0}}">上传进度 {{progress}}%</view>
+  <!-- 识别失败（设计图 38）：三个出口都给：重试、改用 Excel、手工添加。 -->
+  <view wx:elif="{{step === 'error'}}" class="tt2-state">
+    <view class="tt2-empty-icon">◎</view>
+    <text class="tt2-state-title">{{photoError ? '截图识别未完成' : '导入没有完成'}}</text>
+    <text id="import-error" class="tt2-warn imp2-error">{{errorMessage}}</text>
+    <text class="tt2-state-copy">没有写入任何课表数据；原课表没有被修改。</text>
+    <view class="tt2-card imp2-error-help">
+      <view class="tt2-section-title imp2-small-title">可以这样继续</view>
+      <view class="tt2-muted">重新选择一张清晰、完整的课表截图，或改用 Excel / 手工添加。</view>
+    </view>
+    <view class="tt2-actions">
+      <button wx:if="{{photoError}}" id="retry-photo" class="tt2-btn tt2-btn-primary" hover-class="pressed" bindtap="retryPhoto">重新选择截图</button>
+      <button id="retry-import" class="tt2-btn {{photoError ? 'tt2-btn-secondary' : 'tt2-btn-primary'}}" hover-class="pressed" bindtap="retryChoose">{{photoError ? '改用 Excel 导入' : '重新选择文件'}}</button>
+      <button id="to-manual" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="goManualAdd">手工添加课程</button>
+      <button id="back-from-import" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
+    </view>
   </view>
 
-  <view wx:elif="{{step === 'error'}}" class="imp-block">
-    <view class="section-title">导入没有完成</view>
-    <view id="import-error" class="imp-error">{{errorMessage}}</view>
-    <view class="imp-cap" wx:if="{{capWarning !== ''}}">{{capWarning}}</view>
-    <view class="imp-copy">没有写入任何课表数据；如果问题出在文件本身，可以重新导出后再试。</view>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-import" class="home-button" hover-class="pressed" bindtap="retryChoose">重新选择文件</button>
-    <block wx:if="{{photoError}}">
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
-    </block>
-    <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="back-from-import" class="home-button imp-secondary" hover-class="pressed" bindtap="goBack">返回课表</button>
-  </view>
-
+  <!-- 核对页（设计图 76 / 04 / 69）：每条都有来源与修正入口；替换警告紧邻最终按钮。 -->
   <block wx:else>
-    <!-- 元信息卡：先回答「这是什么文件、解析出多少」，再给按钮。 -->
-    <view class="imp-summary">
-      <view class="eyebrow">导入课表 · 先看解析结果再保存</view>
-      <view class="imp-title">解析完成，请核对</view>
-      <view class="imp-head-meta">{{courseCount}} 门课程 · {{warningCount}} 门待核对 · {{blockedCount}} 门待补全</view>
-      <view class="imp-quiet" wx:if="{{blockedCount > 0}}">补全后才能保存</view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="import-meta-toggle" class="imp-meta-toggle" hover-class="pressed" aria-expanded="{{metaExpanded}}" bindtap="toggleMetaDetails">{{metaExpanded ? '收起文件与解析信息' : '查看文件与解析信息'}}</button>
-      <view wx:if="{{metaExpanded}}" class="imp-rows">
-        <view class="imp-sheet-row" wx:for="{{metaRows}}" wx:key="key">
-          <text class="imp-sheet-key">{{item.key}}</text>
-          <text class="imp-sheet-val">{{item.value}}</text>
-        </view>
-      <view class="imp-summary-line" wx:for="{{metaLines}}" wx:key="*this">{{item}}</view>
-      <view class="imp-head-meta">{{metaLine}}</view>
-      </view>
-      <view class="imp-summary-line imp-problem" wx:if="{{problemsText !== ''}}">{{problemsText}}</view>
+    <view class="imp2-steps">
+      <view class="imp2-step"><text class="imp2-step-num">1</text>选择文件</view>
+      <view class="imp2-step-line"></view>
+      <view class="imp2-step on"><text class="imp2-step-num">2</text>核对课程</view>
+      <view class="imp2-step-line"></view>
+      <view class="imp2-step"><text class="imp2-step-num">3</text>保存课表</view>
     </view>
 
-    <view class="imp-notice">保存会替换当前已保存的课表（含手工添加课程）；确认前不写入，可随时放弃。</view>
+    <view class="imp2-review-head">
+      <text class="imp2-hero-title">{{reviewTitle}}</text>
+      <text class="tt2-tag {{allVerified ? 'success' : 'amber'}}">{{allVerified ? '已核对' : '草稿'}}</text>
+    </view>
+    <text class="tt2-muted">{{originText}}</text>
+    <view wx:if="{{blockedCount > 0}}" class="tt2-notice imp2-pending-note">
+      <text class="imp2-pending-title">还有 {{blockedCount}} 条待补全</text>
+      <text>补齐课程名、星期或节次后才能保存；草稿尚未写入。</text>
+    </view>
+    <view wx:if="{{problemsText !== ''}}" class="tt2-warn">{{problemsText}}</view>
+    <view class="tt2-muted imp2-edit-hint">点「修正」可重新核对任意一条，包括课程名；修正只改草稿，不需要重选文件。</view>
 
-    <!-- 金杠小标题 + 右侧「列表 / 课表」切换（与主页 .seg 同一套写法）。 -->
-    <view class="section-head imp-result-head">
-      <view class="section-bar"></view>
-      <view class="section-title">解析结果</view>
-      <view id="draft-view-switch" class="seg">
-        <view class="seg-item {{draftView === 'list' ? 'seg-item-on' : ''}}" data-mode="list" bindtap="switchView">列表</view>
-        <view class="seg-item {{draftView === 'grid' ? 'seg-item-on' : ''}}" data-mode="grid" bindtap="switchView">课表</view>
-      </view>
+    <view id="draft-view-switch" class="tt2-seg imp2-seg">
+      <view class="tt2-seg-item {{draftView === 'list' ? 'on' : ''}}" data-mode="list" bindtap="switchView">列表</view>
+      <view class="tt2-seg-item {{draftView === 'grid' ? 'on' : ''}}" data-mode="grid" bindtap="switchView">课表</view>
     </view>
 
-    <!-- 列表视图：一门课一张卡（课程色条 + 课程名 + 星期 / 节次 / 周次 / 地点 + 原文 + 修正 / 删除）。 -->
     <block wx:if="{{draftView === 'list'}}">
-      <view id="draft-list" class="imp-list">
+      <view id="draft-list" class="imp2-list">
         <block wx:for="{{items}}" wx:key="index">
-          <view class="imp-card {{item.needsReview ? 'imp-card-review' : ''}}" wx:if="{{item.blocking === ''}}">
-            <view class="imp-card-bar" style="background:{{item.barSolid}}"></view>
-            <view class="imp-card-main">
-              <view class="imp-card-name">{{item.name}}<text wx:if="{{item.needsReview}}" class="imp-chip">待核对</text></view>
-              <view class="imp-card-line">{{item.cardLine}}</view>
-              <view class="imp-card-line" wx:if="{{item.cardNote !== ''}}">{{item.cardNote}}</view>
-              <view class="imp-card-warn" wx:if="{{item.needsReview}}">{{item.warningText}}</view>
-              <view class="imp-card-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
+          <view wx:if="{{item.blocking === ''}}" class="imp2-row {{item.needsReview ? 'review' : ''}}">
+            <view class="imp2-row-top">
+              <view class="tt2-grow">
+                <view class="imp2-row-title">{{item.name}}<text wx:if="{{item.needsReview}}" class="tt2-tag amber imp2-inline-tag">待核对</text><text wx:else class="tt2-tag success imp2-inline-tag">已核对</text></view>
+                <view class="imp2-row-sub">{{item.cardLine}}</view>
+                <view class="imp2-row-sub">{{item.cardNote}}</view>
+              </view>
+              <view class="imp2-row-ops">
+                <button class="imp2-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
+              </view>
             </view>
-            <view class="imp-card-ops">
-              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">修正</button>
-              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">删除</button>
+            <view wx:if="{{item.needsReview}}" class="tt2-warn imp2-row-warn">{{item.warningText}}</view>
+            <view class="imp2-source-toggle" data-index="{{item.index}}" hover-class="pressed" bindtap="toggleSource">
+              <text>对照原文件 · {{item.sourceLabel}}</text><text class="tt2-chev">{{item.sourceOpen ? '⌃' : '⌄'}}</text>
+            </view>
+            <view wx:if="{{item.sourceOpen}}" class="imp2-source-fragment">
+              <view class="imp2-source-head">{{item.sourceLabel}}</view>
+              <view class="imp2-source-raw">原文：{{item.rawText !== '' ? item.rawText : '这条没有可对照的原文（截图识别只给重新表述过的字段）'}}</view>
+              <view class="tt2-muted">{{item.sourceHint}}</view>
+            </view>
+            <view class="imp2-row-foot">
+              <text class="tt2-muted">修正只影响这份草稿</text>
+              <button class="imp2-op danger" hover-class="pressed" data-index="{{item.index}}" bindtap="deleteItem">从草稿删除</button>
             </view>
           </view>
         </block>
-        <view class="imp-quiet" wx:if="{{courseCount === 0}}">草稿里已经没有条目了；可以放弃导入，或重新选择文件。</view>
-      </view>
 
-      <!-- 未识别的行：还不是一门课（缺课程名 / 星期 / 节次），只列原文，补录或跳过。 -->
-      <view class="imp-unrecognized" wx:if="{{blockedCount > 0}}">
-        <view class="imp-unrecognized-head">有 {{blockedCount}} 行没能识别，已留空——可以在这里补录，或先跳过</view>
+        <!-- 未识别的行：缺课程名 / 星期 / 节次，补录或跳过；不猜位置。 -->
         <block wx:for="{{items}}" wx:key="index">
-          <view class="imp-unrecognized-row" wx:if="{{item.blocking !== ''}}">
-            <view class="imp-card-raw" wx:if="{{item.rawText !== ''}}">原文：{{item.rawText}}</view>
-            <view class="imp-quiet" wx:else>这一行没有可核对的原文（截图识别只给重新表述过的字段）</view>
-            <view class="imp-unrecognized-hint">{{item.blocking}}</view>
-            <view class="imp-unrecognized-ops">
-              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-edit" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">补录</button>
-              <button style="margin-left:0;margin-right:0;width:58px;max-width:none" class="imp-op imp-op-del" hover-class="pressed" data-index="{{item.index}}" bindtap="skipItem">跳过</button>
+          <view wx:if="{{item.blocking !== ''}}" class="imp2-blocked-card">
+            <view class="imp2-row-title">{{item.nameMissing ? '课程名未识别' : item.name}}<text class="tt2-tag red imp2-inline-tag">待补全</text></view>
+            <view class="imp2-source-raw">原文：{{item.rawText !== '' ? item.rawText : '这一行没有可核对的原文'}}</view>
+            <view class="tt2-warn">{{item.blocking}}</view>
+            <view class="imp2-row-ops">
+              <button class="imp2-op" hover-class="pressed" data-index="{{item.index}}" bindtap="fixItem">补录</button>
+              <button class="imp2-op danger" hover-class="pressed" data-index="{{item.index}}" bindtap="skipItem">跳过</button>
             </view>
           </view>
         </block>
+        <view wx:if="{{courseCount === 0}}" class="tt2-muted imp2-empty">草稿里已经没有条目了；可以放弃导入，或重新选择文件。</view>
       </view>
-
-      <view class="imp-quiet imp-view-hint" wx:if="{{courseCount > 0}}">课表视图 · 切到课表可以看它落到哪一节，草稿态用虚线框</view>
     </block>
 
-    <!-- 课表视图：同一份草稿落进周网格，草稿一律虚线框；缺节次的条目不猜位置，只给一行说明。 -->
     <block wx:else>
-      <view class="imp-quiet">课表视图按节次落位，不筛周次，也不出现具体时刻（学校作息未核实）；草稿一律虚线框，待核对换成琥珀虚线框。</view>
-      <view class="imp-callout-warn" wx:if="{{gridHintWarn !== ''}}">{{gridHintWarn}}</view>
-      <view class="grid-instruction">左右滑动查看周一至周日，左侧节次保持可见</view>
-      <view id="draft-grid" class="grid-shell">
+      <view class="tt2-muted imp2-grid-hint">课表视图按节次落位，不筛周次，也不出现具体时刻；缺节次的条目不猜位置。</view>
+      <view wx:if="{{gridHintWarn !== ''}}" class="tt2-warn">{{gridHintWarn}}</view>
+      <view id="draft-grid" class="tt2-week-shell">
         <view class="grid-axis">
-          <view class="grid-axis-head">节</view>
-          <view class="grid-no" wx:for="{{draftGridUi.sectionPairs}}" wx:key="label" style="height:{{item.heightPx}}px">{{item.label}}</view>
+          <view class="tt2-axis-head">节</view>
+          <view class="tt2-axis-cell" wx:for="{{draftGridUi.sectionPairs}}" wx:key="label" style="height:{{item.heightPx}}px">{{item.label}}</view>
         </view>
-        <scroll-view class="grid-scroll" scroll-x enhanced show-scrollbar style="height:{{draftGridUi.totalHeightPx}}px">
-          <view class="grid" style="width:{{draftGridUi.widthPx}}px">
-            <view class="grid-row grid-head">
+        <scroll-view class="grid-scroll" scroll-x="{{true}}" enhanced="{{true}}" show-scrollbar="{{true}}" style="height:{{draftGridUi.totalHeightPx}}px">
+          <view class="week-grid" style="width:{{draftGridUi.widthPx}}px">
+            <view class="tt2-grid-head">
               <view class="grid-th" wx:for="{{draftGridUi.columns}}" wx:for-item="column" wx:key="weekday">
-                <view class="grid-th-day">{{column.shortLabel}}</view>
+                <text class="tt2-th-day">{{column.shortLabel}}</text>
               </view>
             </view>
             <view class="grid-cols" style="height:{{draftGridUi.heightPx}}px">
               <view class="grid-col" wx:for="{{draftGridUi.columns}}" wx:for-item="column" wx:key="weekday">
-                <view class="grid-line" wx:for="{{draftGridUi.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
-                <view class="grid-block {{block.needsReview ? 'grid-block-review' : ''}}" wx:for="{{column.blocks}}" wx:for-item="block" wx:key="primaryId"
+                <view class="tt2-grid-line" wx:for="{{draftGridUi.sectionNumbers}}" wx:for-item="line" wx:key="*this"></view>
+                <view class="grid-block {{block.needsReview ? 'changed' : ''}}" wx:for="{{column.blocks}}" wx:for-item="block" wx:key="primaryId"
                   style="top:{{block.topPx}}px;height:{{block.heightPx}}px;left:{{block.laneLeftPercent}}%;width:{{block.laneWidthPercent}}%;--blk-tint:{{block.tint}};--blk-line:{{block.lineColor}};--blk-solid:{{block.solid}}">
-                  <view class="grid-block-name">{{block.name}}</view>
-                  <view class="grid-block-meta" wx:if="{{block.meta !== ''}}">{{block.meta}}</view>
-                  <view class="grid-block-badge" wx:if="{{block.count > 1}}">{{block.count}}</view>
+                  <text class="tt2-block-name">{{block.name}}</text>
+                  <text wx:if="{{block.meta !== ''}}" class="tt2-block-meta">{{block.meta}}</text>
                 </view>
               </view>
             </view>
@@ -144,21 +175,26 @@
       </view>
     </block>
 
-    <!-- 底部动作：主按钮是唯一用品牌红的地方；「保存前不会写入任何数据」紧贴按钮。 -->
-    <view class="imp-actions">
-      <view class="imp-quiet">保存前不会写入任何数据</view>
-      <view class="imp-btn-row">
-        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="confirm-save" class="imp-btn" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">确认保存</button>
-        <button style="margin-left:0;margin-right:0;flex:1;width:0;max-width:none" id="abandon-import" class="imp-btn imp-btn-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
+    <!-- 固定动作区：替换警告紧邻最终按钮；页面底部留出等高的空白，不挡最后一条。 -->
+    <view class="imp2-dock">
+      <view class="imp2-replace-warning">
+        <text class="imp2-replace-title">保存会替换当前已保存的课表</text>
+        <text>已有课程和手工修改都会被替换；保存前不会写入任何数据，确认后才替换。</text>
+      </view>
+      <view class="imp2-dock-actions">
+        <button id="confirm-save" class="tt2-btn tt2-btn-primary" hover-class="pressed" disabled="{{saving}}" bindtap="confirmSave">{{saving ? '正在保存…' : '确认替换整份课表'}}</button>
+        <button id="abandon-import" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="abandon">放弃导入</button>
       </view>
     </view>
 
     <block wx:if="{{isPhoto}}">
-      <view class="imp-guide imp-guide-note">{{reviewExitsNote}}</view>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-retry-photo" class="home-button imp-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-rechoose-file" class="home-button imp-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
-      <button style="margin-left:0;margin-right:0;width:100%;max-width:none" id="review-to-manual" class="home-button imp-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+      <view class="tt2-notice info imp2-photo-note">{{reviewExitsNote}}</view>
+      <view class="tt2-actions">
+        <button id="review-retry-photo" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="retryPhoto">重试识别</button>
+        <button id="review-rechoose-file" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="retryChoose">改为文件导入</button>
+        <button id="review-to-manual" class="tt2-btn tt2-btn-secondary" hover-class="pressed" bindtap="goManualAdd">手工录入课程</button>
+      </view>
     </block>
-    <view class="imp-privacy">{{privacyText}}</view>
+    <view class="imp2-privacy">{{privacyText}}</view>
   </block>
 </view>

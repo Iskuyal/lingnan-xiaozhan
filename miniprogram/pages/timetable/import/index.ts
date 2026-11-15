@@ -75,10 +75,17 @@ interface DraftItemView {
   sectionText: string;
   weekText: string;
   teacherText: string;
-  /** 列表卡的第二行：星期 · 节次 · 周次 · 地点（设计图 13 的 card-line）。 */
+  locationText: string;
+  /** 列表卡的第二行：星期 · 节次 · 周次 · 地点（设计图 76 的 card-line）。 */
   cardLine: string;
   /** 列表卡的第三行：教师与校区 / 场地编号 / 备注。 */
   cardNote: string;
+  /** 原材料到草稿的对应：文件/工作表/大节/星期，或截图识别来源。 */
+  sourceLabel: string;
+  sourceHint: string;
+  sourceOpen: boolean;
+  /** 课程名缺失时明确标出，修正入口仍然可用。 */
+  nameMissing: boolean;
   /** 课程色条的实色：草稿卡的颜色按课程名取（services/timetable/palette.ts）。 */
   barSolid: string;
   needsReview: boolean;
@@ -158,6 +165,9 @@ Page({
     privacyText: FILE_PRIVACY,
     isPhoto: false,
     reviewExitsNote: REVIEW_EXITS_NOTE,
+    reviewTitle: '核对 Excel 课程',
+    originText: '',
+    allVerified: false,
     saving: false,
   },
   /**
@@ -465,6 +475,7 @@ Page({
       this.setData({ step: 'guide', items: [], courseCount: 0, blockedCount: 0, warningCount: 0, draftGrid: EMPTY_GRID, draftGridUi: presentGrid(EMPTY_GRID, true) });
       return;
     }
+    const isPhoto = draft.meta.origin === 'photo';
     const items: DraftItemView[] = draft.courses.map((course: DraftCourse, index: number) => {
       const name = textOr(course.name, UNKNOWN_COURSE_NAME);
       const weekdayText = textOr(weekdayLabel(course.weekday), '星期待核对');
@@ -474,6 +485,15 @@ Page({
       const noteText = [course.campus, course.siteNumber === '' ? '' : `场地编号 ${course.siteNumber}`, course.note]
         .filter((part) => part !== '')
         .join(' · ');
+      const sourceLabel = isPhoto
+        ? [draft.meta.fileName === '' ? '课表截图' : draft.meta.fileName, course.sourceWeekdayLabel, '识别结果']
+          .filter((part) => part !== '').join(' · ')
+        : [
+          draft.meta.fileName === '' ? '导入文件' : draft.meta.fileName,
+          draft.meta.sheetName,
+          course.sourceRowLabel === '' ? '' : `大节 ${course.sourceRowLabel}`,
+          course.sourceWeekdayLabel,
+        ].filter((part) => part !== '').join(' · ');
       return {
         index,
         name,
@@ -481,10 +501,15 @@ Page({
         sectionText,
         weekText,
         teacherText: textOr(course.teacher, '教师未识别'),
-        // 列表卡按「星期 · 节次 · 周次 · 地点」一行读完（设计图 13 的 card-line），
+        locationText,
+        // 列表卡按「星期 · 节次 · 周次 · 地点」一行读完（设计图 76 的 card-line），
         // 教师与校区 / 场地编号 / 备注跟在下一行；原文单独一行，永不省略。
         cardLine: [weekdayText, sectionText, weekText, locationText].filter((part) => part !== '').join(' · '),
         cardNote: [`教师：${textOr(course.teacher, '教师未识别')}`, noteText].filter((part) => part !== '').join(' · '),
+        sourceLabel,
+        sourceHint: isPhoto ? '识别结果可能有误，请对照原图逐条核对。' : '对照原文件的工作表与大节核对；这里只改导入草稿。',
+        sourceOpen: this.data.items[index]?.sourceOpen === true,
+        nameMissing: course.name.trim() === '',
         barSolid: colorAt(colorIndexFor(course.name)).solid,
         needsReview: course.warnings.length > 0,
         warningText: course.warnings.join('；'),
@@ -494,7 +519,6 @@ Page({
     });
     const blocked = items.filter((item) => item.blocking !== '');
     const warningCount = items.filter((item) => item.needsReview).length;
-    const isPhoto = draft.meta.origin === 'photo';
     const placed = buildDraftGrid(draft);
     // 越界（字段齐全、节次落在 1-12 节之外）的条目不在「待补全」口径里，单独说一句，
     // 免得「画不出来」这件事在课表视图里没有任何解释。
@@ -506,6 +530,13 @@ Page({
     this.setData({
       items,
       isPhoto,
+      reviewTitle: isPhoto ? '核对导入结果' : '核对 Excel 课程',
+      originText: [
+        draft.meta.fileName === '' ? (isPhoto ? '课表截图' : '导入文件') : draft.meta.fileName,
+        `${draft.courses.length} 条安排`,
+        warningCount === 0 && blocked.length === 0 ? '已逐条核对' : `${warningCount} 处待核对`,
+      ].join(' · '),
+      allVerified: warningCount === 0 && blocked.length === 0,
       courseCount: draft.courses.length,
       warningCount,
       blockedCount: blocked.length,
@@ -543,6 +574,14 @@ Page({
   },
   toggleMetaDetails() {
     this.setData({ metaExpanded: !this.data.metaExpanded });
+  },
+  /** 原材料 → 草稿的对应：展开/收起一条的来源位置与原文，不改任何字段。 */
+  toggleSource(event: DatasetEvent) {
+    const index = Number(event.currentTarget.dataset.index);
+    if (!Number.isInteger(index)) return;
+    this.setData({
+      items: this.data.items.map((item) => (item.index === index ? { ...item, sourceOpen: !item.sourceOpen } : item)),
+    });
   },
   /** 修正 / 补录：打开这条草稿的编辑表单（草稿态），返回时 onShow 会重新刷新。 */
   fixItem(event: DatasetEvent) {

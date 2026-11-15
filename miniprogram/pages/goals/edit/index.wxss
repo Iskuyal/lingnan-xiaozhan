@@ -1,25 +1,122 @@
-.ge-title { margin:10px 0 22px; font-size:24px; font-weight:700; line-height:1.5; }
-.ge-field { margin-top:18px; }
-.ge-label { margin-bottom:8px; font-size:13px; font-weight:600; }
-.ge-input,.ge-pick { width:100%; min-height:48px; padding:12px 13px; background:#fff; border:1px solid #aa9990; border-radius:7px; font-size:14px; line-height:1.7; }
-.ge-hint { margin-top:7px; color:#746760; font-size:11px; line-height:1.8; }
-.ge-pick { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.ge-pick-value { flex:1; }
-.ge-pick-arrow { font-size:23px; color:#8c1614; }
-.ge-switch-row { display:flex; align-items:center; gap:16px; min-height:52px; padding:12px; background:#fff; border:1px solid #ded4cf; border-radius:8px; }
-.ge-switch-copy { flex:1; font-size:13px; line-height:1.8; }
-.ge-switch { flex:none; width:44px; height:26px; padding:3px; border-radius:16px; background:#aa9990; }
-.ge-knob { width:20px; height:20px; border-radius:50%; background:#fff; }
-.ge-switch-on { background:#8c1614; }
-.ge-switch-on .ge-knob { margin-left:18px; }
-.ge-preview { margin-top:22px; padding:20px 18px; background:#8c1614; border-radius:12px; color:#fff; }
-.ge-preview-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-.ge-preview-name { flex:1; font-size:17px; font-weight:600; }
-.ge-preview-state { font-size:28px; font-weight:700; }
-.ge-preview-meta { margin-top:12px; font-size:12px; }
-.ge-preview .ge-hint { color:#fff; }
-.ge-delete,.ge-cancel { min-height:44px; margin-top:12px; padding:12px; color:#8c1614; font-size:13px; text-align:center; }
-.ge-note { margin-top:16px; }
-.ge-missing { padding-top:38px; }
-.ge-missing-title { font-size:22px; font-weight:700; }
-.ge-missing-copy { margin-top:14px; font-size:13px; line-height:1.9; color:#6b5d57; }
+@import "../../../ui/study/study.wxss";
+
+/* 目标日编辑页（设计稿 13 编辑态 / 54 删除确认）。
+ * 排版、输入框、字段标签、提示、双列按钮全部复用 u2- 与 st- 的既有零件；
+ * 这里只补本页独有的三处：日期选择行、计入当天的开关、预览卡里的名称与状态。 */
+
+/* ── 日期选择行：picker 内部是普通 view，用 st-input 的外观 + 两端对齐 ── */
+.goal-pick {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.goal-pick-value {
+  flex: 1;
+  min-width: 0;
+}
+.goal-pick-arrow {
+  flex: none;
+  color: var(--text-3, #746760);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ── 开关：u2- 与 st- 都没有，按设计稿的自定义开关画 ── */
+.goal-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 50px;
+  padding: 13px 14px;
+  border: 1px solid var(--control-line, #aa9990);
+  border-radius: 12px;
+  background: var(--surface, #ffffff);
+}
+.goal-switch-copy {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.goal-switch {
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: 44px;
+  height: 26px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--control-line, #aa9990);
+}
+.goal-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+}
+.goal-switch-on {
+  background: var(--brand, #c41c23);
+}
+.goal-switch-on .goal-knob {
+  margin-left: 18px;
+}
+
+/* ── 预览卡：白卡，名称在左、剩余天数在右 ── */
+.goal-preview {
+  margin-top: 22px;
+}
+.goal-preview-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.goal-preview-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.goal-preview-state {
+  flex: none;
+  color: var(--brand, #c41c23);
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+.goal-preview-meta {
+  margin-top: 8px;
+  color: var(--text-2, #6b5d57);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ── 提示与底部动作 ── */
+.goal-notice {
+  margin-top: 22px;
+}
+/* 删除是危险动作：文字保持在次级层级，但不抢主按钮的位置。 */
+.goal-danger {
+  color: var(--brand, #c41c23);
+}
+.goal-cancel {
+  display: flex;
+  width: 100%;
+  margin-top: 4px;
+  color: var(--text-2, #6b5d57);
+}
+.goal-note {
+  margin-top: 4px;
+}
+
+@media (max-width: 350px) {
+  .goal-preview-state {
+    font-size: 18px;
+  }
+  .goal-switch-row {
+    gap: 10px;
+  }
+}

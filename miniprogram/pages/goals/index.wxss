@@ -1,19 +1,182 @@
-.goal-title { display:none; }
-.goal-copy,.goal-note { margin-top:12px; color:#746760; font-size:12px; line-height:1.9; }
-.goal-group { margin-top:22px; }
-.goal-group-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.goal-group-note { color:#746760; font-size:11px; }
-.goal-item { margin-top:12px; padding:18px; background:#8c1614; border:1px solid #8c1614; border-radius:12px; color:#fff; }
-.goal-item-expired { background:#fff; border-color:#ded4cf; color:#746760; }
-.goal-item-top { display:flex; align-items:flex-start; gap:12px; justify-content:space-between; }
-.goal-name { flex:1; min-width:0; font-size:17px; font-weight:600; line-height:1.6; }
-.goal-state { flex:none; font-size:27px; line-height:1.3; font-weight:700; }
-.goal-meta { margin-top:12px; font-size:12px; line-height:1.8; }
-.goal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:12px; }
-.goal-action { min-width:64px; min-height:44px; padding:10px 12px; border:1px solid rgba(255,255,255,.55); border-radius:6px; font-size:13px; text-align:center; }
-.goal-item-expired .goal-action { border-color:#b9847c; color:#8c1614; }
-.goal-empty { padding:38px 6px; text-align:center; }
-.goal-empty-mark { width:76px; height:76px; margin:0 auto 18px; border-radius:18px; background:#faeee9; color:#8c1614; font-size:36px; line-height:76px; }
-.goal-empty-title { font-size:22px; font-weight:700; }
-.goal-empty-copy { margin-top:14px; color:#6b5d57; font-size:13px; line-height:1.9; }
-.goal-new { margin-top:22px; }
+@import "../../ui/study/study.wxss";
+
+/* 目标日列表（设计稿 12 常规态 / 55 空态）。
+ * 通用件一律用 styles/ui.wxss 的 u2-；本页只补设计稿里有、u2- 里没有的零件：
+ * 标题行右侧的新建图标键、目标主卡的数字与底部链接、列表项的三键操作行。 */
+
+.goals-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.goals-head-main {
+  flex: 1;
+  min-width: 0;
+}
+/* h1 的第二行：块级子元素自带换行，不用 br（WXML 里 br 会被当普通标签）。 */
+.goals-h1-line {
+  display: block;
+}
+.goals-new {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-top: 2px;
+  border: 1px solid #e4e5e8;
+  border-radius: 12px;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #c41c23);
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* ── 最近一个目标的主卡：u2-hero 提供红底与内边距，数字与名称用 st- ── */
+.goals-hero {
+  margin-top: 20px;
+}
+.goals-hero-today {
+  margin: 14px 0 3px;
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+.goals-hero-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #ffffff40;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+/* ── 已保存计划的白卡（设计稿 12 的第二块） ── */
+.goals-saved {
+  margin-top: 12px;
+}
+.goals-saved-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.goals-saved-main {
+  flex: 1;
+  min-width: 0;
+}
+.goals-tag-ok {
+  flex: none;
+  background: var(--success-soft, #e8f3f0);
+  color: var(--success, #147a70);
+}
+.goals-saved-link {
+  justify-content: flex-start;
+  margin-top: 6px;
+}
+
+/* ── 分组：白卡列表，每组一条 u2-section 标题 ── */
+.goals-group {
+  margin-top: 4px;
+}
+.goal-item {
+  padding: 16px 0;
+}
+.goal-item + .goal-item {
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+.goal-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.goal-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--text, #2b2422);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.goal-state {
+  flex: none;
+}
+.goal-meta {
+  margin-top: 4px;
+  color: var(--text-2, #6b5d57);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.goal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.goal-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+/* 「排学习计划」是这一页的主要动作：浅红底 + 品牌红字。 */
+.goal-action-plan {
+  background: var(--brand-soft, #fff0ef);
+  color: var(--brand, #c41c23);
+  font-weight: 650;
+}
+.goal-action-edit {
+  color: var(--text-2, #6b5d57);
+}
+.goal-action-warn {
+  color: var(--text-3, #746760);
+}
+/* 已过期：整条降到次要层级，但日期与「已过期 N 天」仍然可读。 */
+.goal-item-expired .goal-name {
+  color: var(--text-2, #6b5d57);
+}
+.goal-state-ok {
+  background: var(--success-soft, #e8f3f0);
+  color: var(--success, #147a70);
+}
+
+/* ── 页脚 ── */
+.goals-foot {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft, #ececef);
+}
+.goals-foot-note {
+  display: block;
+}
+.goals-foot-back {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+@media (max-width: 350px) {
+  .goal-name {
+    font-size: 14px;
+  }
+  .goal-actions {
+    gap: 4px;
+  }
+  .goal-action {
+    padding: 0 6px;
+    font-size: 12px;
+  }
+}

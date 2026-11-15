@@ -1,9 +1,11 @@
 {
   "pages": [
     "pages/home/index",
+    "pages/timetable/index",
+    "pages/study/index",
+    "pages/campus/index",
     "pages/departments/index",
     "pages/departments/detail/index",
-    "pages/timetable/index",
     "pages/timetable/import/index",
     "pages/timetable/edit/index",
     "pages/timetable/settings/index",
@@ -17,6 +19,7 @@
     "pages/lost-found/mine/index",
     "pages/goals/index",
     "pages/goals/edit/index",
+    "pages/goals/plan/index",
     "pages/calendar/index",
     "pages/fitness/index",
     "pages/advancement/index",
@@ -26,7 +29,39 @@
     "navigationBarTitleText": "岭南小栈",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#fdf7f5"
+    "backgroundColor": "#f5f6f8"
+  },
+  "tabBar": {
+    "color": "#6b5d57",
+    "selectedColor": "#c41c23",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "今天",
+        "iconPath": "assets/ui-v2/tab-today.png",
+        "selectedIconPath": "assets/ui-v2/tab-today-on.png"
+      },
+      {
+        "pagePath": "pages/timetable/index",
+        "text": "课表",
+        "iconPath": "assets/ui-v2/tab-timetable.png",
+        "selectedIconPath": "assets/ui-v2/tab-timetable-on.png"
+      },
+      {
+        "pagePath": "pages/study/index",
+        "text": "学习",
+        "iconPath": "assets/ui-v2/tab-study.png",
+        "selectedIconPath": "assets/ui-v2/tab-study-on.png"
+      },
+      {
+        "pagePath": "pages/campus/index",
+        "text": "校园",
+        "iconPath": "assets/ui-v2/tab-campus.png",
+        "selectedIconPath": "assets/ui-v2/tab-campus-on.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

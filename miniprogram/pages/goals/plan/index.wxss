@@ -1,0 +1,91 @@
+@import "../../../ui/study/study.wxss";
+
+/* 学习计划页（设计稿 14/15/16/17/18/40/43/49/64）。
+ * 通用件用 styles/ui.wxss 的 u2-，C 专用件用 ui/study/study.wxss 的 st-；
+ * 本文件只补「这一步独有、上面两处都没有」的零件，数值取自 390px 设计稿与 _mockup.css。 */
+
+.gp-gap-top { margin-top: 16px; }
+
+/* 顶部目标日一行：左侧小字说清是哪个目标，右侧可换。 */
+.gp-goal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.gp-goal-kicker { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.gp-goal-switch { flex: none; }
+.gp-goal-list { margin-top: 12px; }
+
+/* 设计稿的 h1 是两行高标题，与 u2-h1 同族；这里只补底部留白。 */
+.gp-hero { margin-bottom: 2px; }
+
+/* 输入区的「只发送这段情况 / 课表不发送」一行。 */
+.gp-note-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; }
+
+/* 提示条里放一个行内链接（查看已保存计划 / 撤回本机计划），保持 44px 触达。 */
+.gp-inline-link { display: inline-flex; }
+
+/* 基础规则的「周六 / 周日 + 上午下午晚间」两行。 */
+.gp-period-row { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0; }
+.gp-period-day { flex: none; min-width: 34px; padding-top: 13px; color: var(--text-2, #6b5d57); font-size: 12px; font-weight: 500; }
+.gp-period-chips { flex: 1; min-width: 0; }
+.gp-switch-row { margin-top: 10px; }
+
+/* 标题与右侧标签一行（设计 16/17/18 的 h1 + tag）。 */
+.gp-row-between { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+/* 约束核对：每条右侧的「修改」。 */
+.gp-constraint-edit { flex: none; align-self: flex-start; }
+
+/* 空态块：设计 43 的图标标题文案居中。 */
+.gp-empty-block { padding-bottom: 10px; }
+
+/* 预览卡：与设计 16 的 plan-stat + 绿勾行同构。 */
+.gp-divider { height: 1px; margin: 16px 0; background: var(--line-soft, #ececef); }
+.gp-check-row { display: flex; align-items: center; gap: 9px; }
+.gp-check-text { color: var(--text-2, #6b5d57); font-size: 12px; line-height: 1.7; }
+
+/* 计划段：节次窗口与学习分钟数是两件事，分开写在题目下面。 */
+.gp-window-note { padding-bottom: 9px; border-bottom: 1px solid var(--line-soft, #ececef); color: var(--text-2, #6b5d57); font-size: 12px; line-height: 1.65; }
+.gp-window-foot { padding-top: 10px; padding-bottom: 0; border-bottom: 0; border-top: 1px solid var(--line-soft, #ececef); }
+.gp-plan-window { display: flex; flex-wrap: wrap; gap: 1px 12px; margin-top: 5px; color: var(--text-2, #6b5d57); font-size: 12px; line-height: 1.65; }
+
+/* 对照本周课表：五列网格 + 行标，沿用旧页面的 50rpx 侧列宽度。 */
+.gp-week { display: grid; grid-template-columns: 50rpx repeat(5, 1fr); gap: 6rpx; margin-top: 14px; font-size: 20rpx; }
+.gp-week-corner { min-height: 34rpx; }
+.gp-week-head { padding: 4rpx 0; color: var(--text-3, #746760); font-size: 21rpx; text-align: center; }
+.gp-week-side { display: flex; align-items: center; justify-content: center; color: var(--text-3, #746760); font-size: 19rpx; }
+.gp-cell { min-height: 77rpx; padding: 6rpx 8rpx; border-radius: 10rpx; line-height: 1.3; overflow: hidden; }
+.gp-cell-busy { background: #e7eef8; color: #2f4f7a; }
+.gp-cell-busy2 { background: #eef3e6; color: #4b6328; }
+.gp-cell-free { border: 2rpx dashed #d9e9e4; }
+.gp-cell-plan { border: 3rpx dashed var(--ai, #a67f1c); background: var(--ai-soft, #fbf4e2); color: var(--ai, #a67f1c); font-weight: 700; }
+
+.gp-legend { display: flex; flex-wrap: wrap; gap: 22rpx; margin-top: 16rpx; color: var(--text-2, #6b5d57); font-size: 21rpx; }
+.gp-legend-item { display: flex; align-items: center; }
+.gp-legend-item::before { content: ""; width: 19rpx; height: 19rpx; margin-right: 8rpx; border-radius: 6rpx; }
+.gp-legend-busy::before { background: #e7eef8; }
+.gp-legend-plan::before { border: 2rpx dashed var(--ai, #a67f1c); background: var(--ai-soft, #fbf4e2); }
+.gp-legend-free::before { border: 2rpx dashed #9fcfc2; }
+
+.gp-weekend { margin-top: 16px; }
+.gp-weekend-line { margin-top: 6rpx; color: var(--ai, #a67f1c); font-size: 22rpx; }
+
+/* 已保存 / 历史快照：保存时逐段核对结果的四态（saved / past / conflict / unknown）。 */
+.gp-tag-ok { background: var(--success-soft, #e8f3f0); color: var(--success, #147a70); }
+.gp-saved-row { padding: 12px 0; border-bottom: 1px solid var(--line-soft, #ececef); }
+.gp-saved-row:last-child { border-bottom: 0; }
+.gp-saved-main { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.gp-saved-label { font-size: 15px; line-height: 1.65; font-weight: 650; overflow-wrap: anywhere; }
+.gp-saved-status { margin-top: 6px; font-size: 12px; line-height: 1.7; color: var(--text-2, #6b5d57); }
+.gp-saved-conflict { color: var(--warn, #9a5b1e); }
+.gp-saved-past { color: var(--text-3, #746760); }
+.gp-saved-unknown { color: var(--text-3, #746760); }
+
+/* 底部两个文字键（换一个安排 / 重新核对约束 / 撤回）。 */
+.gp-link-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.gp-btn-disabled { margin-top: 8px; opacity: 0.5; }
+
+/* 页尾说明。 */
+.gp-page-foot { margin: 20px 0 8px; color: var(--text-3, #746760); font-size: 11px; line-height: 1.8; }
+
+@media (max-width: 350px) {
+  .gp-week { gap: 4rpx; }
+  .gp-card { padding: 16px; }
+}

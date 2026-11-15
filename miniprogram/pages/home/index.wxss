@@ -1,36 +1,11 @@
-.home { min-height:100vh; padding-top:14px; }
-.home-brand { padding:12px 18px; background:var(--brand-deep, #8c1614); }
-.school-logo { display:block; width:100%; max-width:320px; margin:0 auto; }
-.home-intro { margin:16px 0; }
-.home-title { font-family:"Songti SC","STSong","SimSun",serif; font-size:23px; line-height:1.6; font-weight:700; }
-.home-copy { margin-top:4px; font-size:12px; color:var(--text-2, #6b5d57); }
-.home-primary { padding:20px; min-height:112px; color:#fff; border-radius:12px; background:var(--brand, #c41c23); text-align:left; }
-.primary-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.entry-label { font-size:11px; }
-.entry-title { margin-top:6px; font-size:16px; font-weight:700; line-height:1.5; color:var(--text, #2b2422); }
-.entry-description { margin-top:6px; font-size:11px; line-height:1.6; color:var(--text-3, #746760); }
-.home-primary .entry-title { font-size:24px; color:#fff; }
-.home-primary .entry-description { font-size:13px; color:#fff; }
-.primary-symbol { flex:none; display:flex; align-items:center; justify-content:center; width:56px; height:56px; border:1px solid #ed9ba0; border-radius:12px; }
-.primary-symbol .ui-icon { width:30px; height:30px; }
-.entry-pair { display:flex; gap:10px; margin-top:10px; }
-.home-entry { flex:1; width:0; min-width:0; min-height:116px; padding:15px 13px; text-align:left; border:1px solid var(--line, #ded4cf); background:var(--surface, #ffffff); border-radius:10px; }
-.home-entry .entry-description { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.goal-strip-value { margin-top:4px; font-size:12px; font-weight:600; color:var(--brand-deep, #8c1614); }
-.home-wide-entry { padding:12px 0; min-height:76px; border-bottom:1px solid var(--line, #ded4cf); text-align:left; border-radius:0; }
-.entry-row { display:flex; align-items:center; gap:12px; }
-.entry-main { flex:1; min-width:0; }
-.entry-main .entry-title { margin:0; font-size:15px; }
-.entry-main .entry-description { margin-top:4px; font-size:12px; }
-.entry-arrow { color:var(--text-3, #746760); font-size:23px; }
-.news-section { margin-top:24px; }
-.recent-news-item { margin-top:12px; padding:16px; background:var(--surface, #ffffff); border:1px solid var(--line, #ded4cf); border-radius:10px; }
-.recent-title { font-size:16px; font-weight:600; line-height:1.7; }
-.recent-date,.news-source { margin-top:10px; font-size:11px; line-height:1.75; color:var(--text-3, #746760); }
-.news-hint { padding:14px 15px; background:var(--surface, #ffffff); border-left:3px solid var(--line, #ded4cf); font-size:13px; line-height:1.8; }
-.news-hint-error { background:var(--warn-soft, rgba(255,244,228,0.86)); border-color:var(--warn, #9a5b1e); color:var(--warn, #9a5b1e); }
-.school-about { margin-top:24px; }
-.introduction { padding:14px 15px; background:var(--surface, #ffffff); border-left:3px solid var(--line, #ded4cf); font-size:13px; line-height:1.9; }
-.source-area { margin-top:14px; color:var(--text-3, #746760); font-size:11px; line-height:1.8; }
-.home-footer { margin-top:34px; text-align:center; font-size:11px; color:var(--text-3, #746760); }
-@media (max-width:350px) { .home-title { font-size:21px; } .home-brand { padding:10px 14px; } .entry-main .entry-title { font-size:14px; } }
+/* 首页（设计图 01 / 53 / 36）：日期角标、下一节课卡片、四个快捷入口、今日时间线。 */
+.home-hero { margin-top:4px; text-align:left; }
+.home-notice { margin-top:14px; text-align:left; }
+.home-notice-copy { margin-top:6px; }
+.home-notice-button { margin-top:12px; }
+.home-empty { padding:30px 8px 8px; }
+.home-empty .u2-actions { margin-bottom:8px; }
+.home-empty-note { margin-top:18px; text-align:left; }
+.home-loading { margin-top:14px; }
+.u2-quick .u2-quick-item { background:transparent; border:0; }
+.u2-quick .u2-quick-item::after { border:0; }

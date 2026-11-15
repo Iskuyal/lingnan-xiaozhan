@@ -1,0 +1,20 @@
+{
+  "verifiedAt": "2026-11-11T08:48:58.018Z",
+  "status": "failed",
+  "requests": 0,
+  "elapsedMs": null,
+  "source": "我周四没空，周末上午有兼职，每次半小时，听力总拖后腿，一周安排三回。",
+  "goal": "演示英语目标",
+  "rawModelText": "",
+  "result": null,
+  "error": "Uncaught Error: errCode: -1  | errMsg: Cloud API isn't enabled, please call wx.cloud.init first\n请先调用 wx.cloud.init() 完成初始化后再调用其他云 API。",
+  "courseCount": null,
+  "courseWriteActions": 0,
+  "localStorageWrites": 0,
+  "realDevice": false,
+  "boundaries": [
+    "最多一次真实AI业务请求，失败不自动重试",
+    "只发送虚构目标与情况，课表仅由本机规则读取",
+    "没有保存新计划或改写课程；这是功能样例，不是独立质量评测"
+  ]
+}
