@@ -1,5 +1,13 @@
 # 待办总表
 
+## 2026-11-16 r4准备收口
+
+代码合main、仓库改名、三份Word/PDF更新和赛事包准备已完成，见[r4交付](../competition/submission-2026-11-15/README.md)与[材料PR #153](https://github.com/Iskuyal/lingnan-xiaozhan/pull/153)。Release保留为私有草稿，12个附件摘要已核对。本轮没有正式提交、学校交接或回执；负责人如继续提交，应核对当前有效入口、校内节点及实际个人字段，不沿用已过期的预指导表单日期。历史AI质量/时延、320独立复跑及平台交互缺口仍按原记录保留。
+
+## 2026-11-15 main与r4材料续办
+
+负责人现已明确授权最新代码合入main及仓库更名，[PR #152](https://github.com/Iskuyal/lingnan-xiaozhan/pull/152)已完成，仓库为Iskuyal/lingnan-xiaozhan。当前更新[r4文档与提交包](../competition/submission-2026-11-15/README.md)；后续实际待办仍是独立AI质量/时延、320独立复跑及已披露平台交互边界，不因改名、合main或材料准备而视为通过。下面“本轮不自动合main”等段落保留各自日期的历史决定，以本节更新当前授权和状态。
+
 ## 2026-11-15 GitHub任务归档
 
 负责人要求清理GitHub Issues及分支，原 [#5](https://github.com/Iskuyal/wx-match/issues/5)、[#93](https://github.com/Iskuyal/wx-match/issues/93)、[#94](https://github.com/Iskuyal/wx-match/issues/94)、[#147](https://github.com/Iskuyal/wx-match/issues/147) 均按 `not_planned` 归档关闭，原文、评论和失败记录保留。关闭的是旧任务载体，不能据此写成全部验收完成；后续重新启动时按明确的新范围建票。

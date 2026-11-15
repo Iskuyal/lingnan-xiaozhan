@@ -1,0 +1,134 @@
+{
+  "draft": true,
+  "releaseId": 446181849,
+  "tag": "submission-r4-20261116",
+  "releaseUrl": "https://github.com/Iskuyal/lingnan-xiaozhan/releases",
+  "allServerDigestsMatch": true,
+  "assets": [
+    {
+      "id": 751547361,
+      "name": "lingnan-xiaozhan-r4-competition-20261116.zip",
+      "label": "完整参赛包",
+      "bytes": 25082500,
+      "sha256": "5a4b50e037686180be648e2d55df536df9815804ffa6bc0dd6fe4d992f618ed1",
+      "originalFilename": "第九届传智杯-AI小程序赛道-岭南小栈.zip",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547361",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-competition-20261116.zip"
+    },
+    {
+      "id": 751536882,
+      "name": "lingnan-xiaozhan-r4-source-20261116.zip",
+      "label": "源码子包",
+      "bytes": 1124676,
+      "sha256": "cb771de65cb1813e68f994d642cee3b5441f65bf3c762bf25723460fa1a535c8",
+      "originalFilename": "岭南小栈-源码子包.zip",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751536882",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-source-20261116.zip"
+    },
+    {
+      "id": 751536885,
+      "name": "SHA256.txt",
+      "label": "完整包SHA256",
+      "bytes": 121,
+      "sha256": "a31742038d7369be512e7e4fcecca10507d20d80d2756b10ed1fa8ce22c2dd09",
+      "originalFilename": "SHA256.txt",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751536885",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/SHA256.txt"
+    },
+    {
+      "id": 751536853,
+      "name": "package-check.json",
+      "label": "包校验",
+      "bytes": 668,
+      "sha256": "55a2b610ea5b5c57212ff440e2da9104e6f8980b5d74fa73a73317e6a6828693",
+      "originalFilename": "package-check.json",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751536853",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/package-check.json"
+    },
+    {
+      "id": 751536849,
+      "name": "source-version.json",
+      "label": "源码版本",
+      "bytes": 509,
+      "sha256": "d5d1327065fab1f488fc88e4c617bd972be42658c6faaa3af8e3deab31e5119c",
+      "originalFilename": "source-version.json",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751536849",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/source-version.json"
+    },
+    {
+      "id": 751547335,
+      "name": "lingnan-xiaozhan-r4-description.docx",
+      "label": "作品说明Word",
+      "bytes": 452220,
+      "sha256": "0773d09c1a75c2ab381e7e3e4effd3d609981939bf03755caabd832152869785",
+      "originalFilename": "岭南小栈-作品说明.docx",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547335",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-description.docx"
+    },
+    {
+      "id": 751537122,
+      "name": "lingnan-xiaozhan-r4-description.pdf",
+      "label": "作品说明PDF",
+      "bytes": 693121,
+      "sha256": "d64507b4daf0e161bc8346f86f63de6e176a248585ba64e1cbe82e40ff84a32f",
+      "originalFilename": "岭南小栈-作品说明.pdf",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751537122",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-description.pdf"
+    },
+    {
+      "id": 751537154,
+      "name": "lingnan-xiaozhan-r4-runbook.docx",
+      "label": "体验与运行说明Word",
+      "bytes": 96309,
+      "sha256": "7279b0360644bc4137a0e2f1019657c2e8476190a7419b469f2c6648683e896c",
+      "originalFilename": "岭南小栈-体验与运行说明.docx",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751537154",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-runbook.docx"
+    },
+    {
+      "id": 751547336,
+      "name": "lingnan-xiaozhan-r4-runbook.pdf",
+      "label": "体验与运行说明PDF",
+      "bytes": 345761,
+      "sha256": "91c38a84e05d03f2283e8e6528dec53751e3876f975d1200054cd4e854157fe8",
+      "originalFilename": "岭南小栈-体验与运行说明.pdf",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547336",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-runbook.pdf"
+    },
+    {
+      "id": 751547355,
+      "name": "lingnan-xiaozhan-r4-checklist.docx",
+      "label": "提交核对清单Word",
+      "bytes": 40462,
+      "sha256": "6d13383b8dc71e546535f6840193f2114713c1f59b4e133f6337d4c5eaf2fe3b",
+      "originalFilename": "岭南小栈-提交核对清单.docx",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547355",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-checklist.docx"
+    },
+    {
+      "id": 751547350,
+      "name": "lingnan-xiaozhan-r4-checklist.pdf",
+      "label": "提交核对清单PDF",
+      "bytes": 279311,
+      "sha256": "87d4dd6ec31b1e1b5e75c75c8ec1377f6c459a981b7bdcdb7052932db2746af5",
+      "originalFilename": "岭南小栈-提交核对清单.pdf",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547350",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-checklist.pdf"
+    },
+    {
+      "id": 751547434,
+      "name": "lingnan-xiaozhan-r4-native-demo.mp4",
+      "label": "新版原生演示 固定测试响应",
+      "bytes": 4171502,
+      "sha256": "64c45b858021b0682d4846676c551c1f3fa0a3f5f3730929414cc8d0cbde55b9",
+      "originalFilename": "岭南小栈-新版原生流程-固定响应.mp4",
+      "apiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/assets/751547434",
+      "browserDownloadUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/download/untagged-ab3c7de0d91cd804ce48/lingnan-xiaozhan-r4-native-demo.mp4"
+    }
+  ],
+  "archiveNaming": "GitHub sanitized Chinese asset names; ASCII names with Chinese labels are used. Rename the complete ZIP to 第九届传智杯-AI小程序赛道-岭南小栈.zip before formal submission.",
+  "releaseApiUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/446181849",
+  "releaseHtmlUrlAtVerification": "https://github.com/Iskuyal/lingnan-xiaozhan/releases/tag/untagged-ab3c7de0d91cd804ce48",
+  "verifiedAt": "2026-11-15T16:17:37.024Z",
+  "urlScope": "Draft untagged URLs can change on edit; use release list or numeric API endpoint."
+}
