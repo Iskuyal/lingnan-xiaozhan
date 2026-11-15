@@ -1,5 +1,7 @@
 # 项目当前状态
 
+**2026-11-15 最新代码合main与仓库更名**：负责人明确授权后，[PR #152](https://github.com/Iskuyal/lingnan-xiaozhan/pull/152)已将最新审查代码合入main，合并提交 `092f657`。GitHub仓库改为 `Iskuyal/lingnan-xiaozhan`，中文展示名岭南小栈，仍为私有；本地origin已同步新地址。当前正在更新[r4参赛材料](competition/submission-2026-11-15/README.md)，本轮复跑类型检查及1025项测试通过，三份Word/PDF共18页已渲染核对，新版原生固定响应演示已录制；包校验与Release草稿按后续记录收口。没有新增真实业务AI、云部署或赛事提交，下方“不自动合main”保留前一轮决定。
+
 **2026-11-15 GitHub任务与分支清理**：按负责人要求，将 #5、#93、#94、#147 以 `not_planned` 归档关闭，保留正文、讨论和未通过记录；这不表示AI效果、时延或320等剩余验证已经通过，后续实际待办继续见[待办总表](tasks/pending.md)。已整合的10条远端分支和7条本地旧分支清理，保留 `main` 与 `codex/review-ai-experience-20261110`；最新实现仍在审查分支，未自动合main。两个既有worktree和3条stash均保留；API交付前的本地证据提交由本地标签 `archive/lingnan-ui-integration-local-20261115` 保留，其文件树与已合入版本相同。本轮仅整理GitHub与分支，不新增模型调用、部署或参赛提交。
 
 **2026-11-14 岭南红三人交付已集成审查**：公共基础及A/B/C按冻结提交合入 `codex/lingnan-ui-integration-20261114`，无文本冲突。规范/规格分轴审查后修复旧通知提案及迟到回复误应用、写入期间原文锁、基础规则换排丢约束、已有课程跳到新增、tab时钟过期、无课日误报、导航意图及练习复制等问题；产品代码 `8dda8d3` 的类型检查和 **1025/1025测试**通过，最终原生夹具跨模块 **10项检查**通过，A/B/C及目标日扩展回归分别见报告。来源、先红后绿及差异见[审查](review/lingnan-ui-integration-2026-11-14.md)和[独立复跑证据](evidence/lingnan-ui-implementation/integration-2026-11-14/README.md)。本轮向原审查主线交付，不自动合main或关闭#147；未部署、上传或更新参赛包。390逻辑宽度与371像素PNG分开记录，320本轮未独立复跑，真机/真实模型效果不因本轮通过。

@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-本仓库的需求、规格与任务使用 GitHub Issues，通过 `gh` CLI 操作。仓库从 `git remote -v` 获取；在仓库外操作时显式指定 `--repo Iskuyal/wx-match`。
+本仓库的需求、规格与任务使用 GitHub Issues，通过 `gh` CLI 操作。仓库从 `git remote -v` 获取；在仓库外操作时显式指定 `--repo Iskuyal/lingnan-xiaozhan`。
 
 ## 当前执行票的例外
 

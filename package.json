@@ -2,7 +2,7 @@
   "name": "wx-match",
   "version": "0.1.0",
   "private": true,
-  "description": "校园工具微信小程序",
+  "description": "岭南小栈微信原生校园助手",
   "scripts": {
     "docs:check": "node scripts/check-docs.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p cloudfunctions/tsconfig.json",
