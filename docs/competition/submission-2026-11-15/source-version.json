@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "d1de33319a028422b1112078a69e4904ba3a6867",
+  "businessCodeBase": "8dda8d363d88d670bd2d5d0edb432434e47fb35c",
+  "mainCodeMerge": "092f6570d436d7f975e55a81a1fec19d11d719aa",
+  "sourcePayloadSha256": "8a53d7a0f89f58fb170cb1b157de558305a86c3b3dcf4bf6e59846c20de91c66",
+  "sourceFiles": 337,
+  "sourceZipSha256": "cb771de65cb1813e68f994d642cee3b5441f65bf3c762bf25723460fa1a535c8",
+  "submitted": false,
+  "materialVersionDate": "2026-11-15",
+  "packagePreparedDate": "2026-11-16"
+}
