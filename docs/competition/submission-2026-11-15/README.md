@@ -2,7 +2,7 @@
 
 材料版次日期为2026年11月15日，11月16日完成打包及独立解压核对。最新审查代码已由[PR #152](https://github.com/Iskuyal/lingnan-xiaozhan/pull/152)合入main，仓库改名为[lingnan-xiaozhan](https://github.com/Iskuyal/lingnan-xiaozhan)，仍保持私有。
 
-本目录提供新版可编辑作品说明、体验与运行说明、提交核对清单及版本校验记录。25.08MB正式命名ZIP已备齐并上传为[Release草稿附件](https://github.com/Iskuyal/lingnan-xiaozhan/releases/tag/untagged-5c335f8b88bd0c455c0e)，同时输出到本地submission-output/submission-r4-20261116。草稿与仓库均为私有，需要有权限的账号查看。
+本目录提供新版可编辑作品说明、体验与运行说明、提交核对清单及版本校验记录。25.08MB正式命名ZIP已备齐并上传为[Release草稿附件](https://github.com/Iskuyal/lingnan-xiaozhan/releases)，标题为“岭南小栈 r4 参赛准备包 2026-11-16”，同时输出到本地submission-output/submission-r4-20261116。草稿与仓库均为私有，需要有权限的账号查看；使用版本列表入口避免草稿编辑后untagged链接变化。
 
 - 作品说明：[Word](岭南小栈-作品说明.docx) · [PDF](岭南小栈-作品说明.pdf) · [正文](作品说明.md)，12页。
 - 体验与运行：[Word](岭南小栈-体验与运行说明.docx) · [PDF](岭南小栈-体验与运行说明.pdf) · [正文](体验说明.md)，4页。
