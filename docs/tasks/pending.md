@@ -1,5 +1,17 @@
 # 待办总表
 
+## 2026-11-15 GitHub任务归档
+
+负责人要求清理GitHub Issues及分支，原 [#5](https://github.com/Iskuyal/wx-match/issues/5)、[#93](https://github.com/Iskuyal/wx-match/issues/93)、[#94](https://github.com/Iskuyal/wx-match/issues/94)、[#147](https://github.com/Iskuyal/wx-match/issues/147) 均按 `not_planned` 归档关闭，原文、评论和失败记录保留。关闭的是旧任务载体，不能据此写成全部验收完成；后续重新启动时按明确的新范围建票。
+
+实际剩余事项继续保留：
+
+- 岭南红UI：320逻辑宽度独立复测、已披露设计差异及部分键盘/安全区/分享等平台交互边界；三人实现及审查已经由 [PR #150](https://github.com/Iskuyal/wx-match/pull/150) 合入审查分支，1025项回归及原生证据见[审查报告](../review/lingnan-ui-integration-2026-11-14.md)。
+- AI与来源：独立质量和时延、来源范围/冲突样本及检索边界仍未闭环；10-30的E首评7/10、8秒内0/8等历史结果保持原状，本轮没有新增真实评测。
+- 资讯：真实定时日志、多页与采集范围的未闭环项保留；不因清理Issues而宣称已验收。
+
+清理后只保留 `main` 和 `codex/review-ai-experience-20261110` 两条长期留存分支，后者保存最新成果；本轮不自动合main。下面各日期段落里的“保持开放”等描述保留当时状态，由本节更新其GitHub状态。
+
 ## 2026-11-14 三人交付合并审查
 
 A/B/C及公共基础已交付并集成；[审查修补与证据](../review/lingnan-ui-integration-2026-11-14.md)记录1023项回归和原生跨模块检查。当前剩余是320逻辑宽度独立复跑、已披露设计差异和相应平台交互边界；不再将三人的实现列为未开始。Issue #147按这些边界保持开放；本轮只向 `codex/review-ai-experience-20261110` 合并，不自动合main、部署、上传或更新参赛包。下方11-13及更早段落保留当时状态。
