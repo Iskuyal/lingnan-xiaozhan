@@ -6,7 +6,7 @@
 
 - 同步[当前状态](../../status.md)、[待办](../../tasks/pending.md)、[Ticket索引](../../tasks/tickets/README.md)、[Ticket 07](../../tasks/tickets/07-department-ai-qa.md)与[Ticket 09](../../tasks/tickets/09-p6-submission.md)：材料定稿v6.5、代码动画v7，部门独立14题首评仍受核账阻塞。
 - 更新[升学恢复入口](../../tasks/advancement-model-prompt.md)，明确已有修复已合入，无需恢复已删除分支；保持旧失败费用核账与模型预算决策前置。
-- 给[10-03内部稿](../../competition/submission-draft-2026-10-03.md)增加快照说明，同名PDF与原稿正文、源码审查包继续保留当时版本。
+- 给[10-03内部稿](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-draft-2026-10-03.md)增加快照说明，同名PDF与原稿正文、源码审查包继续保留当时版本。
 - 修复开放Issue #4、#5、#6、#24、#90、#91、#92、#111、#112、#115、#116中共22条已删除分支链接。历史收尾证据绑定不可变提交 `b7d1d192ff156e2dfc8652b3169108c8fab185c2`；当前待办链接指向main。#6、#116补入当前材料和验证入口，保留原票范围及前次状态。
 
 ## 状态与证据边界

@@ -200,9 +200,9 @@ G4 的 [deploy/README.md](../project-defense-g4/deploy/README.md) 把 `cli cloud
 
 | 文件 | 内容 |
 | --- | --- |
-| [g5-ppt-outline-2026-10-08.md](../../competition/principal-2026-10-08/g5-ppt-outline-2026-10-08.md) | P01–P10 主讲页（合计 **480 秒**）+ 备用页；逐页「标题 / 要点 / 证据链接 / 停留秒数」，另列「必须由负责人提供」与「不得出现的表述」 |
-| [g5-speaker-script-2026-10-08.md](../../competition/principal-2026-10-08/g5-speaker-script-2026-10-08.md) | 8 分钟讲稿，带时间轴与逐段证据出处；正文（`>` 引用块）**1,710 汉字** ≈ 6 分 50 秒（250 字/分钟）+ 45 秒预录视频 = 7 分 35 秒，留 25 秒余量 |
-| [g5-demo-script-2026-10-08.md](../../competition/principal-2026-10-08/g5-demo-script-2026-10-08.md) | 演示脚本：T-1/T-30 准备、现场一轮逐步表、降级矩阵 A–J、额度预算与「额度已尽」话术、排障口径、演示后记录 |
+| [g5-ppt-outline-2026-10-08.md](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/g5-ppt-outline-2026-10-08.md) | P01–P10 主讲页（合计 **480 秒**）+ 备用页；逐页「标题 / 要点 / 证据链接 / 停留秒数」，另列「必须由负责人提供」与「不得出现的表述」 |
+| [g5-speaker-script-2026-10-08.md](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/g5-speaker-script-2026-10-08.md) | 8 分钟讲稿，带时间轴与逐段证据出处；正文（`>` 引用块）**1,710 汉字** ≈ 6 分 50 秒（250 字/分钟）+ 45 秒预录视频 = 7 分 35 秒，留 25 秒余量 |
+| [g5-demo-script-2026-10-08.md](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/g5-demo-script-2026-10-08.md) | 演示脚本：T-1/T-30 准备、现场一轮逐步表、降级矩阵 A–J、额度预算与「额度已尽」话术、排障口径、演示后记录 |
 
 口径要点（全部按仓库证据）：
 

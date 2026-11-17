@@ -1,6 +1,6 @@
 # AI额度恢复、补录与扩展页复查（2026-10-30）
 
-[完整实际演示视频](../../competition/demo-video-2026-10-30/README.md)已制成；新题评测单独见[冻结与执行记录](../fresh-quality-2026-10-30/README.md)。
+[完整实际演示视频](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/demo-video-2026-10-30/README.md)已制成；新题评测单独见[冻结与执行记录](../fresh-quality-2026-10-30/README.md)。
 
 ## 额度与稳定性
 

@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-17",
+  "businessCodeBase": "8dda8d363d88d670bd2d5d0edb432434e47fb35c",
+  "baseMain": "864565f16691f0117b69b268433e1a998665b123",
+  "businessCodeChanged": false,
+  "typecheckPassed": true,
+  "nodeTests": {"total": 1025, "passed": 1025, "failed": 0, "skipped": 0},
+  "packageUnitTests": {"total": 5, "passed": 5, "failed": 0},
+  "docsCheckPassed": true,
+  "newBusinessAiRequests": 0,
+  "videoContentReviewedByAgent": false,
+  "deployed": false,
+  "submitted": false,
+  "scope": "Repository checks only; independent extracted source subset checks are in package-validation.json. Not device, cloud or AI quality acceptance."
+}

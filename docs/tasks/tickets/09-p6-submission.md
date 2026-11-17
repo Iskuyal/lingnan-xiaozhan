@@ -1,12 +1,12 @@
 # 09：P6 参赛材料与包
 
-**2026-10-30 完成补片与r3交付**：[当前包](../../competition/submission-2026-10-30/r3/README.md)含12页a–g PDF、5分31秒真实AI实录与配音、10张实际截图和13条评委虚构课表。788项测试、独立解压安装/构建、ZIP与PDF检查通过；r1/r2及原NO-GO保留。源码`285811e`与录制版本差别单列。学校上报按负责人关闭、未执行；本票按材料制作范围完成，不提升独立模型效果或宣称赛事已提交。
+**2026-10-30 完成补片与r3交付**：[当前包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/r3/README.md)含12页a–g PDF、5分31秒真实AI实录与配音、10张实际截图和13条评委虚构课表。788项测试、独立解压安装/构建、ZIP与PDF检查通过；r1/r2及原NO-GO保留。源码`285811e`与录制版本差别单列。学校上报按负责人关闭、未执行；本票按材料制作范围完成，不提升独立模型效果或宣称赛事已提交。
 
-**2026-10-30 评委样例补充完成**：[13条虚构课表](../../competition/submission-2026-10-30/judge-timetable/README.md)已制作，解析和保存字段离线验证通过；[r2完整包](../../competition/submission-2026-10-30/r2/README.md)已增加该文件、预期与操作说明，r1及源码/旧媒体保持不变。评委保存会整份替换已有课程，说明中明确使用空白或专用测试账号。本项不调用AI、不写现有课表，AI补片与学校上报状态不变。
+**2026-10-30 评委样例补充完成**：[13条虚构课表](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/judge-timetable/README.md)已制作，解析和保存字段离线验证通过；[r2完整包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/r2/README.md)已增加该文件、预期与操作说明，r1及源码/旧媒体保持不变。评委保存会整份替换已有课程，说明中明确使用空白或专用测试账号。本项不调用AI、不写现有课表，AI补片与学校上报状态不变。
 
-**2026-10-30 正式材料执行补记**：[10页a–g PDF与参赛包](../../competition/submission-2026-10-30/README.md)已制成，源代码冻结`95997fd`，正式命名ZIP约12.37MB；独立解压安装、typecheck、build及ZIP完整性检查通过。两个指定入口已读取，预指导字段及网盘/公开视频要求已单列。学校上报、交接与回执按负责人决定关闭，未实际提交；本票剩余为下一轮AI业务实录补片，不借此关闭AI稳定性或独立效果缺口。
+**2026-10-30 正式材料执行补记**：[10页a–g PDF与参赛包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/README.md)已制成，源代码冻结`95997fd`，正式命名ZIP约12.37MB；独立解压安装、typecheck、build及ZIP完整性检查通过。两个指定入口已读取，预指导字段及网盘/公开视频要求已单列。学校上报、交接与回执按负责人决定关闭，未实际提交；本票剩余为下一轮AI业务实录补片，不借此关闭AI稳定性或独立效果缺口。
 
-**2026-10-30 视频执行补记**：按负责人要求完成[可用功能实际录屏与 AI 配音](../../competition/demo-video-2026-10-29/README.md)：2 分 19 秒、9.41 MB，微信开发者工具连续原速录屏，只加中文 AI 女声。Excel 实际上传/云端解析、草稿修正与放弃、手工新增保存与查看、部门/资讯均入片；临时课程已清理，原有51门课程逐项一致。负责人决定产品内 AI 片段下一轮补录，允许拼接；此前真实查询超时的失败录制保留，当前片无业务模型调用。媒体交付不关闭整张阶段票，正式包和学校上报另计。
+**2026-10-30 视频执行补记**：按负责人要求完成[可用功能实际录屏与 AI 配音](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/demo-video-2026-10-29/README.md)：2 分 19 秒、9.41 MB，微信开发者工具连续原速录屏，只加中文 AI 女声。Excel 实际上传/云端解析、草稿修正与放弃、手工新增保存与查看、部门/资讯均入片；临时课程已清理，原有51门课程逐项一致。负责人决定产品内 AI 片段下一轮补录，允许拼接；此前真实查询超时的失败录制保留，当前片无业务模型调用。媒体交付不关闭整张阶段票，正式包和学校上报另计。
 
 - [x] 可用功能的实际运行视频与 AI 配音（开发者工具，非手机真机）。
 - [x] 产品内AI成功真实流程已补录并直接拼接；保留真实等待、原始失败，无转场动画。
@@ -17,15 +17,15 @@
 
 **Status:** done（r3正式材料、完整实录与包验证完成；学校上报关闭且未执行；独立质量未提升为通过）
 
-**2026-10-23材料续办**：[收尾责任表](../closeout-2026-10-23.md)已列出agent已完成与人工/真实验收待办。d项新增[技术附录](../../competition/technical-appendix-2026-10-23.md)与[运行说明](../../competition/runbook-candidate-2026-10-23.md)，e项新候选收录30张原生离线截图；正式名称、核账/预算、真实业务与真机视频、历史许可和学校回执仍缺，本票保持needs-info。
+**2026-10-23材料续办**：[收尾责任表](../closeout-2026-10-23.md)已列出agent已完成与人工/真实验收待办。d项新增[技术附录](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/technical-appendix-2026-10-23.md)与[运行说明](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/runbook-candidate-2026-10-23.md)，e项新候选收录30张原生离线截图；正式名称、核账/预算、真实业务与真机视频、历史许可和学校回执仍缺，本票保持needs-info。
 
-**2026-10-23 执行补记**：负责人已授权按收尾检查推进。可离线部分由[执行卡](../closeout-2026-10-23.md)承接：[七项新UI候选稿](../../competition/submission-candidate-2026-10-23.md)、[新演示脚本](../../competition/demo-script-2026-10-23.md)和[回归步骤](../../testing/submission-rehearsal-2026-10-23.md)已准备。`e389e6a`独立目录typecheck、767项测试和四份审计通过，包复现与实际结果见[证据](../../evidence/competition-closeout-2026-10-23/README.md)。重启后新原生模拟器离线10项通过并归档30张新截图，初轮EEXIST/RPC失败保留历史；真机仍无设备，AI核账关口未解除。报名/C组/队伍信息和校内节点已有确认，剩余受控填入与交接登记；校徽许可保留具体范围。正式名仍未定，不将本票或候选包标正式完成。
+**2026-10-23 执行补记**：负责人已授权按收尾检查推进。可离线部分由[执行卡](../closeout-2026-10-23.md)承接：[七项新UI候选稿](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-candidate-2026-10-23.md)、[新演示脚本](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/demo-script-2026-10-23.md)和[回归步骤](../../testing/submission-rehearsal-2026-10-23.md)已准备。`e389e6a`独立目录typecheck、767项测试和四份审计通过，包复现与实际结果见[证据](../../evidence/competition-closeout-2026-10-23/README.md)。重启后新原生模拟器离线10项通过并归档30张新截图，初轮EEXIST/RPC失败保留历史；真机仍无设备，AI核账关口未解除。报名/C组/队伍信息和校内节点已有确认，剩余受控填入与交接登记；校徽许可保留具体范围。正式名仍未定，不将本票或候选包标正式完成。
 
-**2026-10-03收尾**：七项[内部完整稿](../../competition/submission-draft-2026-10-03.md)及PDF、v2.1项目展示、源码审查ZIP和干净解压构建已交付，见[证据](../../evidence/agent-closeout-2026-10-03/README.md)。它们不再是空模板任务；正式名称、校内交接、往届成果核实、最终真机视频、最终包与提交回执仍缺，故本票不标done。
+**2026-10-03收尾**：七项[内部完整稿](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-draft-2026-10-03.md)及PDF、v2.1项目展示、源码审查ZIP和干净解压构建已交付，见[证据](../../evidence/agent-closeout-2026-10-03/README.md)。它们不再是空模板任务；正式名称、校内交接、往届成果核实、最终真机视频、最终包与提交回执仍缺，故本票不标done。
 
-**2026-10-07入口更新**：PR #133已归档[当前校长审核材料](../../competition/principal-2026-10-08/README.md)，16页PPT/PDF定稿v6.5，3分54秒v7代码动画配套源码、字幕、试听和讲稿。v2.1、10-03七项内部稿/PDF与源码审查包保留为当时快照；代码动画使用合成数据和固定业务AI响应，不能替代最终真机录屏或正式参赛包。正式材料字段与学校回执仍待负责人。
+**2026-10-07入口更新**：PR #133已归档[当前校长审核材料](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/README.md)，16页PPT/PDF定稿v6.5，3分54秒v7代码动画配套源码、字幕、试听和讲稿。v2.1、10-03七项内部稿/PDF与源码审查包保留为当时快照；代码动画使用合成数据和固定业务AI响应，不能替代最终真机录屏或正式参赛包。正式材料字段与学校回执仍待负责人。
 
-**2026-10-17收尾更新**：57屏全流程UI设计（PR #136）已合入 main，并按负责人确认作为 UI 重写依据；[Issue #137](https://github.com/Iskuyal/wx-match/issues/137) 的 WXML/WXSS 重写本轮收尾未开始。因此 e 项真实界面截图与最终演示视频必须在 UI 重写完成后按新界面重做，v6.5/v7/v8 材料只对应现有界面，不能当作最终提交版。v8 镜头推近候选见[校长审核材料](../../competition/principal-2026-10-08/README.md)。状态与人工前置见[收尾记录](../../evidence/agent-closeout-2026-10-17/README.md)。
+**2026-10-17收尾更新**：57屏全流程UI设计（PR #136）已合入 main，并按负责人确认作为 UI 重写依据；[Issue #137](https://github.com/Iskuyal/wx-match/issues/137) 的 WXML/WXSS 重写本轮收尾未开始。因此 e 项真实界面截图与最终演示视频必须在 UI 重写完成后按新界面重做，v6.5/v7/v8 材料只对应现有界面，不能当作最终提交版。v8 镜头推近候选见[校长审核材料](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/README.md)。状态与人工前置见[收尾记录](../../evidence/agent-closeout-2026-10-17/README.md)。
 
 **2026-10-22 提交准备**：UI 原生重写已由 [PR #139](https://github.com/Iskuyal/wx-match/pull/139) 合入 `main@a35ec6c`，覆盖 16 条在用页面；e 项截图与最终演示视频现须按新界面重做（旧 v6.5/v7/v8 材料对应旧界面）。仓库已收尾为仅 `main`，历史分支与 6 个遗留 worktree 已清理。正式名称、校内交接、最终真机视频、参赛包与学校回执仍缺，本票不标 done。
 

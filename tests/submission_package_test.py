@@ -1,10 +1,20 @@
 """Packaging checks are separate from the application's Node test count."""
 from pathlib import Path
-import importlib.util, unittest
+import hashlib, importlib.util, tempfile, unittest
 SPEC = importlib.util.spec_from_file_location('package_builder', Path(__file__).resolve().parents[1] / 'scripts/build-competition-package.py')
 builder = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(builder)
 
 class SubmissionPackageTests(unittest.TestCase):
+    def test_video_must_match_owner_approved_bytes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            video = Path(folder) / 'latest.mp4'
+            video.write_bytes(b'owner supplied video')
+            approval = {'ownerApproved': True, 'sha256': hashlib.sha256(video.read_bytes()).hexdigest()}
+            self.assertEqual(builder.approved_video_bytes(video, approval), video.read_bytes())
+            video.write_bytes(b'obsolete video')
+            with self.assertRaises(ValueError): builder.approved_video_bytes(video, approval)
+            approval['ownerApproved'] = False
+            with self.assertRaises(ValueError): builder.approved_video_bytes(video, approval)
     def test_rejects_escape_and_absolute_members(self):
         for name in ['../outside.txt', '/tmp/key', 'C:/Users/x/key', '源代码/../../outside', '源代码\\file']:
             with self.subTest(name=name): self.assertFalse(builder.safe_member(name))

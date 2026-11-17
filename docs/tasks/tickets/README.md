@@ -1,6 +1,6 @@
 # 执行 Ticket 状态索引
 
-2026-10-30：[Ticket 09](09-p6-submission.md)的材料制作范围已完成，含[r3正式包](../../competition/submission-2026-10-30/r3/README.md)、12页PDF与完整真实AI实录；学校上报/回执关闭且未执行。独立质量与时延按其他票保留，真机、Figma、人工原始材料等沿用负责人关闭决定。下表为10-22历史核对，不得据此重开已关闭任务；当前事项见[待办](../pending.md)，GitHub早前逐票状态见[核对](../../competition/submission-2026-10-30/issues-audit.md)。
+2026-10-30：[Ticket 09](09-p6-submission.md)的材料制作范围已完成，含[r3正式包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/r3/README.md)、12页PDF与完整真实AI实录；学校上报/回执关闭且未执行。独立质量与时延按其他票保留，真机、Figma、人工原始材料等沿用负责人关闭决定。下表为10-22历史核对，不得据此重开已关闭任务；当前事项见[待办](../pending.md)，GitHub早前逐票状态见[核对](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/issues-audit.md)。
 
 2026-09-18 起由负责人确认的拆分，共 11 票；2026-10-17 收尾补入 1 张 9 月历史补票，共 12 票。编号用于引用；开工顺序由实现依赖和决策关卡共同决定。票内保留阶段过程与当时测试数字；**跨票代码、部署、验收口径统一见[项目状态](../../status.md)**，不得从早期失败描述推断当前代码仍失败。
 

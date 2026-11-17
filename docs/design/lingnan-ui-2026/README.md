@@ -1,6 +1,6 @@
 # 岭南校园工具 · 全流程 UI 设计提案
 
-2026-10-30收尾：本地57屏与16页原生实现均保留已交付状态；负责人明确不需要Figma同步，#135剩余远端同步按不再计划关闭，未补造远端57屏或真机结果。下方10-17的额度与“待同步”描述保留历史，当前状态见[正式材料与Issues核对](../../competition/submission-2026-10-30/issues-audit.md)。
+2026-10-30收尾：本地57屏与16页原生实现均保留已交付状态；负责人明确不需要Figma同步，#135剩余远端同步按不再计划关闭，未补造远端57屏或真机结果。下方10-17的额度与“待同步”描述保留历史，当前状态见[正式材料与Issues核对](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/issues-audit.md)。
 
 设计日期：2026-10-16；数值校核与收尾：2026-10-17。状态：**负责人已确认本设计（2026-10-17，见 [Issue #137](https://github.com/Iskuyal/wx-match/issues/137)）；WXML/WXSS 已按本稿重写，见[实现与验证](../../evidence/lingnan-ui-2026-10-17/README.md)。Figma 为 44 屏初稿，额度受限，尚未同步修订。本地修订 PNG/HTML 是实现依据；设计稿本身仍是静态证据。**
 

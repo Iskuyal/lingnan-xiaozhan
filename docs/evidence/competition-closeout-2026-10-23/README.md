@@ -29,10 +29,10 @@
 
 **本轮只读云包回读**：[cloud-readback.json](cloud-readback.json)记录ai/timetable/newsSync下载副本与候选构建的根文件哈希。唯一根文件差异均为package-lock.json；其余分别21/21、6/6、7/7一致。三份远端锁文件记录follow-redirects 1.16.0，下载包的node_modules实际包版本为1.16.1。保留该不一致，不直接断言线上仍运行旧版，也不关闭锁文件同步。本轮未部署、未触发定时任务或业务模型；下载原包含依赖，仅留私有artifacts，不放进参赛ZIP。
 
-2026-10-23续办补充：[技术附录](../../competition/technical-appendix-2026-10-23.md)已补系统/页面结构图、16条在用路由与4段固定commit代码讲解；[包内运行配置说明](../../competition/runbook-candidate-2026-10-23.md)已补安装、AppID/云环境、三条函数、集合权限、AI配置名称及失败排查。两张1200px文档图渲染无横向溢出并已查看。页面数据取自app.json及各页JSON，代码节选逐字来自e389e6a；没有改变业务代码。新候选将本轮30张原生离线截图全量收录，保留r4及此前包，不附旧动画充当最终视频。
+2026-10-23续办补充：[技术附录](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/technical-appendix-2026-10-23.md)已补系统/页面结构图、16条在用路由与4段固定commit代码讲解；[包内运行配置说明](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/runbook-candidate-2026-10-23.md)已补安装、AppID/云环境、三条函数、集合权限、AI配置名称及失败排查。两张1200px文档图渲染无横向溢出并已查看。页面数据取自app.json及各页JSON，代码节选逐字来自e389e6a；没有改变业务代码。新候选将本轮30张原生离线截图全量收录，保留r4及此前包，不附旧动画充当最终视频。
 
-- [七项作品说明](../../competition/submission-candidate-2026-10-23.md)：新UI、能力/部署/效果边界、具体流程比较、来源许可与后续计划。
-- [演示脚本](../../competition/demo-script-2026-10-23.md)：以截图识别/课表助手业务主线说明AI价值，计划镜头未当作录制成果。
+- [七项作品说明](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-candidate-2026-10-23.md)：新UI、能力/部署/效果边界、具体流程比较、来源许可与后续计划。
+- [演示脚本](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/demo-script-2026-10-23.md)：以截图识别/课表助手业务主线说明AI价值，计划镜头未当作录制成果。
 - [回归与录屏步骤](../../testing/submission-rehearsal-2026-10-23.md)：取消、确认、失败恢复、设备/云版与原始结果字段。
 - [收尾执行卡](../../tasks/closeout-2026-10-23.md)：按Ticket 09跟踪，并保留人工及真实调用停止关口。
 
