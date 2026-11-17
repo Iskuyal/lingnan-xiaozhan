@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-17",
+  "draft": true,
+  "releaseId": 448253086,
+  "tag": "submission-latest-20261117",
+  "releaseEntry": "https://github.com/Iskuyal/lingnan-xiaozhan/releases",
+  "apiReleaseUrl": "https://api.github.com/repos/Iskuyal/lingnan-xiaozhan/releases/448253086",
+  "allServerDigestsMatch": true,
+  "assets": [
+    {
+      "id": 757962492,
+      "name": "lingnan-xiaozhan-latest-competition-20261117.zip",
+      "label": "完整参赛提交包",
+      "bytes": 4866064,
+      "sha256": "8e9e05ea8c1ece574b9501198c4779343147740a8aaad6bab863e13ee0e792a2",
+      "originalFilename": "第九届传智杯-AI小程序赛道-岭南小栈.zip"
+    },
+    {
+      "id": 757962471,
+      "name": "lingnan-xiaozhan-latest-source-20261117.zip",
+      "label": "源码子包",
+      "bytes": 1145659,
+      "sha256": "ee65579568bcba8b43c80e9c4b4c3070f56f991742a6ae66f6e63642350d6ec0",
+      "originalFilename": "岭南小栈-源码子包.zip"
+    },
+    {
+      "id": 757962469,
+      "name": "SHA256.txt",
+      "label": "完整包SHA256",
+      "bytes": 121,
+      "sha256": "852b273d9af0a43bedebdad417565aaaab546795d20321d011e005b2d8d3cac8",
+      "originalFilename": "SHA256.txt"
+    },
+    {
+      "id": 757962478,
+      "name": "package-check.json",
+      "label": "包校验",
+      "bytes": 587,
+      "sha256": "3a5c1bd5f2621b45a07dfe3a9d32e8b5728b28a7f0cacdf2b286a35b5279a270",
+      "originalFilename": "package-check.json"
+    },
+    {
+      "id": 757962494,
+      "name": "source-version.json",
+      "label": "源码版本",
+      "bytes": 509,
+      "sha256": "6c67a9deec0284659aaadbdb9675d28c1a6ff87b0cd5597cf371c7a34bc8e6fe",
+      "originalFilename": "source-version.json"
+    },
+    {
+      "id": 757962526,
+      "name": "lingnan-xiaozhan-latest-description.docx",
+      "label": "作品说明Word",
+      "bytes": 45634,
+      "sha256": "a3409b1791492f6fa3f4ab51f243d06d75fb81906fadea05782750bcc47596b2",
+      "originalFilename": "岭南小栈-作品说明.docx"
+    },
+    {
+      "id": 757962534,
+      "name": "lingnan-xiaozhan-latest-description.pdf",
+      "label": "作品说明PDF",
+      "bytes": 385105,
+      "sha256": "cff1d1d7e29239200d92bac9666d5725891a6854c7e628befe22d55c3031c844",
+      "originalFilename": "岭南小栈-作品说明.pdf"
+    },
+    {
+      "id": 757962561,
+      "name": "lingnan-xiaozhan-latest-runbook.docx",
+      "label": "体验与运行说明Word",
+      "bytes": 41754,
+      "sha256": "61206e86bfa7732e0700ee11318da55431b1bd483021962652a9c1bf6aa2ddc6",
+      "originalFilename": "岭南小栈-体验与运行说明.docx"
+    },
+    {
+      "id": 757962545,
+      "name": "lingnan-xiaozhan-latest-runbook.pdf",
+      "label": "体验与运行说明PDF",
+      "bytes": 312574,
+      "sha256": "163e8669f35474dd5d812c142bbafa7dd0fa4d162b92eecd0a3f93c77513d62c",
+      "originalFilename": "岭南小栈-体验与运行说明.pdf"
+    },
+    {
+      "id": 757962562,
+      "name": "lingnan-xiaozhan-latest-checklist.docx",
+      "label": "提交核对清单Word",
+      "bytes": 40480,
+      "sha256": "2fe575d69d5231a6dcc03c4a4bda44a9d9002ef9cbd5d12b2ea902323ddc7de5",
+      "originalFilename": "岭南小栈-提交核对清单.docx"
+    },
+    {
+      "id": 757962568,
+      "name": "lingnan-xiaozhan-latest-checklist.pdf",
+      "label": "提交核对清单PDF",
+      "bytes": 278324,
+      "sha256": "3de43d52ffe57cfa927f04b74562059c5bee1068547632b3e42e558e36e8e3f8",
+      "originalFilename": "岭南小栈-提交核对清单.pdf"
+    },
+    {
+      "id": 757962584,
+      "name": "lingnan-xiaozhan-latest-demo.mp4",
+      "label": "负责人确认的最新演示视频",
+      "bytes": 2834592,
+      "sha256": "887d189587b498790b5575fab6b40ab3b4dccc32d2a21682f6d824607584c052",
+      "originalFilename": "岭南小栈-功能演示.mp4"
+    }
+  ],
+  "archiveNaming": "GitHub附件使用英文名和中文标签。正式提交请将完整ZIP改名为 第九届传智杯-AI小程序赛道-岭南小栈.zip。",
+  "submitted": false
+}

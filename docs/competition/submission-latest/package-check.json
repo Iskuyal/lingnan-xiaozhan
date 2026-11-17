@@ -1,0 +1,16 @@
+{
+  "file": "第九届传智杯-AI小程序赛道-岭南小栈.zip",
+  "bytes": 4866064,
+  "sha256": "8e9e05ea8c1ece574b9501198c4779343147740a8aaad6bab863e13ee0e792a2",
+  "sourceCommit": "0bc57424f149704131ed316e972df228e6c63900",
+  "sourcePayloadSha256": "3e98b870ca164f45d56fce4438eeb0e7eea6dc1b4e9b8cc3bd8777e6d3d57078",
+  "sourceFiles": 337,
+  "payloadFiles": 358,
+  "crcPassed": true,
+  "allPayloadHashesVerified": true,
+  "pathFilterPassed": true,
+  "sourceCredentialPatternScanPassed": true,
+  "under300MB": true,
+  "packagePrepared": true,
+  "submitted": false
+}

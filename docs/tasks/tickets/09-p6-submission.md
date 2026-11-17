@@ -1,5 +1,7 @@
 # 09：P6 参赛材料与包
 
+**2026年11月17日最新版交付**：[当前唯一材料入口](../../competition/submission-latest/README.md)采用负责人已确认的视频，原样收录且不再审查内容。三份Word/PDF共15页、337文件源码子包、虚构输入及4,866,064字节正式ZIP完成；1025项仓库测试、5项打包用例、文档检查和独立解压安装/类型/构建通过。源码 `0bc57424f149704131ed316e972df228e6c63900`，包内仅一个视频且哈希与负责人原件一致。旧预提交交付件及旧r4 Release移除，新私有草稿12个附件摘要已核对；[PR #154](https://github.com/Iskuyal/lingnan-xiaozhan/pull/154)记录本次更新。材料制作范围完成，未执行赛事提交，未新增真实业务AI请求。以下为历史记录。
+
 **2026-10-30 完成补片与r3交付**：[当前包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/r3/README.md)含12页a–g PDF、5分31秒真实AI实录与配音、10张实际截图和13条评委虚构课表。788项测试、独立解压安装/构建、ZIP与PDF检查通过；r1/r2及原NO-GO保留。源码`285811e`与录制版本差别单列。学校上报按负责人关闭、未执行；本票按材料制作范围完成，不提升独立模型效果或宣称赛事已提交。
 
 **2026-10-30 评委样例补充完成**：[13条虚构课表](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/judge-timetable/README.md)已制作，解析和保存字段离线验证通过；[r2完整包](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/submission-2026-10-30/r2/README.md)已增加该文件、预期与操作说明，r1及源码/旧媒体保持不变。评委保存会整份替换已有课程，说明中明确使用空白或专用测试账号。本项不调用AI、不写现有课表，AI补片与学校上报状态不变。
