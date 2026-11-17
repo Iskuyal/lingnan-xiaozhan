@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-17",
+  "packageSha256": "8e9e05ea8c1ece574b9501198c4779343147740a8aaad6bab863e13ee0e792a2",
+  "packageBytes": 4866064,
+  "sourceCommit": "0bc57424f149704131ed316e972df228e6c63900",
+  "singleLatestVideo": true,
+  "videoBytesMatchOwnerOriginal": true,
+  "videoContentReviewed": false,
+  "sourceGitBytesMatched": true,
+  "allCurrentDocumentsMatched": true,
+  "allPayloadHashesVerified": true,
+  "noObsoleteDeliveryMembers": true,
+  "releaseAssetsVerified": 12,
+  "submitted": false,
+  "passed": true
+}

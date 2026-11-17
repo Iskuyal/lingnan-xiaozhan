@@ -1,6 +1,6 @@
 # 校长审核动画 v8：镜头推近、批注与结果核对
 
-2026-10-10。状态：**自审，待负责人评审**。仅用于展示动画的画面版式，不修改实际小程序页面或业务接口；画面中的手机界面是代码复现的合成示例，不是真机或云端截图。动画已按本版式实现并渲染为[v8候选成片](../../competition/principal-2026-10-08/README.md)，实现见[product-demo](../../competition/principal-2026-10-08/product-demo/README.md)；成片未整片连续观看，不代表评审通过。
+2026-10-10。状态：**自审，待负责人评审**。仅用于展示动画的画面版式，不修改实际小程序页面或业务接口；画面中的手机界面是代码复现的合成示例，不是真机或云端截图。动画已按本版式实现并渲染为[v8候选成片](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/README.md)，实现见[product-demo](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/product-demo/README.md)；成片未整片连续观看，不代表评审通过。
 
 ## 为什么改
 

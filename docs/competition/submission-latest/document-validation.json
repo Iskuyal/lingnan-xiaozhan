@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-17",
+  "renderer": "packaged render_docx.py with Windows Microsoft Word COM conversion adapter and bundled Poppler",
+  "initialRendererIssue": "LibreOffice executable unavailable; Windows native Word used instead",
+  "documents": [
+    {
+      "docx": "岭南小栈-作品说明.docx",
+      "pdf": "岭南小栈-作品说明.pdf",
+      "pages": 9,
+      "docxSha256": "a3409b1791492f6fa3f4ab51f243d06d75fb81906fadea05782750bcc47596b2",
+      "pdfSha256": "cff1d1d7e29239200d92bac9666d5725891a6854c7e628befe22d55c3031c844",
+      "renderedPagesVisuallyReviewed": true
+    },
+    {
+      "docx": "岭南小栈-体验与运行说明.docx",
+      "pdf": "岭南小栈-体验与运行说明.pdf",
+      "pages": 4,
+      "docxSha256": "61206e86bfa7732e0700ee11318da55431b1bd483021962652a9c1bf6aa2ddc6",
+      "pdfSha256": "163e8669f35474dd5d812c142bbafa7dd0fa4d162b92eecd0a3f93c77513d62c",
+      "renderedPagesVisuallyReviewed": true
+    },
+    {
+      "docx": "岭南小栈-提交核对清单.docx",
+      "pdf": "岭南小栈-提交核对清单.pdf",
+      "pages": 2,
+      "docxSha256": "2fe575d69d5231a6dcc03c4a4bda44a9d9002ef9cbd5d12b2ea902323ddc7de5",
+      "pdfSha256": "3de43d52ffe57cfa927f04b74562059c5bee1068547632b3e42e558e36e8e3f8",
+      "renderedPagesVisuallyReviewed": true
+    }
+  ],
+  "totalPages": 15,
+  "titleParagraphBordersRemoved": true,
+  "allPagesVisuallyReviewed": true,
+  "layoutFixes": [
+    "removed inherited blue title border",
+    "separated long source labels from paths",
+    "relaxed checklist body spacing"
+  ],
+  "passed": true
+}

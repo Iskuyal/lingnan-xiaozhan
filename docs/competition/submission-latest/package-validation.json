@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "0bc57424f149704131ed316e972df228e6c63900",
+  "sourcePayloadSha256": "3e98b870ca164f45d56fce4438eeb0e7eea6dc1b4e9b8cc3bd8777e6d3d57078",
+  "sourceFiles": 337,
+  "allExtractedSourceHashesVerified": true,
+  "extractedDirectory": ".scratch/submission-latest-source-check-1794897875",
+  "commands": [
+    {
+      "command": "npm ci --ignore-scripts --prefer-offline --no-audit --fund=false",
+      "exitCode": 0,
+      "seconds": 5.68
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "seconds": 2.74
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "seconds": 3.11
+    }
+  ],
+  "passed": true,
+  "scope": "clean extracted source subset install/typecheck/build and packaged-runtime probes; not full repository tests, deployment, real model or device acceptance",
+  "runtimeProbe": {
+    "parsedJudgeCourses": 13,
+    "judgeDraftWarnings": 0,
+    "noticeRequestGuard": true,
+    "noticeApplyingGuard": true,
+    "previewReadout": true,
+    "department-corpus.js": true,
+    "advancement-corpus.js": true,
+    "defense-materials.js": true
+  }
+}

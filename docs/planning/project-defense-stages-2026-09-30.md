@@ -56,7 +56,7 @@ G4：新题首次判定单列；正确率≥80%，反馈引用支持100%，未�
 
 09-30完成方案、任务与PPT首版；10-01至10-02执行G0并在配额许可后启动G1；10-02至10-04在关口通过后推进G2/G3；10-05冻结并做G4真机；10-06至10-07更新G5素材和演练；10-08汇报。日期是倒排建议，依赖未解除不强行标完成。
 
-第一阶段交接：[G0开始提示词](../tasks/project-defense-g0-prompt.md)。第一版汇报入口见[授权演示材料](../competition/principal-2026-10-08/README.md)。
+第一阶段交接：[G0开始提示词](../tasks/project-defense-g0-prompt.md)。第一版汇报入口见[授权演示材料](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/README.md)。
 
 ## GitHub任务
 

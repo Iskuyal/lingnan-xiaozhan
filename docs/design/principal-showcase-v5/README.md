@@ -44,4 +44,4 @@ v4基线的问题：每章以大标题和手机为主，用途与步骤已有表
 
 静态HTML先于材料改版制作，并用`node scripts/render-mockups.mjs docs/design/principal-showcase-v5 --width 1600 --scale 1`渲染。PNG是可见版式依据，代码演示的操作与结果仍需浏览器检查和成片核对。
 
-当前材料已制作并修订，执行与独立静态评审见[验证记录](../../competition/principal-2026-10-08/validation-v5.md)。展示材料可供负责人审阅，不将此记录标为真实小程序界面定稿或真机验收。
+当前材料已制作并修订，执行与独立静态评审见[验证记录](https://github.com/Iskuyal/lingnan-xiaozhan/blob/864565f16691f0117b69b268433e1a998665b123/docs/competition/principal-2026-10-08/validation-v5.md)。展示材料可供负责人审阅，不将此记录标为真实小程序界面定稿或真机验收。

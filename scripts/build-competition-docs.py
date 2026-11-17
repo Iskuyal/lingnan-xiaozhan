@@ -1,4 +1,4 @@
-"""Build the three editable r4 documents from their checked-in Markdown sources."""
+"""Build the three editable latest documents from their checked-in Markdown sources."""
 from pathlib import Path
 import re
 from datetime import datetime, timezone
@@ -10,8 +10,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'docs/competition/submission-2026-11-15'
-EVIDENCE = ROOT / 'docs/evidence/lingnan-ui-implementation/integration-2026-11-14'
+OUT = ROOT / 'docs/competition/submission-latest'
 
 def font(run, size=11, bold=False, east='SimSun'):
     run.font.name = 'Arial'
@@ -67,15 +66,6 @@ def table(doc, rows):
             repeat = OxmlElement('w:tblHeader'); row._tr.get_or_add_trPr().append(repeat)
     doc.add_paragraph().paragraph_format.space_after = Pt(1)
 
-def pictures(doc, paths, caption, width=2.08):
-    p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    for i, relative in enumerate(paths):
-        if i: p.add_run('    ')
-        image = p.add_run().add_picture(str(EVIDENCE / relative), width=Inches(width))
-        image._inline.docPr.set('descr', caption)
-    p.paragraph_format.space_after = Pt(5)
-    c = paragraph(doc, caption, 9, indent=False); c.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
 def base(title):
     doc = Document()
     s = doc.sections[0]
@@ -93,7 +83,7 @@ def base(title):
     s.different_first_page_header_footer = False
     h = s.header.paragraphs[0]; h.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     header_title = title if title.startswith('岭南小栈') else f'岭南小栈 {title}'
-    font(h.add_run(f'{header_title}  r4'), 9)
+    font(h.add_run(f'{header_title}  2026年11月17日'), 9)
     f = s.footer.paragraphs[0]; f.alignment = WD_ALIGN_PARAGRAPH.CENTER
     font(f.add_run('Inlux  |  '), 9)
     field = OxmlElement('w:fldSimple'); field.set(qn('w:instr'), 'PAGE'); f._p.append(field)
@@ -103,7 +93,7 @@ def base(title):
     doc.core_properties.last_modified_by = 'Inlux'
     doc.core_properties.created = datetime.now(timezone.utc)
     doc.core_properties.modified = datetime.now(timezone.utc)
-    doc.core_properties.version = 'r4-20261115'
+    doc.core_properties.version = 'latest-20261117'
     return doc
 
 def blocks(doc, text):
@@ -147,36 +137,14 @@ def main_document():
     doc = base('作品说明'); title(doc, '岭南小栈作品说明')
     paragraph(doc, '第九届传智杯 AI微信小程序开发挑战赛', 12, indent=False)
     paragraph(doc, 'Inlux团队  广东岭南职业技术学院  C组三人', 11, indent=False)
-    paragraph(doc, '2026年11月15日  r4更新材料', 11, indent=False)
-    intro_lines = [x for x in intro.splitlines() if x.startswith(('岭南小栈是一款', '本文覆盖'))]
-    for x in intro_lines: paragraph(doc, x, indent=False)
-    pictures(doc, ['native/01-home.png', 'native/06-plan-to-week.png'], '原生模拟器示例  今天与对应周课表  虚构数据  非手机真机', 2.05)
-    for key in ['a 项目说明', 'b 微信与AI能力说明', 'c 创新点与取舍']:
-        doc.add_page_break(); heading(doc, key); blocks(doc, sec[key])
-        if key.startswith('a '): pictures(doc, ['b-regression/10-import-review.png'], '导入草稿逐条核对后才确认替换  虚构样例', 1.85)
-        if key.startswith('c '): pictures(doc, ['b-regression/05-notice-proposal.png'], '先核对原通知与变更范围  固定AI响应', 1.85)
-    doc.add_page_break(); heading(doc, 'd 技术实现')
-    d_parts = sec['d 技术实现'].split('本地需要Node.js')
-    blocks(doc, d_parts[0])
-    doc.add_page_break(); heading(doc, '运行与版本复现')
-    blocks(doc, '本地需要Node.js' + d_parts[1])
-    blocks(doc, '\n```powershell\nnpm ci --ignore-scripts\nnpm run typecheck\nnpm run build\n```\n')
-    table(doc, [['对象', '复现范围'], ['完整仓库', '类型检查、1025项回归及文档检查；资料权限另计'], ['参赛源码子包', '干净安装、类型检查、构建；未附完整tests'], ['云端与模型', '资源、AppID权限、环境变量和真实调用须分别配置与验证']])
-    doc.add_page_break(); heading(doc, 'e 成果与验证'); blocks(doc, sec['e 成果与验证'])
-    doc.add_page_break(); heading(doc, '调课结果回到对应周')
-    paragraph(doc, '以下为本轮原生夹具操作画面：学生核对提案后应用，页面定位到第11周，并在目标课程上标出本次调整。撤销仍需在有效窗口内操作。', indent=False)
-    pictures(doc, ['b-regression/06-change-result.png', 'b-regression/07-week-11-changed.png'], '限定周次应用与周课表变化  虚构课程及固定响应')
-    paragraph(doc, '这组截图证明界面和夹具闭环，不证明真实数据库事务性能。拍摄多张结果图时的撤销计时处理在验证报告中单列，不能据此认定10秒截止边界通过。', indent=False)
-    doc.add_page_break(); heading(doc, '学习约束与已有练习记录')
-    pictures(doc, ['c-regression/15-ai-draft.png', 'c-regression/77-practice-record.png'], '原话依据核对与练习记录  固定响应  不代表学习效果')
-    paragraph(doc, '约束草稿核对后才进入规则预览，计划与正式课程分开。记录复制只保留当前已有原答和实际返回反馈；没有返回的反馈不补写。', indent=False)
-    doc.add_page_break(); heading(doc, 'f 历史与资料来源'); blocks(doc, sec['f 历史与资料来源'])
-    table(doc, [['材料', '对应版本'], ['新版文档与原生演示', '本轮main代码；虚构数据、固定响应'], ['历史真实AI视频', '2026年10月30日录制版本；保留原片与记录'], ['r1至r3旧包', '原日期及校验不改写，不作为本轮最新包']])
-    doc.add_page_break(); heading(doc, 'g 落地规划'); blocks(doc, sec['g 落地规划'])
-    table(doc, [['阶段', '工作与判据'], ['小范围试点准备', '确认告知、权限、接收方与删除途径，再邀请真实学生'], ['使用验证', '观察导入校对、错误恢复和再次使用意愿，保留真实反馈'], ['持续完善', '新题独立评测及成本核对后决定推广与版本方向']])
-    doc.add_page_break(); heading(doc, '版本与核查入口'); blocks(doc, sec['版本与核查入口'])
-    table(doc, [['版本对象', '说明'], ['业务代码基线', '8dda8d363d88d670bd2d5d0edb432434e47fb35c'], ['main合并记录', '092f6570d436d7f975e55a81a1fec19d11d719aa'], ['完整交付源码与校验', '以source-version.json、manifest及SHA256文件为准']])
+    paragraph(doc, '2026年11月17日  最新提交材料', 11, indent=False)
+    for line in intro.splitlines():
+        if line.startswith(('岭南小栈是一款', '本文覆盖')): paragraph(doc, line, indent=False)
+    table(doc, [['材料', '阅读用途'], ['作品说明', '项目场景、能力、技术与后续计划'], ['体验与运行说明', '安装构建、云资源和操作路径'], ['功能演示视频', '负责人提供并确认的最新文件'], ['版本与验证', '源码来源、文档渲染和包内哈希']])
+    for key, body in sec.items():
+        doc.add_page_break(); heading(doc, key); blocks(doc, body)
     doc.save(OUT / '岭南小栈-作品说明.docx')
+
 
 def support_document(source, output, title_text):
     intro, sec = sections(source)
@@ -190,8 +158,6 @@ def support_document(source, output, title_text):
         for key in group: heading(doc, key); blocks(doc, sec[key])
         if source == '体验说明.md' and gi == 1:
             table(doc, [['能力', '实际前提'], ['课表与设置', '本人身份、相应云函数与数据权限'], ['AI功能', '模型与审核配置、限流、预算和有效网络'], ['公开资讯', '来源范围、同步状态及读取权限']])
-        if source == '体验说明.md' and gi == 2:
-            pictures(doc, ['b-regression/09-import-guide.png'], '从微信聊天选择虚构测试课表  确认保存会整表替换', 1.9)
     if source == '提交核对清单.md':
         for p in doc.paragraphs:
             if p.style.name == 'Normal':

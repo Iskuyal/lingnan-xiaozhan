@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-17",
+  "file": "岭南小栈-功能演示.mp4",
+  "ownerApproved": true,
+  "ownerInstruction": "使用负责人提供的最新视频，不再审查内容",
+  "agentContentReviewed": false,
+  "scope": "file existence, metadata and SHA256 only; no frame extraction or content assessment",
+  "sha256": "887d189587b498790b5575fab6b40ab3b4dccc32d2a21682f6d824607584c052",
+  "bytes": 2834592,
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 448,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "131.655172",
+      "size": "2834592"
+    }
+  },
+  "reencoded": false,
+  "newBusinessAiRequests": 0
+}

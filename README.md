@@ -8,14 +8,12 @@
 
 最新代码已通过 [PR #152](https://github.com/Iskuyal/lingnan-xiaozhan/pull/152) 合入 `main`，包括岭南红四 tab、限定周次调课、AI 约束核对与学习计划、本机练习记录复制及集成审查修补。
 
-- [2026年11月15日参赛材料](docs/competition/submission-2026-11-15/README.md)：可编辑 Word、PDF、体验说明、演示与包校验。
+- [最新参赛材料](docs/competition/submission-latest/README.md)：可编辑 Word、PDF、体验说明、演示与包校验。
 - [集成审查与修补](docs/review/lingnan-ui-integration-2026-11-14.md)：旧提案、迟到回复、写入锁、规则换排及导航等问题的复现与处理。
 - [本机及原生验证](docs/evidence/lingnan-ui-implementation/integration-2026-11-14/README.md)：1025 项回归，A 14 项、B 12 项、C 31 场景、目标日 9 项及跨模块 10 项检查。
 - [版本与参赛包](https://github.com/Iskuyal/lingnan-xiaozhan/releases)：本次包以 Release 草稿准备，未代为提交赛事。
 
-<table><tr><td align="center"><img src="docs/evidence/lingnan-ui-implementation/integration-2026-11-14/native/01-home.png" width="230" alt="今天页原生截图"/><br/>今天</td><td align="center"><img src="docs/evidence/lingnan-ui-implementation/integration-2026-11-14/native/06-plan-to-week.png" width="230" alt="计划对应周课表原生截图"/><br/>课表与计划</td></tr></table>
-
-上图来自微信开发者工具原生模拟器，使用虚构数据和固定测试响应；不是手机真机，也不证明真实模型效果。逻辑屏幕为390px，PNG栅格为371px。新版演示与历史真实AI视频在材料中分开标注。
+本次提交只收录负责人提供并确认的最新视频，未重新审查内容或转码。三份Word/PDF、源码、虚构输入和逐文件校验随包，旧预提交材料不再作为交付入口。
 
 ## 四个主入口
 
